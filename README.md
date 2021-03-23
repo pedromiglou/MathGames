@@ -4,8 +4,8 @@ Full Stack Application about virtual board games
 
 # The Team
     Diogo Carvalho	  - Team Manager
- 	Diogo Cunha	      - Developer
+ 	Diogo Cunha       - UX Designer
  	Pedro Amaral	  - Architect
- 	Pedro Santos	  - Developer
+ 	Pedro Santos	  - QA Engineer
 	Rafael Batista	  - DevOps Master
 	Ricardo Cruz	  - Product Owner
