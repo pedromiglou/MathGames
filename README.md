@@ -12,6 +12,8 @@ Full Stack Application about virtual board games
 
 # JIRA Backlog
 
+https://pedromiglou.atlassian.net/jira/software/projects/MAT/boards/3
+
 # Promotional Website
 
 http://xcoa.av.it.pt/~pi202021g07/
