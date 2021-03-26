@@ -9,3 +9,9 @@ Full Stack Application about virtual board games
  	Pedro Santos	  - QA Engineer
 	Rafael Batista	  - DevOps Master
 	Ricardo Cruz	  - Product Owner
+
+# JIRA Backlog
+
+# Promotional Website
+
+http://xcoa.av.it.pt/~pi202021g07/
