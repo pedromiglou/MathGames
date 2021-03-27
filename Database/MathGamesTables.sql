@@ -4,9 +4,11 @@ create table User (
     email varchar(30) NOT NULL,
     password varchar(30) NOT NULL,
     avatar int,
+    rank int NOT NULL,
     unique (username),
     unique (email),
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    check (rank >= 0)
 );
 
 -- eventually create a stored procedure
