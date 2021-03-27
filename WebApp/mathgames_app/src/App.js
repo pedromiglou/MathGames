@@ -8,7 +8,6 @@ function App(){
     return( 
         <>
         <Router>
-            <Menu/>
             <Welcome/>
             <Switch>
                 <Route path='/' />
