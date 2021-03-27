@@ -11,7 +11,7 @@
 
 			var config = {
 				type: Phaser.AUTO,
-				width: 750,
+				width: 1100,
 				height: 750,
 				backgroundColor: '#4488aa',
 				scene: {
@@ -22,6 +22,8 @@
 			};
 
 			var game = new Phaser.Game(config);
+			var INITIAL_BOARD_POS = 60
+			var DISTANCE_BETWEEN_SQUARES = 105
 
 			function preload() {
 				this.load.image('square', 'assets/square.png')
@@ -33,67 +35,80 @@
 			}
 
 			function create() {
-				positions = []
-
-				current_player = 2;
-
+				// Sound effect played after every move
 				this.move_sound = this.sound.add('click', {volume: 0.2});
-
+				// Array that stores the board's clickable positions
+				positions = []
+				// Player which is currently playing (1 or 2)
+				current_player = 2;				
+				// True if the player's last click was the moving piece, false otherwise
 				clicked_piece_flag = false
+				// Squares which have been blocked
 				blocked_squares = new Set()
+				// Squares to where the moving piece can currently move
 				valid_squares = new Set(["10", "11", "12", "17", "19", "24", "25", "26"])
+				// Positions referencing the last movement made
+				last_played = new Set()
 
+				// Loop used to fill the board with clickable squares
 				for (var pos_y = 0; pos_y < 7; pos_y++) {
 					for (var pos_x = 0; pos_x < 7; pos_x++) {
 						pos = pos_y*7+pos_x;
-						if (pos == 6) {
-							positions.push(this.add.image(60 + 105*pos_x, 60+105*pos_y, 'p2').setName(String(pos)).setInteractive());
-						} else if (pos == 42) {
-							positions.push(this.add.image(60 + 105*pos_x, 60+105*pos_y, 'p1').setName(String(pos)).setInteractive());
-						} else {
-							positions.push(this.add.image(60 + 105*pos_x, 60+105*pos_y, 'square').setName(String(pos)).setInteractive());
-						}
+						if (pos == 6)
+							positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'p2').setName(String(pos)).setInteractive());
+						else if (pos == 42)
+							positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'p1').setName(String(pos)).setInteractive());
+						else
+							positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'square').setName(String(pos)).setInteractive());
 					}
 				}
-				player_image = this.add.image(60 + 105*4, 60+105*2, 'piece').setName('player_piece').setInteractive();
 
+				// Fill in the moving piece
+				player_piece = this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*4, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*2, 'piece').setName('player_piece').setInteractive();
+
+				this.add.text(750+20, 60, "É a vez do jogador:", {font: "40px Impact", color: "Orange"});
+				current_player_text = this.add.text(750+95, 120, "Jogador " + current_player, {font: "40px Impact", color: "Orange"});
+				// Triggered when the player clicks
 				this.input.on('pointerdown', function(pointer, currentlyOver) {
-					clicked_piece = currentlyOver[0]
+					clicked_piece = currentlyOver[0];
 					if (clicked_piece.name == "player_piece") {
-						clicked_piece_flag = true
+						clicked_piece_flag = true;
+						valid_squares.forEach(square => positions[square].setTint(0x00FF00));
 
 					} else if (clicked_piece_flag) {
 						clicked_piece_flag = false;
-						move(this, player_image, clicked_piece, valid_squares, blocked_squares)
+						valid_squares.forEach(square => positions[square].clearTint());
+						move(this);
 					}
 				}, this);
 			}
 
-			function update() {
-
-			}
+			function update() {}
 
 			function move_image(scene, image, new_x, new_y) {
-				old_x = image.x
-				old_y = image.y
-
+				scene.add.image(image.x, image.y, 'blocked').setName('blocked');
 				image.setPosition(new_x, new_y);
-
-				scene.add.image(old_x, old_y, 'blocked').setName('blocked').setInteractive();
 			}
 
-			function move(scene, player_image, clicked_piece, valid_squares, blocked_squares) {
+			function move(scene) {
 				//console.log(current_player);
 				if ( valid_squares.has(clicked_piece.name) ) {
-					
 					scene.move_sound.play();
+
 					// Update blocked squares
-					old_x = (player_image.x-60)/ 105
-					old_y = (player_image.y-60)/ 105									
-					blocked_squares.add(String(old_y*7+old_x))
-					
+					old_x = (player_piece.x-INITIAL_BOARD_POS)/ DISTANCE_BETWEEN_SQUARES;
+					old_y = (player_piece.y-INITIAL_BOARD_POS)/ DISTANCE_BETWEEN_SQUARES;
+					blocked_squares.add(String(old_y*7+old_x));
+
+					// Remove last movement highlight and add new one
+					last_played.forEach(pos =>  positions[pos].clearTint());
+					last_played.clear();
+					last_played.add(old_y*7+old_x);
+					last_played.add(parseInt(clicked_piece.name));
+					last_played.forEach(pos =>  positions[pos].setTint(0xFFFF00));
+
 					// Move player piece to new square
-					move_image(scene, player_image, clicked_piece.x, clicked_piece.y);
+					move_image(scene, player_piece, clicked_piece.x, clicked_piece.y);
 					
 					// Get new square's position [0..49]
 					current_pos = parseInt(clicked_piece.name)
@@ -136,8 +151,8 @@
 						valid_squares.delete(String(current_pos+8));
 					}
 
-					//console.log("Valid squares: ", valid_squares)
-					//console.log("Blocked squares: ", blocked_squares)
+					// Remove blocked squares
+					blocked_squares.forEach(square => valid_squares.delete(square));
 
 					// Check for win conditions
 					if (current_pos == 6 || current_pos == 42 || set_diff(valid_squares, blocked_squares).size == 0) {
@@ -146,10 +161,11 @@
 					}
 
 					if (current_player==1)
-						current_player=2
+						current_player=2;
 					else
-						current_player=1
-					//current_player = 1 - current_player;
+						current_player=1;
+
+					current_player_text.setText("Jogador " + current_player);
 
 				}
 				
@@ -173,7 +189,7 @@
 				scene.text = scene.add.text(0, 0, "O jogador " + winner + " ganhou.", {font: "80px Impact", color: "Red"});
 				var tween = scene.tweens.add ({
 					targets: scene.text,
-					x: 60,
+					x: 230,
 					y: 270,
 					durations: 2000,
 					ease: "Elastic",
