@@ -4,6 +4,8 @@ create table User (
     email varchar(30) NOT NULL,
     password varchar(30) NOT NULL,
     avatar int,
+    unique (username),
+    unique (email),
     PRIMARY KEY (id)
 );
 
@@ -44,7 +46,7 @@ create table Game (
     check (age>0)
 );
 
-create table Match (
+create table GameMatch (
     id int NOT NULL AUTO_INCREMENT,
     player1 int NOT NULL,
     player2 int NOT NULL,
@@ -72,9 +74,11 @@ create table Tournament (
     password VARCHAR(30),
     game_id int NOT NULL,
     winner int,
+    creator int NOT NULL,
     primary key(id),
     foreign key(game_id) references Game(id),
     foreign key(winner) references User(id),
+    foreign key(creator) references User(id),
     check (max_users>2)
 );
 
@@ -82,7 +86,7 @@ create table TournamentMatches(
     match_id int NOT NULL,
     tournament_id int NOT NULL,
     primary key(match_id, tournament_id),
-    foreign key(match_id) references Match(id),
+    foreign key(match_id) references GameMatch(id),
     foreign key(tournament_id) references Tournament(id)
 );
 
@@ -93,4 +97,14 @@ create table TournamentUsers(
     primary key(user_id, tournament_id),
     foreign key(user_id) references User(id),
     foreign key(tournament_id) references Tournament(id)
+);
+
+create table UserHasRank(
+    user_id int NOT NULL,
+    game_id int NOT NULL,
+    rank int NOT NULL,
+    primary key(user_id, game_id),
+    foreign key(user_id) references User(id),
+    foreign key(game_id) references Game(id),
+    check (rank >= 0)
 );
