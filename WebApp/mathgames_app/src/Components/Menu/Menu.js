@@ -25,7 +25,7 @@ function Menu(){
                     </div>
                 </div>
             </div>
-            <nav className={sidebar ? "nav-menu active" : "nav-menu"}>
+            <nav className={sidebaraa ? "nav-menu active" : "nav-menu"}>
                 <ul className="nav-menu-items">
                     {/* 
                     <li className="navbar-toggle">
