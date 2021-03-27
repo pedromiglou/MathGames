@@ -12,24 +12,30 @@ function Menu(){
     const showSidebar = () => setSidebar(!sidebar)
     return(
         <>
-        <IconContext.Provider value={{color: 'red'}}>
-            <div className="nav-logo">
-                <Link to="/">
-                    <figure><img src={process.env.PUBLIC_URL + "/images/logo-light.png"}  alt="logo"/></figure>
-                </Link>
-            </div>
+        <IconContext.Provider value={{color: 'grey'}}>
             <div className="navbar">
-                <Link to="#" className="menu-bars">
-                    <FaIcons.FaBars onClick={showSidebar}/>
-                </Link>
+                <div className="bars_logo">
+                    <Link to="#" className="menu-bars">
+                        <FaIcons.FaBars onClick={showSidebar}/>
+                    </Link>
+                    <div className="nav-logo">
+                        <Link to="/">
+                            <img  className="logo" src={process.env.PUBLIC_URL + "/images/logo-light.png"}  alt="logo"/>
+                        </Link>
+                    </div>
+                </div>
             </div>
             <nav className={sidebar ? "nav-menu active" : "nav-menu"}>
                 <ul className="nav-menu-items">
+                    {/* 
                     <li className="navbar-toggle">
                         <Link to="#" className="menu-bars">
                             <AiIcons.AiOutlineClose onClick={showSidebar}/>
                         </Link>
                     </li>
+                    
+                    */}
+                    
                     {sidebarData.map((item, index) =>{
                         return(
                             <li key={index} className={item.cName}>
