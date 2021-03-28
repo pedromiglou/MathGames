@@ -10,3 +10,10 @@
 html, body, #root, .App {
     height: 100%;
 }
+
+/* Solucao para o backgroud size */
+@media(max-width:767px) {
+    html, body, #root, .App {
+        height: 1000px;
+    }
+}
