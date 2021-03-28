@@ -1,5 +1,14 @@
 class rastrosAI {
-    constructor() {
+    constructor(player) {
+        //get goal
+        if (player == 1) {
+            this.goal = [6,0];
+        } else if (player == 2) {
+            this.goal = [0,6];
+        } else {
+            throw Error("Invalid player number");
+        }
+
         // Array that stores the board
         this.board = []
 
@@ -22,8 +31,9 @@ class rastrosAI {
     }
 
     printField() {
-        var s = "";
+        var s = "  0 1 2 3 4 5 6\n";
         for (var pos_y = 0; pos_y < 7; pos_y++) {
+            s+= pos_y + " ";
             for (var pos_x = 0; pos_x < 7; pos_x++) {
                 s += this.board[pos_y][pos_x] + " ";
             }
@@ -72,25 +82,47 @@ class rastrosAI {
             if (accumulator === undefined) {
                 return current;
             }
-            if (Math.pow(accumulator[0]-6, 2) + Math.pow(accumulator[1] - 0, 2) < Math.pow(current[0]-6, 2) + Math.pow(current[1] - 0, 2)) {
+            if (Math.pow(accumulator[0]-this.goal[0], 2) + Math.pow(accumulator[1] - this.goal[1], 2) < Math.pow(current[0]-this.goal[0], 2) + Math.pow(current[1] - this.goal[1], 2)) {
                 return accumulator;
             } else {
                 return current;
             }
         });
         this.fieldUpdate(chosen);
+        return chosen;
     }
 
 }
 
-var AI = new rastrosAI();
+function buttonClick() {
+    var play = document.getElementById("onlyInput").value;
 
-while (true) {
+    play = play.split(",");
+    play = [Number(play[0]), Number(play[1])]
+
+    console.log("You played:")
+    AI.fieldUpdate(play)
     AI.printField();
-    AI.randomPlay();
+
     if (AI.ended()) {
-        break;
+        console.log("gg")
+    } else {
+        console.log("AI played:")
+        AI.randomPlay();
+        AI.printField();
+
+        if (AI.ended()) {
+            console.log("gg")
+        }
     }
 }
 
+var playerNumber = 1;
+var AI = new rastrosAI(playerNumber);
 AI.printField();
+
+if (playerNumber==1) {
+    console.log("AI played:")
+    AI.randomPlay();
+    AI.printField();
+}
