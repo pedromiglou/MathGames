@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+/* import React, {useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Menu.css';
 import {Link} from 'react-router-dom';
@@ -47,4 +47,4 @@ function Menu(){
     )
 }
 
-export default Menu;
+export default Menu; */
