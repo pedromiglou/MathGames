@@ -7,7 +7,7 @@ import "./Welcome.css";
 function Welcome() {
 	return (
 		<div className="hero-container">
-			<div className="container">
+			<div className="container container-position-fix">
 				<div className="row">
 					<div className="col-xl-6 col-lg-6 col-md-12 col-sm-12">
 						<div className="hero-text">
@@ -40,7 +40,7 @@ function Welcome() {
 					</div>
 					<div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div className="row">
-							<div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 centered">
+							<div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 text-left">
 								<Button
 									className="btns"
 									buttonStyle="btn--primary"

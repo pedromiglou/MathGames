@@ -8,6 +8,14 @@
 	align-items: center;
 	object-fit: contain;
     background-color: rgb(175, 173, 173);
+    margin-top: auto;
+    margin-left: 65px;
+}
+
+.container-position-fix{
+	position: absolute;
+	margin-top: 0;
+	top: 20%;
 }
 
 .hero-text {
@@ -30,11 +38,11 @@
 	text-align: center;
 }
 
-h1 {
+.hero-text h1 {
 	font-size: 400%;
 }
 
-p {
+.hero-text p {
     padding-top: 5%;
     font-size: 125%;
 }
@@ -57,8 +65,13 @@ p {
     text-align:center;
 }
 
+.text-left {
+    text-align: left;
+}
+
 @media(max-width:767px) {
     .text-left {
         text-align: center;
     }
 }
+
