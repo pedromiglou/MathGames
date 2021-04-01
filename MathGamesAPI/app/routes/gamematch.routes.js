@@ -4,16 +4,16 @@ module.exports = app => {
     // Create a new match
     app.post("/matches", matches.create);
   
-    // Retrieve all matchs
+    // Retrieve all match
     app.get("/matches", matches.findAll);
   
-    // Retrieve a single matche with matcheId
+    // Retrieve a single match with matchId
     app.get("/matches/:matchId", matches.findOne);
   
-    // Update a matche with matcheId
+    // Update a match with matchId
     app.put("/matches/:matchId", matches.update);
   
-    // Delete a matche with matcheId
+    // Delete a match with matchId
     app.delete("/matches/:matchId", matches.delete);
   
     // Delete all matches
