@@ -16,6 +16,8 @@ create table Friends (
     friend1 int NOT NULL,
     friend2 int NOT NULL,
     primary KEY(friend1, friend2),
+    foreign key(friend1) references User(id),
+    foreign key(friend2) references User(id),
     check(friend1 != friend2)
 );
 
