@@ -17,6 +17,7 @@ require("./app/routes/gamematch.routes.js")(app);
 require("./app/routes/userranks.routes.js")(app);
 require("./app/routes/ban.routes.js")(app);
 require("./app/routes/tournament.routes.js")(app);
+require("./app/routes/tournamentmatches.routes.js")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 3000;
