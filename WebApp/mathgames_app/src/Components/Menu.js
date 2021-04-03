@@ -30,7 +30,7 @@ function Menu(){
             }
             <nav className={sidebar ? "nav-menu active" : "nav-menu collapsed"}>
                 <ul className="nav-menu-items">
-                    <div class="nav-item">
+                    <div className="nav-item">
                         <li className="nav-text">
                             <Link to="/"> 
                                 <i className="subicon"><AiIcons.AiFillHome/></i>
@@ -41,7 +41,7 @@ function Menu(){
                     <hr></hr>
                     {sidebarData_group1.map((item, index) =>{
                         return(
-                            <div class="nav-item">
+                            <div className="nav-item">
                                 <li key={index} className={item.cName}>
                                     <Link to={item.path}> 
                                         <i className="subicon">{item.icon}</i>
@@ -54,7 +54,7 @@ function Menu(){
                     <hr></hr>
                     {sidebarData_group2.map((item, index) =>{
                         return(
-                            <div class="nav-item">
+                            <div className="nav-item">
                                 <li key={index} className={item.cName}>
                                     <Link to={item.path}> 
                                         <i className="subicon">{item.icon}</i>
