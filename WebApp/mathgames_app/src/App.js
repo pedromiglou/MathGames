@@ -1,9 +1,9 @@
 import React from 'react';
+import Menu from './Components/Menu.js'
 import { BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 
 import Dashboard from './Pages/DashBoard/Dashboard'
 import Welcome from './Pages/Welcome/Welcome'
-import Menu from './Components/Menu.js'
 import ChooseGameMode from './Pages/ChooseGameMode/ChooseGameMode';
 import ChooseGame from './Pages/ChooseGame/ChooseGame';
 
