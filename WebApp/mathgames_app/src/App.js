@@ -8,6 +8,7 @@ import Welcome from './Pages/Welcome/Welcome'
 /* import Menu from './Components/Menu/Menu.js'*/
 import ChooseGameMode from './Pages/ChooseGameMode/ChooseGameMode';
 import ChooseGame from './Pages/ChooseGame/ChooseGame';
+import Tests from './Pages/Tests/Tests';
 
 
 function App(){
@@ -20,6 +21,7 @@ function App(){
                 <Route path='/dashboard' component={Dashboard} />
                 <Route path='/choose' component={ChooseGame} />
                 <Route path='/mode' component={ChooseGameMode} />
+                <Route path='/tests' component={Tests} />
             </Switch>
         </Router>
         </>

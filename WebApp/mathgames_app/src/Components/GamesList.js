@@ -1,6 +1,5 @@
 import { React, useState } from "react";
 import { Container, Card } from "react-bootstrap";
-import ReactDOM from 'react-dom'
 
 import "./GamesList.css";
 
@@ -9,82 +8,82 @@ const games_list = [
         id: 0,
         title: "Game 1",
         img: process.env.PUBLIC_URL + "/images/mathGames.png",
+        hoover: false,
     },
     {
         id: 1,
         title: "Game 2",
         img: process.env.PUBLIC_URL + "/images/mathGames.png",
+        hoover: false,
     },
     {
         id: 2,
         title: "Game 2",
         img: process.env.PUBLIC_URL + "/images/mathGames.png",
+        hoover: false,
     },
     {
         id: 3,
         title: "Game 2",
         img: process.env.PUBLIC_URL + "/images/mathGames.png",
+        hoover: false,
     },
     {
         id: 4,
         title: "Game 2",
         img: process.env.PUBLIC_URL + "/images/mathGames.png",
+        hoover: false,
     },
 ];
 
 function GamesList() {
+    const [title, setTitle] = useState(false);
+    const titleState = () => setTitle(!title);
 
-	var element = "";
+    function changeCard(e, game) {
+        var x = document.getElementById(game.id);
+        x.style.width = "350px";
+        x.style.height = "350px";
+        x.style.opacity = "0.5";
+        x.style.backgroundColor = "aquat";
 
-    function changeCard(e) {
-        e.target.style.width = "350px";
-        e.target.style.height = "350px";
-        e.target.style.opacity = "0.5";
-        e.target.style.backgroundColor = "rgba(0,0,0,.5)";
-
-		const element = (
-			<h1 className='testex'>
-			  Hello !
-			</h1>
-		  );
-		  
-		  ReactDOM.render(
-			element,
-			document.getElementById('root')
-		  );
+        games_list[game.id]["hoover"] = true;
+        titleState();
     }
 
-    function replaceCard(e) {
-        e.target.style.margin = "0px";
-        e.target.style.width = "300px";
-        e.target.style.height = "300px";
-        e.target.style.opacity = "1";
-        e.target.style.backgroundColor = "white";
-		var wtf = "";
+    function replaceCard(e, game) {
+        var x = document.getElementById(game.id);
+        x.style.margin = "0px";
+        x.style.width = "300px";
+        x.style.height = "300px";
+        x.style.opacity = "1";
+        x.style.backgroundColor = "white";
+
+        games_list[game.id]["hoover"] = false;
+        titleState();
     }
 
+    const showTitle = (game) => {
+        if (game.hoover) {
+            return <h1 className="testex">{game.title}</h1>;
+        }
+    };
 
     return (
         <Container className="display-games container">
             {games_list.map((game) => (
                 <Card key={game.id}>
-                    {/* <Card.Img
-                        variant="top"
-                        src={game.img}
-                        className="card-img"
-						onMouseOver={changeCard}
-						onMouseLeave={replaceCard}
-                    /> */}
-                    <div>
+                    <div
+                        onMouseEnter={(e) => changeCard(e, game)}
+                        onMouseLeave={(e) => replaceCard(e, game)}
+                    >
                         <img
                             src={game.img}
                             alt="Info"
                             className="card-img"
-							onMouseOver={changeCard}
-							onMouseLeave={replaceCard}
+                            id={game.id}
                         />
-						{element}
-						
+                        {showTitle(game)}
                     </div>
                 </Card>
             ))}
