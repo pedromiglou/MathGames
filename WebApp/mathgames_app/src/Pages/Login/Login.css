@@ -1,0 +1,135 @@
+.container {
+	position: relative;
+	width: 100%;
+	min-height: 500px;
+	background-color: #fff;
+	margin-top: 50px;
+}
+
+.forms-container {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	background-color: rgb(8, 56, 99);
+
+}
+
+.signin {
+	position: absolute;
+	left: 35%;
+	width: 65%;
+	height: 100%;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	z-index: 1px;
+
+	background-color: rgb(8, 56, 99);
+	transition: 1s 0.7s ease-in-out;
+}
+
+.signin-side {
+	position: absolute;
+	left: 0%;
+	width: 35%;
+	height: 100%;
+
+	text-align: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	background-color: aqua;
+	transition: 1s 0.7s ease-in-out;
+}
+
+.signup {
+	position: absolute;
+	left: 35%;
+	width: 65%;
+	height: 100%;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	z-index: -1px;
+	background-color: rgb(8, 56, 99);
+	transition: 1s 0.7s ease-in-out;
+}
+
+form {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	padding: 0rem 5rem;
+	transition: all 0.2s 0.7s;
+	overflow: hidden;
+	grid-column: 1 / 2;
+	grid-row: 1 / 2;
+}
+
+.input-field {
+	max-width: 380px;
+	width: 100%;
+	background-color: #f0f0f0;
+	margin: 10px 0;
+	height: 55px;
+	border-radius: 55px;
+	display: grid;
+	grid-template-columns: 15% 85%;
+	padding: 0 0.4rem;
+	position: relative;
+}
+
+.input-field i {
+	text-align: center;
+	line-height: 55px;
+	color: #acacac;
+	transition: 0.5s;
+	font-size: 1.1rem;
+}
+
+.input-field input {
+	background: none;
+	outline: none;
+	border: none;
+	line-height: 1;
+	font-weight: 600;
+	font-size: 1.1rem;
+	color: #333;
+}
+
+.input-field input::placeholder {
+	color: #aaa;
+	font-weight: 500;
+}
+
+.btn {
+	width: 150px;
+	background-color: #5995fd;
+	border: none;
+	outline: none;
+	height: 49px;
+	border-radius: 49px;
+	color: #fff;
+	text-transform: uppercase;
+	font-weight: 600;
+	margin: 10px 0;
+	cursor: pointer;
+	transition: 0.5s;
+}
+.btn.transparent {
+	margin: 0;
+	background: none;
+	border: 2px solid #fff;
+	width: 130px;
+	height: 60px;
+	font-weight: 600;
+	font-size: 0.8rem;
+  }  
