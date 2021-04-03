@@ -65,7 +65,7 @@ function GamesList() {
 
     const showTitle = (game) => {
         if (game.hoover) {
-            return <h1 className="testex">{game.title}</h1>;
+            return <h1 className="game-title">{game.title}</h1>;
         }
     };
 
