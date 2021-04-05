@@ -18,7 +18,7 @@ create table Friends (
     primary KEY(friend1, friend2),
     foreign key(friend1) references User(id),
     foreign key(friend2) references User(id),
-    check(friend1 != friend2)
+    check(friend1 < friend2)
 );
 
 create table Bans (
