@@ -20,6 +20,7 @@ require("./app/routes/tournament.routes.js")(app);
 require("./app/routes/tournamentmatches.routes.js")(app);
 require("./app/routes/tournamentusers.routes.js")(app);
 require("./app/routes/friend.routes.js")(app);
+require("./app/routes/comment.routes.js")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 3000;
