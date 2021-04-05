@@ -1,11 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Lato', sans-serif;
+}
+
+html, body, #root{
+    height: 100%;
+    width: 100%;
+    background: transparent;
+}
+
+/* Solucao para o backgroud size
+@media(max-width:767px) {
+    html, body, #root, .App {
+        height: 1000px;
+    }
+}
+ */
+
+/* ----------------------------*/
+
 /* horizontal navbar */
 .navbar{
     background-color: #F1F1F1;
-    height: 100px;
+    height: 7vh;
     display: flex;
     justify-content: start;
     align-items: center;
+    position: -webkit-sticky;
+    position: sticky;
+    top:0px;
 }
+
 /*-----------------------*/
 
 /*Bars and Logo */
@@ -29,29 +58,33 @@
 }
 /*-----------------------*/
 
-/* HR Divider
+/*------ MENU DIVIDIR----- */
 
+/*
 .menu-divider{
     margin: 0;
     height: 1px;
     -webkit-animation: change-color-background 4s infinite;
     animation: change-color-background 10s infinite;
+    position: absolute;
+    top:0;
+    position: -webkit-sticky;
+    position: sticky;
 }
-
 */
 
-/*-----------------------*/
+/*---------------------- */
 
 /* Vertical Menu Collapsed */
 .nav-menu{
     background-color: #F9F9F9;
-    margin-top: 100px;
-    height: 100vh;
+    height: 93vh;
     display: flex;
     justify-content: center;
-    position: fixed;
-    top: 0;
-    transition: 2000ms;
+    transition: 500ms;
+    position: absolute;
+    top: 7vh;
+    margin-right: 0 !important;
 }
 
 .nav-menu.collapsed{
@@ -93,7 +126,7 @@
     transform: scale(1,1);
     transition: transform 1s ease;
     -webkit-animation: change-color-background 4s infinite;
-    animation: change-color-background 10s infinite;
+    animation: change-color-background 4s infinite;
 }
 
 .nav-text{
@@ -125,34 +158,55 @@
     height: 24px;
 }
 
+hr{
+    margin:0;
+}
+
 /* Appear and disappear animations */
 span.icons-name{
     margin-left: 16px;
-    -webkit-animation: appearAnimation 0.7s forwards;
-    animation: appearAnimation 0.7s forwards;
+    -webkit-animation: appearAnimation 0.4s forwards;
+    animation: appearAnimation 0.4s forwards;
+    width: auto;
 }
 
 span.icons-noname{
     margin-left: 16px;
-    -webkit-animation: disappearAnimation 0.7s forwards;
-    animation: disappearAnimation 0.7s forwards;
+    -webkit-animation: disappearAnimation 0.4s forwards;
+    animation: disappearAnimation 0.4s forwards;
+    width: auto;
 }
 
 /*-----------------------*/
+
+/*----- SUB-COMPONENT----*/
+
+.sub-component.active{
+    width: calc(100%-300px);
+    margin-left: 300px;
+    height: 93vh;
+}
+
+.sub-component.collapsed{
+    width: calc(100%-65px);
+    margin-left: 65px;
+    height: 93vh;
+}
+/*-----------------------*/
+
 
 /* KEYFRAMES */
 
 @keyframes disappearAnimation {
     0%   {opacity: 1;}
-    50%  {opacity: 0.3;}
     100% {opacity: 0;}
 }
 
 @keyframes appearAnimation {
     0%   {opacity: 0;}
-    25%  {opacity: 0.25;}
-    50%  {opacity: 0.5;}
-    75%  {opacity: 0.75;}
+    25%  {opacity: 0.1;}
+    50%  {opacity: 0.3;}
+    75%  {opacity: 0.6;}
     100% {opacity: 1;}
 }
 
@@ -190,4 +244,30 @@ span.icons-noname{
     0%{
         background-color: #16F5EA;
     }
-  }
+}
+
+/* media queries */
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+    .example {background: red;}
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+    .example {background: green;}
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+    .example {background: blue;}
+} 
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+    .example {background: orange;}
+} 
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+    .example {background: pink;}
+}
