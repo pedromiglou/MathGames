@@ -11,7 +11,7 @@ exports.create = (req, res) => {
 
   // Create a UserRank
   const userrank = new UserRank({
-    rank: req.body.rank,
+    ranking: req.body.ranking,
   });
 
   // Save UserRank in the database

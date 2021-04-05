@@ -1,12 +1,12 @@
 const sql = require("./db.js");
 
 // constructor
-const UserRank = function(userrank) {
-  this.rank = userrank.rank;
+const UserRank = function(userranking) {
+  this.ranking = userranking.ranking;
 };
 
 UserRank.create = (newUserRank, user_id, game_id, result) => {
-  sql.query("INSERT INTO UserHasRank SET user_id = ?, game_id = ?, rank = ?", [user_id ,game_id , newUserRank.rank], (err, res) => {
+  sql.query("INSERT INTO UserHasRank SET user_id = ?, game_id = ?, ranking = ?", [user_id ,game_id , newUserRank.ranking], (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -71,8 +71,8 @@ UserRank.getAll = result => {
 
 UserRank.updateByUserIdGameId = (user_id, game_id, newUserRank, result) => {
   sql.query(
-    "UPDATE UserHasRank SET rank = ? WHERE user_id = ? and game_id = ?",
-    [newUserRank.rank, user_id, game_id],
+    "UPDATE UserHasRank SET ranking = ? WHERE user_id = ? and game_id = ?",
+    [newUserRank.ranking, user_id, game_id],
     (err, res) => {
       if (err) {
         console.log("error: ", err);
