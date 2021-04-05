@@ -4,11 +4,11 @@ create table User (
     email varchar(30) NOT NULL,
     password varchar(30) NOT NULL,
     avatar int,
-    rank int NOT NULL,
+    ranking int NOT NULL,
     unique (username),
     unique (email),
     PRIMARY KEY (id),
-    check (rank >= 0)
+    check (ranking >= 0)
 );
 
 -- eventually create a stored procedure
@@ -16,7 +16,9 @@ create table Friends (
     friend1 int NOT NULL,
     friend2 int NOT NULL,
     primary KEY(friend1, friend2),
-    check(friend1 != friend2)
+    foreign key(friend1) references User(id),
+    foreign key(friend2) references User(id),
+    check(friend1 < friend2)
 );
 
 create table Bans (
@@ -104,9 +106,9 @@ create table TournamentUsers(
 create table UserHasRank(
     user_id int NOT NULL,
     game_id int NOT NULL,
-    rank int NOT NULL,
+    ranking int NOT NULL,
     primary key(user_id, game_id),
     foreign key(user_id) references User(id),
     foreign key(game_id) references Game(id),
-    check (rank >= 0)
+    check (ranking >= 0)
 );
