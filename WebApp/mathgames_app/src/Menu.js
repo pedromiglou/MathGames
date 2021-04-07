@@ -12,6 +12,7 @@ import Welcome from './Pages/Welcome/Welcome';
 import ChooseGameMode from './Pages/ChooseGameMode/ChooseGameMode';
 import ChooseGame from './Pages/ChooseGame/ChooseGame';
 import Game from './Pages/Game/Game'
+import Login from './Pages/Login/Login'
 
 function Menu(){
     const [sidebar, setSidebar] = useState(true);
@@ -81,6 +82,7 @@ function Menu(){
                         <Route path='/choose' component={ChooseGame} />
                         <Route path='/mode' component={ChooseGameMode} />
                         <Route path='/game' component={Game} />
+                        <Route path='/login' component={Login} />
                     </Switch>
                 </div>
             </IconContext.Provider>
