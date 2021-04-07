@@ -1,3 +1,10 @@
+class rastrosState {
+    constructor(blocked_squares, piece) {
+        this.blocked_squares = blocked_squares;
+        this.piece = piece;
+    }
+}
+
 class rastrosAI {
     constructor(player) {
         //get goal
@@ -65,6 +72,8 @@ class rastrosAI {
                 }
             }
         }
+
+        this.tryToWin();
     }
 
     //check if game ended
@@ -90,6 +99,35 @@ class rastrosAI {
         });
         this.fieldUpdate(chosen);
         return chosen;
+    }
+
+    /*
+    fácil -> move-se sempre em direção ao goal
+    médio -> o mesmo mas se estiver perto de cada um dos goals pensa em fazer jogadas que garantam a vitória/evitem a derrota
+    difícil -> começa a pensar mais cedo e também tem cuidado em ficar encurralado
+    */
+    
+    search(validQuares, limit) {
+        validSquares.forEach(element => {
+            
+        });
+    }
+    
+    //if close to a goal try to get a winning play
+    tryToWin() {
+        if (Math.pow(this.piece[0]-this.goal[0],2) <=4 && Math.pow(this.piece[1]-this.goal[1],2) <=4) {
+            
+        }
+    }
+
+    //if close to a enemy goal try to make a saving play
+    tryNotToLose() {
+
+    }
+
+    //if cornered try to make the enemy lose first
+    cornered() {
+
     }
 
 }
