@@ -11,6 +11,7 @@ import Dashboard from './Pages/DashBoard/Dashboard';
 import Welcome from './Pages/Welcome/Welcome';
 import ChooseGameMode from './Pages/ChooseGameMode/ChooseGameMode';
 import ChooseGame from './Pages/ChooseGame/ChooseGame';
+import Game from './Pages/Game/Game'
 
 function Menu(){
     const [sidebar, setSidebar] = useState(true);
@@ -48,8 +49,8 @@ function Menu(){
                         <hr></hr>
                         {sidebarData_group1.map((item, index) =>{
                             return(
-                                <div className="nav-item">
-                                    <li key={index} className={item.cName}>
+                                <div key={item.id} className="nav-item">
+                                    <li className={item.cName}>
                                         <Link to={item.path}> 
                                             <i className="subicon">{item.icon}</i>
                                             <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span>
@@ -61,8 +62,8 @@ function Menu(){
                         <hr></hr>
                         {sidebarData_group2.map((item, index) =>{
                             return(
-                                <div className="nav-item">
-                                    <li key={index} className={item.cName}>
+                                <div key={item.id} className="nav-item">
+                                    <li  className={item.cName}>
                                         <Link to={item.path}> 
                                             <i className="subicon">{item.icon}</i>
                                             <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span>
@@ -79,6 +80,7 @@ function Menu(){
                         <Route path='/dashboard' component={Dashboard} />
                         <Route path='/choose' component={ChooseGame} />
                         <Route path='/mode' component={ChooseGameMode} />
+                        <Route path='/game' component={Game} />
                     </Switch>
                 </div>
             </IconContext.Provider>

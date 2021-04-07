@@ -28,7 +28,7 @@ html, body, #root{
     background-color: #F1F1F1;
     height: 7vh;
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
     align-items: center;
     position: -webkit-sticky;
     position: sticky;
@@ -131,7 +131,7 @@ html, body, #root{
 
 .nav-text{
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
     align-items: center;
     width: 100%;
     list-style: none;
