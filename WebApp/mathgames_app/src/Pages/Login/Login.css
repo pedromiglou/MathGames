@@ -1,4 +1,4 @@
-.container {
+.container-login {
 	position: relative;
 	width: 100%;
 	min-height: 500px;
@@ -6,7 +6,7 @@
 	margin-top: 50px;
 }
 
-.forms-container {
+.forms-container-login {
 	position: absolute;
 	width: 100%;
 	height: 100%;
@@ -110,7 +110,7 @@ form {
 	font-weight: 500;
 }
 
-.btn {
+.btn-login {
 	width: 150px;
 	background-color: #5995fd;
 	border: none;
@@ -124,7 +124,7 @@ form {
 	cursor: pointer;
 	transition: 0.5s;
 }
-.btn.transparent {
+.btn-login.transparent {
 	margin: 0;
 	background: none;
 	border: 2px solid #fff;

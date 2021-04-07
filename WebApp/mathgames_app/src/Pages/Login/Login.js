@@ -52,8 +52,8 @@ function Login() {
 	}
 
 	return (
-		<div className="container">
-			<div className="forms-container">
+		<div className="container container-login">
+			<div className="forms-container-login">
 				<div
 					id="signin_id"
 					className={signIn ? "signin" : "signin"}
@@ -72,7 +72,7 @@ function Login() {
 						<input
 							type="submit"
 							value="Login"
-							className="btn solid"
+							className="btn-login solid"
 						/>
 					</form>
 				</div>
@@ -95,14 +95,14 @@ function Login() {
 						<input
 							type="submit"
 							value="Login"
-							className="btn solid"
+							className="btn-login solid"
 						/>
 					</form>
 				</div>
 
 				<div className="signin-side" id="toggle_side">
 					<button
-						className="btn transparent"
+						className="btn-login transparent"
 						onClick={toggle_sign_up}
 					>
 						{signIn ? "Registe-se" : "Iniciar Sessao" }
