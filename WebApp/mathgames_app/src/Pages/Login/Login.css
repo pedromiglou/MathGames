@@ -1,9 +1,17 @@
 .container-login {
-	position: relative;
+	position: absolute;
 	width: 100%;
 	min-height: 500px;
 	background-color: #fff;
-	margin-top: 50px;
+
+	/* Vertical align */
+	top: 50%;
+	-ms-transform: translateY(-50%);
+  	transform: translateY(-50%);
+
+	/* Horizontal align */
+	/* ... */
+	left: 25%;
 }
 
 .forms-container-login {
@@ -13,7 +21,7 @@
 	top: 0;
 	left: 0;
 	background-color: rgb(8, 56, 99);
-
+	border-radius: 25px;
 }
 
 .signin {
@@ -28,6 +36,9 @@
 
 	z-index: 1px;
 
+	border-radius: 25px;
+
+
 	background-color: rgb(8, 56, 99);
 	transition: 1s 0.7s ease-in-out;
 }
@@ -37,14 +48,35 @@
 	left: 0%;
 	width: 35%;
 	height: 100%;
-
 	text-align: center;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 
+	border-top-left-radius: 23px;
+	border-bottom-left-radius: 23px;
+
 	background-color: aqua;
 	transition: 1s 0.7s ease-in-out;
+	
+}
+
+.signup-side {
+	position: absolute;
+	left: 0%;
+	width: 35%;
+	height: 100%;
+	text-align: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	border-top-right-radius: 23px;
+	border-bottom-right-radius: 23px;
+
+	background-color: aqua;
+	transition: 1s 0.7s ease-in-out;
+	
 }
 
 .signup {
@@ -57,7 +89,9 @@
 	justify-content: center;
 	align-items: center;
 
-	z-index: -1px;
+	border-radius: 25px;
+
+	z-index: -1;
 	background-color: rgb(8, 56, 99);
 	transition: 1s 0.7s ease-in-out;
 }

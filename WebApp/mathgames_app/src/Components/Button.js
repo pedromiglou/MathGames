@@ -12,7 +12,6 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { HashLink } from "react-router-hash-link";
 
 import "./Button.css";
 const STYLES = ["btn--primary", "btn--outline", "btn--test"];
@@ -37,29 +36,17 @@ export const Button = ({
     // const checkButtonRouting = SIZES.includes(routing) ? routing : ROUTING[0];
 
 
-    if (routing === "HashLink") {
-        return (
-            <HashLink to={address} className="btn-mobile">
-                <button
-                    className={`btn ${checkButtonStyle} ${checkButtonSize}`}
-                    onClick={onClick}
-                    type={type}
-                >
-                    {children}
-                </button>
-            </HashLink>
-        );
-    } else {
-        return (
-            <Link to={address} className="btn-mobile">
-                <button
-                    className={`btn ${checkButtonStyle} ${checkButtonSize}`}
-                    onClick={onClick}
-                    type={type}
-                >
-                    {children}
-                </button>
-            </Link>
-        );
-    }
+    
+    return (
+        <Link to={address} className="btn-mobile">
+            <button
+                className={`btn ${checkButtonStyle} ${checkButtonSize}`}
+                onClick={onClick}
+                type={type}
+            >
+                {children}
+            </button>
+        </Link>
+    );
+
 };
