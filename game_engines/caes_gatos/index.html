@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>Gatos&Cães</title>
+	<script src="phaser.js"></script>
+</head>
+<body>
+	<div>
+		<script type="text/javascript">
+
+			var config = {
+				type: Phaser.AUTO,
+				width: 1100,
+				height: 855,
+				backgroundColor: '#4488aa',
+				scene: {
+					preload: preload,
+					create: create,
+					update: update
+				}
+			};
+
+			var game = new Phaser.Game(config);
+			var INITIAL_BOARD_POS = 60
+			var DISTANCE_BETWEEN_SQUARES = 105
+
+			function preload() {
+				this.load.image('square', 'assets/square.png')
+				this.load.spritesheet('cat_dog', 'assets/cat_dog.png', { frameWidth: 100, frameHeight: 100 });
+				this.load.image('center', 'assets/center_square.png')
+				this.load.audio('click', ['assets/move.wav']);
+			}
+
+			function create() {
+				// Sound effect played after every move
+				this.move_sound = this.sound.add('click', {volume: 0.2});
+				// Array that stores the board's clickable positions
+				positions = []
+				// Player which is currently playing (0 or 1)
+				current_player = 0;				
+
+				player_0_valid_squares = new Set()
+				player_1_valid_squares = new Set()
+				player_0_first_move = true
+				player_1_first_move = true
+
+				adjacents = new Set()
+
+				// Loop used to fill the board with clickable squares
+				for (var pos_y = 0; pos_y < 8; pos_y++) {
+					for (var pos_x = 0; pos_x < 8; pos_x++) {
+						pos = pos_y*8+pos_x;
+						player_0_valid_squares.add(String(pos))
+						player_1_valid_squares.add(String(pos))
+						if ([27, 28, 35, 36].includes(pos)) {
+							positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'square').setName(String(pos)).setInteractive());
+							positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'center').setName(String(pos)).setInteractive());
+						} else {
+							positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'square').setName(String(pos)).setInteractive());
+						}
+					}
+				}
+
+				this.add.text(750+20, 60, "É a vez do jogador:", {font: "40px Impact", color: "Orange"});
+				current_player_text = this.add.text(750+95, 120, "Jogador " + current_player, {font: "40px Impact", color: "Orange"});
+				
+				// Triggered when the player clicks
+				this.input.on('pointerdown', function(pointer, currentlyOver) {
+					clicked_piece = currentlyOver[0];
+					if (clicked_piece === undefined) {
+						return
+					}
+					if (player_0_first_move && current_player == 0) {
+						if (["27", "28", "35", "36"].includes(clicked_piece.name)) {
+							player_0_first_move = false;
+							move(this)
+						}
+					} else if (player_1_first_move && current_player == 1) {
+						if (!["27", "28", "35", "36"].includes(clicked_piece.name)) {
+							player_1_first_move = false;
+							move(this)
+						}
+					} else if (!(player_1_first_move && player_0_first_move)) {
+						move(this)
+					}
+				}, this);
+			}
+
+			function update() {}
+
+
+			function move(scene) {
+				if ( (player_0_valid_squares.has(clicked_piece.name) && current_player == 0) || (player_1_valid_squares.has(clicked_piece.name) && current_player == 1) ) {
+					scene.move_sound.play();
+					
+					// Get new square's position [0..49]
+					current_pos = parseInt(clicked_piece.name)
+
+					adjacents.clear()
+					player_0_valid_squares.delete(String(current_pos))
+					player_1_valid_squares.delete(String(current_pos))
+					adjacents.add(String(current_pos-1))
+					adjacents.add(String(current_pos+1))
+					adjacents.add(String(current_pos-8))
+					adjacents.add(String(current_pos+8))
+
+					// Remove invalid squares (edge cases)
+					if ( [0,1,2,3,4,5,6,7].includes(current_pos) ) {
+						adjacents.delete(String(current_pos-8));
+					}
+
+					if ( [56,57,58,59,60,61,62,63].includes(current_pos) ) {
+						adjacents.delete(String(current_pos+8));
+					}
+
+					if ( [0,8,16,24,32,40,48,56].includes(current_pos) ) {
+						adjacents.delete(String(current_pos-1));
+					}
+
+					if ( [7,15,23,31,39,47,55].includes(current_pos) ) {
+						adjacents.delete(String(current_pos+1));
+					}
+					
+					// Add player piece to new square
+					scene.add.sprite(clicked_piece.x, clicked_piece.y, 'cat_dog', current_player);
+					if (current_player == 0) {
+						player_1_valid_squares = set_diff(player_1_valid_squares, adjacents)
+						if (player_1_valid_squares.size == 0) {
+							finish_game(scene, current_pos)
+						}
+					} else {
+						player_0_valid_squares = set_diff(player_0_valid_squares, adjacents)
+						if (player_0_valid_squares.size == 0) {
+							finish_game(scene, current_pos)
+						}
+					}
+					
+					current_player = 1 - current_player
+
+					current_player_text.setText("Jogador " + current_player);
+
+				}
+				
+
+			}
+
+			function set_diff(a, b) {
+				c = new Set( [...a].filter(x => !b.has(x)) )
+				//console.log("Set Diff: ", c)
+				return c
+			}
+
+			function finish_game(scene, current_pos) {
+				winner = current_player
+
+				scene.text = scene.add.text(0, 0, "O jogador " + winner + " ganhou.", {font: "80px Impact", color: "Red"});
+				var tween = scene.tweens.add ({
+					targets: scene.text,
+					x: 230,
+					y: 270,
+					durations: 2000,
+					ease: "Elastic",
+					easeParams: [1.5, 0.5],
+					delay: 0
+				}, scene);
+			}
+
+		</script>
+	</div>
+</body>
+</html>

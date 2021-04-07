@@ -1,20 +1,5 @@
-
-.hero-container {
-    /* background: url('/images/img-home.jpg') center center/cover no-repeat; */
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.2);
-    object-fit: contain;
-}
-
-.display-games {
+.games-list h1 {
     text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    padding-top: 50px;
+    font-size: 50px;
+    margin-top: 30px;
 }
-
