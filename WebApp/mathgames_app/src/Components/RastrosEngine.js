@@ -59,7 +59,7 @@ function create() {
     // Array that stores the board's clickable positions
     var positions = []
     // Player which is currently playing (1 or 2)
-    this.current_player = 2;				
+    this.current_player = 1;				
     // True if the player's last click was the moving piece, false otherwise
     var clicked_piece_flag = false
     // Squares which have been blocked
@@ -191,7 +191,7 @@ function move(scene, blocked_squares, positions, clicked_piece, current_player_t
        // console.log(current_player)
         current_player_text.setText("Jogador " + scene.current_player);
        // console.log(current_player_text.text)
-
+        
     }
     
 
@@ -204,9 +204,9 @@ function set_diff(a, b) {
 }
 
 function finish_game(scene, current_pos) {
-    if (current_pos === 6)
+    if (current_pos === 42)
         var winner = 1
-    else if (current_pos === 42)
+    else if (current_pos === 6)
         winner = 2
     else
         winner = scene.current_player
@@ -221,5 +221,28 @@ function finish_game(scene, current_pos) {
         easeParams: [1.5, 0.5],
         delay: 0
     }, scene);
+}
+
+
+
+
+
+
+
+function randomPlay(validSquares) {
+    var chosen = Array.from(validSquares).reduce((accumulator, current) => {
+        var tmp = parseInt(current)
+        tmp = [(tmp-(tmp%7))/7, tmp%7]
+        if (accumulator === undefined) {
+            return current;
+        }
+        if (Math.pow(accumulator[0]-0, 2) + Math.pow(accumulator[1] - 6, 2) < Math.pow(tmp[0]-0, 2) + Math.pow(tmp[1] - 6, 2)) {
+            return accumulator;
+        } else {
+            return current;
+        }
+    });
+   // this.fieldUpdate(chosen);
+    return chosen;
 }
 
