@@ -15,7 +15,7 @@ export default class RastrosEngine extends React.Component {
 
     componentDidMount() {
 
-        let canvasobj = document.getElementById("myCanvas");
+        let canvasobj = document.getElementById("rastrosCanvas");
 
         const config = {
             canvas: canvasobj,
@@ -105,7 +105,7 @@ export default class RastrosEngine extends React.Component {
 
     render() {
         return (
-            <canvas id="myCanvas" />
+            <canvas id="rastrosCanvas" />
         );
         
     }
@@ -207,6 +207,34 @@ function move(scene, blocked_squares, positions, clicked_piece, current_player_t
 }
 
 
+function set_diff(a, b) {
+    var c = new Set( [...a].filter(x => !b.has(x)) )
+    //console.log("Set Diff: ", c)
+    return c
+}
+
+function finish_game(scene, current_pos) {
+    if (current_pos === 42)
+        var winner = 1
+    else if (current_pos === 6)
+        winner = 2
+    else
+        winner = scene.current_player
+
+    scene.text = scene.add.text(0, 0, "O jogador " + winner + " ganhou.", {font: "80px Impact", color: "Red"});
+    scene.tweens.add ({
+        targets: scene.text,
+        x: 230,
+        y: 270,
+        durations: 2000,
+        ease: "Elastic",
+        easeParams: [1.5, 0.5],
+        delay: 0
+    }, scene);
+}
+
+
+
 
 
 function AI_move(scene, valid_squares, player_piece, blocked_squares, clicked_piece, last_played, positions, current_player_text) {
@@ -290,33 +318,6 @@ function AI_move(scene, valid_squares, player_piece, blocked_squares, clicked_pi
         current_player_text.setText("Jogador " + scene.current_player);
     }
 }
-
-function set_diff(a, b) {
-    var c = new Set( [...a].filter(x => !b.has(x)) )
-    //console.log("Set Diff: ", c)
-    return c
-}
-
-function finish_game(scene, current_pos) {
-    if (current_pos === 42)
-        var winner = 1
-    else if (current_pos === 6)
-        winner = 2
-    else
-        winner = scene.current_player
-
-    scene.text = scene.add.text(0, 0, "O jogador " + winner + " ganhou.", {font: "80px Impact", color: "Red"});
-    scene.tweens.add ({
-        targets: scene.text,
-        x: 230,
-        y: 270,
-        durations: 2000,
-        ease: "Elastic",
-        easeParams: [1.5, 0.5],
-        delay: 0
-    }, scene);
-}
-
 
 function randomPlay(validSquares) {
     var tmpSquares = Array.from(validSquares).map(x => [(parseInt(x)-(parseInt(x)%7))/7, parseInt(x)%7]);
