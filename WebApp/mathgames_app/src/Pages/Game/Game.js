@@ -5,12 +5,14 @@ import React from "react";
 import "./Game.css"
 import "bootstrap/dist/css/bootstrap.min.css";
 import RastrosEngine from "../../Components/RastrosEngine";
+import RastrosAIEngine from "../../Components/RastrosAIEngine";
+
 
 function Game() {
     return (
 
         <div >
-            <RastrosEngine></RastrosEngine>
+            <RastrosEngine tipo="Off"></RastrosEngine>
         </div>
     );
 }

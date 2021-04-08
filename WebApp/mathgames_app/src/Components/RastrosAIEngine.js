@@ -1,17 +1,12 @@
-
 import  React from "react";
-//import { Container, Card } from "react-bootstrap";
 import Phaser from "phaser";
 
-var tipo = null
-
-export default class RastrosEngine extends React.Component {
 
 
-    constructor(props)  {
-        super(props)
-        tipo = props.tipo
-    }
+var game = null
+
+export default class RastrosAIEngine extends React.Component {
+
 
     componentDidMount() {
 
@@ -24,84 +19,17 @@ export default class RastrosEngine extends React.Component {
             height: 750,
             backgroundColor: '#4488aa',
             scene: {
-                preload: this.preload,
-                create: this.create,
-                update: this.update
+                preload: preload,
+                create: create,
+                update: update
             }
         }
 
-        var game = new Phaser.Game(config);
+        game = new Phaser.Game(config);
 
     }
 
 
-    preload() {
-        this.load.image('square', process.env.PUBLIC_URL + '/game_assets/rastros/square.png');
-        this.load.image('p1', process.env.PUBLIC_URL + '/game_assets/rastros/p1.png');
-        this.load.image('p2', process.env.PUBLIC_URL + '/game_assets/rastros/p2.png');
-        this.load.image('piece', process.env.PUBLIC_URL + '/game_assets/rastros/piece.png');
-        this.load.image('blocked', process.env.PUBLIC_URL + '/game_assets/rastros/blocked.png');
-        this.load.audio('click', [process.env.PUBLIC_URL + '/game_assets/rastros/move.wav']);
-    }
-    
-    create() {
-        var INITIAL_BOARD_POS = 60
-        var DISTANCE_BETWEEN_SQUARES = 105
-        // Sound effect played after every move
-        this.move_sound = this.sound.add('click', {volume: 0.2});
-        // Array that stores the board's clickable positions
-        var positions = []
-        // Player which is currently playing (1 or 2)
-        this.current_player = 1;				
-        // True if the player's last click was the moving piece, false otherwise
-        var clicked_piece_flag = false
-        // Squares which have been blocked
-        var blocked_squares = new Set()
-        // Squares to where the moving piece can currently move
-        var valid_squares = new Set(["10", "11", "12", "17", "19", "24", "25", "26"])
-        // Positions referencing the last movement made
-        var last_played = new Set()
-    
-        // Loop used to fill the board with clickable squares
-        for (var pos_y = 0; pos_y < 7; pos_y++) {
-            for (var pos_x = 0; pos_x < 7; pos_x++) {
-                var pos = pos_y*7+pos_x;
-                if (pos === 6)
-                    positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'p2').setName(String(pos)).setInteractive());
-                else if (pos === 42)
-                    positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'p1').setName(String(pos)).setInteractive());
-                else
-                    positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'square').setName(String(pos)).setInteractive());
-            }
-        }
-        
-        console.log(this.INITIAL_BOARD_POS)
-        // Fill in the moving piece
-        var player_piece = this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*4, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*2, 'piece').setName('player_piece').setInteractive();
-    
-        this.add.text(750+20, 60, "É a vez do jogador:", {font: "40px Impact", color: "Orange"});
-        var current_player_text = this.add.text(750+95, 120, "Jogador " + this.current_player, {font: "40px Impact", color: "Orange"});
-        
-        // Triggered when the player clicks
-        this.input.on('pointerdown', function(pointer, currentlyOver) {
-            var clicked_piece = currentlyOver[0];
-            if (clicked_piece !== undefined) {
-                if (clicked_piece.name === "player_piece") {
-                    clicked_piece_flag = true;
-                    valid_squares.forEach(square => positions[square].setTint(0x00FF00));
-    
-                } else if (clicked_piece_flag) {
-                    clicked_piece_flag = false;
-                    valid_squares.forEach(square => positions[square].clearTint());
-                    move(this, blocked_squares, positions, clicked_piece, current_player_text, last_played, valid_squares, player_piece);
-                }
-            }
-        }, this);
-    }
-    
-    update() {}
-    
-    
 
     render() {
         return (
@@ -112,15 +40,81 @@ export default class RastrosEngine extends React.Component {
 }
 
 
+
+
+function preload() {
+    this.load.image('square', process.env.PUBLIC_URL + '/game_assets/rastros/square.png');
+    this.load.image('p1', process.env.PUBLIC_URL + '/game_assets/rastros/p1.png');
+    this.load.image('p2', process.env.PUBLIC_URL + '/game_assets/rastros/p2.png');
+    this.load.image('piece', process.env.PUBLIC_URL + '/game_assets/rastros/piece.png');
+    this.load.image('blocked', process.env.PUBLIC_URL + '/game_assets/rastros/blocked.png');
+    this.load.audio('click', [process.env.PUBLIC_URL + '/game_assets/rastros/move.wav']);
+}
+
+function create() {
+    var INITIAL_BOARD_POS = 60
+	var DISTANCE_BETWEEN_SQUARES = 105
+    // Sound effect played after every move
+    this.move_sound = this.sound.add('click', {volume: 0.2});
+    // Array that stores the board's clickable positions
+    var positions = []
+    // Player which is currently playing (1 or 2)
+    this.current_player = 1;				
+    // True if the player's last click was the moving piece, false otherwise
+    var clicked_piece_flag = false
+    // Squares which have been blocked
+    var blocked_squares = new Set()
+    // Squares to where the moving piece can currently move
+    var valid_squares = new Set(["10", "11", "12", "17", "19", "24", "25", "26"])
+    // Positions referencing the last movement made
+    var last_played = new Set()
+
+    // Loop used to fill the board with clickable squares
+    for (var pos_y = 0; pos_y < 7; pos_y++) {
+        for (var pos_x = 0; pos_x < 7; pos_x++) {
+            var pos = pos_y*7+pos_x;
+            if (pos === 6)
+                positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'p2').setName(String(pos)).setInteractive());
+            else if (pos === 42)
+                positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'p1').setName(String(pos)).setInteractive());
+            else
+                positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'square').setName(String(pos)).setInteractive());
+        }
+    }
+
+    // Fill in the moving piece
+    var player_piece = this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*4, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*2, 'piece').setName('player_piece').setInteractive();
+
+    this.add.text(750+20, 60, "É a vez do jogador:", {font: "40px Impact", color: "Orange"});
+    var current_player_text = this.add.text(750+95, 120, "Jogador " + this.current_player, {font: "40px Impact", color: "Orange"});
+    // Triggered when the player clicks
+    this.input.on('pointerdown', function(pointer, currentlyOver) {
+        var clicked_piece = currentlyOver[0];
+        if (clicked_piece !== undefined) {
+            if (clicked_piece.name === "player_piece") {
+                clicked_piece_flag = true;
+                valid_squares.forEach(square => positions[square].setTint(0x00FF00));
+
+            } else if (clicked_piece_flag) {
+                clicked_piece_flag = false;
+                valid_squares.forEach(square => positions[square].clearTint());
+                move(this, blocked_squares, positions, clicked_piece, current_player_text, last_played, valid_squares, player_piece);
+            }
+        }
+    }, this);
+}
+
+function update() {}
+
 function move_image(scene, image, new_x, new_y) {
     scene.add.image(image.x, image.y, 'blocked').setName('blocked');
     image.setPosition(new_x, new_y);
 }
 
 function move(scene, blocked_squares, positions, clicked_piece, current_player_text, last_played, valid_squares, player_piece) {
-    console.log(tipo)
     var INITIAL_BOARD_POS = 60
-    var DISTANCE_BETWEEN_SQUARES = 105
+	var DISTANCE_BETWEEN_SQUARES = 105
+    //console.log(current_player);
     if ( valid_squares.has(clicked_piece.name) ) {
         scene.move_sound.play();
 
@@ -187,7 +181,7 @@ function move(scene, blocked_squares, positions, clicked_piece, current_player_t
         if (current_pos === 6 || current_pos === 42 || set_diff(valid_squares, blocked_squares).size === 0) {
             finish_game(scene, current_pos);
             valid_squares.clear();
-        }   else {
+        } else {
             if (scene.current_player===1)
                 scene.current_player=2;
             else
@@ -195,19 +189,13 @@ function move(scene, blocked_squares, positions, clicked_piece, current_player_t
             
             current_player_text.setText("Jogador " + scene.current_player);
 
-            if (tipo==="AI") {
-                setTimeout(function(){ AI_move(scene, valid_squares, player_piece, blocked_squares, clicked_piece, last_played, positions, current_player_text) }, 1000);
-                //AI_move(scene, valid_squares, player_piece, blocked_squares, clicked_piece, last_played, positions, current_player_text)
-            }
+            setTimeout(function(){ AI_move(scene, valid_squares, player_piece, blocked_squares, clicked_piece, last_played, positions, current_player_text) }, 1000);
+            //AI_move(scene, valid_squares, player_piece, blocked_squares, clicked_piece, last_played, positions, current_player_text)
         }
         
     }
-    
 
 }
-
-
-
 
 function AI_move(scene, valid_squares, player_piece, blocked_squares, clicked_piece, last_played, positions, current_player_text) {
     var INITIAL_BOARD_POS = 60
@@ -291,6 +279,9 @@ function AI_move(scene, valid_squares, player_piece, blocked_squares, clicked_pi
     }
 }
 
+
+
+
 function set_diff(a, b) {
     var c = new Set( [...a].filter(x => !b.has(x)) )
     //console.log("Set Diff: ", c)
@@ -316,6 +307,11 @@ function finish_game(scene, current_pos) {
         delay: 0
     }, scene);
 }
+
+
+
+
+
 
 
 function randomPlay(validSquares) {
