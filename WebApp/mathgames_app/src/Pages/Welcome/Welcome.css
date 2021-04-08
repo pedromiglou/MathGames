@@ -9,7 +9,7 @@
 	object-fit: contain;
     background-color: rgb(175, 173, 173);
     margin-top: auto;
-    margin-left: 65px;
+	position:fixed;
 }
 
 .container-position-fix{
