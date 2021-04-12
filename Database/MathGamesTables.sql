@@ -5,6 +5,7 @@ create table User (
     password varchar(30) NOT NULL,
     avatar int,
     ranking int NOT NULL,
+    account_type char NOT NULL,
     unique (username),
     unique (email),
     PRIMARY KEY (id),
@@ -28,19 +29,6 @@ create table Bans (
     foreign key(user_id) references User(id)
 );
 
-create table Comments (
-    id int NOT NULL AUTO_INCREMENT,
-    text varchar(250),
-    rating int,
-    poster int NOT NULL,
-    receiver int NOT NULL,
-    primary key(id),
-    foreign key(poster) references User(id),
-    foreign key(receiver) references User(id),
-    check(rating IS NOT NULL OR text IS NOT NULL),
-    check(rating IS NULL OR (rating>0 && rating<6))
-);
-
 create table Game (
     id int NOT NULL AUTO_INCREMENT,
     name varchar(20),
@@ -53,7 +41,7 @@ create table Game (
 create table GameMatch (
     id int NOT NULL AUTO_INCREMENT,
     player1 int NOT NULL,
-    player2 int NOT NULL,
+    player2 int,
     winner int,
     number_moves int NOT NULL,
     game_type char NOT NULL,
@@ -66,8 +54,7 @@ create table GameMatch (
     FOREIGN KEY(game_id) references Game(id),
     check (player1 != player2),
     check (winner IS NULL OR winner = player1 or winner = player2),
-    check (number_moves>=0),
-    check (game_type='C' OR game_type='R' OR game_type='T')
+    check (number_moves>=0)
 );
 
 create table Tournament (

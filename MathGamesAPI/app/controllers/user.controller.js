@@ -15,7 +15,8 @@ exports.create = (req, res) => {
     email: req.body.email,
     password: req.body.password,
     avatar: req.body.avatar,
-    ranking: req.body.ranking
+    ranking: req.body.ranking,
+    account_type: req.body.account_type
   });
 
   // Save User in the database
