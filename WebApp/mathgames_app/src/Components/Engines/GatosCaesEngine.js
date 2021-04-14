@@ -2,19 +2,19 @@
 import  React from "react";
 import Phaser from "phaser";
 
-var tipo = null
+//var game_type = null
 
 export default class GatosCaesEngine extends React.Component {
 
 
-    constructor(props)  {
-        super(props)
-        tipo = props.tipo
-    }
+    // constructor(props)  {
+    //     super(props)
+    //     //game_type = props.game_type
+    // }
 
     componentDidMount() {
 
-        let canvasobj = document.getElementById("gatoscaesCanvas");
+        let canvasobj = document.getElementById("game_canvas");
 
         const config = {
             canvas: canvasobj,
@@ -29,7 +29,7 @@ export default class GatosCaesEngine extends React.Component {
             }
         }
 
-        var game = new Phaser.Game(config);
+        new Phaser.Game(config);
 
     }
 
@@ -82,12 +82,12 @@ export default class GatosCaesEngine extends React.Component {
             if (clicked_piece === undefined) {
                 return
             }
-            if (player_0_first_move && this.current_player == 0) {
+            if (player_0_first_move && this.current_player === 0) {
                 if (["27", "28", "35", "36"].includes(clicked_piece.name)) {
                     player_0_first_move = false;
                     move(this, adjacents, clicked_piece, current_player_text)
                 }
-            } else if (player_1_first_move && this.current_player == 1) {
+            } else if (player_1_first_move && this.current_player === 1) {
                 if (!["27", "28", "35", "36"].includes(clicked_piece.name)) {
                     player_1_first_move = false;
                     move(this, adjacents, clicked_piece, current_player_text)
@@ -103,7 +103,7 @@ export default class GatosCaesEngine extends React.Component {
 
     render() {
         return (
-            <canvas id="gatoscaesCanvas" />
+            <canvas id="game_canvas" />
         );
         
     }
@@ -111,7 +111,8 @@ export default class GatosCaesEngine extends React.Component {
 
 
 function move(scene, adjacents, clicked_piece, current_player_text) {
-    if ( (scene.player_0_valid_squares.has(clicked_piece.name) && scene.current_player == 0) || (scene.player_1_valid_squares.has(clicked_piece.name) && scene.current_player == 1) ) {
+    if ( (scene.player_0_valid_squares.has(clicked_piece.name) && scene.current_player === 0) 
+        || (scene.player_1_valid_squares.has(clicked_piece.name) && scene.current_player === 1) ) {
         scene.move_sound.play();
         
         // Get new square's position [0..49]
@@ -144,14 +145,14 @@ function move(scene, adjacents, clicked_piece, current_player_text) {
         
         // Add player piece to new square
         scene.add.sprite(clicked_piece.x, clicked_piece.y, 'cat_dog', scene.current_player);
-        if (scene.current_player == 0) {
+        if (scene.current_player === 0) {
             scene.player_1_valid_squares = set_diff(scene.player_1_valid_squares, adjacents)
-            if (scene.player_1_valid_squares.size == 0) {
+            if (scene.player_1_valid_squares.size === 0) {
                 finish_game(scene)
             }
         } else {
             scene.player_0_valid_squares = set_diff(scene.player_0_valid_squares, adjacents)
-            if (scene.player_0_valid_squares.size == 0) {
+            if (scene.player_0_valid_squares.size === 0) {
                 finish_game(scene)
             }
         }
@@ -174,7 +175,7 @@ function finish_game(scene) {
     var winner = scene.current_player
 
     scene.text = scene.add.text(0, 0, "O jogador " + winner + " ganhou.", {font: "80px Impact", color: "Red"});
-    var tween = scene.tweens.add ({
+    scene.tweens.add ({
         targets: scene.text,
         x: 230,
         y: 270,

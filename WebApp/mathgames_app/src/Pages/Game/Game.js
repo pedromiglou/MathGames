@@ -1,19 +1,25 @@
 import React from "react";
-
-// import { Link } from "react-router-dom";
-
 import "./Game.css"
 import "bootstrap/dist/css/bootstrap.min.css";
-import RastrosEngine from "../../Components/RastrosEngine";
-import GatosCaesEngine from "../../Components/GatosCaesEngine";
+import RastrosEngine from "../../Components/Engines/RastrosEngine";
+import GatosCaesEngine from "../../Components/Engines/GatosCaesEngine";
 
 function Game() {
-    return (
+    var game = "rastros";
+    var game_mode = "AI";
 
-        <div >
-            <GatosCaesEngine tipo="Off"></GatosCaesEngine>
-        </div>
-    );
+    if ( game === "rastros" )
+        return (
+            <div>            
+                <RastrosEngine game_type={game_mode}></RastrosEngine>
+            </div>
+        );
+    if ( game === "gatoscaes" )
+        return (
+            <div>
+                <GatosCaesEngine game_type={game_mode}></GatosCaesEngine>
+            </div>
+        );
 }
 
 export default Game;
