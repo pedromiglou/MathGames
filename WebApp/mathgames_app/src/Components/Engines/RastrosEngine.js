@@ -75,6 +75,9 @@ export default class RastrosEngine extends React.Component {
             }
         }
         
+        console.log(this.positions)
+
+
         // Fill in the moving piece
         var player_piece = this.add.image(this.INITIAL_BOARD_POS + this.DISTANCE_BETWEEN_SQUARES*4, this.INITIAL_BOARD_POS+this.DISTANCE_BETWEEN_SQUARES*2, 'piece').setName('player_piece').setInteractive();
     
@@ -86,8 +89,13 @@ export default class RastrosEngine extends React.Component {
             var clicked_piece = currentlyOver[0];
             if ( clicked_piece !== undefined  && this.player_turn)
                 if (clicked_piece.name === "player_piece") {
-                    clicked_piece_flag = true;
-                    valid_squares.forEach(square => this.positions[square].setTint(0x00FF00));
+                    if (!clicked_piece_flag) {
+                        clicked_piece_flag = true;
+                        valid_squares.forEach(square => this.positions[square].setTint(0x00FF00));
+                    } else {
+                        clicked_piece_flag = false;
+                        valid_squares.forEach(square => this.positions[square].clearTint());
+                    }
                 } else if ( clicked_piece_flag ) {
                     clicked_piece_flag = false;
                     valid_squares.forEach(square => this.positions[square].clearTint());
