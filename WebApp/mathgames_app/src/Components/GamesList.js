@@ -1,5 +1,6 @@
 import { React, useState } from "react";
 import { Container, Card } from "react-bootstrap";
+import {Route, Link} from "react-router-dom";
 
 import "./GamesList.css";
 
@@ -9,30 +10,35 @@ const games_list = [
         title: "Game 1",
         img: process.env.PUBLIC_URL + "/images/mathGames.png",
         hoover: false,
+        path: '/gamePage',
     },
     {
         id: 1,
         title: "Game 2",
         img: process.env.PUBLIC_URL + "/images/mathGames.png",
         hoover: false,
+        path: '/gamePage',
     },
     {
         id: 2,
         title: "Game 2",
         img: process.env.PUBLIC_URL + "/images/mathGames.png",
         hoover: false,
+        path: '/gamePage',
     },
     {
         id: 3,
         title: "Game 2",
         img: process.env.PUBLIC_URL + "/images/mathGames.png",
         hoover: false,
+        path: '/gamePage',
     },
     {
         id: 4,
         title: "Game 2",
         img: process.env.PUBLIC_URL + "/images/mathGames.png",
         hoover: false,
+        path: '/gamePage',
     },
 ];
 
@@ -70,24 +76,31 @@ function GamesList() {
     };
 
     return (
+        <>
         <Container className="display-games container">
             {games_list.map((game) => (
                 <Card key={game.id}>
-                    <div
-                        onMouseEnter={(e) => changeCard(e, game)}
-                        onMouseLeave={(e) => replaceCard(e, game)}
-                    >
-                        <img
-                            src={game.img}
-                            alt="Info"
-                            className="card-img"
-                            id={game.id}
-                        />
-                        {showTitle(game)}
-                    </div>
+                    <Route>
+                        <Link to={game.path}>
+                            <div
+                                onMouseEnter={(e) => changeCard(e, game)}
+                                onMouseLeave={(e) => replaceCard(e, game)}
+                            >
+                                <img
+                                    src={game.img}
+                                    alt="Info"
+                                    className="card-img"
+                                    id={game.id}
+                                />
+                                {showTitle(game)}
+                            </div> 
+                        </Link>
+                    </Route>    
                 </Card>
             ))}
         </Container>
+        
+        </>
     );
 }
 

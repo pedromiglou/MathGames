@@ -11,7 +11,7 @@ export const sidebarData_group1 = [
     {
         id: 0,
         title: 'Jogos',
-        path: '/games',
+        path: '/gamesDashboard',
         icon: <CgIcons.CgGames/>,
         cName: 'nav-text',
     },

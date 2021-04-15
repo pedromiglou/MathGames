@@ -1,18 +1,18 @@
 import React, {useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Menu.css';
-import {Link} from 'react-router-dom';
 import {sidebarData_group1, sidebarData_group2} from './data/SidebarData.js';
 import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
 import {IconContext} from 'react-icons';
-import { BrowserRouter as Router, Switch, Route} from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Link, withRouter} from 'react-router-dom';
 import Dashboard from './Pages/DashBoard/Dashboard';
 import Welcome from './Pages/Welcome/Welcome';
 import ChooseGameMode from './Pages/ChooseGameMode/ChooseGameMode';
 import ChooseGame from './Pages/ChooseGame/ChooseGame';
-import Game from './Pages/Game/Game'
-import Login from './Pages/Login/Login'
+import Game from './Pages/Game/Game';
+import Login from './Pages/Login/Login';
+import GamePage from './Pages/GamePage/GamePage';
 
 function Menu(){
     const [sidebar, setSidebar] = useState(true);
@@ -77,12 +77,13 @@ function Menu(){
                 </nav>
                 <div className={sidebar ? "sub-component active" : "sub-component collapsed"}>
                     <Switch>
-                        <Route exact path='/' component={Welcome} />
-                        <Route path='/dashboard' component={Dashboard} />
-                        <Route path='/choose' component={ChooseGame} />
-                        <Route path='/mode' component={ChooseGameMode} />
-                        <Route path='/game' component={Game} />
-                        <Route path='/login' component={Login} />
+                        <Route exact path='/' component={withRouter(Welcome)} />
+                        <Route exact path='/dashboard' component={withRouter(Dashboard)} />
+                        <Route exact path='/gamesDashboard' component={withRouter(ChooseGame)} />
+                        <Route exact path='/mode' component={withRouter(ChooseGameMode)} />
+                        <Route exact path='/game' component={withRouter(Game)} />
+                        <Route exact path='/login' component={withRouter(Login)} />
+                        <Route exact path='/gamePage' component={withRouter(GamePage)}/>
                     </Switch>
                 </div>
             </IconContext.Provider>
