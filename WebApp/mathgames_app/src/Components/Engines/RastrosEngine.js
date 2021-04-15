@@ -28,9 +28,7 @@ export default class RastrosEngine extends React.Component {
                 update: this.update
             }
         }
-
         new Phaser.Game(config);
-
     }
 
     preload() {
@@ -99,6 +97,10 @@ export default class RastrosEngine extends React.Component {
                 } else if ( clicked_piece_flag ) {
                     clicked_piece_flag = false;
                     valid_squares.forEach(square => this.positions[square].clearTint());
+
+                    if ( !valid_squares.has(clicked_piece.name) )
+                        return;
+
                     var is_finished = move(this, blocked_squares, clicked_piece, current_player_text, last_played, valid_squares, player_piece);
 
                     if ( game_type === "AI" && !is_finished ) {
