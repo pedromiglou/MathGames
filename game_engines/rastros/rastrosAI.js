@@ -1,3 +1,9 @@
+    /*
+    easy -> 20% good plays
+    medium -> 50% good plays
+    hard -> 80% good plays
+    */
+
 class rastrosState {
     constructor(blocked_squares, piece, depth) {
         this.blocked_squares = blocked_squares;
@@ -6,7 +12,7 @@ class rastrosState {
         for (var y = piece[0]-1; y<=piece[0]+1; y++) {
             for (var x = piece[1]-1; x<=piece[1]+1; x++) {
                 if (!this.blocked_squares.find(element => element[0] == y && element[1] == x)) {
-                    if (!(y==piece[0] && x==piece[1]) && y>=0 && y<=6 && x>=0 && x<=6) {
+                    if (y>=0 && y<=6 && x>=0 && x<=6) {
                         this.validSquares.push([y,x]);
                     }
                 }
@@ -77,7 +83,7 @@ class rastrosAI {
         for (var y = new_pos[0]-1; y<=new_pos[0]+1; y++) {
             for (var x = new_pos[1]-1; x<=new_pos[1]+1; x++) {
                 if (!this.blocked_squares.find(element => element[0] == y && element[1] == x)) {
-                    if (!(y==new_pos[0] && x==new_pos[1]) && y>=0 && y<=6 && x>=0 && x<=6) {
+                    if (y>=0 && y<=6 && x>=0 && x<=6) {
                         this.validSquares.push([y,x]);
                     }
                 }
@@ -94,53 +100,52 @@ class rastrosAI {
         } else if ((state.piece.toString() == "0,6" && this.goal.toString() == "6,0") || (state.piece.toString() == "6,0" && this.goal.toString() == "0,6") || state.validSquares.length == 0) {
             return -1;
         } else {
-            return 0;
+            return (98 - Math.pow(state.piece[0]-this.goal[0], 2) - Math.pow(state.piece[1] - this.goal[1], 2))/98;
         }
     }
 
-    randomPlay2() {
+    makePlay() {
         var chosen = null;
         var score = -1;
 
-        //console.log(this.validSquares);
-
         this.validSquares.forEach( (element) => {
             var state = new rastrosState(this.blocked_squares.concat([element]), element, 0);
-            var newScore = this.search(state, 3);
+            var newScore = this.minimax(state, 7, false);
             if (newScore >= score) {
                 chosen = element;
                 score = newScore;
             }
         });
 
-        //console.log(chosen);
-
         this.fieldUpdate(chosen);
         return chosen;
     }
 
-    /*
-    //not that random of a play
-    randomPlay() {
-        var chosen = this.validSquares.reduce((accumulator, current) => {
-            if (accumulator === undefined) {
-                return current;
-            }
-            if (Math.pow(accumulator[0]-this.goal[0], 2) + Math.pow(accumulator[1] - this.goal[1], 2) < Math.pow(current[0]-this.goal[0], 2) + Math.pow(current[1] - this.goal[1], 2)) {
-                return accumulator;
-            } else {
-                return current;
-            }
-        });
-        this.fieldUpdate(chosen);
-        return chosen;
-    }*/
-
-    /*
-    fácil -> move-se sempre em direção ao goal
-    médio -> o mesmo mas se estiver perto de cada um dos goals pensa em fazer jogadas que garantam a vitória/evitem a derrota
-    difícil -> começa a pensar mais cedo e também tem cuidado em ficar encurralado
-    */
+    minimax(node, depth, maximizingPlayer) {
+        if (depth == 0 || this.ended(node)==1 || this.ended(node)==-1) {
+            return this.ended(node);
+        }
+        if (maximizingPlayer) {
+            var value = -100;
+            node.validSquares.forEach((element) => {
+                var child = new rastrosState(node.blocked_squares.concat([element]), element,0);
+                var newValue = this.minimax(child, depth-1, false);
+                if (newValue > value) {
+                    value = newValue;
+                }
+            })
+        } else {
+            var value = 100;
+            node.validSquares.forEach((element) => {
+                var child = new rastrosState(node.blocked_squares.concat([element]), element,0);
+                var newValue = this.minimax(child, depth-1, true);
+                if (newValue < value) {
+                    value = newValue;
+                }
+            })
+        }
+        return value;
+    }
     
     //oldState -> rastros state object, limit -> depth search depth limit
     search(oldState, limit) {
@@ -159,23 +164,6 @@ class rastrosAI {
         });
         return sum/size;
     }
-    
-    //if close to a goal try to get a winning play
-    tryToWin() {
-        if (Math.pow(this.piece[0]-this.goal[0],2) <=4 && Math.pow(this.piece[1]-this.goal[1],2) <=4) {
-            
-        }
-    }
-
-    //if close to a enemy goal try to make a saving play
-    tryNotToLose() {
-
-    }
-
-    //if cornered try to make the enemy lose first
-    cornered() {
-
-    }
 
 }
 
@@ -189,18 +177,17 @@ function buttonClick() {
     AI.fieldUpdate(play)
     AI.printField();
 
-    if (AI.ended(AI.state)) {
+    if (AI.ended(AI.state)==1 || AI.ended(AI.state)==-1) {
         console.log("gg")
     } else {
         console.log("AI played:")
-        AI.randomPlay2();
+        AI.makePlay();
         AI.printField();
 
-        if (AI.ended(AI.state)) {
+        if (AI.ended(AI.state)==1 || AI.ended(AI.state)==-1) {
             console.log("gg")
         }
     }
-    
 }
 
 var playerNumber = 1;
@@ -209,6 +196,6 @@ AI.printField();
 
 if (playerNumber==1) {
     console.log("AI played:")
-    AI.randomPlay2();
+    AI.makePlay();
     AI.printField();
 }
