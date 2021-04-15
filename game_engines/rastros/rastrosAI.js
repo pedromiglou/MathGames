@@ -1,7 +1,18 @@
 class rastrosState {
-    constructor(blocked_squares, piece) {
+    constructor(blocked_squares, piece, depth) {
         this.blocked_squares = blocked_squares;
         this.piece = piece;
+        this.validSquares = [];
+        for (var y = piece[0]-1; y<=piece[0]+1; y++) {
+            for (var x = piece[1]-1; x<=piece[1]+1; x++) {
+                if (!this.blocked_squares.find(element => element[0] == y && element[1] == x)) {
+                    if (!(y==piece[0] && x==piece[1]) && y>=0 && y<=6 && x>=0 && x<=6) {
+                        this.validSquares.push([y,x]);
+                    }
+                }
+            }
+        }
+        this.depth = depth;
     }
 }
 
@@ -32,7 +43,7 @@ class rastrosAI {
         
         this.piece = [2, 4];
 
-        this.blocked_squares = new Set();
+        this.blocked_squares = [];
 
         this.fieldUpdate([2,4]);
     }
@@ -53,7 +64,7 @@ class rastrosAI {
     //update board, blocked_squares, piece coordinates and validSquares
     fieldUpdate(new_pos) {
         // Squares which have been blocked
-        this.blocked_squares.add(new_pos.toString());
+        this.blocked_squares.push(new_pos);
 
         this.board[this.piece[0]][this.piece[1]] = "B";
 
@@ -65,7 +76,7 @@ class rastrosAI {
         this.validSquares = [];
         for (var y = new_pos[0]-1; y<=new_pos[0]+1; y++) {
             for (var x = new_pos[1]-1; x<=new_pos[1]+1; x++) {
-                if (! this.blocked_squares.has(([y,x]).toString())) {
+                if (!this.blocked_squares.find(element => element[0] == y && element[1] == x)) {
                     if (!(y==new_pos[0] && x==new_pos[1]) && y>=0 && y<=6 && x>=0 && x<=6) {
                         this.validSquares.push([y,x]);
                     }
@@ -73,18 +84,42 @@ class rastrosAI {
             }
         }
 
-        this.tryToWin();
+        this.state = new rastrosState(this.blocked_squares, this.piece, 0);
     }
 
     //check if game ended
-    ended() {
-        if (this.piece.toString() == "6,0" || this.piece.toString() == "0,6") {
-            return true;
+    ended(state) {
+        if ((state.piece.toString() == "6,0" && this.goal.toString() == "6,0") || (state.piece.toString() == "0,6" && this.goal.toString() == "0,6")) {
+            return 1;
+        } else if ((state.piece.toString() == "0,6" && this.goal.toString() == "6,0") || (state.piece.toString() == "6,0" && this.goal.toString() == "0,6") || state.validSquares.length == 0) {
+            return -1;
         } else {
-            return false;
+            return 0;
         }
     }
 
+    randomPlay2() {
+        var chosen = null;
+        var score = -1;
+
+        //console.log(this.validSquares);
+
+        this.validSquares.forEach( (element) => {
+            var state = new rastrosState(this.blocked_squares.concat([element]), element, 0);
+            var newScore = this.search(state, 3);
+            if (newScore >= score) {
+                chosen = element;
+                score = newScore;
+            }
+        });
+
+        //console.log(chosen);
+
+        this.fieldUpdate(chosen);
+        return chosen;
+    }
+
+    /*
     //not that random of a play
     randomPlay() {
         var chosen = this.validSquares.reduce((accumulator, current) => {
@@ -99,7 +134,7 @@ class rastrosAI {
         });
         this.fieldUpdate(chosen);
         return chosen;
-    }
+    }*/
 
     /*
     fácil -> move-se sempre em direção ao goal
@@ -107,10 +142,22 @@ class rastrosAI {
     difícil -> começa a pensar mais cedo e também tem cuidado em ficar encurralado
     */
     
-    search(validQuares, limit) {
-        validSquares.forEach(element => {
-            
+    //oldState -> rastros state object, limit -> depth search depth limit
+    search(oldState, limit) {
+        //number of validSquares
+        var size = oldState.validSquares.length;
+        var sum = 0;
+
+        //calcular uma probabilidade de vitória para uma jogada
+        oldState.validSquares.forEach(element => {
+            var newState = new rastrosState(oldState.blocked_squares.concat([element]), element, oldState.depth+1);
+            if (newState.depth == limit || this.ended(newState)!=0) {
+                sum += this.ended(newState);
+            } else {
+                sum += this.search(newState, limit);
+            }
         });
+        return sum/size;
     }
     
     //if close to a goal try to get a winning play
@@ -142,17 +189,18 @@ function buttonClick() {
     AI.fieldUpdate(play)
     AI.printField();
 
-    if (AI.ended()) {
+    if (AI.ended(AI.state)) {
         console.log("gg")
     } else {
         console.log("AI played:")
-        AI.randomPlay();
+        AI.randomPlay2();
         AI.printField();
 
-        if (AI.ended()) {
+        if (AI.ended(AI.state)) {
             console.log("gg")
         }
     }
+    
 }
 
 var playerNumber = 1;
@@ -161,6 +209,6 @@ AI.printField();
 
 if (playerNumber==1) {
     console.log("AI played:")
-    AI.randomPlay();
+    AI.randomPlay2();
     AI.printField();
 }

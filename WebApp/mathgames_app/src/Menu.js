@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Menu.css';
 import {sidebarData_group1, sidebarData_group2} from './data/SidebarData.js';
@@ -55,6 +55,7 @@ function Menu(){
                                         <Link to={item.path}> 
                                             <i className="subicon">{item.icon}</i>
                                             <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span>
+                                            
                                         </Link>
                                     </li>
                                 </div>
