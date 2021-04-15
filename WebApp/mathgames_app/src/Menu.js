@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Menu.css';
 import {Link} from 'react-router-dom';
@@ -11,8 +11,10 @@ import Dashboard from './Pages/DashBoard/Dashboard';
 import Welcome from './Pages/Welcome/Welcome';
 import ChooseGameMode from './Pages/ChooseGameMode/ChooseGameMode';
 import ChooseGame from './Pages/ChooseGame/ChooseGame';
-import Game from './Pages/Game/Game'
-import Login from './Pages/Login/Login'
+import Game from './Pages/Game/Game';
+import Login from './Pages/Login/Login';
+
+
 
 function Menu(){
     const [sidebar, setSidebar] = useState(true);
@@ -55,6 +57,7 @@ function Menu(){
                                         <Link to={item.path}> 
                                             <i className="subicon">{item.icon}</i>
                                             <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span>
+                                            
                                         </Link>
                                     </li>
                                 </div>
