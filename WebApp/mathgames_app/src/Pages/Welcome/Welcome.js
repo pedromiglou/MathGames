@@ -1,4 +1,5 @@
 import React from "react";
+import {Link} from "react-router-dom";
 import { Button } from "../../Components/Button";
 
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -41,6 +42,10 @@ function Welcome() {
 					<div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div className="row">
 							<div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 text-left">
+								<Link to='/gamesDashboard'>
+									JOGAR AGORA!
+								</Link>
+								{/* 
 								<Button
 									className="btns"
 									buttonStyle="btn--primary"
@@ -51,6 +56,7 @@ function Welcome() {
 									JOGAR AGORA!{" "}
 									<i className="far fa-play-circle" />
 								</Button>
+								*/}
 							</div>
 							<div className="half container col-xl-6 col-lg-6 col-md-8 col-sm-12">
 								<div className="row">
