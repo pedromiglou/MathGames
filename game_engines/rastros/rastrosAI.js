@@ -5,20 +5,19 @@
     */
 
 class rastrosState {
-    constructor(blocked_squares, piece, depth) {
-        this.blocked_squares = blocked_squares;
+    constructor(blocked_squares, piece) {
+        this.blocked_squares=[];
+        for (var i = 0; i < blocked_squares.length; i++) this.blocked_squares[i] = blocked_squares[i].slice();
+        this.blocked_squares[piece[0]][piece[1]] = true;
         this.piece = piece;
         this.validSquares = [];
         for (var y = piece[0]-1; y<=piece[0]+1; y++) {
             for (var x = piece[1]-1; x<=piece[1]+1; x++) {
-                if (!this.blocked_squares.find(element => element[0] == y && element[1] == x)) {
-                    if (y>=0 && y<=6 && x>=0 && x<=6) {
-                        this.validSquares.push([y,x]);
-                    }
+                if (y>=0 && y<=6 && x>=0 && x<=6 && !this.blocked_squares[y][x]) {
+                    this.validSquares.push([y,x]);
                 }
             }
         }
-        this.depth = depth;
     }
 }
 
@@ -27,8 +26,10 @@ class rastrosAI {
         //get goal
         if (player == 1) {
             this.goal = [6,0];
+            this.otherGoal = [0,6];
         } else if (player == 2) {
             this.goal = [0,6];
+            this.otherGoal = [6,0];
         } else {
             throw Error("Invalid player number");
         }
@@ -49,7 +50,13 @@ class rastrosAI {
         
         this.piece = [2, 4];
 
-        this.blocked_squares = [];
+        this.blocked_squares = [[false,false,false,false,false,false,false],
+                                [false,false,false,false,false,false,false],
+                                [false,false,false,false,false,false,false],
+                                [false,false,false,false,false,false,false],
+                                [false,false,false,false,false,false,false],
+                                [false,false,false,false,false,false,false],
+                                [false,false,false,false,false,false,false]];
 
         this.fieldUpdate([2,4]);
     }
@@ -70,7 +77,7 @@ class rastrosAI {
     //update board, blocked_squares, piece coordinates and validSquares
     fieldUpdate(new_pos) {
         // Squares which have been blocked
-        this.blocked_squares.push(new_pos);
+        this.blocked_squares[new_pos[0]][new_pos[1]] = true;
 
         this.board[this.piece[0]][this.piece[1]] = "B";
 
@@ -78,57 +85,48 @@ class rastrosAI {
         this.piece = [new_pos[0], new_pos[1]];
         this.board[new_pos[0]][new_pos[1]] = "P";
 
-        // Squares to where the moving piece can currently move
-        this.validSquares = [];
-        for (var y = new_pos[0]-1; y<=new_pos[0]+1; y++) {
-            for (var x = new_pos[1]-1; x<=new_pos[1]+1; x++) {
-                if (!this.blocked_squares.find(element => element[0] == y && element[1] == x)) {
-                    if (y>=0 && y<=6 && x>=0 && x<=6) {
-                        this.validSquares.push([y,x]);
-                    }
-                }
-            }
-        }
-
-        this.state = new rastrosState(this.blocked_squares, this.piece, 0);
+        this.state = new rastrosState(this.blocked_squares, this.piece);
     }
 
     //check if game ended
     ended(state) {
-        if ((state.piece.toString() == "6,0" && this.goal.toString() == "6,0") || (state.piece.toString() == "0,6" && this.goal.toString() == "0,6")) {
-            return 1;
-        } else if ((state.piece.toString() == "0,6" && this.goal.toString() == "6,0") || (state.piece.toString() == "6,0" && this.goal.toString() == "0,6") || state.validSquares.length == 0) {
-            return -1;
+        if (state.piece[0] == this.goal[0] && state.piece[1] == this.goal[1]) {
+            return 99;
+        } else if ((state.piece[0] == this.otherGoal[0] && state.piece[1] == this.otherGoal[1]) || state.validSquares.length == 0) {
+            return -99;
         } else {
-            return (98 - Math.pow(state.piece[0]-this.goal[0], 2) - Math.pow(state.piece[1] - this.goal[1], 2))/98;
+            return 98 - Math.pow(state.piece[0]-this.goal[0], 2) - Math.pow(state.piece[1] - this.goal[1], 2);
         }
     }
 
     makePlay() {
+        var startTime=new Date();
         var chosen = null;
         var score = -1;
 
-        this.validSquares.forEach( (element) => {
-            var state = new rastrosState(this.blocked_squares.concat([element]), element, 0);
-            var newScore = this.minimax(state, 7, false);
+        this.state.validSquares.forEach( (element) => {
+            var state = new rastrosState(this.blocked_squares, element);
+            var newScore = this.minimax(state, 9, false);
             if (newScore >= score) {
                 chosen = element;
                 score = newScore;
             }
         });
+        console.log(Math.round(new Date()-startTime));
 
         this.fieldUpdate(chosen);
         return chosen;
     }
 
     minimax(node, depth, maximizingPlayer) {
-        if (depth == 0 || this.ended(node)==1 || this.ended(node)==-1) {
-            return this.ended(node);
+        var x = this.ended(node);
+        if (depth == 0 || x==99 || x==-99) {
+            return x;
         }
         if (maximizingPlayer) {
             var value = -100;
             node.validSquares.forEach((element) => {
-                var child = new rastrosState(node.blocked_squares.concat([element]), element,0);
+                var child = new rastrosState(node.blocked_squares, element);
                 var newValue = this.minimax(child, depth-1, false);
                 if (newValue > value) {
                     value = newValue;
@@ -137,7 +135,7 @@ class rastrosAI {
         } else {
             var value = 100;
             node.validSquares.forEach((element) => {
-                var child = new rastrosState(node.blocked_squares.concat([element]), element,0);
+                var child = new rastrosState(node.blocked_squares, element);
                 var newValue = this.minimax(child, depth-1, true);
                 if (newValue < value) {
                     value = newValue;
@@ -146,25 +144,6 @@ class rastrosAI {
         }
         return value;
     }
-    
-    //oldState -> rastros state object, limit -> depth search depth limit
-    search(oldState, limit) {
-        //number of validSquares
-        var size = oldState.validSquares.length;
-        var sum = 0;
-
-        //calcular uma probabilidade de vitória para uma jogada
-        oldState.validSquares.forEach(element => {
-            var newState = new rastrosState(oldState.blocked_squares.concat([element]), element, oldState.depth+1);
-            if (newState.depth == limit || this.ended(newState)!=0) {
-                sum += this.ended(newState);
-            } else {
-                sum += this.search(newState, limit);
-            }
-        });
-        return sum/size;
-    }
-
 }
 
 function buttonClick() {
@@ -178,14 +157,14 @@ function buttonClick() {
     AI.printField();
 
     if (AI.ended(AI.state)==1 || AI.ended(AI.state)==-1) {
-        console.log("gg")
+        console.log("gg1")
     } else {
         console.log("AI played:")
         AI.makePlay();
         AI.printField();
 
         if (AI.ended(AI.state)==1 || AI.ended(AI.state)==-1) {
-            console.log("gg")
+            console.log("gg2")
         }
     }
 }
