@@ -18,4 +18,11 @@ module.exports = app => {
   
     // Delete all users
     app.delete("/users", users.deleteAll);
+
+
+    // Login
+    app.post("/login", users.login);
+
+    // Register
+    app.post("/register", users.register);
   };

@@ -14,9 +14,6 @@ exports.create = (req, res) => {
     username: req.body.username,
     email: req.body.email,
     password: req.body.password,
-    avatar: req.body.avatar,
-    ranking: req.body.ranking,
-    account_type: req.body.account_type
   });
 
   // Save User in the database
@@ -30,6 +27,8 @@ exports.create = (req, res) => {
   });
 };
 
+
+
 // Retrieve all Users from the database.
 exports.findAll = (req, res) => {
   User.getAll((err, data) => {
@@ -41,6 +40,9 @@ exports.findAll = (req, res) => {
     else res.send(data);
   });
 };
+
+
+
 
 // Find a single User with a userId
 exports.findOne = (req, res) => {
@@ -58,6 +60,8 @@ exports.findOne = (req, res) => {
     } else res.send(data);
   });
 };
+
+
 
 // Update a User identified by the userId in the request
 exports.update = (req, res) => {
@@ -89,6 +93,9 @@ exports.update = (req, res) => {
   );
 };
 
+
+
+
 // Delete a User with the specified userId in the request
 exports.delete = (req, res) => {
   User.remove(req.params.userId, (err, data) => {
@@ -117,3 +124,31 @@ exports.deleteAll = (req, res) => {
     else res.send({ message: `All Users were deleted successfully!` });
   });
 };
+
+
+
+
+
+
+// Login
+exports.login = (req, res) => {
+  console.log("here")
+  User.findByUsername(req.body.username, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Credentials are incorrect.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving User with id " + req.body.username
+        });
+      }
+    } else res.send(data);
+  });
+};
+
+// ZRegister
+exports.register = (req, res) => {
+  this.create(req, res)
+}

@@ -35,22 +35,58 @@ function Login() {
         }
     }
 
+    function run_register(event) {
+        event.preventDefault();
+        let userInfo= {
+            username: document.getElementById('nomeUtilizadorRegisto').value,
+            email: document.getElementById('emailRegisto').value,
+            password: document.getElementById('passwordRegisto').value,
+        }
+        
+        fetch('http://localhost:4000/register', {
+            method:'POST',
+            headers:{'Content-type':'application/json'},
+            body: JSON.stringify(userInfo)
+        }).then(r=>r.json()).then(res=> {
+            if(res) {
+                console.log('New User was created')
+                window.location.reload();
+            }
+        })
+    }
+
+    function run_login(event) {
+        event.preventDefault();
+        let userInfo= {
+            username: document.getElementById('nomeUtilizadorLogin').value,
+            password: document.getElementById('passwordLogin').value,
+        }
+        
+        fetch('http://localhost:4000/login', {
+            method:'POST',
+            headers:{'Content-type':'application/json'},
+            body: JSON.stringify(userInfo)
+        }).then(r=>r.json()).then(res=> {
+            if(res) {
+                console.log(res)
+                window.location.reload();
+            }
+        })
+    }
+
     return (
         <div className="container container-login">
             <div className="forms-container-login">
                 <div id="signin_id" className={"signin"}>
-                    <form action="#" className="sign-in-form">
+                    <form action="#" className="sign-in-form" onSubmit={run_login}>
                         <h2 className="title">Iniciar Sessao</h2>
                         <div className="input-field">
                             <i className="fas fa-user"></i>
-                            <input type="text" placeholder="Nome" />
+                            <input id="nomeUtilizadorLogin" type="text" placeholder="Nome de Utilizador" />
                         </div>
                         <div className="input-field">
                             <i className="fas fa-lock"></i>
-                            <input
-                                type="password"
-                                placeholder="Palavra-chave"
-                            />
+                            <input id="passwordLogin" type="password" placeholder="Palavra-chave" />
                         </div>
                         <input
                             type="submit"
@@ -61,22 +97,19 @@ function Login() {
                 </div>
 
                 <div id="signup_id" className="signup">
-                    <form action="#" className="sign-in-form">
+                    <form action="#" className="sign-in-form" onSubmit={run_register}>
                         <h2 className="title">Registar</h2>
                         <div className="input-field">
                             <i className="fas fa-user"></i>
-                            <input type="text" placeholder="Nome" />
+                            <input id="nomeUtilizadorRegisto" type="text" placeholder="Nome de Utilizador" />
                         </div>
                         <div className="input-field">
                             <i className="fas fa-user"></i>
-                            <input type="email" placeholder="Email" />
+                            <input id="emailRegisto" type="email" placeholder="Email" />
                         </div>
                         <div className="input-field">
                             <i className="fas fa-lock"></i>
-                            <input
-                                type="password"
-                                placeholder="Palavra-chave"
-                            />
+                            <input id="passwordRegisto" type="password" placeholder="Palavra-chave" />
                         </div>
                         <input
                             type="submit"
