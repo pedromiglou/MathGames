@@ -60,6 +60,15 @@ export default class RastrosEngine extends React.Component {
         var valid_squares = new Set(["10", "11", "12", "17", "19", "24", "25", "26"])
         // Positions referencing the last movement made
         var last_played = new Set()
+        
+        var AI_blocked_squares = [[false,false,false,false,false,false,false],
+                                [false,false,false,false,false,false,false],
+                                [false,false,false,false,false,false,false],
+                                [false,false,false,false,false,false,false],
+                                [false,false,false,false,false,false,false],
+                                [false,false,false,false,false,false,false],
+                                [false,false,false,false,false,false,false]];
+
     
         // Loop used to fill the board with clickable squares
         for (var pos_y = 0; pos_y < 7; pos_y++) {
@@ -74,8 +83,6 @@ export default class RastrosEngine extends React.Component {
             }
         }
         
-        console.log(this.positions)
-
 
         // Fill in the moving piece
         var player_piece = this.add.image(this.INITIAL_BOARD_POS + this.DISTANCE_BETWEEN_SQUARES*4, this.INITIAL_BOARD_POS+this.DISTANCE_BETWEEN_SQUARES*2, 'piece').setName('player_piece').setInteractive();
@@ -102,16 +109,17 @@ export default class RastrosEngine extends React.Component {
                     if ( !valid_squares.has(clicked_piece.name) )
                         return;
 
-                    var is_finished = move(this, blocked_squares, clicked_piece, current_player_text, last_played, valid_squares, player_piece);
+                    var is_finished = move(this, blocked_squares, clicked_piece, current_player_text, last_played, valid_squares, player_piece, AI_blocked_squares);
 
                     if ( game_type === "AI" && !is_finished ) {
                         this.player_turn = false;
                         
                         // Process AI move
-                        var ai_move = randomPlay(valid_squares);
+                        var ai_move = randomPlay(valid_squares, AI_blocked_squares, clicked_piece);
                         clicked_piece = this.positions[ai_move];
                         var wait_time =  Math.floor(Math.random() * (2000 - 500) ) + 500;
-                        setTimeout(() => {move(this, blocked_squares, clicked_piece, current_player_text, last_played, valid_squares, player_piece); this.player_turn = true;}, wait_time);
+                        move(this, blocked_squares, clicked_piece, current_player_text, last_played, valid_squares, player_piece, AI_blocked_squares); 
+                        this.player_turn = true;
                     }
                 }
         }, this);
@@ -131,7 +139,7 @@ function move_image(scene, image, new_x, new_y) {
     image.setPosition(new_x, new_y);
 }
 
-function move(scene, blocked_squares, clicked_piece, current_player_text, last_played, valid_squares, player_piece) {
+function move(scene, blocked_squares, clicked_piece, current_player_text, last_played, valid_squares, player_piece, AI_blocked_squares) {
     if ( valid_squares.has(clicked_piece.name) ) {
         scene.move_sound.play();
 
@@ -146,6 +154,7 @@ function move(scene, blocked_squares, clicked_piece, current_player_text, last_p
         last_played.add( old_y*7 + old_x );
         last_played.add( parseInt(clicked_piece.name) );
         last_played.forEach( pos =>  scene.positions[pos].setTint(0xFFFF00) );
+
 
         // Move player piece to new square
         move_image(scene, player_piece, clicked_piece.x, clicked_piece.y);
@@ -237,15 +246,119 @@ function finish_game(scene, current_pos) {
     scene.positions.forEach(x => x.disableInteractive());
 }
 
-function randomPlay(validSquares) {
-    var tmpSquares = Array.from(validSquares).map(x => [(parseInt(x)-(parseInt(x)%7))/7, parseInt(x)%7]);
-    var chosen = tmpSquares.reduce((accumulator, current) => {
-        if (Math.pow(accumulator[0]-0, 2) + Math.pow(accumulator[1] - 6, 2) < Math.pow(current[0]-0, 2) + Math.pow(current[1] - 6, 2)) {
-            return accumulator;
+
+
+
+//make a play using the AI
+function randomPlay(valid_squares, AI_blocked_squares, piece) {
+    var chosen = null;
+    var INITIAL_BOARD_POS = 60
+    var DISTANCE_BETWEEN_SQUARES = 105
+
+    var piece_x = ( piece.x - INITIAL_BOARD_POS )/ DISTANCE_BETWEEN_SQUARES;
+    var piece_y = ( piece.y - INITIAL_BOARD_POS )/ DISTANCE_BETWEEN_SQUARES;
+    AI_blocked_squares[piece_y][piece_x] = true;
+
+    var tmpSquares = Array.from(valid_squares).map(x => [(parseInt(x)-(parseInt(x)%7))/7, parseInt(x)%7]);
+
+
+    if (Math.random()>0.5) {         // [0..1] Prob   0.2->EASY     0.5->medium      0.8->dificil
+        if ((Math.pow(0-piece_y, 2) + Math.pow(6-piece_x,2)<=8) ||
+            (Math.pow(6-piece_y, 2) + Math.pow(0-piece_x,2)<=8)) {
+                chosen = tmpSquares.reduce((accumulator, current) => {
+                    if (Math.pow(accumulator[0]-0, 2) + Math.pow(accumulator[1] - 6, 2) < Math.pow(current[0]-0, 2) + Math.pow(current[1] - 6, 2)) {
+                        return accumulator;
+                    } else {
+                        return current;
+                    }
+                });
         } else {
-            return current;
+            chosen = tmpSquares[Math.floor(Math.random() * tmpSquares.length)];
         }
-    });
+    } else {
+        var score = -100;
+
+        tmpSquares.forEach( (element) => {
+            AI_blocked_squares[element[0]][element[1]] = true;
+            var validSquares = [];
+            for (var y = element[0]-1; y<=element[0]+1; y++) {
+                for (var x = element[1]-1; x<=element[1]+1; x++) {
+                    if (y>=0 && y<=6 && x>=0 && x<=6 && !AI_blocked_squares[y][x]) {
+                        validSquares.push([y,x]);
+                    }
+                }
+            }
+
+            var newScore = minimax(validSquares, element, 9, false, AI_blocked_squares);
+            if (newScore >= score) {
+                chosen = element;
+                score = newScore;
+            }
+            AI_blocked_squares[element[0]][element[1]] = false;
+        });
+    }
+
+    AI_blocked_squares[chosen[0]][chosen[1]] = true;
+
     return chosen[0]*7+chosen[1];
 }
 
+
+//minimax algorithmn
+function minimax(validSquares, piece, depth, maximizingPlayer, AI_blocked_squares) {
+    var x = ended(piece, validSquares);
+
+    if (depth == 0 || x==99 || x==-99) {
+        return x;
+    }
+
+    if (maximizingPlayer) {
+        var value = -100;
+        validSquares.forEach((element) => {
+            AI_blocked_squares[element[0]][element[1]] = true;
+            var validSquares2 = [];
+            for (var y = element[0]-1; y<=element[0]+1; y++) {
+                for (var x = element[1]-1; x<=element[1]+1; x++) {
+                    if (y>=0 && y<=6 && x>=0 && x<=6 && !AI_blocked_squares[y][x]) {
+                        validSquares2.push([y,x]);
+                    }
+                }
+            }
+            var newValue = minimax(validSquares2, element, depth-1, false, AI_blocked_squares);
+            if (newValue > value) {
+                value = newValue;
+            }
+            AI_blocked_squares[element[0]][element[1]] = false;
+        })
+    } else {
+        var value = 100;
+        validSquares.forEach((element) => {
+            AI_blocked_squares[element[0]][element[1]] = true;
+            var validSquares2 = [];
+            for (var y = element[0]-1; y<=element[0]+1; y++) {
+                for (var x = element[1]-1; x<=element[1]+1; x++) {
+                    if (y>=0 && y<=6 && x>=0 && x<=6 && !AI_blocked_squares[y][x]) {
+                        validSquares2.push([y,x]);
+                    }
+                }
+            }
+            var newValue = minimax(validSquares2, element, depth-1, true, AI_blocked_squares);
+            if (newValue < value) {
+                value = newValue;
+            }
+            AI_blocked_squares[element[0]][element[1]] = false;
+        })
+    }
+    return value;
+}
+
+//heuristic
+function ended(piece, validSquares) {
+    if (piece[0] == 0 && piece[1] == 6) {
+        return 99;
+    } else if ((piece[0] == 6 && piece[1] == 0) || validSquares.length == 0) {
+        return -99;
+    } else {
+        return 98 - Math.pow(piece[0]-0, 2) - Math.pow(piece[1] - 6, 2);
+    }
+}
