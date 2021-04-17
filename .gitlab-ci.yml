@@ -11,7 +11,7 @@ test-job-API:
     - cd MathGamesAPI
     - npm i npm@latest -g
     - npm i
-    - node server.js
+    - ng build --prod
 
 test-job-WebApp:
   stage: test
