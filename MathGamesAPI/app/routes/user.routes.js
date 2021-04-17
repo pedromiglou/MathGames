@@ -1,3 +1,7 @@
+const { findById, authenticate } = require("../models/user.model.js");
+const authorize = require('../config/authorize')
+const Role = require('../config/roles');
+
 module.exports = app => {
     const users = require("../controllers/user.controller.js");
   
@@ -20,9 +24,13 @@ module.exports = app => {
     app.delete("/users", users.deleteAll);
 
 
+
     // Login
-    app.post("/login", users.login);
+    app.post("/login", users.authenticate);
 
     // Register
     app.post("/register", users.register);
+
+    app.get('/gamePage', authorize(Role.Admin), users.findAll);            // admin only
+    app.get('/gamesDashboard', authorize(Role.User), users.findAll);       // all authenticated users
   };
