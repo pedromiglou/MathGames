@@ -4,16 +4,16 @@ build-job:
     - echo "build job placeholder"
 
 
-test-job1:
+test-job-API:
   stage: test
   image: node:14
   script:
     - cd MathGamesAPI
     - npm i npm@latest -g
     - npm i
-    - npm run build
+    - node server.js
 
-test-job2:
+test-job-WebApp:
   stage: test
   image: node:14
   script:
