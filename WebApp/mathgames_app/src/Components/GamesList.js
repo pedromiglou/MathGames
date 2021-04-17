@@ -1,46 +1,10 @@
 import { React, useState } from "react";
 import { Container, Card } from "react-bootstrap";
 import {Route, Link} from "react-router-dom";
+import {games_info} from '../data/GamesInfo';
 
 import "./GamesList.css";
 
-const games_list = [
-    {
-        id: 0,
-        title: "Game 1",
-        img: process.env.PUBLIC_URL + "/images/mathGames.png",
-        hoover: false,
-        path: '/gamePage',
-    },
-    {
-        id: 1,
-        title: "Game 2",
-        img: process.env.PUBLIC_URL + "/images/mathGames.png",
-        hoover: false,
-        path: '/gamePage',
-    },
-    {
-        id: 2,
-        title: "Game 2",
-        img: process.env.PUBLIC_URL + "/images/mathGames.png",
-        hoover: false,
-        path: '/gamePage',
-    },
-    {
-        id: 3,
-        title: "Game 2",
-        img: process.env.PUBLIC_URL + "/images/mathGames.png",
-        hoover: false,
-        path: '/gamePage',
-    },
-    {
-        id: 4,
-        title: "Game 2",
-        img: process.env.PUBLIC_URL + "/images/mathGames.png",
-        hoover: false,
-        path: '/gamePage',
-    },
-];
 
 function GamesList() {
     const [title, setTitle] = useState(false);
@@ -53,7 +17,7 @@ function GamesList() {
         x.style.opacity = "0.5";
         x.style.backgroundColor = "aquat";
 
-        games_list[game.id]["hoover"] = true;
+        game.hoover = true;
         titleState();
     }
 
@@ -65,7 +29,7 @@ function GamesList() {
         x.style.opacity = "1";
         x.style.backgroundColor = "white";
 
-        games_list[game.id]["hoover"] = false;
+        game.hoover = false;
         titleState();
     }
 
@@ -78,21 +42,21 @@ function GamesList() {
     return (
         <>
         <Container className="display-games container">
-            {games_list.map((game) => (
-                <Card key={game.id}>
+            {Object.entries(games_info).map( ([key, value]) =>  ( 
+                <Card key={key}>
                     <Route>
-                        <Link to={game.path}>
+                        <Link to={value['path']}>
                             <div
-                                onMouseEnter={(e) => changeCard(e, game)}
-                                onMouseLeave={(e) => replaceCard(e, game)}
+                                onMouseEnter={(e) => changeCard(e, value)}
+                                onMouseLeave={(e) => replaceCard(e, value)}
                             >
                                 <img
-                                    src={game.img}
+                                    src={value['img']}
                                     alt="Info"
                                     className="card-img"
-                                    id={game.id}
+                                    id={key}
                                 />
-                                {showTitle(game)}
+                                {showTitle(value)}
                             </div> 
                         </Link>
                     </Route>    

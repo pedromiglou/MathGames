@@ -1,14 +1,18 @@
 const sql = require("./db.js");
+const config = require('../config/auth.config');
+const jwt = require('jsonwebtoken');
+
+const Role = require('../config/roles');
+const { USER } = require("../config/db.config.js");
 
 // constructor
 const User = function(user) {
   this.username = user.username;
   this.email = user.email;
   this.password = user.password;
-  this.avatar = user.avatar;
-  this.ranking = user.ranking;
-  this.account_type = user.account_type;
 };
+
+
 
 User.create = (newUser, result) => {
   sql.query("INSERT INTO User SET ?", newUser, (err, res) => {
@@ -41,6 +45,26 @@ User.findById = (UserId, result) => {
     result({ kind: "not_found" }, null);
   });
 };
+
+
+User.findByUsername = (Username, result) => {
+  sql.query(`SELECT * FROM User WHERE username = ${sql.escape(Username)}`, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    if (res.length) {
+      console.log("found user: ", res[0]);
+      result(null, res[0]);
+      return;
+    }
+    // not found User with the username
+    result({ kind: "not_found" }, null);
+  });
+};
+
 
 User.getAll = result => {
   sql.query("SELECT * FROM User", (err, res) => {
@@ -110,4 +134,26 @@ User.removeAll = result => {
   });
 };
 
+User.authenticate = (username, password, result) => {
+  User.findByUsername(username, (err, user) => {
+    if (!err){
+      if (user.password === password) {
+          const token = jwt.sign({ id: user.id, account_type: user.account_type }, config.secret);
+          const { password, ...userWithoutPassword } = user;
+          result(null,{
+              ...userWithoutPassword,
+              token
+          });
+      } else {
+        result('Username or password is incorrect',null)
+      }
+    } else {
+      result('Username or password is incorrect',null)
+    }
+  });
+}
+
+
+
 module.exports = User;
+

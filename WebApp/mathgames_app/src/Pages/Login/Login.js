@@ -2,6 +2,7 @@ import { React, useState } from "react";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Login.css";
+import AuthService from "../../Services/auth.service"
 
 function Login() {
     const [signIn, setSignIn] = useState(true);
@@ -35,22 +36,38 @@ function Login() {
         }
     }
 
+    function run_register(event) {
+        event.preventDefault();
+        var resultado = AuthService.register(
+            document.getElementById("nomeUtilizadorRegisto").value,
+            document.getElementById("emailRegisto").value,
+            document.getElementById("passwordRegisto").value
+        ) 
+        
+        
+    }
+
+    function run_login(event) {
+        event.preventDefault();
+        var resultado = AuthService.login(
+            document.getElementById("nomeUtilizadorLogin").value,
+            document.getElementById("passwordLogin").value
+        )           
+    }
+
     return (
         <div className="container container-login">
             <div className="forms-container-login">
                 <div id="signin_id" className={"signin"}>
-                    <form action="#" className="sign-in-form">
+                    <form action="#" className="sign-in-form" onSubmit={run_login}>
                         <h2 className="title">Iniciar Sessao</h2>
                         <div className="input-field">
                             <i className="fas fa-user"></i>
-                            <input type="text" placeholder="Nome" />
+                            <input id="nomeUtilizadorLogin" type="text" placeholder="Nome de Utilizador" />
                         </div>
                         <div className="input-field">
                             <i className="fas fa-lock"></i>
-                            <input
-                                type="password"
-                                placeholder="Palavra-chave"
-                            />
+                            <input id="passwordLogin" type="password" placeholder="Palavra-chave" />
                         </div>
                         <input
                             type="submit"
@@ -61,22 +78,19 @@ function Login() {
                 </div>
 
                 <div id="signup_id" className="signup">
-                    <form action="#" className="sign-in-form">
+                    <form action="#" className="sign-in-form" onSubmit={run_register}>
                         <h2 className="title">Registar</h2>
                         <div className="input-field">
                             <i className="fas fa-user"></i>
-                            <input type="text" placeholder="Nome" />
+                            <input id="nomeUtilizadorRegisto" type="text" placeholder="Nome de Utilizador" />
                         </div>
                         <div className="input-field">
                             <i className="fas fa-user"></i>
-                            <input type="email" placeholder="Email" />
+                            <input id="emailRegisto" type="email" placeholder="Email" />
                         </div>
                         <div className="input-field">
                             <i className="fas fa-lock"></i>
-                            <input
-                                type="password"
-                                placeholder="Palavra-chave"
-                            />
+                            <input id="passwordRegisto" type="password" placeholder="Palavra-chave" />
                         </div>
                         <input
                             type="submit"

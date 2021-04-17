@@ -1,5 +1,5 @@
 
-import  React from "react";
+import  React , {useEffect} from "react";
 import Phaser from "phaser";
 
 var game_type = null
@@ -9,6 +9,7 @@ export default class RastrosEngine extends React.Component {
         super(props)
         game_type = props.game_type
     }
+
 
     componentDidMount() {
 
