@@ -22,70 +22,113 @@ function Menu(){
         <>
         <Router>
             <IconContext.Provider value={{color: 'grey'}}>
-                <div className="navbar">
-                    <div className="bars_logo">
-                        <Link to="#" className="menu-bars">
-                            <FaIcons.FaBars onClick={showSidebar}/>
-                        </Link>
-                        <div className="nav-logo">
-                            <Link to="/">
-                                <img  className="logo" src={process.env.PUBLIC_URL + "/images/logo-light.png"}  alt="logo"/>
+                <div className="container-fluid">
+                    <div id="horizontal_nav_row" className="row sticky-top">
+                        <div id="row-logo" className="row">
+                            <Link to="#" className="menu-bars">
+                                <FaIcons.FaBars onClick={showSidebar}/>
                             </Link>
-                        </div>
-                    </div>
-                </div>
-                {/*
-                <hr className="menu-divider"></hr>
-                */}
-                <nav className={sidebar ? "nav-menu active" : "nav-menu collapsed"}>
-                    <ul className="nav-menu-items">
-                        <div className="nav-item">
-                            <li className="nav-text">
-                                <Link to="/"> 
-                                    <i className="subicon"><AiIcons.AiFillHome/></i>
-                                    <span className={sidebar ? "icons-name" : "icons-noname"}>Inicio</span>
+                            <div className="nav-logo">
+                                <Link to="/">
+                                    <img  className="logo" src={process.env.PUBLIC_URL + "/images/logo-light.png"}  alt="logo"/>
                                 </Link>
-                            </li>
+                            </div>
+
                         </div>
-                        <hr></hr>
-                        {sidebarData_group1.map((item, index) =>{
-                            return(
-                                <div key={item.id} className="nav-item">
-                                    <li className={item.cName}>
-                                        <Link to={item.path}> 
-                                            <i className="subicon">{item.icon}</i>
-                                            <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span>
-                                            
+
+                        {/* <hr className="menu-divider"></hr>  */}                     
+
+                        
+                        <div className="navbar">
+                            <div className="profile">
+                                <Link to="/profile">
+                                    {/*
+                                    <div className="round_profile_logo">
+                                        <img className="logo" src={process.env.PUBLIC_URL + "/images/user-profile.png"}  alt="logo"/>
+                                    </div>
+                                    */}
+                                </Link>
+                            </div>
+                            <div className="notif">
+                                <Link to="/notifications">
+                                    <div className="notifications_section">
+
+                                    </div>
+                                </Link>
+                            </div>
+                            <div className="friends">
+                                <Link to="/friends">
+                                    <div className="friend_section">
+
+                                    </div>
+                                </Link>
+                            </div>
+                            
+                        </div>
+                        
+                        
+                    </div>
+                    
+                    <div id="content" className="row">
+                        <nav className={sidebar ? "nav-menu active" : "nav-menu collapsed"}>
+                            <ul className="nav-menu-items">
+                                <div className="nav-item">
+                                    <li className="nav-text">
+                                        <Link to="/"> 
+                                            <i className="subicon"><AiIcons.AiFillHome/></i>
+                                            <span className={sidebar ? "icons-name" : "icons-noname"}>Inicio</span>
                                         </Link>
                                     </li>
                                 </div>
-                            );
-                        })}
-                        <hr></hr>
-                        {sidebarData_group2.map((item, index) =>{
-                            return(
-                                <div key={item.id} className="nav-item">
-                                    <li  className={item.cName}>
-                                        <Link to={item.path}> 
-                                            <i className="subicon">{item.icon}</i>
-                                            <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span>
-                                        </Link>
-                                    </li>
-                                </div>
-                            );
-                        })}
-                    </ul>
-                </nav>
-                <div className={sidebar ? "sub-component active" : "sub-component collapsed"}>
-                    <Switch>
-                        <Route exact path='/' component={withRouter(Welcome)} />
-                        <Route exact path='/dashboard' component={withRouter(Dashboard)} />
-                        <Route exact path='/gamesDashboard' component={withRouter(ChooseGame)} />
-                        <Route exact path='/mode' component={withRouter(ChooseGameMode)} />
-                        <Route exact path='/game' component={withRouter(Game)} />
-                        <Route exact path='/login' component={withRouter(Login)} />
-                        <Route exact path='/gamePage' component={withRouter(GamePage)}/>
-                    </Switch>
+                                <hr></hr>
+                                {sidebarData_group1.map((item, index) =>{
+                                    return(
+                                        <div key={item.id} className="nav-item">
+                                            <li className={item.cName}>
+                                                <Link to={item.path}> 
+                                                    <i className="subicon">{item.icon}</i>
+                                                    <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span>
+                                                    
+                                                </Link>
+                                            </li>
+                                        </div>
+                                    );
+                                })}
+                                <hr></hr>
+                                {sidebarData_group2.map((item) =>{
+                                    return(
+                                        <div key={item.id} className="nav-item">
+                                            <li  className={item.cName}>
+                                                <Link to={item.path}> 
+                                                    <i className="subicon">{item.icon}</i>
+                                                    <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span>
+                                                </Link>
+                                            </li>
+                                        </div>
+                                    );
+                                })}
+                                <hr></hr>
+                                
+                            </ul>
+                        </nav>
+    
+                        {/*<hr className="menu-divider"></hr>*/}
+                        
+                        
+                        <div className={sidebar ? "sub-component active" : "sub-component collapsed"}>
+                            <Switch>
+                                <Route exact path='/' component={withRouter(Welcome)} />
+                                <Route exact path='/dashboard' component={withRouter(Dashboard)} />
+                                <Route exact path='/gamesDashboard' component={withRouter(ChooseGame)} />
+                                <Route exact path='/mode' component={withRouter(ChooseGameMode)} />
+                                <Route exact path='/game' component={withRouter(Game)} />
+                                <Route exact path='/login' component={withRouter(Login)} />
+                                <Route exact path='/gamePage' component={withRouter(GamePage)}/>
+                            </Switch>
+                        </div>
+                        
+                        
+                    </div>
                 </div>
             </IconContext.Provider>
         </Router>
