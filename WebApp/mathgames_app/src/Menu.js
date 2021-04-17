@@ -13,6 +13,7 @@ import ChooseGame from './Pages/ChooseGame/ChooseGame';
 import Game from './Pages/Game/Game';
 import Login from './Pages/Login/Login';
 import GamePage from './Pages/GamePage/GamePage';
+import Profile from './Pages/Profile/Profile';
 
 function Menu(){
     const [sidebar, setSidebar] = useState(true);
