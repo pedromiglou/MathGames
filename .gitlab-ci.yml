@@ -11,7 +11,7 @@ test-job-API:
     - cd MathGamesAPI
     - npm i npm@latest -g
     - npm i
-    - timeout 60 node server.js
+    - npm test
 
 test-job-WebApp:
   stage: test
