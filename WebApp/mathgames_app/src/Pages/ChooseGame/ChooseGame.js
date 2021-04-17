@@ -49,7 +49,7 @@ function ChooseGameMode() {
 
 
 	return (
-		<div className="container" id="choose_game_container">
+		<div className="choose-game-container" id="choose_game_container">
 			<div className="row no-margin">
 				<div className="col-lg-9" id="filter_options">
 					<div className="row top-bar no-margin">

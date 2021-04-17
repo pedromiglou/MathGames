@@ -13,16 +13,16 @@
 
 .card-img {
 	margin: 0px;
-	width: 300px;
+	width: 320px;
 	height: auto;
 }
 
-.card-style {
+/* .card-style {
 	height: auto;
-	width: 300px;
+	width: 330px;
 	max-height: 305px;
 }
-
+ */
 * {
 	transition: all 0.3s ease-out;
 }
@@ -49,6 +49,8 @@
 	text-decoration: none !important;
     margin-top: 50%;
     font-size: large;
+	width: 100%;
+	padding: 0;
 }
 
 button.learn-more {
@@ -118,6 +120,7 @@ button.learn-more .button-text {
 	text-align: center;
 	text-transform: uppercase;
 	font-size: 15px;
+	width: 200px !important;
 }
 
 button:hover .circle .icon.arrow {
@@ -130,4 +133,16 @@ button:hover .button-text {
 
 .teste:hover .circle {
     width: 85%;
+}
+
+.teste {
+
+}
+
+.card:hover {
+	transform: scale(1.1);
+}
+
+.button_playnow {
+
 }
