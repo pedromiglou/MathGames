@@ -1,71 +1,97 @@
 import { React, useState } from "react";
 import { Container, Card } from "react-bootstrap";
-import {Route, Link} from "react-router-dom";
-import {games_info} from '../data/GamesInfo';
+import { Route, Link } from "react-router-dom";
+import { games_info } from "../data/GamesInfo";
 
 import "./GamesList.css";
 
-
 function GamesList() {
-    const [title, setTitle] = useState(false);
-    const titleState = () => setTitle(!title);
+	const [title, setTitle] = useState(false);
+	const titleState = () => setTitle(!title);
 
-    function changeCard(e, game) {
-        var x = document.getElementById(game.id);
-        x.style.width = "350px";
-        x.style.height = "350px";
-        x.style.opacity = "0.5";
-        x.style.backgroundColor = "aquat";
+	function changeCard(e, game) {
+		var x2 = document.getElementById(game.id + "_Card");
+		x2.style.boxShadow = "10px 5px 5px grey";
 
-        game.hoover = true;
-        titleState();
-    }
+		var x = document.getElementById(game.id);
+		x.style.width = "350px";
+		x.style.height = "350px";
+		x.style.opacity = "0.5";
+		x.style.backgroundColor = "aquat";
 
-    function replaceCard(e, game) {
-        var x = document.getElementById(game.id);
-        x.style.margin = "0px";
-        x.style.width = "300px";
-        x.style.height = "300px";
-        x.style.opacity = "1";
-        x.style.backgroundColor = "white";
+		game.hoover = true;
+		titleState();
+	}
 
-        game.hoover = false;
-        titleState();
-    }
+	function replaceCard(e, game) {
+		var x2 = document.getElementById(game.id + "_Card");
+		x2.style.boxShadow = "";
 
-    const showTitle = (game) => {
-        if (game.hoover) {
-            return <h1 className="game-title">{game.title}</h1>;
-        }
-    };
+		var x = document.getElementById(game.id);
+		x.style.margin = "0px";
+		x.style.width = "300px";
+		x.style.height = "300px";
+		x.style.opacity = "1";
+		x.style.backgroundColor = "white";
 
-    return (
-        <>
-        <Container className="display-games container">
-            {Object.entries(games_info).map( ([key, value]) =>  ( 
-                <Card key={key}>
-                    <Route>
-                        <Link to={value['path']}>
-                            <div
-                                onMouseEnter={(e) => changeCard(e, value)}
-                                onMouseLeave={(e) => replaceCard(e, value)}
-                            >
-                                <img
-                                    src={value['img']}
-                                    alt="Info"
-                                    className="card-img"
-                                    id={key}
-                                />
-                                {showTitle(value)}
-                            </div> 
-                        </Link>
-                    </Route>    
-                </Card>
-            ))}
-        </Container>
-        
-        </>
-    );
+		game.hoover = false;
+		titleState();
+	}
+
+	const showTitle = (game) => {
+		if (game.hoover) {
+			return (
+				<>
+					<h2 className="game-title">{game.title}</h2>
+					<div className="row">
+						<div className="col-lg-9 no-padding no-margin">
+							{/* <button className="play-button"> Jogar! </button> */}
+							<button className="learn-more circle" id="playnow_btn">
+								<span
+									id="myspan"
+									className="circle"
+									aria-hidden="true"
+								>
+									<span className="icon arrow"></span>
+								</span>
+								<span className="button-text">Jogar Agora</span>
+							</button>
+						</div>
+						<div className="col-lg-2">
+							<p className="game_age"> +{game.age} </p>
+						</div>
+					</div>
+				</>
+			);
+		}
+	};
+
+	return (
+		<>
+			<Container className="display-games container">
+				{Object.entries(games_info).map(([key, value]) => (
+					<Card key={key} id={key + "_Card"} className="teste">
+						<Route>
+							<Link to={value["path"]}>
+								<div
+									onMouseEnter={(e) => changeCard(e, value)}
+									onMouseLeave={(e) => replaceCard(e, value)}
+								>
+									<img
+										src={value["img"]}
+										alt="Info"
+										className="card-img"
+										id={key}
+									/>
+									{showTitle(value)}
+								</div>
+							</Link>
+						</Route>
+					</Card>
+				))}
+			</Container>
+		</>
+	);
 }
 
 export default GamesList;

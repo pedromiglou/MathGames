@@ -143,7 +143,7 @@ const Profile = () => {
                                     process.env.PUBLIC_URL +
                                     "/images/user-profile.png"
                                 }
-                                alt="profile image"
+                                alt="profile_image"
                             />
                             <div className="input-field_profile">
                                 <input type="text" value="Username" readOnly />
