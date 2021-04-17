@@ -18,6 +18,25 @@ function Menu(){
     const [sidebar, setSidebar] = useState(true);
     const showSidebar = () => setSidebar(!sidebar)
 
+
+    
+    const [admin, setAdmin] = useState(false);
+    //Talvez se venham a usar estes tambem, dont delete
+    /*
+    const [user, setUser] = useState(false);
+    const [tournament_user, setTournament_user] = useState(false);
+    */
+    const [free_user, setFree_user] = useState(true);
+
+    function check_role() {
+        var role = localStorage.getItem("role");
+        if (role !== "A" || role !== "U" || role !== "T"){
+            setFree_user(true);
+        } else {
+            setFree_user(false);
+        }
+    }
+
     return(
         <>
         <Router>
@@ -37,33 +56,54 @@ function Menu(){
                         </div>
 
                         {/* <hr className="menu-divider"></hr>  */}                     
-
                         
+                        {admin &&
+                            <h1>Admin</h1>
+                        }
+
                         <div className="navbar">
-                            <div className="profile">
-                                <Link to="/profile">
-                                    {/*
-                                    <div className="round_profile_logo">
-                                        <img className="logo" src={process.env.PUBLIC_URL + "/images/user-profile.png"}  alt="logo"/>
+                            {!free_user &&
+                                <div className="notif">
+                                    <div className="notif_section">
+                                        <Link to="/notifications" className="notif_icon">
+                                            <FaIcons.FaBell/>
+                                        </Link>
                                     </div>
-                                    */}
-                                </Link>
-                            </div>
-                            <div className="notif">
-                                <Link to="/notifications">
-                                    <div className="notifications_section">
-
+                                </div>
+                            }
+                            {!free_user &&
+                                <div className="friends">
+                                    <div className="friends_section">
+                                        <Link to="/friends" className="friends_icon">
+                                            <FaIcons.FaUserFriends/>
+                                        </Link>
                                     </div>
-                                </Link>
-                            </div>
-                            <div className="friends">
-                                <Link to="/friends">
-                                    <div className="friend_section">
-
-                                    </div>
-                                </Link>
-                            </div>
+                                </div>
+                            }
                             
+
+                            <div className="account_info">               
+                                {!free_user &&
+                                    <div className="info">
+                                        <h5>Nome do gajo</h5>
+                                        <h5>Nivel</h5>  
+                                    </div> 
+                                } 
+
+                                {free_user &&
+                                    <div className="info">
+                                        <Link to="/login" className="notif_icon">
+                                            <h2>Login/Registar</h2>
+                                        </Link>
+                                    </div>
+                                }
+
+                                <div className="round_profile_logo">
+                                    <Link to="/profile">
+                                        <img className="profile_logo" src={process.env.PUBLIC_URL + "/images/user-profile.png"}  alt="logo"/>
+                                    </Link>
+                                </div>
+                            </div>
                         </div>
                         
                         

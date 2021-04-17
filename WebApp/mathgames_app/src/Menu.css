@@ -34,6 +34,7 @@ html, body, #root{
     position: -webkit-sticky;
     position: sticky;
     top:0px;
+    display: flex;
 }
 
 /*Bars and Logo */
@@ -67,16 +68,75 @@ html, body, #root{
 /* horizontal navbar */
 .navbar{
     display: flex;
-    width: 100px;
-    height: 100px;
+    width: 30%;
+    max-width: calc(100% - 400px);
+    height: 100%;
     position: absolute;
     right: 0;
+    bottom: 0;
     padding: 0.5rem 1rem;
 }
 
-.profile{
-    align-self: flex-end;
+.friends{
+    width: max(15%, 40px);
+    margin-right: max(5%, 20px);
+    height: 100%;
 }
+
+.friends_section{
+    height: 50%;
+    margin: 25% 0;
+}
+
+.friends_icon{
+    font-size: 24px;
+    background: none;
+}
+
+
+.notif{
+    width: min(15%, 100px);
+    margin-right: max(5%, 20px);
+    height: 100%;
+    padding: 0.5em 1em;
+}
+
+.notif_section{
+    height: 50%;
+    margin: 25% 0;
+}
+
+.notif_icon{
+    font-size: 24px;
+    background: none;
+}
+
+
+.account_info{
+    width: 60%;
+    height: 100%;
+    display: inline-flex;
+    float: right;
+}
+
+.round_profile_logo{
+    width: 25%;
+    height: 100%;
+    min-width: 70px;
+    float:right;
+}
+
+.profile_logo{
+    width: 100%;
+    min-width: 70px;
+}
+
+.info{
+    width: 75%;
+    height: 100%;
+}
+
+
 
 
 /*------ MENU DIVIDIR----- */
