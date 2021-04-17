@@ -14,10 +14,13 @@ class AuthService {
             headers:{'Content-type':'application/json'},
             body: JSON.stringify(userInfo)
         }).then(r=>r.json()).then(res=> {
+            console.log(res)
             if(res.token) {
                 localStorage.setItem("user", JSON.stringify(res))
+                window.location.assign("http://localhost:3000/");
+            } else {
+                window.location.reload();
             }
-            return res
         })
     }
 
@@ -42,8 +45,6 @@ class AuthService {
     }
 
     getCurrentUser() {
-        console.log(JSON.parse(localStorage.getItem("user")))
-        console.log("vou return")
         return JSON.parse(localStorage.getItem("user"))
     }
 }

@@ -1,5 +1,5 @@
 
-import  React , {useEffect} from "react";
+import  React  from "react";
 import Phaser from "phaser";
 
 var game_type = null
@@ -117,7 +117,6 @@ export default class RastrosEngine extends React.Component {
                         // Process AI move
                         var ai_move = randomPlay(valid_squares, AI_blocked_squares, clicked_piece);
                         clicked_piece = this.positions[ai_move];
-                        var wait_time =  Math.floor(Math.random() * (2000 - 500) ) + 500;
                         move(this, blocked_squares, clicked_piece, current_player_text, last_played, valid_squares, player_piece, AI_blocked_squares); 
                         this.player_turn = true;
                     }
@@ -308,12 +307,13 @@ function randomPlay(valid_squares, AI_blocked_squares, piece) {
 function minimax(validSquares, piece, depth, maximizingPlayer, AI_blocked_squares) {
     var x = ended(piece, validSquares);
 
-    if (depth == 0 || x==99 || x==-99) {
+    if (depth === 0 || x===99 || x===-99) {
         return x;
     }
 
+    var value;
     if (maximizingPlayer) {
-        var value = -100;
+        value = -100;
         validSquares.forEach((element) => {
             AI_blocked_squares[element[0]][element[1]] = true;
             var validSquares2 = [];
@@ -331,7 +331,7 @@ function minimax(validSquares, piece, depth, maximizingPlayer, AI_blocked_square
             AI_blocked_squares[element[0]][element[1]] = false;
         })
     } else {
-        var value = 100;
+        value = 100;
         validSquares.forEach((element) => {
             AI_blocked_squares[element[0]][element[1]] = true;
             var validSquares2 = [];
@@ -354,9 +354,9 @@ function minimax(validSquares, piece, depth, maximizingPlayer, AI_blocked_square
 
 //heuristic
 function ended(piece, validSquares) {
-    if (piece[0] == 0 && piece[1] == 6) {
+    if (piece[0] === 0 && piece[1] === 6) {
         return 99;
-    } else if ((piece[0] == 6 && piece[1] == 0) || validSquares.length == 0) {
+    } else if ((piece[0] === 6 && piece[1] === 0) || validSquares.length === 0) {
         return -99;
     } else {
         return 98 - Math.pow(piece[0]-0, 2) - Math.pow(piece[1] - 6, 2);

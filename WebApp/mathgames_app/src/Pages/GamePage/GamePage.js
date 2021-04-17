@@ -1,4 +1,6 @@
 import React, {useState, useEffect} from 'react';
+import { useHistory, useParams } from "react-router-dom";
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './GamePage.css';
 import { BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
@@ -48,6 +50,11 @@ function GamePage() {
         x.style.display = "none";
     }
 
+    let history = useHistory()
+
+
+
+
     return (
         <>
         <div className="container">
@@ -91,11 +98,21 @@ function GamePage() {
                                 ))}
                             </select>
                         </div>
-                        <Route>
-                        <Link to='/game'>
-                            <button>Jogar</button>
-                        </Link>
-                    </Route>    
+                        
+                       {/* <Route>
+                        <Link to="/game">*/}
+                            <button onClick={() => history.push(
+                                                            {
+                                                            pathname: "/game", 
+                                                            state: {
+                                                                game_id: id,
+                                                                game_mode: gameMode,
+                                                                ai_dif: AIdif
+                                                                }  
+                                                            }
+                            )}>Jogar</button>
+                        {/*</Link>
+                        </Route>*/}    
                     </div>
                 </div>
             </div>

@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from "react";
+import { useHistory, useParams } from "react-router-dom";
 import "./Game.css"
 import "bootstrap/dist/css/bootstrap.min.css";
 import RastrosEngine from "../../Components/Engines/RastrosEngine";
@@ -10,6 +11,9 @@ import socketIOClient from "socket.io-client";
 
 
 function Game() {
+    let history = useHistory()
+    var params = history.location.state
+
     /*
     const [response, setResponse] = useState("");
 
@@ -33,11 +37,15 @@ function Game() {
     }
     */
    
+/*
+    var game_id = parseInt(params.game_id);
+    var game_mode = params.game_mode;
+    var ai_diff = params.ai_diff
+*/
 
-    var game = "rastros";
-    var game_mode = "AI";
-
-    if ( game === "rastros" ) {
+    var game_id = 0
+    var game_mode = "AI"
+    if ( game_id === 0 ) {
         return (
             <div>    
                 {
@@ -55,7 +63,7 @@ function Game() {
             </div>
         );
     }
-    if ( game === "gatoscaes" ) {
+    if ( game_id === 1 ) {
         return (
             <div>
                 {

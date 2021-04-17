@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Menu.css';
 import {sidebarData_group1, sidebarData_group2} from './data/SidebarData.js';
@@ -6,7 +6,6 @@ import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
 import {IconContext} from 'react-icons';
 import { BrowserRouter as Router, Switch, Route, Link, withRouter} from 'react-router-dom';
-import Dashboard from './Pages/DashBoard/Dashboard';
 import Welcome from './Pages/Welcome/Welcome';
 import ChooseGameMode from './Pages/ChooseGameMode/ChooseGameMode';
 import ChooseGame from './Pages/ChooseGame/ChooseGame';
@@ -14,29 +13,30 @@ import Game from './Pages/Game/Game';
 import Login from './Pages/Login/Login';
 import GamePage from './Pages/GamePage/GamePage';
 import Profile from './Pages/Profile/Profile';
+import AuthService from './Services/auth.service'
 
 function Menu(){
     const [sidebar, setSidebar] = useState(true);
+    const [admin, setAdmin] = useState(false);
+    const [user, setUser] = useState("")
     const showSidebar = () => setSidebar(!sidebar)
 
+    useEffect(() => {
+        var resultado = AuthService.getCurrentUser();
+        setUser(resultado)
+        if (resultado !== null) {
+            setFree_user(false);
+        } else {
+            setFree_user(true)
+        }
+    }, [])
 
-    
-    const [admin, setAdmin] = useState(false);
     //Talvez se venham a usar estes tambem, dont delete
     /*
     const [user, setUser] = useState(false);
     const [tournament_user, setTournament_user] = useState(false);
     */
     const [free_user, setFree_user] = useState(true);
-
-    function check_role() {
-        var role = localStorage.getItem("role");
-        if (role !== "A" || role !== "U" || role !== "T"){
-            setFree_user(true);
-        } else {
-            setFree_user(false);
-        }
-    }
 
     return(
         <>
@@ -86,8 +86,8 @@ function Menu(){
                             <div className="account_info">               
                                 {!free_user &&
                                     <div className="info">
-                                        <h5>Nome do gajo</h5>
-                                        <h5>Nivel</h5>  
+                                        <h5>Nome: {user.username} </h5>
+                                        <h5>Nivel: {user.account_level} </h5>  
                                     </div> 
                                 } 
 
@@ -160,12 +160,12 @@ function Menu(){
                         <div className={sidebar ? "sub-component active" : "sub-component collapsed"}>
                             <Switch>
                                 <Route exact path='/' component={withRouter(Welcome)} />
-                                <Route exact path='/dashboard' component={withRouter(Dashboard)} />
                                 <Route exact path='/gamesDashboard' component={withRouter(ChooseGame)} />
                                 <Route exact path='/mode' component={withRouter(ChooseGameMode)} />
                                 <Route exact path='/game' component={withRouter(Game)} />
                                 <Route exact path='/login' component={withRouter(Login)} />
                                 <Route exact path='/gamePage' component={withRouter(GamePage)}/>
+                                <Route exact path='/profile' component={withRouter(Profile)}/>
                             </Switch>
                         </div>
                         

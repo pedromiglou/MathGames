@@ -38,21 +38,20 @@ function Login() {
 
     function run_register(event) {
         event.preventDefault();
-        var resultado = AuthService.register(
+        AuthService.register(
             document.getElementById("nomeUtilizadorRegisto").value,
             document.getElementById("emailRegisto").value,
             document.getElementById("passwordRegisto").value
         ) 
-        
-        
+        window.location.reload();        
     }
 
     function run_login(event) {
         event.preventDefault();
-        var resultado = AuthService.login(
+        AuthService.login(
             document.getElementById("nomeUtilizadorLogin").value,
             document.getElementById("passwordLogin").value
-        )           
+        )        
     }
 
     return (
