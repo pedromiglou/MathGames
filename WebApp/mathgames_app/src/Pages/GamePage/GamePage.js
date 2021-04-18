@@ -1,12 +1,17 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import { useHistory, useParams } from "react-router-dom";
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './GamePage.css';
 import { BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
+import {games_info} from '../../data/GamesInfo';
 
 
 
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
 function GamePage() {
+    let history = useHistory()
+
     //De alguma maneira verificar se estiver vazio
     const [gameMode, setGameMode] = useState("");
     //Depois aqui podemos meter conforme as preferencias no perfil
@@ -17,6 +22,10 @@ function GamePage() {
         { label: "medium", value:"medium"},
         { label: "hard", value:"hard"}
     ];
+
+    const params = new URLSearchParams(window.location.search)
+    let id = params.get('id')
+    const game_info = games_info[id]
 
     function changeMode (val) {
         setGameMode(val);
@@ -43,15 +52,19 @@ function GamePage() {
         x.style.display = "none";
     }
 
+
+
+
+
     return (
         <>
         <div className="container">
             <div className="row">
                 <div className="col xl-5 lg-5 md-12 sm-12">
-                    <h1>Yoté</h1>
-                    <i>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum</i>
+                    <h1>{game_info["title"]}</h1>
+                    <i>{game_info["description"]}</i>
                     <h1>Caracteristicas</h1>
-                    <h5>Dificuldade <i>X</i></h5>
+                    <h5>Faixa Etária <i>{game_info["age"]}</i></h5>
                     <h5>Dificuldade <i>X</i></h5>
                     <h5>Dificuldade <i>X</i></h5>
                 </div>
@@ -66,7 +79,7 @@ function GamePage() {
                     </div>
                     <div className="container">
                         <div className="row">
-                            <div idclassName="comp">
+                            <div className="comp">
                                 <button onClick={() => changeMode("competitivo")}>Competitivo</button>
                             </div>
                             <div className="offline1v1">
@@ -82,15 +95,25 @@ function GamePage() {
                             </div>
                             <select id="sel_dif" onChange={(e) => changeDif(e)}>
                                 {dif_options.map((option) => (
-                                    <option value={option.value}>{option.label}</option>
+                                    <option key={option.label} value={option.value}>{option.label}</option>
                                 ))}
                             </select>
                         </div>
-                        <Route>
-                        <Link to='/game'>
-                            <button>Jogar</button>
-                        </Link>
-                    </Route>    
+                        
+                       {/* <Route>
+                        <Link to="/game">*/}
+                            <button onClick={() => history.push(
+                                                            {
+                                                            pathname: "/game", 
+                                                            state: {
+                                                                game_id: id,
+                                                                game_mode: gameMode,
+                                                                ai_dif: AIdif
+                                                                }  
+                                                            }
+                            )}>Jogar</button>
+                        {/*</Link>
+                        </Route>*/}    
                     </div>
                 </div>
             </div>

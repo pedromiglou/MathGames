@@ -1,4 +1,5 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
+import { useHistory, useParams } from "react-router-dom";
 import "./Game.css"
 import "bootstrap/dist/css/bootstrap.min.css";
 import RastrosEngine from "../../Components/Engines/RastrosEngine";
@@ -9,8 +10,25 @@ import { BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
 //const ENDPOINT = "http://127.0.0.1:4000";
 //const socket = socketIOClient(ENDPOINT);
 
+var game_id = 0;
+var game_mode = "Online";
+var ai_diff = "medium";
+
 
 function Game() {
+    let history = useHistory()
+    var params = history.location.state
+
+    if (params !== undefined) {
+        game_id = parseInt(params.game_id);
+        game_mode = params.game_mode;
+        ai_diff = params.ai_diff
+    }
+    
+    //Apenas para teste estas 2 linhas
+    //var game_id = 0
+    //var game_mode = "AI"
+
     /*
     const [response, setResponse] = useState("");
 
@@ -34,10 +52,7 @@ function Game() {
     }
     */
 
-    var game = "rastros";
-    var game_mode = "Online";
-
-    if ( game === "rastros" ) {
+    if ( game_id === 0 ) {
         return (
             // <Route>
             //     <Link to='/game_page'>
@@ -49,7 +64,7 @@ function Game() {
             </div>
         );
     }
-    if ( game === "gatoscaes" ) {
+    if ( game_id === 1 ) {
         return (
             <div>
                 <GatosCaesEngine game_mode={game_mode}></GatosCaesEngine>

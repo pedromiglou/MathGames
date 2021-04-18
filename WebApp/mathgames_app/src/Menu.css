@@ -13,85 +13,170 @@ html, body, #root{
     background: transparent;
 }
 
+.container-fluid{
+    height: 100%;
+    padding:0;
+}
 /* Solucao para o backgroud size
 @media(max-width:767px) {
     html, body, #root, .App {
         height: 1000px;
     }
 }
- */
+*/
 
-/* ----------------------------*/
-
-/* horizontal navbar */
-.navbar{
+/* Global horizontal Navbar */
+#horizontal_nav_row.row{
     background-color: #F1F1F1;
-    height: 7vh;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
+    margin:0;
+    height: 100px;
+    width: 100%;
     position: -webkit-sticky;
     position: sticky;
     top:0px;
+    display: flex;
 }
-
-/*-----------------------*/
 
 /*Bars and Logo */
-.bars_logo{
-    display: inline-flex;
-    height: 100%;
-    width: 300px;
+#row-logo.row{
+    margin:0;
+    padding: 8px 16px;
+    width: min(50%, 400px);
+    min-width: 250px;
 }
 
-.menu-bars{
-    margin-top: 1rem;
-    font-size: 2rem;
-    background: none;
+.nav-logo{
+    width: min(80%, 350px);
+    min-width: 100px;
+    height: auto;
+    align-items: center;
 }
 
 .logo{
-    width: 230px;
-    height: 70px;
-    margin-left: 1rem;
-    margin-top: 10px;
+    width: 100%;
+    min-width: 100px;
+    height: 100%;
 }
-/*-----------------------*/
+
+.menu-bars{
+    align-self: center;
+    font-size: 24px;
+    margin-right: 16px;
+    background: none;
+}
+
+/* horizontal navbar */
+.navbar{
+    display: flex;
+    width: 30%;
+    max-width: calc(100% - 400px);
+    height: 100%;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    padding: 0.5rem 1rem;
+}
+
+.friends{
+    width: max(15%, 40px);
+    margin-right: max(5%, 20px);
+    height: 100%;
+}
+
+.friends_section{
+    height: 50%;
+    margin: 25% 0;
+}
+
+.friends_icon{
+    font-size: 24px;
+    background: none;
+}
+
+
+.notif{
+    width: min(15%, 100px);
+    margin-right: max(5%, 20px);
+    height: 100%;
+    padding: 0.5em 1em;
+}
+
+.notif_section{
+    height: 50%;
+    margin: 25% 0;
+}
+
+.notif_icon{
+    font-size: 24px;
+    background: none;
+}
+
+
+.account_info{
+    width: 60%;
+    height: 100%;
+    display: inline-flex;
+    float: right;
+}
+
+.round_profile_logo{
+    width: 25%;
+    height: 100%;
+    min-width: 70px;
+    float:right;
+}
+
+.profile_logo{
+    width: 100%;
+    min-width: 70px;
+}
+
+.info{
+    width: 75%;
+    height: 100%;
+}
+
+
+
 
 /*------ MENU DIVIDIR----- */
-
 /*
 .menu-divider{
     margin: 0;
-    height: 1px;
+    width: 1px;
+    height: 100%;
     -webkit-animation: change-color-background 4s infinite;
     animation: change-color-background 10s infinite;
-    position: absolute;
-    top:0;
-    position: -webkit-sticky;
-    position: sticky;
 }
 */
 
-/*---------------------- */
+/* Global content below horizontal navbar */
+
+#content.row{
+    margin:0;
+    height: calc(100% - 100px);
+}
 
 /* Vertical Menu Collapsed */
 .nav-menu{
     background-color: #F9F9F9;
-    height: 93vh;
-    display: flex;
-    justify-content: center;
-    transition: 500ms;
-    position: absolute;
-    top: 7vh;
+    height: 100%;
+    position: fixed;
     margin-right: 0 !important;
 }
 
+.nav-menu-items{
+    width: 100%;
+    height: 100%;
+}
+
 .nav-menu.collapsed{
-    width: 65px; 
+    width: 65px;
+    transition: 600ms; 
 }
 .nav-menu.active{
     width: 300px;
+    transition: 700ms;
 }
 
 .nav-item{
@@ -107,6 +192,7 @@ html, body, #root{
     letter-spacing: 2px;
     transition: 1s box-shadow;
 }
+
 
 .nav-item:hover{
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
@@ -149,10 +235,6 @@ html, body, #root{
     padding: .5rem 1rem;
 }
 
-.nav-menu-items{
-    width: 100%;
-}
-
 .subicon svg{
     width: 24px;
     height: 24px;
@@ -179,18 +261,22 @@ span.icons-noname{
 
 /*-----------------------*/
 
+
 /*----- SUB-COMPONENT----*/
+.sub-component{
+    height: 100%;
+}
 
 .sub-component.active{
-    width: calc(100%-300px);
+    width: calc(100% - 300px);
     margin-left: 300px;
-    height: 93vh;
+    transition: 700ms;
 }
 
 .sub-component.collapsed{
-    width: calc(100%-65px);
+    width: calc(100% - 65px);
     margin-left: 65px;
-    height: 93vh;
+    transition: 600ms;
 }
 /*-----------------------*/
 
@@ -249,12 +335,36 @@ span.icons-noname{
 /* media queries */
 /* Extra small devices (phones, 600px and down) */
 @media only screen and (max-width: 600px) {
-    .example {background: red;}
+    /*Bars and Logo */
+    #row-logo.row{
+        margin:0;
+        padding: 8px 16px;
+        width: 100%;
+    }
+
+    .nav-logo{
+        width: calc(80% - 40px);
+        height: auto;
+    }
+
+    .logo{
+        width: 100%;
+        min-width: 100px;
+        height: 100%;
+    }
+
+    .menu-bars{
+        align-self: center;
+        font-size: 24px;
+        margin-right: 16px;
+        background: none;
+    }
 }
 
 /* Small devices (portrait tablets and large phones, 600px and up) */
 @media only screen and (min-width: 600px) {
-    .example {background: green;}
+    
+    
 }
 
 /* Medium devices (landscape tablets, 768px and up) */

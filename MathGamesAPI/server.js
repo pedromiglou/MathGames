@@ -3,12 +3,15 @@ const bodyParser = require("body-parser");
 const cors = require('cors')
 const express = require("express");
 const index = require("./app/routes/index")
+const sql = require("./app/models/db.js");
+const errorHandler = require("./app/config/errorhandler");
 
 const app = express();
 app.use(index);
 app.use(cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(errorHandler)
 
 const server = require("http").createServer(app)
 

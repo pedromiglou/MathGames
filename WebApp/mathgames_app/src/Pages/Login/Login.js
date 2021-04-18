@@ -2,6 +2,7 @@ import { React, useState } from "react";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Login.css";
+import AuthService from "../../Services/auth.service"
 
 function Login() {
     const [signIn, setSignIn] = useState(true);
@@ -37,41 +38,20 @@ function Login() {
 
     function run_register(event) {
         event.preventDefault();
-        let userInfo= {
-            username: document.getElementById('nomeUtilizadorRegisto').value,
-            email: document.getElementById('emailRegisto').value,
-            password: document.getElementById('passwordRegisto').value,
-        }
-        
-        fetch('http://localhost:4000/register', {
-            method:'POST',
-            headers:{'Content-type':'application/json'},
-            body: JSON.stringify(userInfo)
-        }).then(r=>r.json()).then(res=> {
-            if(res) {
-                console.log('New User was created')
-                window.location.reload();
-            }
-        })
+        AuthService.register(
+            document.getElementById("nomeUtilizadorRegisto").value,
+            document.getElementById("emailRegisto").value,
+            document.getElementById("passwordRegisto").value
+        ) 
+        window.location.reload();        
     }
 
     function run_login(event) {
         event.preventDefault();
-        let userInfo= {
-            username: document.getElementById('nomeUtilizadorLogin').value,
-            password: document.getElementById('passwordLogin').value,
-        }
-        
-        fetch('http://localhost:4000/login', {
-            method:'POST',
-            headers:{'Content-type':'application/json'},
-            body: JSON.stringify(userInfo)
-        }).then(r=>r.json()).then(res=> {
-            if(res) {
-                console.log(res)
-                window.location.reload();
-            }
-        })
+        AuthService.login(
+            document.getElementById("nomeUtilizadorLogin").value,
+            document.getElementById("passwordLogin").value
+        )        
     }
 
     return (
