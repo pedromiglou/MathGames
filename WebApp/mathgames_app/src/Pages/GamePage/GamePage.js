@@ -1,9 +1,9 @@
-import React, {useState, useEffect} from 'react';
-import { useHistory, useParams } from "react-router-dom";
+import React, {useState} from 'react';
+import { useHistory} from "react-router-dom";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './GamePage.css';
-import { BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
+//import { BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
 import {games_info} from '../../data/GamesInfo';
 
 
