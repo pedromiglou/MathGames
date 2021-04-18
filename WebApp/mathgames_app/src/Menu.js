@@ -20,20 +20,16 @@ import AuthService from './Services/auth.service'
 
 
 function Menu(){
-    console.log("menu")
     const [sidebar, setSidebar] = useState(true);
+    const [admin, setAdmin] = useState(false);
+    const [user, setUser] = useState("")
     const showSidebar = () => setSidebar(!sidebar);
+
 
     useEffect(() => {
         if (sessionStorage.getItem('user_id') === null) {
             sessionStorage.setItem('user_id', uuidv4());
         }
-    }, []);
-    const [admin, setAdmin] = useState(false);
-    const [user, setUser] = useState("")
-    const showSidebar = () => setSidebar(!sidebar)
-
-    useEffect(() => {
         var resultado = AuthService.getCurrentUser();
         setUser(resultado)
         if (resultado !== null) {

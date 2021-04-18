@@ -10,27 +10,31 @@ function Login() {
     function toggle_sign_up() {
         setSignIn(!signIn);
 
+        var signin_id;
+        var signup_id;
+        var toggle_side;
+
         if (signIn === true) {
-            var toggle_side = document.getElementById("toggle_side");
+            toggle_side = document.getElementById("toggle_side");
             var toggle_side_width = toggle_side.clientWidth;
 
-            var signup_id = document.getElementById("signup_id");
+            signup_id = document.getElementById("signup_id");
             var signup_id_width = signup_id.clientWidth;
 
-            var signin_id = document.getElementById("signin_id");
+            signin_id = document.getElementById("signin_id");
             signin_id.style.transform = `translate(-${toggle_side_width}px, 0px)`;
             signup_id.style.transform = `translate(-${toggle_side_width}px, 0px)`;
             signup_id.style.zIndex = "0";
 
             toggle_side.style.transform = `translate(${signup_id_width}px, 0px)`;
         } else {
-            var toggle_side = document.getElementById("toggle_side");
+            toggle_side = document.getElementById("toggle_side");
             toggle_side.style.transform = `translate(0px, 0px)`;
 
-            var signin_id = document.getElementById("signin_id");
+            signin_id = document.getElementById("signin_id");
             signin_id.style.transform = `translate(0px, 0px)`;
 
-            var signup_id = document.getElementById("signup_id");
+            signup_id = document.getElementById("signup_id");
             signup_id.style.transform = `translate(0px, 0px)`;
             signup_id.style.zIndex = "-1";
         }
