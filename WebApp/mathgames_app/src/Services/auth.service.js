@@ -40,7 +40,6 @@ class AuthService {
             if(res) {
                 console.log('New User was created')
             }
-            return res
         })
     }
 

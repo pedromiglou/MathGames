@@ -4,13 +4,14 @@ import "./Game.css"
 import "bootstrap/dist/css/bootstrap.min.css";
 import RastrosEngine from "../../Components/Engines/RastrosEngine";
 import GatosCaesEngine from "../../Components/Engines/GatosCaesEngine";
-import socketIOClient from "socket.io-client";
+//import socketIOClient from "socket.io-client";
+import { BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
 
 //const ENDPOINT = "http://127.0.0.1:4000";
 //const socket = socketIOClient(ENDPOINT);
 
 var game_id = 0;
-var game_mode = "AI";
+var game_mode = "Online";
 var ai_diff = "medium";
 
 
@@ -51,39 +52,22 @@ function Game() {
     }
     */
 
-
     if ( game_id === 0 ) {
         return (
-            <div>    
-                {
-                    /*
-                    <p>
-                    It's <span>{response}</span>
-                    </p> 
-                    <form onSubmit={teste} id='form'>
-                        <input id='input'></input>
-                    </form>
-                    */
-                }
-                
-                <RastrosEngine game_type={game_mode}></RastrosEngine>
+            // <Route>
+            //     <Link to='/game_page'>
+            //         <button>Jogar</button>
+            //     </Link>
+            // </Route>
+            <div>
+                <RastrosEngine game_mode={game_mode}></RastrosEngine>
             </div>
         );
     }
     if ( game_id === 1 ) {
         return (
             <div>
-                {
-                    /*
-                    <p>
-                    It's <span>{response}</span>
-                    </p> 
-                    <form onSubmit={teste} id='form'>
-                        <input id='input'></input>
-                    </form>
-                    */
-                }
-                <GatosCaesEngine game_type={game_mode}></GatosCaesEngine>
+                <GatosCaesEngine game_mode={game_mode}></GatosCaesEngine>
             </div>
         );
     }
