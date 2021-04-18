@@ -123,7 +123,7 @@ export default class RastrosEngine extends React.Component {
                     socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
                     if (game_mode === "Online") this.player_turn = !this.player_turn
 
-                    if ( game_type === "AI" && !is_finished ) {
+                    if ( game_mode === "AI" && !is_finished ) {
                         this.player_turn = false;
                         
                         // Process AI move
