@@ -56,8 +56,8 @@ function GamesList() {
 								<span className="button-text">Jogar Agora</span>
 							</button>
 						</div>
-						<div className="col-lg-3">
-							<p className="game_age"> +{game.age} </p>
+						<div className="col-lg-3 game_age">
+							<p> +{game.age} </p>
 						</div>
 					</div>
 				</>
@@ -69,7 +69,7 @@ function GamesList() {
 		<>
 			<div className="display-games">
 				{Object.entries(games_info).map(([key, value]) => (
-					<Card key={key} id={key + "_Card"} className="teste">
+					<Card key={key} id={key + "_Card"} className="button-fix">
 						<Route>
 							<Link to={value["path"]}>
 								<div

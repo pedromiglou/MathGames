@@ -34,10 +34,10 @@
 	left: 0;
 	right: 0;
 	/* top: 45%; */
-    top: 10px;
+	top: 10px;
 	text-align: center;
-    color: black;
-    font-weight: 900;
+	color: black;
+	font-weight: 900;
 }
 
 .play-button {
@@ -45,10 +45,16 @@
 }
 
 .game_age {
+	/* margin-top: auto;
+	margin-bottom: auto; */
+	margin-top: 5px;
+}
+
+.game_age p {
 	color: black;
 	text-decoration: none !important;
-    margin-top: 50%;
-    font-size: large;
+	/* margin-top: 50%; */
+	font-size: large;
 	width: 100%;
 	padding: 0;
 }
@@ -68,6 +74,8 @@ button.learn-more {
 	padding: 0;
 	font-size: inherit;
 	font-family: inherit;
+	margin-top: auto;
+	margin-bottom: auto;
 }
 button.learn-more .circle {
 	transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
@@ -113,7 +121,6 @@ button.learn-more .button-text {
 	right: 0;
 	bottom: 0;
 	padding: 0.75rem 0;
-	margin: 0 0 0 1.85rem;
 	color: White;
 	font-weight: 700;
 	line-height: 1.6;
@@ -131,18 +138,10 @@ button:hover .button-text {
 	color: #fff;
 }
 
-.teste:hover .circle {
-    width: 85%;
-}
-
-.teste {
-
+.button-fix:hover .circle {
+	width: 85%;
 }
 
 .card:hover {
 	transform: scale(1.1);
-}
-
-.button_playnow {
-
 }
