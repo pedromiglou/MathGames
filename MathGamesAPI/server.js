@@ -102,6 +102,7 @@ require("./app/routes/tournament.routes.js")(app);
 require("./app/routes/tournamentmatches.routes.js")(app);
 require("./app/routes/tournamentusers.routes.js")(app);
 require("./app/routes/friend.routes.js")(app);
+require("./app/routes/notification.routes.js")(app);
 
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
