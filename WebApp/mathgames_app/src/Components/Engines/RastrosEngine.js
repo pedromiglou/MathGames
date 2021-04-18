@@ -1,6 +1,11 @@
 
 import  React from "react";
 import Phaser from "phaser";
+import io from "socket.io-client";
+
+import data from '../../data/data';
+
+const { devAPI } = data;
 
 var game_type = null
 
@@ -11,7 +16,6 @@ export default class RastrosEngine extends React.Component {
     }
 
     componentDidMount() {
-
         let canvasobj = document.getElementById("game_canvas");
         canvasobj.style.border = "20px solid black";
 
@@ -59,6 +63,8 @@ export default class RastrosEngine extends React.Component {
         var valid_squares = new Set(["10", "11", "12", "17", "19", "24", "25", "26"])
         // Positions referencing the last movement made
         var last_played = new Set()
+
+        var socket = io( devAPI );
     
         // Loop used to fill the board with clickable squares
         for (var pos_y = 0; pos_y < 7; pos_y++) {
@@ -102,7 +108,7 @@ export default class RastrosEngine extends React.Component {
                         return;
 
                     var is_finished = move(this, blocked_squares, clicked_piece, current_player_text, last_played, valid_squares, player_piece);
-
+                    socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
                     if ( game_type === "AI" && !is_finished ) {
                         this.player_turn = false;
                         
@@ -114,6 +120,16 @@ export default class RastrosEngine extends React.Component {
                     }
                 }
         }, this);
+
+        
+        socket.on("connection", () => {
+            socket.emit("start_game", sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
+        });
+
+        socket.on("move_piece", (new_pos) => {
+            console.log("Received move: ", new_pos);
+            move(this, blocked_squares, this.positions[new_pos], current_player_text, last_played, valid_squares, player_piece);
+        });
     }
     
     update() {}

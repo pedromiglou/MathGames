@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Menu.css';
 import {sidebarData_group1, sidebarData_group2} from './data/SidebarData.js';
@@ -13,10 +14,18 @@ import ChooseGame from './Pages/ChooseGame/ChooseGame';
 import Game from './Pages/Game/Game';
 import Login from './Pages/Login/Login';
 import GamePage from './Pages/GamePage/GamePage';
+import Game_Page from './Pages/Game_Page/Game_Page';
+
 
 function Menu(){
     const [sidebar, setSidebar] = useState(true);
-    const showSidebar = () => setSidebar(!sidebar)
+    const showSidebar = () => setSidebar(!sidebar);
+
+    useEffect(() => {
+        if (sessionStorage.getItem('user_id') === null) {
+            sessionStorage.setItem('user_id', uuidv4());
+        }
+    }, []);
 
     return(
         <>
@@ -85,6 +94,7 @@ function Menu(){
                         <Route exact path='/game' component={withRouter(Game)} />
                         <Route exact path='/login' component={withRouter(Login)} />
                         <Route exact path='/gamePage' component={withRouter(GamePage)}/>
+                        <Route exact path="/game_page" component={withRouter(Game_Page) } />
                     </Switch>
                 </div>
             </IconContext.Provider>
