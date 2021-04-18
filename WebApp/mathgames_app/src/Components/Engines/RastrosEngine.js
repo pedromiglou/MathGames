@@ -1,18 +1,15 @@
 
 import  React from "react";
 import Phaser from "phaser";
-import io from "socket.io-client";
+import socket from "../../index"
 
-import data from '../../data/data';
 
-const { devAPI } = data;
-
-var game_type = null
+var game_mode = null
 
 export default class RastrosEngine extends React.Component {
     constructor(props)  {
         super(props)
-        game_type = props.game_type
+        game_mode = props.game_mode
     }
 
     componentDidMount() {
@@ -54,7 +51,11 @@ export default class RastrosEngine extends React.Component {
         // Player which is currently playing (1 or 2)
         this.current_player = 1;
         // True if it's a player's turn, False if it's the AI's turn
-        this.player_turn = true;		
+        if (game_mode === "Online" && sessionStorage.getItem("starter") === "false") {
+            this.player_turn = false;
+        } else  {
+            this.player_turn = true;
+        }
         // True if the player's last click was the moving piece, false otherwise
         var clicked_piece_flag = false
         // Squares which have been blocked
@@ -64,8 +65,7 @@ export default class RastrosEngine extends React.Component {
         // Positions referencing the last movement made
         var last_played = new Set()
 
-        var socket = io( devAPI );
-    
+
         // Loop used to fill the board with clickable squares
         for (var pos_y = 0; pos_y < 7; pos_y++) {
             for (var pos_x = 0; pos_x < 7; pos_x++) {
@@ -78,9 +78,6 @@ export default class RastrosEngine extends React.Component {
                     this.positions.push(this.add.image(this.INITIAL_BOARD_POS + this.DISTANCE_BETWEEN_SQUARES*pos_x, this.INITIAL_BOARD_POS+this.DISTANCE_BETWEEN_SQUARES*pos_y, 'square').setName(String(pos)).setInteractive());
             }
         }
-        
-        console.log(this.positions)
-
 
         // Fill in the moving piece
         var player_piece = this.add.image(this.INITIAL_BOARD_POS + this.DISTANCE_BETWEEN_SQUARES*4, this.INITIAL_BOARD_POS+this.DISTANCE_BETWEEN_SQUARES*2, 'piece').setName('player_piece').setInteractive();
@@ -109,7 +106,9 @@ export default class RastrosEngine extends React.Component {
 
                     var is_finished = move(this, blocked_squares, clicked_piece, current_player_text, last_played, valid_squares, player_piece);
                     socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
-                    if ( game_type === "AI" && !is_finished ) {
+                    if (game_mode === "Online") this.player_turn = !this.player_turn
+
+                    if ( game_mode === "AI" && !is_finished ) {
                         this.player_turn = false;
                         
                         // Process AI move
@@ -122,13 +121,13 @@ export default class RastrosEngine extends React.Component {
         }, this);
 
         
-        socket.on("connection", () => {
-            socket.emit("start_game", sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
-        });
+        socket.emit("start_game", sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
+
 
         socket.on("move_piece", (new_pos) => {
             console.log("Received move: ", new_pos);
             move(this, blocked_squares, this.positions[new_pos], current_player_text, last_played, valid_squares, player_piece);
+            this.player_turn = !this.player_turn
         });
     }
     

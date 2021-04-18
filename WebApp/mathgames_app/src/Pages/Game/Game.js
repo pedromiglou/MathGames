@@ -35,7 +35,7 @@ function Game() {
     */
 
     var game = "rastros";
-    var game_mode = "I";
+    var game_mode = "Online";
 
     if ( game === "rastros" ) {
         return (
@@ -45,14 +45,14 @@ function Game() {
             //     </Link>
             // </Route>
             <div>
-                <RastrosEngine game_type={game_mode}></RastrosEngine>
+                <RastrosEngine game_mode={game_mode}></RastrosEngine>
             </div>
         );
     }
     if ( game === "gatoscaes" ) {
         return (
             <div>
-                <GatosCaesEngine game_type={game_mode}></GatosCaesEngine>
+                <GatosCaesEngine game_mode={game_mode}></GatosCaesEngine>
             </div>
         );
     }
