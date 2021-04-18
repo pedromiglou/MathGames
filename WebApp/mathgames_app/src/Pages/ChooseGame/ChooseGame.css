@@ -1,5 +1,62 @@
 .games-list h1 {
-    text-align: center;
-    font-size: 50px;
-    margin-top: 30px;
+	text-align: center;
+	font-size: 50px;
+	margin-top: 30px;
 }
+
+.top-bar {
+	border: 1px solid #dee2e6;
+	min-height: 70px;
+    max-height: 70px;
+}
+
+.lvl-info {
+	border: 1px solid #dee2e6;
+	min-height: 70px;
+    max-height: 70px;
+}
+
+.lvl-info p {  
+    text-align: center;
+    vertical-align: middle;
+    line-height: 70px;
+}
+
+.top-bar div {
+    text-align: center;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.top-bar button {
+    height: 70px;
+    width: 80%;
+    background: none;
+    border: none;
+}
+
+.top-bar button:hover {
+    height: 70px;
+    width: 80%;
+    background: none;
+    text-decoration: underline;
+}
+
+/* Overwrite bootstrap */
+#level-info {
+	padding: 0;
+}
+#filter_options {
+	padding: 0;
+}
+.no-padding {
+	padding: 0;
+}
+.no-margin {
+	margin-left: 0;
+    margin-right: 0;
+}
+#choose_game_container {
+	margin-top: 10px;
+}
+/* --- */
