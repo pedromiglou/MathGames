@@ -15,7 +15,10 @@ import GamePage from './Pages/GamePage/GamePage';
 import Profile from './Pages/Profile/Profile';
 import AuthService from './Services/auth.service'
 
+
+
 function Menu(){
+    console.log("menu")
     const [sidebar, setSidebar] = useState(true);
     const [admin, setAdmin] = useState(false);
     const [user, setUser] = useState("")
@@ -45,9 +48,9 @@ function Menu(){
                 <div className="container-fluid">
                     <div id="horizontal_nav_row" className="row sticky-top">
                         <div id="row-logo" className="row">
-                            <Link to="#" className="menu-bars">
-                                <FaIcons.FaBars onClick={showSidebar}/>
-                            </Link>
+                            <div className="menu-bars">
+                                <FaIcons.FaBars onClick={() => showSidebar()}/>
+                            </div>
                             <div className="nav-logo">
                                 <Link to="/">
                                     <img  className="logo" src={process.env.PUBLIC_URL + "/images/logo-light.png"}  alt="logo"/>
@@ -151,8 +154,8 @@ function Menu(){
                                 })}
                                 <hr></hr>
                                 
-                            </ul>
-                        </nav>
+                                </ul>
+                            </nav>
     
                         {/*<hr className="menu-divider"></hr>*/}
                         

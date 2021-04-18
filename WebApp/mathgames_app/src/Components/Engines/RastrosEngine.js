@@ -19,9 +19,14 @@ export default class RastrosEngine extends React.Component {
         const config = {
             canvas: canvasobj,
             type: Phaser.WEBGL,
-            autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
-            width: 1100,
-            height: 750,
+            scale: {
+                mode: Phaser.Scale.FIT,
+                width: 1100,
+                height: 750,
+            },
+            //autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
+            //width: 1100,
+            //height: 750,
             backgroundColor: '#4488aa',
             scene: {
                 preload: this.preload,
@@ -108,9 +113,9 @@ export default class RastrosEngine extends React.Component {
 
                     if ( !valid_squares.has(clicked_piece.name) )
                         return;
+                    
 
                     var is_finished = move(this, blocked_squares, clicked_piece, current_player_text, last_played, valid_squares, player_piece, AI_blocked_squares);
-
                     if ( game_type === "AI" && !is_finished ) {
                         this.player_turn = false;
                         
@@ -128,7 +133,8 @@ export default class RastrosEngine extends React.Component {
 
     render() {
         return (
-            <canvas id="game_canvas" className="game"/>
+            
+            <canvas id="game_canvas" className="game" />
         );
     }
 }
@@ -318,7 +324,7 @@ function minimax(validSquares, piece, depth, maximizingPlayer, AI_blocked_square
             AI_blocked_squares[element[0]][element[1]] = true;
             var validSquares2 = [];
             for (var y = element[0]-1; y<=element[0]+1; y++) {
-                for (var x = element[1]-1; x<=element[1]+1; x++) {
+                for (x = element[1]-1; x<=element[1]+1; x++) {
                     if (y>=0 && y<=6 && x>=0 && x<=6 && !AI_blocked_squares[y][x]) {
                         validSquares2.push([y,x]);
                     }
@@ -336,7 +342,7 @@ function minimax(validSquares, piece, depth, maximizingPlayer, AI_blocked_square
             AI_blocked_squares[element[0]][element[1]] = true;
             var validSquares2 = [];
             for (var y = element[0]-1; y<=element[0]+1; y++) {
-                for (var x = element[1]-1; x<=element[1]+1; x++) {
+                for (x = element[1]-1; x<=element[1]+1; x++) {
                     if (y>=0 && y<=6 && x>=0 && x<=6 && !AI_blocked_squares[y][x]) {
                         validSquares2.push([y,x]);
                     }

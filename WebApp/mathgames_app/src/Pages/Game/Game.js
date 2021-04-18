@@ -9,10 +9,24 @@ import socketIOClient from "socket.io-client";
 //const ENDPOINT = "http://127.0.0.1:4000";
 //const socket = socketIOClient(ENDPOINT);
 
+var game_id = 0;
+var game_mode = "AI";
+var ai_diff = "medium";
+
 
 function Game() {
     let history = useHistory()
     var params = history.location.state
+
+    if (params !== undefined) {
+        game_id = parseInt(params.game_id);
+        game_mode = params.game_mode;
+        ai_diff = params.ai_diff
+    }
+    
+    //Apenas para teste estas 2 linhas
+    //var game_id = 0
+    //var game_mode = "AI"
 
     /*
     const [response, setResponse] = useState("");
@@ -36,15 +50,8 @@ function Game() {
         }
     }
     */
-   
-/*
-    var game_id = parseInt(params.game_id);
-    var game_mode = params.game_mode;
-    var ai_diff = params.ai_diff
-*/
 
-    var game_id = 0
-    var game_mode = "AI"
+
     if ( game_id === 0 ) {
         return (
             <div>    
