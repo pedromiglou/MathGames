@@ -1,5 +1,3 @@
-const API_URL = "http://localhost:4000/"
-
 
 class AuthService {
     login(username, password) {

@@ -174,6 +174,7 @@ function Menu(){
                                 <Route exact path='/login' component={withRouter(Login)} />
                                 <Route exact path='/gamePage' component={withRouter(GamePage)}/>
                                 <Route exact path='/profile' component={withRouter(Profile)}/>
+                                <Route exact path="/game_page" component={withRouter(Game_Page)}/>
                             </Switch>
                         </div>
                         
