@@ -1,5 +1,5 @@
 import { React, useState } from "react";
-import { Container, Card } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import { Route, Link } from "react-router-dom";
 import { games_info } from "../data/GamesInfo";
 
@@ -43,7 +43,7 @@ function GamesList() {
 			return (
 				<>
 					<h2 className="game-title">{game.title}</h2>
-					<div className="row">
+					<div className="row above-img">
 						<div className="col-lg-9 button_playnow">
 							{/* <button className="play-button"> Jogar! </button> */}
 							<button

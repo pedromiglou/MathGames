@@ -12,9 +12,14 @@
 }
 
 .card-img {
+	position: relative;
 	margin: 0px;
 	width: 320px;
 	height: auto;
+}
+
+.card {
+	border-radius: 10%;
 }
 
 /* .card-style {
@@ -45,18 +50,27 @@
 }
 
 .game_age {
-	/* margin-top: auto;
-	margin-bottom: auto; */
-	margin-top: 5px;
+	position: absolute;
+	height: 100%;
+	right: 0;
+	top: 0;
+	text-align: center;
+	
 }
 
 .game_age p {
 	color: black;
 	text-decoration: none !important;
-	/* margin-top: 50%; */
+	height: 100%;
 	font-size: large;
 	width: 100%;
 	padding: 0;
+
+	text-align: center;
+	display: inline-block;
+	vertical-align: middle;
+
+	padding-top: 10px;
 }
 
 button.learn-more {
@@ -143,5 +157,19 @@ button:hover .button-text {
 }
 
 .card:hover {
+	position: relative;
+	z-index: 100;
 	transform: scale(1.1);
+}
+
+.above-img {
+	position: absolute;
+	z-index: 200;
+	display: block;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	margin-left: 0;
+	margin-right: 0;
+	margin-bottom: 5px;
 }

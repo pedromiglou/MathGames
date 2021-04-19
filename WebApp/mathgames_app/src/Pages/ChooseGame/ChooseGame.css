@@ -82,12 +82,12 @@
     background-color: white;
 }
 
-.progress {
+/* .progress {
 	position: absolute;
 	bottom: 50%;
 	width: 80%;
 }
-
+ */
 .centering {
 	margin-left: auto;
 	text-align: center;
@@ -330,3 +330,4 @@
 .actived-btn {
     background-color: white !important;
 }
+
