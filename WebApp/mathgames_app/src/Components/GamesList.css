@@ -12,17 +12,22 @@
 }
 
 .card-img {
+	position: relative;
 	margin: 0px;
-	width: 300px;
+	width: 320px;
 	height: auto;
 }
 
-.card-style {
+.card {
+	border-radius: 10%;
+}
+
+/* .card-style {
 	height: auto;
-	width: 300px;
+	width: 330px;
 	max-height: 305px;
 }
-
+ */
 * {
 	transition: all 0.3s ease-out;
 }
@@ -34,10 +39,10 @@
 	left: 0;
 	right: 0;
 	/* top: 45%; */
-    top: 10px;
+	top: 10px;
 	text-align: center;
-    color: black;
-    font-weight: 900;
+	color: black;
+	font-weight: 900;
 }
 
 .play-button {
@@ -45,10 +50,27 @@
 }
 
 .game_age {
+	position: absolute;
+	height: 100%;
+	right: 0;
+	top: 0;
+	text-align: center;
+	
+}
+
+.game_age p {
 	color: black;
 	text-decoration: none !important;
-    margin-top: 50%;
-    font-size: large;
+	height: 100%;
+	font-size: large;
+	width: 100%;
+	padding: 0;
+
+	text-align: center;
+	display: inline-block;
+	vertical-align: middle;
+
+	padding-top: 10px;
 }
 
 button.learn-more {
@@ -66,6 +88,8 @@ button.learn-more {
 	padding: 0;
 	font-size: inherit;
 	font-family: inherit;
+	margin-top: auto;
+	margin-bottom: auto;
 }
 button.learn-more .circle {
 	transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
@@ -111,13 +135,13 @@ button.learn-more .button-text {
 	right: 0;
 	bottom: 0;
 	padding: 0.75rem 0;
-	margin: 0 0 0 1.85rem;
 	color: White;
 	font-weight: 700;
 	line-height: 1.6;
 	text-align: center;
 	text-transform: uppercase;
 	font-size: 15px;
+	width: 200px !important;
 }
 
 button:hover .circle .icon.arrow {
@@ -128,6 +152,24 @@ button:hover .button-text {
 	color: #fff;
 }
 
-.teste:hover .circle {
-    width: 85%;
+.button-fix:hover .circle {
+	width: 85%;
+}
+
+.card:hover {
+	position: relative;
+	z-index: 100;
+	transform: scale(1.1);
+}
+
+.above-img {
+	position: absolute;
+	z-index: 200;
+	display: block;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	margin-left: 0;
+	margin-right: 0;
+	margin-bottom: 5px;
 }

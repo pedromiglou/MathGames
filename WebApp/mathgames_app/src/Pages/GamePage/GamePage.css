@@ -1,0 +1,97 @@
+.choose-game-mode-container {
+	margin-top: 20px;
+    width: 100%;
+}
+
+.game-details {
+    text-align: center;
+    border: 1px solid black;
+}
+
+.game-details h1 {
+    text-align: center;
+}
+
+.game-details-p {
+    height: 50%;
+
+    text-align: center;
+    border: 1px solid black;
+}
+
+.game-caracteristics {
+    height: 35%;
+    padding: 0;
+}
+
+.player-info-and-modes {
+    height: 100%;
+}
+
+.player-rank {
+    height: 30%;
+    border: 1px solid black;
+}
+
+.center-progress-bar {
+    margin: auto;
+}
+
+.center-progress-bar p {
+    text-align: center;
+    font-size: large;
+    font-weight: 900;
+}
+
+.lvl-left {
+    padding-top: 15px;
+}
+
+.lvl-right {
+    padding-top: 15px;
+}
+
+.rank-img {
+    position: relative;
+    margin: 15px;
+    width: 150px;
+    height: auto;
+}
+
+.set-padding {
+    padding: 15px;
+}
+
+.mode-card {
+    text-align: center;
+    justify-content: center;
+	width: 200px;
+	height: auto;
+
+
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.game-mode-card {
+	position: relative;
+	margin: 0px;
+	width: 200px;
+	height: auto;
+}
+
+.above-type-img {
+	position: absolute;
+	z-index: 200;
+	display: block;
+    
+
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+
+    color: black !important;
+    font-weight: 900;
+    font-size: xx-large ;
+}
