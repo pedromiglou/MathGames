@@ -49,5 +49,35 @@ export const games_info =
             path: '/gamePage?id=4',
             description: "Este jogo, em que as capturas não são obrigatórias mas sim estratégicas, tem como principal objetivo chegar em primeiro lugar à primeira linha do adversário.",
             age: 12,
+        },
+
+        5: {
+            id: 5,
+            title: "Avanço",
+            img: process.env.PUBLIC_URL + "/images/mathGames.png",
+            hoover: false,
+            path: '/gamePage?id=4',
+            description: "Este jogo, em que as capturas não são obrigatórias mas sim estratégicas, tem como principal objetivo chegar em primeiro lugar à primeira linha do adversário.",
+            age: 12,
+        },
+
+        6: {
+            id: 6,
+            title: "Avanço",
+            img: process.env.PUBLIC_URL + "/images/mathGames.png",
+            hoover: false,
+            path: '/gamePage?id=4',
+            description: "Este jogo, em que as capturas não são obrigatórias mas sim estratégicas, tem como principal objetivo chegar em primeiro lugar à primeira linha do adversário.",
+            age: 12,
+        },
+
+        7: {
+            id: 7,
+            title: "Avanço",
+            img: process.env.PUBLIC_URL + "/images/mathGames.png",
+            hoover: false,
+            path: '/gamePage?id=4',
+            description: "Este jogo, em que as capturas não são obrigatórias mas sim estratégicas, tem como principal objetivo chegar em primeiro lugar à primeira linha do adversário.",
+            age: 12,
         }
     };

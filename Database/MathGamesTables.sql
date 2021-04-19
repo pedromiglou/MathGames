@@ -99,3 +99,15 @@ create table UserHasRank(
     foreign key(game_id) references Game(id),
     check (ranking >= 0)
 );
+
+create table Notifications(
+    id int NOT NULL AUTO_INCREMENT,
+    sender int NOT NULL,
+    receiver int NOT NULL,
+    notification_type char NOT NULL,
+    notification_date datetime NOT NULL,
+    primary key(id),
+    foreign key(sender) references User(id),
+    foreign key(receiver) references User(id),
+    check (sender != receiver)
+);
