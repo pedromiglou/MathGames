@@ -1,5 +1,7 @@
-import { React, useState } from "react";
-import GamesList from "../../Components/GamesList.js";
+import React, {useState} from "react";
+// import { Link } from "react-router-dom";
+import GamesList from "../../Components/GamesList.js"
+//import { BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
 
 import "./ChooseGame.css";
 import "bootstrap/dist/css/bootstrap.min.css";

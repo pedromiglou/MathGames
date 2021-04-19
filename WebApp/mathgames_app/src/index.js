@@ -5,6 +5,10 @@ import Menu from './Menu.js';
 import reportWebVitals from './reportWebVitals';
 
 
+import io from "socket.io-client";
+let socket = io("http://localhost:4000");
+export default socket;
+
 ReactDOM.render(<Menu />, document.getElementById('root'));
 
 
