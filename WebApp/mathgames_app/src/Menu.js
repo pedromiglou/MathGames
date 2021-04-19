@@ -17,13 +17,9 @@ import Game_Page from './Pages/Game_Page/Game_Page';
 import Profile from './Pages/Profile/Profile';
 import AuthService from './Services/auth.service'
 
-<<<<<<< HEAD
 /* Redux */
 import { Provider } from 'react-redux';
 import store from './store';
-=======
-
->>>>>>> 340478f6a817b254c742e93fadf29def688da2ac
 
 function Menu(){
     const [sidebar, setSidebar] = useState(true);
