@@ -50,18 +50,21 @@ export default class RastrosEngine extends React.Component {
     create() {
         this.INITIAL_BOARD_POS = 60
         this.DISTANCE_BETWEEN_SQUARES = 105
+        
         // Sound effect played after every move
         this.move_sound = this.sound.add('click', {volume: 0.2});
         // Array that stores the board's clickable positions
         this.positions = []
         // Player which is currently playing (1 or 2)
         this.current_player = 1;
-        // True if it's a player's turn, False if it's the AI's turn
+        
+        // True if it's a player's turn
         if (game_mode === "Online" && sessionStorage.getItem("starter") === "false") {
             this.player_turn = false;
         } else  {
             this.player_turn = true;
         }
+
         // True if the player's last click was the moving piece, false otherwise
         var clicked_piece_flag = false
         // Squares which have been blocked
@@ -120,8 +123,10 @@ export default class RastrosEngine extends React.Component {
                     
 
                     var is_finished = move(this, blocked_squares, clicked_piece, current_player_text, last_played, valid_squares, player_piece, AI_blocked_squares);
-                    socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
-                    if (game_mode === "Online") this.player_turn = !this.player_turn
+                    if (game_mode === "Online") {
+                        socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
+                        this.player_turn = !this.player_turn
+                    }
 
                     if ( game_mode === "AI" && !is_finished ) {
                         this.player_turn = false;
@@ -136,14 +141,15 @@ export default class RastrosEngine extends React.Component {
         }, this);
 
         
-        socket.emit("start_game", sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
+        if (game_mode === "Online") {
+            socket.emit("start_game", sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
 
-
-        socket.on("move_piece", (new_pos) => {
-            console.log("Received move: ", new_pos);
-            move(this, blocked_squares, this.positions[new_pos], current_player_text, last_played, valid_squares, player_piece);
-            this.player_turn = !this.player_turn
-        });
+            socket.on("move_piece", (new_pos) => {
+                console.log("Received move: ", new_pos);
+                move(this, blocked_squares, this.positions[new_pos], current_player_text, last_played, valid_squares, player_piece);
+                this.player_turn = !this.player_turn
+            });
+        }
     }
     
     update() {}

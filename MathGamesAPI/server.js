@@ -25,9 +25,7 @@ const io = require("socket.io")(server, {
 });
 
 
-var in_game_users = {};
 var current_games = {};
-
 var match_queue = [];
 var users_info = {}
 
@@ -41,7 +39,7 @@ io.on("connection", (socket) => {
     users_info[user_id] = socket.id;
     match_queue.push(user_id)
 
-    while ( match_queue.length >= 2 ) {
+    if ( match_queue.length >= 2 ) {
       console.log("Match found.");
       var player1 = match_queue.shift()
       var player2 = match_queue.shift()
@@ -59,7 +57,7 @@ io.on("connection", (socket) => {
     if (Object.keys(current_games).includes(match_id)) {
       if (Object.keys(current_games[match_id]).includes(user_id)) {
         console.log("Everythings checks out.");
-        in_game_users[user_id] = socket.id;
+        user_id[user_id] = socket.id;
         console.log(in_game_users)
         console.log(match_queue)
       }
@@ -74,8 +72,8 @@ io.on("connection", (socket) => {
       if (Object.keys(current_games[match_id]).includes(user_id)) {
         console.log("Everythings checks out.");
         console.log(current_games[match_id][user_id]);
-        console.log("Sending move to: ", in_game_users[ current_games[match_id][user_id] ]);
-        io.to( in_game_users[ current_games[match_id][user_id] ] ).emit("move_piece", new_pos);
+        console.log("Sending move to: ", users_info[ current_games[match_id][user_id] ]);
+        io.to( users_info[ current_games[match_id][user_id] ] ).emit("move_piece", new_pos);
       }
     }
   })

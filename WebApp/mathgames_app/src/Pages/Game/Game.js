@@ -11,7 +11,7 @@ import GatosCaesEngine from "../../Components/Engines/GatosCaesEngine";
 //const socket = socketIOClient(ENDPOINT);
 
 var game_id = 0;
-var game_mode = "Online";
+var game_mode = "1vs1";
 var ai_diff = "medium";
 
 
