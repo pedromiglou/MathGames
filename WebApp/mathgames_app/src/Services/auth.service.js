@@ -1,5 +1,3 @@
-const API_URL = "http://localhost:4000/"
-
 
 class AuthService {
     login(username, password) {
@@ -40,7 +38,6 @@ class AuthService {
             if(res) {
                 console.log('New User was created')
             }
-            return res
         })
     }
 

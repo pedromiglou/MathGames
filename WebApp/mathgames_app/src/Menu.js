@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Menu.css';
 import {sidebarData_group1, sidebarData_group2} from './data/SidebarData.js';
@@ -12,20 +13,29 @@ import ChooseGame from './Pages/ChooseGame/ChooseGame';
 import Game from './Pages/Game/Game';
 import Login from './Pages/Login/Login';
 import GamePage from './Pages/GamePage/GamePage';
+import Game_Page from './Pages/Game_Page/Game_Page';
 import Profile from './Pages/Profile/Profile';
 import AuthService from './Services/auth.service'
 
+<<<<<<< HEAD
 /* Redux */
 import { Provider } from 'react-redux';
 import store from './store';
+=======
+
+>>>>>>> 340478f6a817b254c742e93fadf29def688da2ac
 
 function Menu(){
     const [sidebar, setSidebar] = useState(true);
     const [admin, setAdmin] = useState(false);
     const [user, setUser] = useState("")
-    const showSidebar = () => setSidebar(!sidebar)
+    const showSidebar = () => setSidebar(!sidebar);
+
 
     useEffect(() => {
+        if (sessionStorage.getItem('user_id') === null) {
+            sessionStorage.setItem('user_id', uuidv4());
+        }
         var resultado = AuthService.getCurrentUser();
         setUser(resultado)
         if (resultado !== null) {
@@ -174,7 +184,6 @@ function Menu(){
                                     <Route exact path='/profile' component={withRouter(Profile)}/>
                                 </Switch>
                             </div>
-                            
                             
                         </div>
                     </div>

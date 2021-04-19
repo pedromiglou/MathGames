@@ -1,15 +1,17 @@
-import React, {useState, useEffect} from 'react';
-import { useHistory, useParams } from "react-router-dom";
+import React, {useState} from 'react';
+import { useHistory} from "react-router-dom";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './GamePage.css';
-import { BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
+//import { BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
 import {games_info} from '../../data/GamesInfo';
 
 
 
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
 function GamePage() {
+    let history = useHistory()
+
     //De alguma maneira verificar se estiver vazio
     const [gameMode, setGameMode] = useState("");
     //Depois aqui podemos meter conforme as preferencias no perfil
@@ -50,7 +52,6 @@ function GamePage() {
         x.style.display = "none";
     }
 
-    let history = useHistory()
 
 
 
