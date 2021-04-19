@@ -45,7 +45,6 @@ io.on("connection", (socket) => {
       var player2 = match_queue.shift()
       if (player1 !== undefined && player2 !== undefined) {
         create_game(player1, player2);
-        break;
       } else {
         if (player1 !== undefined) match_queue.unshift(player1)
         if (player2 !== undefined) match_queue.unshift(player2)
@@ -58,7 +57,6 @@ io.on("connection", (socket) => {
       if (Object.keys(current_games[match_id]).includes(user_id)) {
         console.log("Everythings checks out.");
         user_id[user_id] = socket.id;
-        console.log(in_game_users)
         console.log(match_queue)
       }
     }
