@@ -13,7 +13,6 @@ import ChooseGame from './Pages/ChooseGame/ChooseGame';
 import Game from './Pages/Game/Game';
 import Login from './Pages/Login/Login';
 import GamePage from './Pages/GamePage/GamePage';
-import Game_Page from './Pages/Game_Page/Game_Page';
 import Profile from './Pages/Profile/Profile';
 import AuthService from './Services/auth.service'
 

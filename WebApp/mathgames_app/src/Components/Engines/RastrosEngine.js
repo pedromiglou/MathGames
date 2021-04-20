@@ -5,11 +5,22 @@ import socket from "../../index"
 
 
 var game_mode = null
+var ai_diff = null
 
 export default class RastrosEngine extends React.Component {
     constructor(props)  {
         super(props)
         game_mode = props.game_mode
+        ai_diff = props.ai_diff
+
+        if (ai_diff === "easy") {
+            ai_diff = 0.2
+        } else if (ai_diff === "medium") {
+            ai_diff = 0.5
+        } else {
+            ai_diff = 0.8
+        }
+        console.log(ai_diff)
     }
 
 
@@ -290,7 +301,7 @@ function randomPlay(valid_squares, AI_blocked_squares, piece) {
     var tmpSquares = Array.from(valid_squares).map(x => [(parseInt(x)-(parseInt(x)%7))/7, parseInt(x)%7]);
 
 
-    if (Math.random()>0.5) {         // [0..1] Prob   0.2->EASY     0.5->medium      0.8->dificil
+    if (Math.random()>ai_diff) {         // [0..1] Prob   0.2->EASY     0.5->medium      0.8->dificil
         if ((Math.pow(0-piece_y, 2) + Math.pow(6-piece_x,2)<=8) ||
             (Math.pow(6-piece_y, 2) + Math.pow(0-piece_x,2)<=8)) {
                 chosen = tmpSquares.reduce((accumulator, current) => {

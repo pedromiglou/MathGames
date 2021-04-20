@@ -1,6 +1,6 @@
 import { React, useState } from "react";
 import { Card } from "react-bootstrap";
-import { Route, Link } from "react-router-dom";
+import { Route, Link, useHistory } from "react-router-dom";
 import { games_info } from "../data/GamesInfo";
 
 import "./GamesList.css";
@@ -9,15 +9,14 @@ function GamesList() {
 	const [title, setTitle] = useState(false);
 	const titleState = () => setTitle(!title);
 
+	var history = useHistory()
+
 	function changeCard(e, game) {
 		var x2 = document.getElementById(game.id + "_Card");
 		x2.style.boxShadow = "10px 5px 5px grey";
 
 		var x = document.getElementById(game.id);
 		x.style.opacity = "0.5";
-		/*x.style.width = "350px";
-		x.style.height = "350px";
-		x.style.backgroundColor = "aquat"; */
 
 		game.hoover = true;
 		titleState();
@@ -29,13 +28,14 @@ function GamesList() {
 
 		var x = document.getElementById(game.id);
 		x.style.opacity = "1";
-		/*x.style.margin = "0px";
-		x.style.width = "300px";
-		x.style.height = "300px";
-		x.style.backgroundColor = "white"; */
 
 		game.hoover = false;
 		titleState();
+	}
+
+	function enterGame(value) {
+		value["hoover"] = false;
+		history.push(value["path"])
 	}
 
 	const showTitle = (game) => {
@@ -69,23 +69,19 @@ function GamesList() {
 		<>
 			<div className="display-games">
 				{Object.entries(games_info).map(([key, value]) => (
-					<Card key={key} id={key + "_Card"} className="button-fix">
-						<Route>
-							<Link to={value["path"]}>
-								<div
-									onMouseEnter={(e) => changeCard(e, value)}
-									onMouseLeave={(e) => replaceCard(e, value)}
-								>
-									<img
-										src={value["img"]}
-										alt="Info"
-										className="card-img"
-										id={key}
-									/>
-									{showTitle(value)}
-								</div>
-							</Link>
-						</Route>
+					<Card key={key} id={key + "_Card"} className="button-fix" onClick={() => enterGame(value)}>
+						<div
+							onMouseEnter={(e) => changeCard(e, value)}
+							onMouseLeave={(e) => replaceCard(e, value)}
+						>
+							<img
+								src={value["img"]}
+								alt="Info"
+								className="card-img"
+								id={key}
+							/>
+							{showTitle(value)}
+						</div>
 					</Card>
 				))}
 			</div>

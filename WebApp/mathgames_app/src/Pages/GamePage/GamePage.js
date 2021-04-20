@@ -1,10 +1,13 @@
-import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useHistory, useParams } from "react-router-dom";
+import { Card } from "react-bootstrap";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./GamePage.css";
-//import { BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { games_info } from "../../data/GamesInfo";
+import socket from "../../index"
+
 
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
 function GamePage() {
@@ -42,21 +45,50 @@ function GamePage() {
 	function showDif() {
 		var x = document.getElementById("sel_dif");
 		x.style.display = "block";
+		setAIdif("easy");
 	}
 
 	function hideDif() {
 		var x = document.getElementById("sel_dif");
 		x.style.display = "none";
 	}
+	
+	function find_match() {
+		if (gameMode !== "Online") {
+			history.push(
+				{
+				pathname: "/game", 
+				state: {
+					game_id: id,
+					game_mode: gameMode,
+					ai_diff: AIdif
+					}  
+				})
+		} else {
+			socket.emit("user_id", sessionStorage.getItem("user_id"))
 
-	let history = useHistory();
-
+			socket.on("match_found", (msg) => {
+				console.log("Match found!");
+				sessionStorage.setItem('match_id', msg['match_id']);
+				sessionStorage.setItem('starter', msg['starter']);
+				history.push(
+					{
+					pathname: "/game", 
+					state: {
+						game_id: id,
+						game_mode: gameMode,
+						ai_diff: AIdif
+						}  
+					})
+			})
+		}
+	}
 	return (
 		<>
 			<div className="container choose-game-mode-container">
 				<div className="row">
 					<div className="col-lg-4 game-details">
-						<h1> Yote </h1>
+						<h1> {game_info["title"]} </h1>
 						<img
 							src={
 								process.env.PUBLIC_URL + "/images/mathGames.png"
@@ -65,19 +97,7 @@ function GamePage() {
 							className="rank-img"
 						/>
 						<p className="game-details-p">
-							{" "}
-							Lorem Ipsum is simply dummy text of the printing and
-							typesetting industry. Lorem Ipsum has been the
-							industry's standard dummy text ever since the 1500s,
-							when an unknown printer took a galley of type and
-							scrambled it to make a type specimen book. It has
-							survived not only five centuries, but also the leap
-							into electronic typesetting, remaining essentially
-							unchanged. It was popularised in the 1960s with the
-							release of Letraset sheets containing Lorem Ipsum
-							passages, and more recently with desktop publishing
-							software like Aldus PageMaker including versions of
-							Lorem Ipsum.
+							{game_info["description"]}
 						</p>
 						<div className="col-lg-12 game-caracteristics">
 							<p> Caracteristicas </p>
@@ -138,97 +158,87 @@ function GamePage() {
 						<div className="col-lg-12 border">
 							<div className="row">
 								<div className="col-lg-6 centered set-padding">
-									<Card className="mode-card">
-										<Route>
-											<Link to={"game"}>
-												<div>
-													<img
-														src={
-															process.env
-																.PUBLIC_URL +
-															"/images/mathGames.png"
-														}
-														alt="Info"
-														className="game-mode-card"
-													/>
-													<span className="above-type-img">
-														Competitivo
-													</span>
-												</div>
-											</Link>
-										</Route>
+									<Card className="mode-card" onClick={() => changeMode("Online")}>
+										<div>
+											<img
+												src={
+													process.env
+														.PUBLIC_URL +
+													"/images/mathGames.png"
+												}
+												alt="Info"
+												className="game-mode-card"
+											/>
+											<span className="above-type-img">
+												Competitivo
+											</span>
+										</div>
 									</Card>
 								</div>
 								<div className="col-lg-6 centered set-padding">
-									<Card className="mode-card">
-										<Route>
-											<Link to={"game"}>
-												<div>
-													<img
-														src={
-															process.env
-																.PUBLIC_URL +
-															"/images/mathGames.png"
-														}
-														alt="Info"
-														className="game-mode-card"
-													/>
-													<span className="above-type-img">
-														1vs1
-													</span>
-												</div>
-											</Link>
-										</Route>
+									<Card className="mode-card" onClick={() => changeMode("1vs1")}>
+										<div>
+											<img
+												src={
+													process.env
+														.PUBLIC_URL +
+													"/images/mathGames.png"
+												}
+												alt="Info"
+												className="game-mode-card"
+											/>
+											<span className="above-type-img">
+												1vs1
+											</span>
+										</div>
 									</Card>
 								</div>
 							</div>
 							<div className="row">
 								<div className="col-lg-6 centered set-padding">
-									<Card className="mode-card">
-										<Route>
-											<Link to={"game"}>
-												<div>
-													<img
-														src={
-															process.env
-																.PUBLIC_URL +
-															"/images/mathGames.png"
-														}
-														alt="Info"
-														className="game-mode-card"
-													/>
-													<span className="above-type-img">
-														Convidar Amigo
-													</span>
-												</div>
-											</Link>
-										</Route>
+									<Card className="mode-card" onClick={() => changeMode("Amigo")}>
+										<div>
+											<img
+												src={
+													process.env
+														.PUBLIC_URL +
+													"/images/mathGames.png"
+												}
+												alt="Info"
+												className="game-mode-card"
+											/>
+											<span className="above-type-img">
+												Convidar Amigo
+											</span>
+										</div>
 									</Card>
 								</div>
 								<div className="col-lg-6 centered set-padding">
-									<Card className="mode-card">
-										<Route>
-											<Link to={"game"}>
-												<div>
-													<img
-														src={
-															process.env
-																.PUBLIC_URL +
-															"/images/mathGames.png"
-														}
-														alt="Info"
-														className="game-mode-card"
-													/>
-													<span className="above-type-img">
-														1vs1
-													</span>
-												</div>
-											</Link>
-										</Route>
+									<Card className="mode-card" onClick={() => changeMode("AI")}>
+										<div>
+											<img
+												src={
+													process.env
+														.PUBLIC_URL +
+													"/images/mathGames.png"
+												}
+												alt="Info"
+												className="game-mode-card"
+											/>
+											<span className="above-type-img">
+												Contra Computador
+											</span>
+										</div>
 									</Card>
 								</div>
 							</div>
 						</div>
+						<select id="sel_dif" onChange={(e) => changeDif(e)} style={{display: "none"}}>
+                                {dif_options.map((option) => (
+                                    <option key={option.label} value={option.value}>{option.label}</option>
+                                ))}
+                            </select>
+						<button onClick={() => find_match()}>Jogar</button>
 					</div>
 				</div>
 			</div>
