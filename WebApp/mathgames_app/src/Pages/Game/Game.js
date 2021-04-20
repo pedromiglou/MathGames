@@ -11,7 +11,7 @@ import GatosCaesEngine from "../../Components/Engines/GatosCaesEngine";
 //const socket = socketIOClient(ENDPOINT);
 
 var game_id = 0;
-var game_mode = "Online";
+var game_mode = "1vs1";
 var ai_diff = "medium";
 
 
@@ -59,14 +59,14 @@ function Game() {
             //         <button>Jogar</button>
             //     </Link>
             // </Route>
-            <div>
+            <div className="game-board">
                 <RastrosEngine game_mode={game_mode} ai_diff={ai_diff}></RastrosEngine>
             </div>
         );
     }
     if ( game_id === 1 ) {
         return (
-            <div>
+            <div className="game-board">
                 <GatosCaesEngine game_mode={game_mode} ai_diff={ai_diff}></GatosCaesEngine>
             </div>
         );

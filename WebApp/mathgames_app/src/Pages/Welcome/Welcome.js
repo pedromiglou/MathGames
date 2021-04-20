@@ -1,5 +1,5 @@
 import React from "react";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Welcome.css";
@@ -41,9 +41,26 @@ function Welcome() {
 					<div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div className="row">
 							<div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 text-left">
-								<Link to='/gamesDashboard'>
-									JOGAR AGORA!
-								</Link>
+								{/* <a className="play-now">JOGAR AGORA!</a>
+								<Link to="/gamesDashboard">JOGAR AGORA!</Link> */}
+								{/* <div class="wrapper">
+									<a class="cta" href="#">
+										<span>JOGAR AGORA!</span>
+										
+									</a>
+								</div> */}
+								<div id="container">
+									<Link to="/gamesDashboard">
+										<button class="learn-more">
+											<span class="circle" aria-hidden="true">
+												<span class="icon arrow"></span>
+											</span>
+											<span class="button-text">
+												JOGAR AGORA!
+											</span>
+										</button>
+									</Link>
+								</div>
 								{/* 
 								<Button
 									className="btns"
