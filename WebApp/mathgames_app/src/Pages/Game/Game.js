@@ -70,14 +70,7 @@ function Game() {
                 <GatosCaesEngine game_mode={game_mode} ai_diff={ai_diff}></GatosCaesEngine>
             </div>
         );
-    }
-
-    
-   
-    
-    
+    } 
 }
-
-
 
 export default Game;
