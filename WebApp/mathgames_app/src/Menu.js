@@ -21,7 +21,7 @@ import store from './store';
 
 function Menu(){
     const [sidebar, setSidebar] = useState(true);
-    const [admin, setAdmin] = useState(false);
+    //const [admin, setAdmin] = useState(false);
     const [user, setUser] = useState("")
     const showSidebar = () => setSidebar(!sidebar);
 
@@ -67,9 +67,9 @@ function Menu(){
 
                             {/* <hr className="menu-divider"></hr>  */}                     
                             
-                            {admin &&
+                            {/* {admin &&
                                 <h1>Admin</h1>
-                            }
+                            } */}
 
                             <div className="navbar">
                                 {!free_user &&
@@ -172,7 +172,11 @@ function Menu(){
                                     <Route exact path='/' component={withRouter(Welcome)} />
                                     <Route exact path='/gamesDashboard' component={withRouter(ChooseGame)} />
                                     <Route exact path='/game' component={withRouter(Game)} />
+<<<<<<< HEAD
                                     <Route exact path='/game/:id' component={withRouter(Game)} />
+=======
+                                    <Route exact path='/game/:g:id' component={withRouter(Game)} />
+>>>>>>> c1362ad002b465681065b8cc8aceb66e9c1565df
                                     <Route exact path='/login' component={withRouter(Login)} />
                                     <Route exact path='/gamePage' component={withRouter(GamePage)}/>
                                     <Route exact path='/profile' component={withRouter(Profile)}/>

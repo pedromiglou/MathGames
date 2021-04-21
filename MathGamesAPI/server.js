@@ -49,25 +49,21 @@ io.on("connection", (socket) => {
   })
 
   socket.on("entered_link", (msg) => {
-    console.log("entrei outro por link")
-    console.log(msg)
+    console.log("User conected through link.")
     if (msg["user_id"] !== null) {
       var user_id = msg["user_id"]
       var match_id = msg["match_id"]
       users_info[user_id] = socket.id
+
       if (Object.keys(current_games).includes(match_id)) {
-        console.log("sou o 2º")
         var other_user = Object.keys(current_games[match_id])[0];
         current_games[match_id][user_id] = other_user;
         current_games[match_id][other_user] = user_id;
-        console.log(other_user)
-        console.log(user_id)
+
         io.to(users_info[other_user]).emit("match_found", {"match_id": match_id, "starter": true});
         io.to(users_info[user_id]).emit("match_found", {"match_id": match_id, "starter": false});
 
       } else {
-        console.log("sou o 1º")
-
         current_games[match_id] = {};
         current_games[match_id][user_id] = "";
       }
@@ -101,28 +97,16 @@ io.on("connection", (socket) => {
 
   //User send user_id and match_id when he joins game to start game
   socket.on("start_game", (user_id, match_id) => {
-    if (Object.keys(current_games).includes(match_id)) {
-      if (Object.keys(current_games[match_id]).includes(user_id)) {
-        console.log("Everythings checks out.");
+    if (Object.keys(current_games).includes(match_id))
+      if (Object.keys(current_games[match_id]).includes(user_id))
         user_id[user_id] = socket.id;
-        console.log(match_queue)
-      }
-    }
   });
 
   //User sends match id, userid and new_pos when he wants to make a move in the game
   socket.on("move", (new_pos, user_id, match_id) => {
-    console.log("Received move: ", new_pos);
-    console.log("Received match_id: ", match_id);
-    
-    if (Object.keys(current_games).includes(match_id)) {
-      if (Object.keys(current_games[match_id]).includes(user_id)) {
-        console.log("Everythings checks out.");
-        console.log(current_games[match_id][user_id]);
-        console.log("Sending move to: ", users_info[ current_games[match_id][user_id] ]);
+    if (Object.keys(current_games).includes(match_id))
+      if (Object.keys(current_games[match_id]).includes(user_id))
         io.to( users_info[ current_games[match_id][user_id] ] ).emit("move_piece", new_pos);
-      }
-    }
   })
   
   //

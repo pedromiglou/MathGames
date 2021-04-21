@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { Card } from "react-bootstrap";
 //import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -16,7 +16,7 @@ function GamePage() {
 	//De alguma maneira verificar se estiver vazio
 	const [gameMode, setGameMode] = useState("");
 	//Depois aqui podemos meter conforme as preferencias no perfil
-	const [AIdif, setAIdif] = useState("");
+	const [AIdiff, setAIdiff] = useState("");
 
 	var isSomeoneLogged = false;
 	var resultado = AuthService.getCurrentUser();
@@ -31,12 +31,12 @@ function GamePage() {
 	];
 
 	const params = new URLSearchParams(window.location.search);
-	let id = params.get("id");
-	const game_info = games_info[id];
+	let game_id = params.get("id");
+	const game_info = games_info[game_id];
 
 	function changeMode(val) {
 		setGameMode(val);
-		if (val === "AI") {
+		if (val === "ai") {
 			showDif();
 		} else {
 			hideDif();
@@ -45,13 +45,13 @@ function GamePage() {
 
 	function changeDif(e) {
 		var dif = e.target.value;
-		setAIdif(dif);
+		setAIdiff(dif);
 	}
 
 	function showDif() {
 		var x = document.getElementById("sel_dif");
 		x.style.display = "block";
-		setAIdif("easy");
+		setAIdiff("easy");
 	}
 
 	function hideDif() {
@@ -60,26 +60,27 @@ function GamePage() {
 	}
 	
 	function find_match() {
-		if ((gameMode === "Amigo") && !isSomeoneLogged) {
+		if (gameMode === "amigo") {
 			socket.emit("friendbylink", sessionStorage.getItem("user_id"))
 
 			socket.on("link_sent", (msg) => {
 				history.push({
-					pathname: "/game/?id="+msg['match_id'], 
+					pathname: "/game/?g="+game_id+"&id="+msg['match_id'], 
 					state: {
-						game_id: id,
+						game_id: game_id,
 						game_mode: gameMode,
-						ai_diff: AIdif,
+						ai_diff: AIdiff,
 					  } 
 				})
 			})
-		} else if (gameMode !== "Online") {
-			history.push({
+		} else if (gameMode !== "online") {
+			history.push(
+				{
 				pathname: "/game", 
 				state: {
-					game_id: id,
+					game_id: game_id,
 					game_mode: gameMode,
-					ai_diff: AIdif,
+					ai_diff: AIdiff
 					}  
 				})
 		} else {
@@ -93,9 +94,9 @@ function GamePage() {
 					{
 					pathname: "/game", 
 					state: {
-						game_id: id,
+						game_id: game_id,
 						game_mode: gameMode,
-						ai_diff: AIdif,
+						ai_diff: AIdiff
 						}  
 					})
 			})
@@ -176,7 +177,7 @@ function GamePage() {
 						<div className="col-lg-12 border">
 							<div className="row">
 								<div className="col-lg-6 centered set-padding">
-									<Card className="mode-card" onClick={() => changeMode("Online")}>
+									<Card className="mode-card" onClick={() => changeMode("online")}>
 										<div>
 											<img
 												src={
@@ -194,7 +195,7 @@ function GamePage() {
 									</Card>
 								</div>
 								<div className="col-lg-6 centered set-padding">
-									<Card className="mode-card" onClick={() => changeMode("1vs1")}>
+									<Card className="mode-card" onClick={() => changeMode("offline")}>
 										<div>
 											<img
 												src={
@@ -214,7 +215,7 @@ function GamePage() {
 							</div>
 							<div className="row">
 								<div className="col-lg-6 centered set-padding">
-									<Card className="mode-card" onClick={() => changeMode("Amigo")}>
+									<Card className="mode-card" onClick={() => changeMode("amigo")}>
 										<div>
 											<img
 												src={
@@ -232,7 +233,7 @@ function GamePage() {
 									</Card>
 								</div>
 								<div className="col-lg-6 centered set-padding">
-									<Card className="mode-card" onClick={() => changeMode("AI")}>
+									<Card className="mode-card" onClick={() => changeMode("ai")}>
 										<div>
 											<img
 												src={
