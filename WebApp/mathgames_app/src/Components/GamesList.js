@@ -15,9 +15,6 @@ function GamesList() {
 
 		var x = document.getElementById(game.id);
 		x.style.opacity = "0.5";
-		/*x.style.width = "350px";
-		x.style.height = "350px";
-		x.style.backgroundColor = "aquat"; */
 
 		game.hoover = true;
 		titleState();
@@ -29,10 +26,6 @@ function GamesList() {
 
 		var x = document.getElementById(game.id);
 		x.style.opacity = "1";
-		/*x.style.margin = "0px";
-		x.style.width = "300px";
-		x.style.height = "300px";
-		x.style.backgroundColor = "white"; */
 
 		game.hoover = false;
 		titleState();
@@ -46,14 +39,20 @@ function GamesList() {
 					<div className="row above-img">
 						<div className="col-lg-9 button_playnow">
 							{/* <button className="play-button"> Jogar! </button> */}
-							<button
-								className="learn-more circle"
-								id="playnow_btn"
-							>
+							<button className="learn-more circle">
 								<span className="circle" aria-hidden="true">
 									<span className="icon arrow"></span>
 								</span>
-								<span className="button-text">Jogar Agora</span>
+								<span
+									className="button-text"
+									style={{
+										color: "white",
+										marginLeft: "5px",
+										fontFamily: "Bubblegum Sans",
+									}}
+								>
+									Jogar Agora
+								</span>
 							</button>
 						</div>
 						<div className="col-lg-3 game_age">
