@@ -6,14 +6,13 @@ import GamesList from "../../Components/GamesList.js"
 import "./ChooseGame.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-function ChooseGameMode() {
+function ChooseGame() {
 	const [filterOption, setfilterOption] = useState("RecommendedGames");
 
 	var allGames_e;
 	var recommended_e;
 	var mostPlayed_e;
-
-
+	
 	const progress = {
 		width: "50%",
 	};
@@ -64,7 +63,7 @@ function ChooseGameMode() {
 								id="allGames"
 								onClick={allGames}
                                 //class="box foo"
-                                class={filterOption === "AllGames" ? "box foo actived-btn" : "box foo" }
+                                className={filterOption === "AllGames" ? "box foo actived-btn" : "box foo" }
 							>
 								Todos os jogos
 							</button>
@@ -75,7 +74,7 @@ function ChooseGameMode() {
                                 style={{ textDecoration: "underline" }}
 								onClick={recommendedGames}
                                 //class="box foo testexd"
-                                class={filterOption === "RecommendedGames" ? "box foo actived-btn" : "box foo" }
+                                className={filterOption === "RecommendedGames" ? "box foo actived-btn" : "box foo" }
 							>
 								Recomendados
 							</button>
@@ -85,7 +84,7 @@ function ChooseGameMode() {
 								id="mostPlayedGames"
 								onClick={mostPlayedGames}
                                 //class="box foo"
-                                class={filterOption === "MostPlayedGames" ? "box foo actived-btn" : "box foo" }
+                                className={filterOption === "MostPlayedGames" ? "box foo actived-btn" : "box foo" }
 							>
 								Mais Jogados
 							</button>
@@ -128,4 +127,4 @@ function ChooseGameMode() {
 	);
 }
 
-export default ChooseGameMode;
+export default ChooseGame;

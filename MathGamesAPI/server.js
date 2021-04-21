@@ -5,6 +5,9 @@ const express = require("express");
 const index = require("./app/routes/index")
 const sql = require("./app/models/db.js");
 const errorHandler = require("./app/config/errorhandler");
+var uuid = require('uuid');
+const { PassThrough } = require("stream");
+const { match } = require("assert");
 
 const app = express();
 app.use(index);
@@ -28,13 +31,57 @@ const io = require("socket.io")(server, {
 var current_games = {};
 var match_queue = [];
 var users_info = {}
+var link_current_games = {};
 
+//Connecting new Users
 io.on("connection", (socket) => { 
   console.log("New client connected");
   console.log("id: ", socket.id);
   
-  //socket.emit('connection');
+  //
+  // FRIEND GAME BY LINK SECTION 
+  // 
+  
+  //User sends user_id and want to play with a friend through a link
+  socket.on("friendbylink", (user_id) => {
+    users_info[user_id] = socket.id;
+    io.to(socket.id).emit("link_sent", {"match_id": uuid.v4()});
+  })
 
+  socket.on("entered_link", (msg) => {
+    console.log("entrei outro por link")
+    console.log(msg)
+    if (msg["user_id"] !== null) {
+      var user_id = msg["user_id"]
+      var match_id = msg["match_id"]
+      users_info[user_id] = socket.id
+      if (Object.keys(current_games).includes(match_id)) {
+        console.log("sou o 2º")
+        var other_user = Object.keys(current_games[match_id])[0];
+        current_games[match_id][user_id] = other_user;
+        current_games[match_id][other_user] = user_id;
+        console.log(other_user)
+        console.log(user_id)
+        io.to(users_info[other_user]).emit("match_found", {"match_id": match_id, "starter": true});
+        io.to(users_info[user_id]).emit("match_found", {"match_id": match_id, "starter": false});
+
+      } else {
+        console.log("sou o 1º")
+
+        current_games[match_id] = {};
+        current_games[match_id][user_id] = "";
+      }
+    }
+  })
+  //
+  // END OF FRIEND GAME BY LINK SECTION 
+  // 
+  
+  //
+  // ONLINE GAME SECTION 
+  // 
+
+  //User says that he wants to play Online and put himself in matchqueue list
   socket.on("user_id", (user_id) => {
     users_info[user_id] = socket.id;
     match_queue.push(user_id)
@@ -52,6 +99,7 @@ io.on("connection", (socket) => {
     }
   });
 
+  //User send user_id and match_id when he joins game to start game
   socket.on("start_game", (user_id, match_id) => {
     if (Object.keys(current_games).includes(match_id)) {
       if (Object.keys(current_games[match_id]).includes(user_id)) {
@@ -62,6 +110,7 @@ io.on("connection", (socket) => {
     }
   });
 
+  //User sends match id, userid and new_pos when he wants to make a move in the game
   socket.on("move", (new_pos, user_id, match_id) => {
     console.log("Received move: ", new_pos);
     console.log("Received match_id: ", match_id);
@@ -75,6 +124,10 @@ io.on("connection", (socket) => {
       }
     }
   })
+  
+  //
+  // END OF ONLINE GAME SECTION 
+  // 
 });
 
 function create_game(user1, user2) {

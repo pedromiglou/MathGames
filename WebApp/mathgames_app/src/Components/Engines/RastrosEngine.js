@@ -20,7 +20,6 @@ export default class RastrosEngine extends React.Component {
         } else {
             ai_diff = 0.8
         }
-        console.log(ai_diff)
     }
 
 
@@ -59,6 +58,7 @@ export default class RastrosEngine extends React.Component {
     }
     
     create() {
+        console.log(game_mode)
         this.INITIAL_BOARD_POS = 60
         this.DISTANCE_BETWEEN_SQUARES = 105
         
@@ -70,7 +70,7 @@ export default class RastrosEngine extends React.Component {
         this.current_player = 1;
         
         // True if it's a player's turn
-        if (game_mode === "Online" && sessionStorage.getItem("starter") === "false") {
+        if ((game_mode === "Online" || game_mode === "Amigo") && sessionStorage.getItem("starter") === "false") {
             this.player_turn = false;
         } else  {
             this.player_turn = true;
@@ -134,7 +134,7 @@ export default class RastrosEngine extends React.Component {
                     
 
                     var is_finished = move(this, blocked_squares, clicked_piece, current_player_text, last_played, valid_squares, player_piece, AI_blocked_squares);
-                    if (game_mode === "Online") {
+                    if (game_mode === "Online" || game_mode === "Amigo") {
                         socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
                         this.player_turn = !this.player_turn
                     }
@@ -152,7 +152,7 @@ export default class RastrosEngine extends React.Component {
         }, this);
 
         
-        if (game_mode === "Online") {
+        if (game_mode === "Online" || game_mode === "Amigo") {
             socket.emit("start_game", sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
 
             socket.on("move_piece", (new_pos) => {

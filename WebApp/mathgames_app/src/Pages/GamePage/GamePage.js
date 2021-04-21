@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { Card } from "react-bootstrap";
-
+//import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+
 import "./GamePage.css";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { games_info } from "../../data/GamesInfo";
 import socket from "../../index"
-
+import AuthService from "../../Services/auth.service"
 
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
 function GamePage() {
@@ -17,6 +17,12 @@ function GamePage() {
 	const [gameMode, setGameMode] = useState("");
 	//Depois aqui podemos meter conforme as preferencias no perfil
 	const [AIdif, setAIdif] = useState("");
+
+	var isSomeoneLogged = false;
+	var resultado = AuthService.getCurrentUser();
+	if (resultado !== null) {
+		isSomeoneLogged = true;
+	}
 
 	const dif_options = [
 		{ label: "easy", value: "easy" },
@@ -54,14 +60,26 @@ function GamePage() {
 	}
 	
 	function find_match() {
-		if (gameMode !== "Online") {
-			history.push(
-				{
+		if ((gameMode === "Amigo") && !isSomeoneLogged) {
+			socket.emit("friendbylink", sessionStorage.getItem("user_id"))
+
+			socket.on("link_sent", (msg) => {
+				history.push({
+					pathname: "/game/?id="+msg['match_id'], 
+					state: {
+						game_id: id,
+						game_mode: gameMode,
+						ai_diff: AIdif,
+					  } 
+				})
+			})
+		} else if (gameMode !== "Online") {
+			history.push({
 				pathname: "/game", 
 				state: {
 					game_id: id,
 					game_mode: gameMode,
-					ai_diff: AIdif
+					ai_diff: AIdif,
 					}  
 				})
 		} else {
@@ -77,7 +95,7 @@ function GamePage() {
 					state: {
 						game_id: id,
 						game_mode: gameMode,
-						ai_diff: AIdif
+						ai_diff: AIdif,
 						}  
 					})
 			})
