@@ -7,7 +7,6 @@ import './SwitchComponent.css';
 
 /* Pages */
 import Welcome from '../Pages/Welcome/Welcome';
-import ChooseGameMode from '../Pages/ChooseGameMode/ChooseGameMode';
 import ChooseGame from '../Pages/ChooseGame/ChooseGame';
 import Game from '../Pages/Game/Game';
 import Login from '../Pages/Login/Login';
@@ -19,7 +18,6 @@ export const MemoComponent = React.memo(() => {
         <Switch>
             <Route exact path='/' component={withRouter(Welcome)} />
             <Route exact path='/gamesDashboard' component={withRouter(ChooseGame)} />
-            <Route exact path='/mode' component={withRouter(ChooseGameMode)} />
             <Route exact path='/game' component={withRouter(Game)} />
             <Route exact path='/login' component={withRouter(Login)} />
             <Route exact path='/gamePage' component={withRouter(GamePage)}/>
