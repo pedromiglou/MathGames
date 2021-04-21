@@ -13,11 +13,6 @@ function ChooseGameMode() {
 	var recommended_e;
 	var mostPlayed_e;
 
-
-	const progress = {
-		width: "50%",
-	};
-
 	function allGames() {
 		setfilterOption("AllGames");
 
