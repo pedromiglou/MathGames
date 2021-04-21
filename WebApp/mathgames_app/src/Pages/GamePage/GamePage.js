@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { Card } from "react-bootstrap";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./GamePage.css";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { games_info } from "../../data/GamesInfo";
 import socket from "../../index"
 
@@ -30,7 +29,7 @@ function GamePage() {
 
 	function changeMode(val) {
 		setGameMode(val);
-		if (val === "AI") {
+		if (val === "ai") {
 			showDif();
 		} else {
 			hideDif();
@@ -54,7 +53,7 @@ function GamePage() {
 	}
 	
 	function find_match() {
-		if (gameMode !== "Online") {
+		if (gameMode !== "online") {
 			history.push(
 				{
 				pathname: "/game", 
@@ -158,7 +157,7 @@ function GamePage() {
 						<div className="col-lg-12 border">
 							<div className="row">
 								<div className="col-lg-6 centered set-padding">
-									<Card className="mode-card" onClick={() => changeMode("Online")}>
+									<Card className="mode-card" onClick={() => changeMode("online")}>
 										<div>
 											<img
 												src={
@@ -176,7 +175,7 @@ function GamePage() {
 									</Card>
 								</div>
 								<div className="col-lg-6 centered set-padding">
-									<Card className="mode-card" onClick={() => changeMode("1vs1")}>
+									<Card className="mode-card" onClick={() => changeMode("offline")}>
 										<div>
 											<img
 												src={
@@ -196,7 +195,7 @@ function GamePage() {
 							</div>
 							<div className="row">
 								<div className="col-lg-6 centered set-padding">
-									<Card className="mode-card" onClick={() => changeMode("Amigo")}>
+									<Card className="mode-card" onClick={() => changeMode("amigo")}>
 										<div>
 											<img
 												src={
@@ -214,7 +213,7 @@ function GamePage() {
 									</Card>
 								</div>
 								<div className="col-lg-6 centered set-padding">
-									<Card className="mode-card" onClick={() => changeMode("AI")}>
+									<Card className="mode-card" onClick={() => changeMode("ai")}>
 										<div>
 											<img
 												src={

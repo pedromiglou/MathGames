@@ -1,6 +1,6 @@
 import { React, useState } from "react";
 import { Card } from "react-bootstrap";
-import { Route, Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { games_info } from "../data/GamesInfo";
 
 import "./GamesList.css";

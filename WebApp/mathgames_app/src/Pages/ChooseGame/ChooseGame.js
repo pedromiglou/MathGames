@@ -14,9 +14,9 @@ function ChooseGameMode() {
 	var mostPlayed_e;
 
 
-	const progress = {
-		width: "50%",
-	};
+	// const progress = {
+	// 	width: "50%",
+	// };
 
 	function allGames() {
 		setfilterOption("AllGames");
@@ -63,8 +63,8 @@ function ChooseGameMode() {
 							<button
 								id="allGames"
 								onClick={allGames}
-                                //class="box foo"
-                                class={filterOption === "AllGames" ? "box foo actived-btn" : "box foo" }
+                                //className="box foo"
+                                className={filterOption === "AllGames" ? "box foo actived-btn" : "box foo" }
 							>
 								Todos os jogos
 							</button>
@@ -74,8 +74,8 @@ function ChooseGameMode() {
 								id="recommendedGames"
                                 style={{ textDecoration: "underline" }}
 								onClick={recommendedGames}
-                                //class="box foo testexd"
-                                class={filterOption === "RecommendedGames" ? "box foo actived-btn" : "box foo" }
+                                //className="box foo testexd"
+                                className={filterOption === "RecommendedGames" ? "box foo actived-btn" : "box foo" }
 							>
 								Recomendados
 							</button>
@@ -84,8 +84,8 @@ function ChooseGameMode() {
 							<button
 								id="mostPlayedGames"
 								onClick={mostPlayedGames}
-                                //class="box foo"
-                                class={filterOption === "MostPlayedGames" ? "box foo actived-btn" : "box foo" }
+                                //className="box foo"
+                                className={filterOption === "MostPlayedGames" ? "box foo actived-btn" : "box foo" }
 							>
 								Mais Jogados
 							</button>

@@ -22,7 +22,7 @@ import store from './store';
 
 function Menu(){
     const [sidebar, setSidebar] = useState(true);
-    const [admin, setAdmin] = useState(false);
+    //const [admin, setAdmin] = useState(false);
     const [user, setUser] = useState("")
     const showSidebar = () => setSidebar(!sidebar);
 
@@ -68,9 +68,9 @@ function Menu(){
 
                             {/* <hr className="menu-divider"></hr>  */}                     
                             
-                            {admin &&
+                            {/* {admin &&
                                 <h1>Admin</h1>
-                            }
+                            } */}
 
                             <div className="navbar">
                                 {!free_user &&
