@@ -272,25 +272,6 @@ span.icons-noname{
 /*-----------------------*/
 
 
-/*----- SUB-COMPONENT----*/
-.sub-component{
-    height: 100%;
-}
-
-.sub-component.active{
-    width: calc(100% - 300px);
-    margin-left: 300px;
-    transition: 700ms;
-}
-
-.sub-component.collapsed{
-    width: calc(100% - 65px);
-    margin-left: 65px;
-    transition: 600ms;
-}
-/*-----------------------*/
-
-
 /* KEYFRAMES */
 
 @keyframes disappearAnimation {
