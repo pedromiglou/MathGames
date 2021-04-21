@@ -285,3 +285,110 @@ function randomPlay(validSquares) {
 }
 
 */
+
+function heuristic(aiPieces, playerPieces) {
+    var countAI = 0;
+    var countPlayer = 0;
+    for (var y=0; y<8; y++) {
+        for (var x=0;x<8;x++ ) {
+            if (!playerPieces[y][x] && !aiPieces[y][x] && (y==0 || !aiPieces[y-1][x]) &&
+            (y==7 || !aiPieces[y+1][x]) && (x==0 || !aiPieces[y][x-1]) && (x==7 || !aiPieces[y][x+1])) {
+                countPlayer++;
+            }
+            if (!aiPieces[y][x] && !playerPieces[y][x] && (y==0 || !playerPieces[y-1][x]) &&
+            (y==7 || !playerPieces[y+1][x]) && (x==0 || !playerPieces[y][x-1]) && (x==7 || !playerPieces[y][x+1])) {
+                countAI++;
+            }
+        }
+    }
+    return countAI-countPlayer;
+}
+
+//make a play using the AI
+/*
+transform validSquares to [[1,2],[2,3],...]
+keep 2 matrixes aiPieces and playerPieces with only true/false -> initially everything is false
+keep count of every turn
+at the end transform chosen as needed
+*/
+function makePlay(probabilityOfGoodMove, validSquares, aiPieces, playerPieces, turnCount) {
+    var chosen = null;
+    if (Math.random()>probabilityOfGoodMove) {
+        chosen = validSquares[Math.floor(Math.random() * validSquares.length)];
+    } else {
+        var score = -100;
+
+        validSquares.forEach( (piece) => {
+            var validSquares2 = [];
+            aiPieces[piece[0]][piece[1]] = true;
+            for (var y=0; y<8; y++) {
+                for (var x=0;x<8;x++) {
+                    if (!aiPieces[y][x] && !playerPieces[y][x] && (y==0 || !playerPieces[y-1][x]) &&
+                    (y==7 || !playerPieces[y+1][x]) && (x==0 || !playerPieces[y][x-1]) && (x==7 || !playerPieces[y][x+1])) {
+                        validSquares2.push([y,x]);
+                    }
+                }
+            }
+            var newScore = minimax(validSquares2, Math.ceil(turnCount/7), false, aiPieces, playerPieces);
+            if (newScore > score) {
+                chosen = piece;
+                score = newScore;
+            }
+
+            aiPieces[piece[0]][piece[1]] = false;
+        });
+    }
+
+    return chosen;
+}
+
+//minimax algorithmn
+function minimax(validSquares, depth, maximizingPlayer, aiPieces, playerPieces) {
+    if (depth == 0 || validSquares.length==0) {
+        return heuristic(aiPieces, playerPieces);
+    }
+    if (maximizingPlayer) {
+        var value = -100;
+        validSquares.forEach((piece) => {
+            var validSquares2 = [];
+            aiPieces[piece[0]][piece[1]] = true;
+            for (var y=0; y<8; y++) {
+                for (var x=0;x<8;x++) {
+                    if (!aiPieces[y][x] && !playerPieces[y][x] && (y==0 || !playerPieces[y-1][x]) &&
+                    (y==7 || !playerPieces[y+1][x]) && (x==0 || !playerPieces[y][x-1]) && (x==7 || !playerPieces[y][x+1])) {
+                        validSquares2.push([y,x]);
+                    }
+                }
+            }
+
+            var newValue = minimax(validSquares2, depth-1, false, aiPieces, playerPieces);
+            if (newValue > value) {
+                value = newValue;
+            }
+            
+            aiPieces[piece[0]][piece[1]] = false;
+        })
+    } else {
+        var value = 100;
+        validSquares.forEach((piece) => {
+            var validSquares2 = [];
+            playerPieces[piece[0]][piece[1]] = true;
+            for (var y=0; y<8; y++) {
+                for (var x=0;x<8;x++) {
+                    if (!aiPieces[y][x] && !playerPieces[y][x] && (y==0 || !aiPieces[y-1][x]) &&
+                    (y==7 || !aiPieces[y+1][x]) && (x==0 || !aiPieces[y][x-1]) && (x==7 || !aiPieces[y][x+1])) {
+                        validSquares2.push([y,x]);
+                    }
+                }
+            }
+
+            var newValue = minimax(validSquares2, depth-1, true, aiPieces, playerPieces);
+            if (newValue < value) {
+                value = newValue;
+            }
+            
+            playerPieces[piece[0]][piece[1]] = false;
+        })
+    }
+    return value;
+}
