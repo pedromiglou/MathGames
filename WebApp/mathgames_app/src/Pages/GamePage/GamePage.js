@@ -15,7 +15,7 @@ function GamePage() {
 	//De alguma maneira verificar se estiver vazio
 	const [gameMode, setGameMode] = useState("");
 	//Depois aqui podemos meter conforme as preferencias no perfil
-	const [AIdif, setAIdif] = useState("");
+	const [AIdiff, setAIdiff] = useState("");
 
 	const dif_options = [
 		{ label: "easy", value: "easy" },
@@ -24,8 +24,8 @@ function GamePage() {
 	];
 
 	const params = new URLSearchParams(window.location.search);
-	let id = params.get("id");
-	const game_info = games_info[id];
+	let game_id = params.get("id");
+	const game_info = games_info[game_id];
 
 	function changeMode(val) {
 		setGameMode(val);
@@ -38,13 +38,13 @@ function GamePage() {
 
 	function changeDif(e) {
 		var dif = e.target.value;
-		setAIdif(dif);
+		setAIdiff(dif);
 	}
 
 	function showDif() {
 		var x = document.getElementById("sel_dif");
 		x.style.display = "block";
-		setAIdif("easy");
+		setAIdiff("easy");
 	}
 
 	function hideDif() {
@@ -53,14 +53,27 @@ function GamePage() {
 	}
 	
 	function find_match() {
-		if (gameMode !== "online") {
+		if (gameMode === "amigo") {
+			socket.emit("friendbylink", sessionStorage.getItem("user_id"))
+
+			socket.on("link_sent", (msg) => {
+				history.push({
+					pathname: "/game/?g="+game_id+"&id="+msg['match_id'], 
+					state: {
+						game_id: game_id,
+						game_mode: gameMode,
+						ai_diff: AIdiff,
+					  } 
+				})
+			})
+		} else if (gameMode !== "online") {
 			history.push(
 				{
 				pathname: "/game", 
 				state: {
-					game_id: id,
+					game_id: game_id,
 					game_mode: gameMode,
-					ai_diff: AIdif
+					ai_diff: AIdiff
 					}  
 				})
 		} else {
@@ -74,9 +87,9 @@ function GamePage() {
 					{
 					pathname: "/game", 
 					state: {
-						game_id: id,
+						game_id: game_id,
 						game_mode: gameMode,
-						ai_diff: AIdif
+						ai_diff: AIdiff
 						}  
 					})
 			})

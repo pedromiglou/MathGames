@@ -174,6 +174,7 @@ function Menu(){
                                     <Route exact path='/gamesDashboard' component={withRouter(ChooseGame)} />
                                     <Route exact path='/mode' component={withRouter(ChooseGameMode)} />
                                     <Route exact path='/game' component={withRouter(Game)} />
+                                    <Route exact path='/game/:g:id' component={withRouter(Game)} />
                                     <Route exact path='/login' component={withRouter(Login)} />
                                     <Route exact path='/gamePage' component={withRouter(GamePage)}/>
                                     <Route exact path='/profile' component={withRouter(Profile)}/>

@@ -98,10 +98,19 @@ class RastrosScene extends Phaser.Scene {
         if ( game_mode === 'ai' )
             this.player.add(1);
 
-        if (game_mode === "online" && sessionStorage.getItem("starter") === "false")
-            this.player.add(2);
-        else
-            this.player.add(1);
+        if ( game_mode === "online" || game_mode === "amigo" ) {
+            if ( sessionStorage.getItem("starter") === "false" )
+                this.player.add(2);
+            else
+                this.player.add(1);
+
+            socket.emit("start_game", sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
+            socket.on("move_piece", (new_pos) => {
+                console.log("Received move: ", new_pos);
+                this.move(this.positions[new_pos]);
+            });
+        }
+
 
         // Loop used to fill the board with clickable squares
         for (var pos_y = 0; pos_y < 7; pos_y++) {
@@ -135,7 +144,7 @@ class RastrosScene extends Phaser.Scene {
             if ( this.validate_click(clicked_piece) )
                 if ( this.move(clicked_piece) ) {
                     // Emit move just made
-                    if (game_mode === "online")
+                    if ( game_mode === "online" || game_mode === "amigo" )
                         socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
 
                     // Process AI move
@@ -143,15 +152,6 @@ class RastrosScene extends Phaser.Scene {
                         this.move( this.positions[ randomPlay(this.valid_squares, AI_blocked_squares, clicked_piece) ] );
                 }
         }, this);
-
-        if (game_mode === "online") {
-            socket.emit("start_game", sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
-
-            socket.on("move_piece", (new_pos) => {
-                console.log("Received move: ", new_pos);
-                this.move(this.positions[new_pos]);
-            });
-        }
     }
 
     validate_click(clicked_piece) {
