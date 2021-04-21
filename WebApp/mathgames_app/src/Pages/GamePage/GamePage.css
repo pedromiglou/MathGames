@@ -6,6 +6,23 @@
 .game-details {
     text-align: center;
     border: 1px solid black;
+
+    transform: translateY(1000px);
+    animation: slideInL 0.8s ease forwards 0.5s;
+}
+
+.container-hidden {
+    overflow: hidden;
+}
+
+.animation-slideIn {
+    transform: translateY(1000px);
+    animation: slideDown 0.8s ease forwards 0.5s;
+}
+
+.game-modes {
+    transform: translateY(1000px);
+    animation: slideIn 0.8s ease forwards 0.5s;
 }
 
 .game-details h1 {
@@ -16,7 +33,6 @@
     height: 50%;
 
     text-align: center;
-    border: 1px solid black;
 }
 
 .game-caracteristics {
@@ -31,6 +47,9 @@
 .player-rank {
     height: 30%;
     border: 1px solid black;
+
+    transform: translateY(1000px);
+    animation: slideDown 0.8s ease forwards 0.5s;
 }
 
 .center-progress-bar {
@@ -94,4 +113,14 @@
     color: black !important;
     font-weight: 900;
     font-size: xx-large ;
+}
+
+
+@keyframes slideInL {
+    0% {
+        transform: translateX(-500px);
+    }
+    100% {
+        transform: translateX(0px);
+    }
 }

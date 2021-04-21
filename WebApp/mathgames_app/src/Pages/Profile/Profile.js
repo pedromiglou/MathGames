@@ -174,8 +174,8 @@ const Profile = () => {
 					</button>
 				</div>
 				{menuOption === "Geral" && (
-					<div className="col-lg-9 no-margins">
-						<div className="container profile">
+					<div className="col-lg-9 no-margins ">
+						<div className="container profile container-hidden">
 							<img
 								src={
 									process.env.PUBLIC_URL +

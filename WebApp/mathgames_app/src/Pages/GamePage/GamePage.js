@@ -53,17 +53,16 @@ function GamePage() {
     return (
         <>
             <div className="container choose-game-mode-container">
-                <div className="row">
+                <div className="row container-hidden">
                     <div className="col-lg-4 game-details">
                         <h1> Yote </h1>
                         <img
-                                            src={
-                                                process.env.PUBLIC_URL +
-                                                "/images/mathGames.png"
-                                            }
-                                            alt="Info"
-                                            className="rank-img"
-                                        />
+                            src={
+                                process.env.PUBLIC_URL + "/images/mathGames.png"
+                            }
+                            alt="Info"
+                            className="rank-img"
+                        />
                         <p className="game-details-p">
                             {" "}
                             Lorem Ipsum is simply dummy text of the printing and
@@ -96,7 +95,7 @@ function GamePage() {
                         </div>
                     </div>
                     <div className="col-lg-8 player-info-and-modes">
-                        <div className="col-lg-12 player-rank">
+                        <div className="col-lg-12 player-rank container-hidden">
                             <div className="row">
                                 <div className="col-lg-6 set-padding centered">
                                     <div>
@@ -135,8 +134,8 @@ function GamePage() {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-lg-12 border">
-                            <div className="row">
+                        <div className="col-lg-12 border container-hidden animation-slideIn">
+                            <div className="row game-modes">
                                 <div className="col-lg-6 centered set-padding">
                                     <Card className="mode-card">
                                         <Route>
@@ -182,7 +181,7 @@ function GamePage() {
                                     </Card>
                                 </div>
                             </div>
-                            <div className="row">
+                            <div className="row game-modes">
                                 <div className="col-lg-6 centered set-padding">
                                     <Card className="mode-card">
                                         <Route>

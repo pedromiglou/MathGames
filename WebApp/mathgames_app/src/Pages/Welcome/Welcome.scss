@@ -12,6 +12,9 @@ html {
 	font-family: Bubblegum Sans;
 	font-weight: 900;
 
+	animation: slideUp .8s ease-in-out forwards .8s;
+
+
 	@keyframes ani {
 		0% {
 			transform: translate3d(0, 0, 0);
@@ -48,3 +51,14 @@ html {
       padding-top: 8%;
 	}
 }
+
+
+@keyframes slideUp {
+	0% {
+	  transform: translateY(300px);
+	}
+	100% {
+	  transform: translateY(0px);
+	}
+  }
+  

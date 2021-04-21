@@ -58,12 +58,29 @@
 	padding: 0%;
 	margin: 0%;
 	border-right: 1px solid rgb(63, 63, 63) !important;
+
+	transform: translateY(1000px);
+    animation: slideInL 0.8s ease forwards 0.5s;
 }
 
 .profile {
 	text-align: center;
 	width: 100%;
 	min-height: 400px;
+
+	/* transform: translateY(300px);
+    animation: slideIn 0.8s ease forwards 0.5s; */
+	/* animation: fadein 3s; */
+}
+
+.profile img {
+	transform: translateY(1000px);
+    animation: slideDown 0.8s ease forwards 0.5s;
+}
+
+.inputs {
+	transform: translateY(300px);
+    animation: slideUp 0.8s ease forwards 0.5s;
 }
 
 .side-button {
@@ -560,4 +577,13 @@ h2 small {
 .testexd {
     border-left: 10px solid #900;
     border-right: 10px solid #900;  
+}
+
+@keyframes fadein {
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
 }
