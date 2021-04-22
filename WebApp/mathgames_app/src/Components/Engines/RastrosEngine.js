@@ -137,7 +137,9 @@ class RastrosScene extends Phaser.Scene {
         // Triggered when the player clicks
         this.input.on('pointerdown', function(pointer, currentlyOver) {
             var clicked_piece = currentlyOver[0];
-
+            console.log("cliquei")
+            if (clicked_piece !== undefined)
+                console.log(clicked_piece.name)
             if (!this.player.has(this.current_player))
                 return;
 

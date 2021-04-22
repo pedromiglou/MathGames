@@ -78,6 +78,29 @@ class GatosCaesScene extends Phaser.Scene {
 
         var adjacents = new Set()
 
+        //AI Variables
+        this.aiPieces = [[false,false,false,false,false,false,false,false],
+                        [false,false,false,false,false,false,false,false],
+                        [false,false,false,false,false,false,false,false],
+                        [false,false,false,false,false,false,false,false],
+                        [false,false,false,false,false,false,false,false],
+                        [false,false,false,false,false,false,false,false],
+                        [false,false,false,false,false,false,false,false],
+                        [false,false,false,false,false,false,false,false]];
+        
+        this.playerPieces = [[false,false,false,false,false,false,false,false],
+                        [false,false,false,false,false,false,false,false],
+                        [false,false,false,false,false,false,false,false],
+                        [false,false,false,false,false,false,false,false],
+                        [false,false,false,false,false,false,false,false],
+                        [false,false,false,false,false,false,false,false],
+                        [false,false,false,false,false,false,false,false],
+                        [false,false,false,false,false,false,false,false]];
+        
+        this.turnCount = 0;
+
+
+
         if ( game_mode === "online" || game_mode === "amigo" ) {
             if ( sessionStorage.getItem("starter") === "false" ) {
                 this.player_turn = false;
@@ -127,20 +150,25 @@ class GatosCaesScene extends Phaser.Scene {
                 if (this.player_0_first_move && this.current_player === 0) {
                     if (["27", "28", "35", "36"].includes(clicked_piece.name)) {
                         move(this, adjacents, clicked_piece, current_player_text)
-                        // Emit move just made
+
                         if ( game_mode === "online" || game_mode === "amigo" ) 
                             socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
+                        
+                        if ( game_mode === "ai" )
+                            move(this, adjacents, this.positions[ randomPlay(this) ], current_player_text)
+
+
                     }
                 } else if (this.player_1_first_move && this.current_player === 1) {
                     if (!["27", "28", "35", "36"].includes(clicked_piece.name)) {
                         move(this, adjacents, clicked_piece, current_player_text)
-                        // Emit move just made
+
                         if ( game_mode === "online" || game_mode === "amigo" )
                             socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
                     }
                 } else if (!(this.player_1_first_move && this.player_0_first_move)) {
                     move(this, adjacents, clicked_piece, current_player_text)
-                    // Emit move just made
+
                     if ( game_mode === "online" || game_mode === "amigo" )
                         socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
                 }   
@@ -201,12 +229,15 @@ function move(scene, adjacents, clicked_piece, current_player_text) {
         
         // Add player piece to new square
         scene.add.sprite(clicked_piece.x, clicked_piece.y, 'cat_dog', scene.current_player);
+        var tmpPieceCoords = [(parseInt(clicked_piece.name)-(parseInt(clicked_piece.name)%8))/8, parseInt(clicked_piece.name)%8];
         if (scene.current_player === 0) {
+            scene.playerPieces[tmpPieceCoords[0]][tmpPieceCoords[1]] = true;
             scene.player_1_valid_squares = set_diff(scene.player_1_valid_squares, adjacents)
             if (scene.player_1_valid_squares.size === 0) {
                 finish_game(scene)
             }
         } else {
+            scene.aiPieces[tmpPieceCoords[0]][tmpPieceCoords[1]] = true;
             scene.player_0_valid_squares = set_diff(scene.player_0_valid_squares, adjacents)
             if (scene.player_0_valid_squares.size === 0) {
                 finish_game(scene)
@@ -216,7 +247,7 @@ function move(scene, adjacents, clicked_piece, current_player_text) {
         scene.current_player = 1 - scene.current_player
         current_player_text.setText("Jogador " + scene.current_player);
         scene.player_turn = !scene.player_turn;
-
+        scene.turnCount++;
     }
     
 
@@ -244,122 +275,8 @@ function finish_game(scene) {
 }
 
 
-/*
 
-function AI_move(scene, valid_squares, player_piece, blocked_squares, clicked_piece, last_played, positions, current_player_text) {
-    var INITIAL_BOARD_POS = 60
-	var DISTANCE_BETWEEN_SQUARES = 105
-    var AI_square = randomPlay(valid_squares)
-    var poslist = [(AI_square-(AI_square%7))/7, AI_square%7]
-    var pos_x = INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*poslist[1]
-    var pos_y = INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*poslist[0]
 
-    // Update blocked squares
-    var old_x = (player_piece.x-INITIAL_BOARD_POS)/ DISTANCE_BETWEEN_SQUARES;
-    var old_y = (player_piece.y-INITIAL_BOARD_POS)/ DISTANCE_BETWEEN_SQUARES;
-    blocked_squares.add(String(old_y*7+old_x));
-
-    // Remove last movement highlight and add new one
-    last_played.forEach(pos =>  positions[pos].clearTint());
-    last_played.clear();
-    last_played.add(old_y*7+old_x);
-    last_played.add(parseInt(clicked_piece.name));
-    last_played.forEach(pos =>  positions[pos].setTint(0xFFFF00));
-
-    // Move player piece to new square
-    move_image(scene, player_piece, pos_x, pos_y);
-
-    
-    // Get new square's position [0..49]
-    var current_pos = parseInt(AI_square)
-    valid_squares.clear()
-
-    // Add all possible positions
-    valid_squares.add(String(current_pos-6));
-    valid_squares.add(String(current_pos-7));
-    valid_squares.add(String(current_pos-8));
-
-    valid_squares.add(String(current_pos+6));
-    valid_squares.add(String(current_pos+7));
-    valid_squares.add(String(current_pos+8));
-
-    valid_squares.add(String(current_pos-1));
-    valid_squares.add(String(current_pos+1));
-    
-    // Remove invalid squares (edge cases)
-    if ( [0,1,2,3,4,5,6].includes(current_pos) ) {
-        valid_squares.delete(String(current_pos-6));
-        valid_squares.delete(String(current_pos-7));
-        valid_squares.delete(String(current_pos-8));
-    }
-
-    if ( [42,43,44,45,46,47,48].includes(current_pos) ) {
-        valid_squares.delete(String(current_pos+6));
-        valid_squares.delete(String(current_pos+7));
-        valid_squares.delete(String(current_pos+8));
-    }
-
-    if ( [0,7,14,21,28,35,42].includes(current_pos) ) {
-        valid_squares.delete(String(current_pos-8));
-        valid_squares.delete(String(current_pos-1));
-        valid_squares.delete(String(current_pos+6));
-    }
-
-    if ( [6,13,20,27,34,41,48].includes(current_pos) ) {
-        valid_squares.delete(String(current_pos-6));
-        valid_squares.delete(String(current_pos+1));
-        valid_squares.delete(String(current_pos+8));
-    }
-
-    // Remove blocked squares
-    blocked_squares.forEach(square => valid_squares.delete(square));
-
-    // Check for win conditions
-    if (current_pos === 6 || current_pos === 42 || set_diff(valid_squares, blocked_squares).size === 0) {
-        finish_game(scene, current_pos);
-        valid_squares.clear();
-    } else {
-        if (scene.current_player===1)
-            scene.current_player=2;
-        else
-            scene.current_player=1;
-        
-        current_player_text.setText("Jogador " + scene.current_player);
-    }
-}
-
-function randomPlay(validSquares) {
-    var tmpSquares = Array.from(validSquares).map(x => [(parseInt(x)-(parseInt(x)%7))/7, parseInt(x)%7]);
-    var chosen = tmpSquares.reduce((accumulator, current) => {
-        if (Math.pow(accumulator[0]-0, 2) + Math.pow(accumulator[1] - 6, 2) < Math.pow(current[0]-0, 2) + Math.pow(current[1] - 6, 2)) {
-            return accumulator;
-        } else {
-            return current;
-        }
-    });
-   // this.fieldUpdate(chosen);
-    return chosen[0]*7+chosen[1];
-}
-
-*/
-
-function heuristic(aiPieces, playerPieces) {
-    var countAI = 0;
-    var countPlayer = 0;
-    for (var y=0; y<8; y++) {
-        for (var x=0;x<8;x++ ) {
-            if (!playerPieces[y][x] && !aiPieces[y][x] && (y==0 || !aiPieces[y-1][x]) &&
-            (y==7 || !aiPieces[y+1][x]) && (x==0 || !aiPieces[y][x-1]) && (x==7 || !aiPieces[y][x+1])) {
-                countPlayer++;
-            }
-            if (!aiPieces[y][x] && !playerPieces[y][x] && (y==0 || !playerPieces[y-1][x]) &&
-            (y==7 || !playerPieces[y+1][x]) && (x==0 || !playerPieces[y][x-1]) && (x==7 || !playerPieces[y][x+1])) {
-                countAI++;
-            }
-        }
-    }
-    return countAI-countPlayer;
-}
 
 //make a play using the AI
 /*
@@ -368,35 +285,38 @@ keep 2 matrixes aiPieces and playerPieces with only true/false -> initially ever
 keep count of every turn
 at the end transform chosen as needed
 */
-function makePlay(probabilityOfGoodMove, validSquares, aiPieces, playerPieces, turnCount) {
+function randomPlay(scene) {
     var chosen = null;
-    if (Math.random()>probabilityOfGoodMove) {
-        chosen = validSquares[Math.floor(Math.random() * validSquares.length)];
+    var tmpSquares = Array.from(scene.validSquares).map(x => [(parseInt(x)-(parseInt(x)%8))/8, parseInt(x)%8]);
+
+
+    if (Math.random()>ai_diff) {
+        chosen = tmpSquares[Math.floor(Math.random() * tmpSquares.length)];
     } else {
         var score = -100;
 
-        validSquares.forEach( (piece) => {
+        tmpSquares.forEach( (piece) => {
             var validSquares2 = [];
-            aiPieces[piece[0]][piece[1]] = true;
+            scene.aiPieces[piece[0]][piece[1]] = true;
             for (var y=0; y<8; y++) {
                 for (var x=0;x<8;x++) {
-                    if (!aiPieces[y][x] && !playerPieces[y][x] && (y==0 || !playerPieces[y-1][x]) &&
-                    (y==7 || !playerPieces[y+1][x]) && (x==0 || !playerPieces[y][x-1]) && (x==7 || !playerPieces[y][x+1])) {
+                    if (!scene.aiPieces[y][x] && !scene.playerPieces[y][x] && (y==0 || !scene.playerPieces[y-1][x]) &&
+                    (y==7 || !scene.playerPieces[y+1][x]) && (x==0 || !scene.playerPieces[y][x-1]) && (x==7 || !scene.playerPieces[y][x+1])) {
                         validSquares2.push([y,x]);
                     }
                 }
             }
-            var newScore = minimax(validSquares2, Math.ceil(turnCount/7), false, aiPieces, playerPieces);
+            var newScore = minimax(validSquares2, Math.ceil(scene.turnCount/7), false, scene.aiPieces, scene.playerPieces);
             if (newScore > score) {
                 chosen = piece;
                 score = newScore;
             }
 
-            aiPieces[piece[0]][piece[1]] = false;
+            scene.aiPieces[piece[0]][piece[1]] = false;
         });
     }
 
-    return chosen;
+    return chosen[0]*8+chosen[1];
 }
 
 //minimax algorithmn
@@ -448,4 +368,25 @@ function minimax(validSquares, depth, maximizingPlayer, aiPieces, playerPieces) 
         })
     }
     return value;
+}
+
+
+
+
+function heuristic(aiPieces, playerPieces) {
+    var countAI = 0;
+    var countPlayer = 0;
+    for (var y=0; y<8; y++) {
+        for (var x=0;x<8;x++ ) {
+            if (!playerPieces[y][x] && !aiPieces[y][x] && (y==0 || !aiPieces[y-1][x]) &&
+            (y==7 || !aiPieces[y+1][x]) && (x==0 || !aiPieces[y][x-1]) && (x==7 || !aiPieces[y][x+1])) {
+                countPlayer++;
+            }
+            if (!aiPieces[y][x] && !playerPieces[y][x] && (y==0 || !playerPieces[y-1][x]) &&
+            (y==7 || !playerPieces[y+1][x]) && (x==0 || !playerPieces[y][x-1]) && (x==7 || !playerPieces[y][x+1])) {
+                countAI++;
+            }
+        }
+    }
+    return countAI-countPlayer;
 }

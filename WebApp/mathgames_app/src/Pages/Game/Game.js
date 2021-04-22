@@ -12,7 +12,6 @@ function Game()  {
     const url = new URLSearchParams(window.location.search);
 	let match_id = url.get("id");
 
-    /* */
     let history = useHistory()
     var params = history.location.state
     var game_id, game_mode, ai_diff;
@@ -27,15 +26,6 @@ function Game()  {
         game_mode = params.game_mode;
         ai_diff = params.ai_diff;
     }
-    //var game_id = parseInt(params.game_id);
-    
-    /* */
-    
-    /*  // To test, uncomment these lines and comment the block above
-    var game_id = 0;
-    var game_mode = "offline";
-    var ai_diff = "easy";
-    */
 
     // Game is ready to start when both players are connected
     if ( game_ready_to_start === false ) {
