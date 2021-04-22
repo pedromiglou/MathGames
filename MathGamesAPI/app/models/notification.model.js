@@ -8,7 +8,10 @@ const Notification = function(notification) {
 };
 
 Notification.create = (notification, result) => {
-  let date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  let date = new Date();
+  date.setTime( date.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  //date.setHours(date.getHours() + 1);
+  date = date.toISOString().slice(0, 19).replace('T', ' ');
   console.log(date);
   sql.query("INSERT INTO Notifications SET sender = ?, receiver = ?, notification_type = ?, notification_date = ?", [notification.sender, notification.receiver, notification.notification_type, date], (err, res) => {
     if (err) {
@@ -23,7 +26,8 @@ Notification.create = (notification, result) => {
 };
 
 Notification.findByUserId = (user_id, result) => {
-  sql.query('SELECT * FROM Notifications WHERE receiver = ?', [user_id], (err, res) => {
+  sql.query('SELECT Notifications.id, User.id as sender_id, username as sender, receiver, notification_type, notification_date ' + 
+  'FROM Notifications JOIN User ON sender = User.id WHERE receiver = ? ORDER BY notification_date desc', [user_id], (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);

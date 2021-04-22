@@ -59,7 +59,17 @@ exports.findByUserId = (req, res) => {
           message: "Error retrieving Friends with user id " + req.params.userId
         });
       }
-    } else res.send(data);
+    } else {
+      res.send(data);
+      /* See what is the better way to do this. In the model or in the controller ? For now is in the controller but this code is also working
+      
+      sql.query('SELECT id, username, avatar, account_level FROM User WHERE id in (?)', [data], (err, res_final) => {
+        console.log("friends of user ", req.params.userId, ": ", res_final);
+        res.send(res_final);
+      });
+      */
+    }
+
   });
 };
 

@@ -28,13 +28,24 @@ Friend.findByUserId = (user_id, result) => {
     }
 
     if (res.length) {
-      console.log("found Friendship: ", res);
-      result(null, res);
-      return;
-    }
+      var res = res.map(element => {
+        if (element.friend1 !== parseInt(user_id)) {
+          return element.friend1;
+        } else {
+          return element.friend2;
+        }
+      });
 
-    // not found Friendship with the user id
-    result({ kind: "not_found" }, null);
+      sql.query('SELECT id, username, avatar, account_level FROM User WHERE id in (?)', [res], (err, res_final) => {
+        console.log("friends of user ", user_id, ": ", res_final);
+        result(null, res_final);
+        return;
+      });
+      
+    } else {
+      // not found Friendship with the user id
+      result({ kind: "not_found" }, null);
+    }
   });
 };
 

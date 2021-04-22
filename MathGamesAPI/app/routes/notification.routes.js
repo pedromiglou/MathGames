@@ -14,5 +14,5 @@ module.exports = app => {
     app.delete("/notifications/:notificationId", notifications.delete);
   
     // Delete all notifications
-    app.delete("/notifications", notifications.deleteAll);
+    //app.delete("/notifications", notifications.deleteAll);
   };
