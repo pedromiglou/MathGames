@@ -46,8 +46,7 @@ function Login() {
             document.getElementById("nomeUtilizadorRegisto").value,
             document.getElementById("emailRegisto").value,
             document.getElementById("passwordRegisto").value
-        ) 
-        window.location.reload();        
+        )
     }
 
     function run_login(event) {

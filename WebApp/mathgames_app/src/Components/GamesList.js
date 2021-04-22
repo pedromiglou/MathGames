@@ -1,6 +1,6 @@
 import { React, useState } from "react";
 import { Card } from "react-bootstrap";
-import { Route, Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { games_info } from "../data/GamesInfo";
 
 import "./GamesList.css";
@@ -8,6 +8,8 @@ import "./GamesList.css";
 function GamesList() {
 	const [title, setTitle] = useState(false);
 	const titleState = () => setTitle(!title);
+
+	var history = useHistory()
 
 	function changeCard(e, game) {
 		var x2 = document.getElementById(game.id + "_Card");
@@ -29,6 +31,11 @@ function GamesList() {
 
 		game.hoover = false;
 		titleState();
+	}
+
+	function enterGame(value) {
+		value["hoover"] = false;
+		history.push(value["path"])
 	}
 
 	const showTitle = (game) => {
@@ -68,23 +75,19 @@ function GamesList() {
 		<>
 			<div className="display-games">
 				{Object.entries(games_info).map(([key, value]) => (
-					<Card key={key} id={key + "_Card"} className="button-fix">
-						<Route>
-							<Link to={value["path"]}>
-								<div
-									onMouseEnter={(e) => changeCard(e, value)}
-									onMouseLeave={(e) => replaceCard(e, value)}
-								>
-									<img
-										src={value["img"]}
-										alt="Info"
-										className="card-img"
-										id={key}
-									/>
-									{showTitle(value)}
-								</div>
-							</Link>
-						</Route>
+					<Card key={key} id={key + "_Card"} className="button-fix" onClick={() => enterGame(value)}>
+						<div
+							onMouseEnter={(e) => changeCard(e, value)}
+							onMouseLeave={(e) => replaceCard(e, value)}
+						>
+							<img
+								src={value["img"]}
+								alt="Info"
+								className="card-img"
+								id={key}
+							/>
+							{showTitle(value)}
+						</div>
 					</Card>
 				))}
 			</div>
