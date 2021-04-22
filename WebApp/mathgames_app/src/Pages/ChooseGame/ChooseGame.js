@@ -1,12 +1,12 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 // import { Link } from "react-router-dom";
-import GamesList from "../../Components/GamesList.js"
+import GamesList from "../../Components/GamesList.js";
 //import { BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
 
 import "./ChooseGame.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-function ChooseGameMode() {
+function ChooseGame() {
 	const [filterOption, setfilterOption] = useState("RecommendedGames");
 
 	var allGames_e;
@@ -14,9 +14,9 @@ function ChooseGameMode() {
 	var mostPlayed_e;
 
 
-	const progress = {
-		width: "50%",
-	};
+	// const progress = {
+	// 	width: "50%",
+	// };
 
 	function allGames() {
 		setfilterOption("AllGames");
@@ -63,8 +63,8 @@ function ChooseGameMode() {
 							<button
 								id="allGames"
 								onClick={allGames}
-                                //class="box foo"
-                                class={filterOption === "AllGames" ? "box foo actived-btn" : "box foo" }
+                                //className="box foo"
+                                className={filterOption === "AllGames" ? "box foo actived-btn" : "box foo" }
 							>
 								Todos os jogos
 							</button>
@@ -74,8 +74,8 @@ function ChooseGameMode() {
 								id="recommendedGames"
                                 style={{ textDecoration: "underline" }}
 								onClick={recommendedGames}
-                                //class="box foo testexd"
-                                class={filterOption === "RecommendedGames" ? "box foo actived-btn" : "box foo" }
+                                //className="box foo testexd"
+                                className={filterOption === "RecommendedGames" ? "box foo actived-btn" : "box foo" }
 							>
 								Recomendados
 							</button>
@@ -84,8 +84,8 @@ function ChooseGameMode() {
 							<button
 								id="mostPlayedGames"
 								onClick={mostPlayedGames}
-                                //class="box foo"
-                                class={filterOption === "MostPlayedGames" ? "box foo actived-btn" : "box foo" }
+                                //className="box foo"
+                                className={filterOption === "MostPlayedGames" ? "box foo actived-btn" : "box foo" }
 							>
 								Mais Jogados
 							</button>
@@ -114,18 +114,20 @@ function ChooseGameMode() {
 						</div>
 					</div>
 				</div> */}
-			</div>
-			<div className="games-list">
-				{/* TODO: Passar props para filtrar pedido de jogos `a api */}
-				{filterOption === "AllGames" && <GamesList />}
-				{filterOption === "RecommendedGames" && <GamesList />}
-				{filterOption === "MostPlayedGames" && (
-					// <GamesList />
-					<h1>ola</h1>
-				)}
-			</div>
-		</div>
-	);
+            </div>
+            <div className="container-hidden">
+                <div className="games-list">
+                    {/* TODO: Passar props para filtrar pedido de jogos `a api */}
+                    {filterOption === "AllGames" && <GamesList />}
+                    {filterOption === "RecommendedGames" && <GamesList />}
+                    {filterOption === "MostPlayedGames" && (
+                        // <GamesList />
+                        <h1>ola</h1>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
 }
 
-export default ChooseGameMode;
+export default ChooseGame;

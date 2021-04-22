@@ -38,6 +38,8 @@ class AuthService {
             if(res) {
                 console.log('New User was created')
             }
+            window.location.reload();        
+
         })
     }
 

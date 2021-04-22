@@ -1,76 +1,78 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { useHistory } from "react-router-dom";
 import "./Game.css"
 import "bootstrap/dist/css/bootstrap.min.css";
-import RastrosEngine from "../../Components/Engines/RastrosEngine";
-import GatosCaesEngine from "../../Components/Engines/GatosCaesEngine";
-//import socketIOClient from "socket.io-client";
-//import { BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
+import { RastrosEngine } from "../../Components/Engines/RastrosEngine";
+import { GatosCaesEngine } from "../../Components/Engines/GatosCaesEngine";
+import socket from "../../index"
 
-//const ENDPOINT = "http://127.0.0.1:4000";
-//const socket = socketIOClient(ENDPOINT);
+function Game()  {
 
-var game_id = 0;
-var game_mode = "Online";
-var ai_diff = "medium";
+    const [game_ready_to_start, setReady] = useState(false);
+    const url = new URLSearchParams(window.location.search);
+	let match_id = url.get("id");
 
-
-function Game() {
+    /* */
     let history = useHistory()
     var params = history.location.state
+    var game_id, game_mode, ai_diff;
 
-    if (params !== undefined) {
-        game_id = parseInt(params.game_id);
+    if ( match_id !== null ) {
+        game_id = parseInt( url.get("g") );
+        game_mode = "amigo";
+        ai_diff = undefined;
+    }
+    else {
+        game_id = parseInt( params.game_id );
         game_mode = params.game_mode;
-        ai_diff = params.ai_diff
+        ai_diff = params.ai_diff;
     }
+    //var game_id = parseInt(params.game_id);
     
-    //Apenas para teste estas 2 linhas
-    //var game_id = 0
-    //var game_mode = "AI"
-
-    /*
-    const [response, setResponse] = useState("");
-
-    useEffect(() => {
-        socket.on("server-client", data => {
-            console.log("9")
-            setResponse(data);
-        });
-    }, []);
-
-
-
-    function teste(event) {
-        event.preventDefault();
-        var input = document.getElementById('input');
-        
-        if (input.value) {
-            socket.emit('client-server', input.value);
-            input.value = '';
-        }
-    }
+    /* */
+    
+    /*  // To test, uncomment these lines and comment the block above
+    var game_id = 0;
+    var game_mode = "offline";
+    var ai_diff = "easy";
     */
 
-    if ( game_id === 0 ) {
+    // Game is ready to start when both players are connected
+    if ( game_ready_to_start === false ) {
+        if ( match_id !== null ) {
+            game_mode = "amigo"
+            socket.emit("entered_link", {"user_id": sessionStorage.getItem("user_id"), "match_id": match_id})
+
+            socket.on("match_found", (msg) => {
+                sessionStorage.setItem('match_id', msg['match_id']);
+                sessionStorage.setItem('starter', msg['starter']);
+                setReady(true)
+            })
+        } else {
+            setReady(true)
+        }
         return (
-            // <Route>
-            //     <Link to='/game_page'>
-            //         <button>Jogar</button>
-            //     </Link>
-            // </Route>
             <div>
-                <RastrosEngine game_mode={game_mode} ai_diff={ai_diff}></RastrosEngine>
+                <h1>Waiting for game...</h1>
             </div>
         );
+    } else {
+        if ( game_id === 0 ) {
+            return (
+                <div>
+                    <RastrosEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></RastrosEngine>
+                </div>
+            );
+        }
+        if ( game_id === 1 ) {
+            return (
+                <div>
+                    <GatosCaesEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></GatosCaesEngine>
+                </div>
+            );
+        }
     }
-    if ( game_id === 1 ) {
-        return (
-            <div>
-                <GatosCaesEngine game_mode={game_mode} ai_diff={ai_diff}></GatosCaesEngine>
-            </div>
-        );
-    } 
+    
 }
 
 export default Game;
