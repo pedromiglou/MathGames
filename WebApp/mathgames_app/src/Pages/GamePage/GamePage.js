@@ -81,7 +81,7 @@ function GamePage() {
 				sessionStorage.setItem('starter', msg['starter']);
 				history.push(
 					{
-					pathname: "/game", 
+					pathname: "/game/?g="+game_id, 
 					state: {
 						game_id: game_id,
 						game_mode: gameMode,
@@ -92,7 +92,7 @@ function GamePage() {
 		} else {
 			history.push(
 				{
-				pathname: "/game", 
+				pathname: "/game/?g="+game_id, 
 				state: {
 					game_id: game_id,
 					game_mode: gameMode,

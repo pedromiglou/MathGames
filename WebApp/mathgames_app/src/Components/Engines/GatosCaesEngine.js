@@ -67,7 +67,7 @@ class GatosCaesScene extends Phaser.Scene {
         // Sound effect played after every move
         this.move_sound = this.sound.add('click', {volume: 0.2});
         // Array that stores the board's clickable positions
-        var positions = []
+        this.positions = []
         // Player which is currently playing (0 or 1)
         this.current_player = 0;				
         this.player_turn = true;
@@ -113,7 +113,7 @@ class GatosCaesScene extends Phaser.Scene {
 
             socket.on("move_piece", (new_pos) => {
                 console.log("Received move: ", new_pos);
-                move(this, adjacents, positions[new_pos], current_player_text);
+                move(this, adjacents, this.positions[new_pos], current_player_text);
             });
         }
 
@@ -126,51 +126,60 @@ class GatosCaesScene extends Phaser.Scene {
                 this.player_0_valid_squares.add(String(pos))
                 this.player_1_valid_squares.add(String(pos))
                 if ([27, 28, 35, 36].includes(pos)) {
-                    tmpPositions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'square').setName(String(pos)).setInteractive());
-                    positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'center').setName(String(pos)).setInteractive());
+                    this.positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'square').setName(String(pos)).setInteractive());
+                    tmpPositions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'center').setName(String(pos)).setInteractive());
                 } else {
-                    positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'square').setName(String(pos)).setInteractive());
+                    this.positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'square').setName(String(pos)).setInteractive());
                 }
             }
         }
 
-        positions.concat(tmpPositions)
+        this.positions.concat(tmpPositions)
         
 
         this.add.text(750+20, 60, "É a vez do jogador:", {font: "40px Impact", color: "Orange"});
         var current_player_text = this.add.text(750+95, 120, "Jogador " + this.current_player, {font: "40px Impact", color: "Orange"});
         
+
+        console.log("inicio")
+        console.log(this.player_0_valid_squares)
         // Triggered when the player clicks
         this.input.on('pointerdown', function(pointer, currentlyOver) {
             var clicked_piece = currentlyOver[0];
             if (clicked_piece === undefined) {
                 return
             }
+
+
             if (this.player_turn) {
                 if (this.player_0_first_move && this.current_player === 0) {
                     if (["27", "28", "35", "36"].includes(clicked_piece.name)) {
-                        move(this, adjacents, clicked_piece, current_player_text)
-
-                        if ( game_mode === "online" || game_mode === "amigo" ) 
-                            socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
+                        if (move(this, adjacents, clicked_piece, current_player_text)) {
+                            if ( game_mode === "online" || game_mode === "amigo" )
+                                socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
                         
-                        if ( game_mode === "ai" )
-                            move(this, adjacents, this.positions[ randomPlay(this) ], current_player_text)
-
-
+                            if ( game_mode === "ai" )
+                                move(this, adjacents, this.positions[ randomPlay(this) ], current_player_text)
+                        }
                     }
                 } else if (this.player_1_first_move && this.current_player === 1) {
                     if (!["27", "28", "35", "36"].includes(clicked_piece.name)) {
-                        move(this, adjacents, clicked_piece, current_player_text)
-
-                        if ( game_mode === "online" || game_mode === "amigo" )
-                            socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
+                        if (move(this, adjacents, clicked_piece, current_player_text)) {
+                            if ( game_mode === "online" || game_mode === "amigo" )
+                                socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
+                        
+                            if ( game_mode === "ai" )
+                                move(this, adjacents, this.positions[ randomPlay(this) ], current_player_text)
+                        }
                     }
                 } else if (!(this.player_1_first_move && this.player_0_first_move)) {
-                    move(this, adjacents, clicked_piece, current_player_text)
-
-                    if ( game_mode === "online" || game_mode === "amigo" )
-                        socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
+                    if (move(this, adjacents, clicked_piece, current_player_text)) {
+                        if ( game_mode === "online" || game_mode === "amigo" )
+                            socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
+                    
+                        if ( game_mode === "ai" )
+                            move(this, adjacents, this.positions[ randomPlay(this) ], current_player_text)
+                    }
                 }   
             }
         }, this);
@@ -189,6 +198,8 @@ class GatosCaesScene extends Phaser.Scene {
 
 
 function move(scene, adjacents, clicked_piece, current_player_text) {
+    console.log("aqui")
+    console.log(scene.player_0_valid_squares)
     if ( (scene.player_0_valid_squares.has(clicked_piece.name) && scene.current_player === 0) 
         || (scene.player_1_valid_squares.has(clicked_piece.name) && scene.current_player === 1) ) {
 
@@ -204,6 +215,9 @@ function move(scene, adjacents, clicked_piece, current_player_text) {
 
         adjacents.clear()
         scene.player_0_valid_squares.delete(String(current_pos))
+        console.log("aqui22")
+        console.log(scene.player_0_valid_squares)
+
         scene.player_1_valid_squares.delete(String(current_pos))
         adjacents.add(String(current_pos-1))
         adjacents.add(String(current_pos+1))
@@ -246,11 +260,15 @@ function move(scene, adjacents, clicked_piece, current_player_text) {
         
         scene.current_player = 1 - scene.current_player
         current_player_text.setText("Jogador " + scene.current_player);
-        scene.player_turn = !scene.player_turn;
         scene.turnCount++;
+
+        if ( game_mode === "online" || game_mode === "amigo" || game_mode === "ai" ) 
+            scene.player_turn = !scene.player_turn;
+    
+        return true
     }
     
-
+    return false
 }
 
 
@@ -287,7 +305,7 @@ at the end transform chosen as needed
 */
 function randomPlay(scene) {
     var chosen = null;
-    var tmpSquares = Array.from(scene.validSquares).map(x => [(parseInt(x)-(parseInt(x)%8))/8, parseInt(x)%8]);
+    var tmpSquares = Array.from(scene.player_1_valid_squares).map(x => [(parseInt(x)-(parseInt(x)%8))/8, parseInt(x)%8]);
 
 
     if (Math.random()>ai_diff) {

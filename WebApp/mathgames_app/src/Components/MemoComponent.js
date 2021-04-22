@@ -18,7 +18,7 @@ export const MemoComponent = React.memo(() => {
         <Switch>
             <Route exact path='/' component={withRouter(Welcome)} />
             <Route exact path='/gamesDashboard' component={withRouter(ChooseGame)} />
-            <Route exact path='/game' component={withRouter(Game)} />
+            <Route path='/game/:g:id' component={withRouter(Game)} />
             <Route exact path='/login' component={withRouter(Login)} />
             <Route exact path='/gamePage' component={withRouter(GamePage)}/>
             <Route exact path='/profile' component={withRouter(Profile)}/>
