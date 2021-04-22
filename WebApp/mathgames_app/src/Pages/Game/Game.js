@@ -7,35 +7,30 @@ import { GatosCaesEngine } from "../../Components/Engines/GatosCaesEngine";
 import socket from "../../index"
 
 function Game()  {
-
     const [game_ready_to_start, setReady] = useState(false);
     const url = new URLSearchParams(window.location.search);
 	let match_id = url.get("id");
 
-    /* */
     let history = useHistory()
     var params = history.location.state
     var game_id, game_mode, ai_diff;
 
     if ( match_id !== null ) {
+        console.log("tou aqui")
         game_id = parseInt( url.get("g") );
         game_mode = "amigo";
         ai_diff = undefined;
     }
     else {
-        game_id = parseInt( params.game_id );
-        game_mode = params.game_mode;
-        ai_diff = params.ai_diff;
+        if (params !== undefined) {
+            game_id = parseInt( params.game_id );
+            game_mode = params.game_mode;
+            ai_diff = params.ai_diff;
+        } else {
+            // Necessario devido ao memo/Botao de encolher menu
+            game_id = parseInt( url.get("g") )
+        }
     }
-    //var game_id = parseInt(params.game_id);
-    
-    /* */
-    
-    /*  // To test, uncomment these lines and comment the block above
-    var game_id = 0;
-    var game_mode = "offline";
-    var ai_diff = "easy";
-    */
 
     // Game is ready to start when both players are connected
     if ( game_ready_to_start === false ) {

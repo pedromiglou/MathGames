@@ -13,7 +13,7 @@ class AuthService {
             body: JSON.stringify(userInfo)
         }).then(r=>r.json()).then(res=> {
             console.log(res)
-            if(res.user.token) {
+            if(res.user) {
                 localStorage.setItem("user", JSON.stringify(res.user));
                 window.location.assign("http://localhost:3000/");
             } else {
