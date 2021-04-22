@@ -29,7 +29,7 @@ const io = require("socket.io")(server, {
 
 
 var current_games = {};
-var match_queue = [];
+var match_queue = {0: [], 1: []};
 var users_info = {}
 var link_current_games = {};
 
@@ -43,7 +43,9 @@ io.on("connection", (socket) => {
   // 
   
   //User sends user_id and want to play with a friend through a link
-  socket.on("friendbylink", (user_id) => {
+  socket.on("friendbylink", (msg) => {
+    var user_id = msg["user_id"]
+    var game_id = msg["game_id"]
     users_info[user_id] = socket.id;
     io.to(socket.id).emit("link_sent", {"match_id": uuid.v4()});
   })
@@ -78,19 +80,21 @@ io.on("connection", (socket) => {
   // 
 
   //User says that he wants to play Online and put himself in matchqueue list
-  socket.on("user_id", (user_id) => {
+  socket.on("user_id", (msg) => {
+    var user_id = msg["user_id"];
+    var game_id = parseInt(msg["game_id"]);
     users_info[user_id] = socket.id;
-    match_queue.push(user_id)
+    match_queue[game_id].push(user_id)
 
-    if ( match_queue.length >= 2 ) {
+    if ( match_queue[game_id].length >= 2 ) {
       console.log("Match found.");
-      var player1 = match_queue.shift()
-      var player2 = match_queue.shift()
+      var player1 = match_queue[game_id].shift()
+      var player2 = match_queue[game_id].shift()
       if (player1 !== undefined && player2 !== undefined) {
         create_game(player1, player2);
       } else {
-        if (player1 !== undefined) match_queue.unshift(player1)
-        if (player2 !== undefined) match_queue.unshift(player2)
+        if (player1 !== undefined) match_queue[game_id].unshift(player1)
+        if (player2 !== undefined) match_queue[game_id].unshift(player2)
       }
     }
   });

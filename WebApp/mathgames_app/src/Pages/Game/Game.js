@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import "./Game.css"
 import "bootstrap/dist/css/bootstrap.min.css";
 import { RastrosEngine } from "../../Components/Engines/RastrosEngine";
-import GatosCaesEngine from "../../Components/Engines/GatosCaesEngine";
+import { GatosCaesEngine } from "../../Components/Engines/GatosCaesEngine";
 import socket from "../../index"
 
 function Game()  {

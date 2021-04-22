@@ -60,7 +60,6 @@ class RastrosScene extends Phaser.Scene {
     }
     
     create() {
-        console.log(game_mode)
         this.INITIAL_BOARD_POS = 60
         this.DISTANCE_BETWEEN_SQUARES = 105
 
@@ -72,17 +71,6 @@ class RastrosScene extends Phaser.Scene {
         this.player = new Set();
         // Stores the player which can move in a given turn
         this.current_player = 1;
-<<<<<<< HEAD
-        
-        // True if it's a player's turn
-        if ((game_mode === "Online" || game_mode === "Amigo") && sessionStorage.getItem("starter") === "false") {
-            this.player_turn = false;
-        } else  {
-            this.player_turn = true;
-        }
-
-=======
->>>>>>> c1362ad002b465681065b8cc8aceb66e9c1565df
         // True if the player's last click was the moving piece, false otherwise
         this.scene.clicked_piece_flag = false;
         // Squares which have been blocked

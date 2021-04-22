@@ -61,7 +61,7 @@ function GamePage() {
 	
 	function find_match() {
 		if (gameMode === "amigo") {
-			socket.emit("friendbylink", sessionStorage.getItem("user_id"))
+			socket.emit("friendbylink", {"user_id": sessionStorage.getItem("user_id"), "game_id": game_id})
 
 			socket.on("link_sent", (msg) => {
 				history.push({
@@ -73,18 +73,8 @@ function GamePage() {
 					  } 
 				})
 			})
-		} else if (gameMode !== "online") {
-			history.push(
-				{
-				pathname: "/game", 
-				state: {
-					game_id: game_id,
-					game_mode: gameMode,
-					ai_diff: AIdiff
-					}  
-				})
-		} else {
-			socket.emit("user_id", sessionStorage.getItem("user_id"))
+		} else if (gameMode === "online") {
+			socket.emit("user_id", {"user_id": sessionStorage.getItem("user_id"), "game_id": game_id})
 
 			socket.on("match_found", (msg) => {
 				console.log("Match found!");
@@ -100,6 +90,16 @@ function GamePage() {
 						}  
 					})
 			})
+		} else {
+			history.push(
+				{
+				pathname: "/game", 
+				state: {
+					game_id: game_id,
+					game_mode: gameMode,
+					ai_diff: AIdiff
+					}  
+				})
 		}
 	}
 	return (
