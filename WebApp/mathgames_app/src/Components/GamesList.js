@@ -46,14 +46,20 @@ function GamesList() {
 					<div className="row above-img">
 						<div className="col-lg-9 button_playnow">
 							{/* <button className="play-button"> Jogar! </button> */}
-							<button
-								className="learn-more circle"
-								id="playnow_btn"
-							>
+							<button className="learn-more circle">
 								<span className="circle" aria-hidden="true">
 									<span className="icon arrow"></span>
 								</span>
-								<span className="button-text">Jogar Agora</span>
+								<span
+									className="button-text"
+									style={{
+										color: "white",
+										marginLeft: "5px",
+										fontFamily: "Bubblegum Sans",
+									}}
+								>
+									Jogar Agora
+								</span>
 							</button>
 						</div>
 						<div className="col-lg-3 game_age">

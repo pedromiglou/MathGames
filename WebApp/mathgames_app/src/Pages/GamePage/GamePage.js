@@ -11,7 +11,10 @@ import AuthService from "../../Services/auth.service"
 
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
 function GamePage() {
-	let history = useHistory();
+    //De alguma maneira verificar se estiver vazio
+    const [gameMode, setGameMode] = useState("");
+    //Depois aqui podemos meter conforme as preferencias no perfil
+    const [AIdif, setAIdif] = useState("");
 
 	//De alguma maneira verificar se estiver vazio
 	const [gameMode, setGameMode] = useState("");
@@ -24,11 +27,9 @@ function GamePage() {
 		isSomeoneLogged = true;
 	}
 
-	const dif_options = [
-		{ label: "easy", value: "easy" },
-		{ label: "medium", value: "medium" },
-		{ label: "hard", value: "hard" },
-	];
+    const params = new URLSearchParams(window.location.search);
+    let id = params.get("id");
+    const game_info = games_info[id];
 
 	const params = new URLSearchParams(window.location.search);
 	let game_id = params.get("id");

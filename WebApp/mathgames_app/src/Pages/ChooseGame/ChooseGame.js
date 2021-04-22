@@ -1,6 +1,6 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 // import { Link } from "react-router-dom";
-import GamesList from "../../Components/GamesList.js"
+import GamesList from "../../Components/GamesList.js";
 //import { BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
 
 import "./ChooseGame.css";
@@ -114,18 +114,20 @@ function ChooseGame() {
 						</div>
 					</div>
 				</div> */}
-			</div>
-			<div className="games-list">
-				{/* TODO: Passar props para filtrar pedido de jogos `a api */}
-				{filterOption === "AllGames" && <GamesList />}
-				{filterOption === "RecommendedGames" && <GamesList />}
-				{filterOption === "MostPlayedGames" && (
-					// <GamesList />
-					<h1>ola</h1>
-				)}
-			</div>
-		</div>
-	);
+            </div>
+            <div className="container-hidden">
+                <div className="games-list">
+                    {/* TODO: Passar props para filtrar pedido de jogos `a api */}
+                    {filterOption === "AllGames" && <GamesList />}
+                    {filterOption === "RecommendedGames" && <GamesList />}
+                    {filterOption === "MostPlayedGames" && (
+                        // <GamesList />
+                        <h1>ola</h1>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
 }
 
 export default ChooseGame;

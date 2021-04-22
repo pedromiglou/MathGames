@@ -2,6 +2,15 @@
 	margin: 15px;
 }
 
+.games-list-hidden {
+	overflow: hidden;
+}
+
+.games-list {
+	transform: translateY(1000px);
+    animation: slideUp 0.8s ease forwards 0.5s;
+}
+
 .games-list h1 {
 	text-align: center;
 	font-size: 50px;
@@ -12,6 +21,8 @@
 	/* border: 1px solid #dee2e6; */
 	min-height: 70px;
 	max-height: 70px;
+
+	overflow: hidden;
 }
 
 .lvl-info {
@@ -40,7 +51,8 @@
 	border: none;
 	padding: 0;
     border: 1px solid #dee2e6;
-
+	color: white;
+	margin: 0;
 }
 
 .top-bar button:hover {
@@ -48,6 +60,7 @@
 	width: 100%;
 	background: none;
 	text-decoration: underline;
+	color: rgb(113, 88, 226);
 }
 
 .top-button {
@@ -62,6 +75,9 @@
 
 	font-size: large;
 	padding: 0;
+
+	transform: translateY(300px);
+    animation: slideDown 0.8s ease forwards 0.5s;
 }
 
 .top-button {
@@ -72,7 +88,7 @@
 	width: 100%;
 	height: 70px;
 	margin: 4px 0;
-	background: #d1d1d1;
+	background: rgb(113, 88, 226);
 	font-weight: lighter;
 	letter-spacing: 2px;
 	transition: 1s box-shadow;
@@ -325,9 +341,28 @@
 	}
 }
 
+@keyframes slideUp {
+    0% {
+        transform: translateY(500px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+@keyframes slideDown {
+    0% {
+        transform: translateY(-300px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
 
 
 .actived-btn {
     background-color: white !important;
+	color: rgb(113, 88, 226) !important;
 }
 
