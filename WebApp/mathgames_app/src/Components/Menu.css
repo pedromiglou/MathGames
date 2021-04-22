@@ -25,6 +25,16 @@ html, body, #root{
 }
 */
 
+
+h1 { font-family: Bubblegum Sans; font-size: 24px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 26.4px; } h3 { font-family: Bubblegum Sans; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 15.4px; } p { font-family: Bubblegum Sans; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 20px; } blockquote { font-family: Bubblegum Sans; font-size: 21px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 30px; } pre { font-family: Bubblegum Sans; font-size: 13px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 18.5667px; }
+span {
+    font-family: Bubblegum Sans;
+}
+
+button {
+    font-family: Bubblegum Sans;
+}
+
 /* Global horizontal Navbar */
 #horizontal_nav_row.row{
     background-color: #F1F1F1;
@@ -259,25 +269,6 @@ span.icons-noname{
     width: auto;
 }
 
-/*-----------------------*/
-
-
-/*----- SUB-COMPONENT----*/
-.sub-component{
-    height: 100%;
-}
-
-.sub-component.active{
-    width: calc(100% - 300px);
-    margin-left: 300px;
-    transition: 700ms;
-}
-
-.sub-component.collapsed{
-    width: calc(100% - 65px);
-    margin-left: 65px;
-    transition: 600ms;
-}
 /*-----------------------*/
 
 

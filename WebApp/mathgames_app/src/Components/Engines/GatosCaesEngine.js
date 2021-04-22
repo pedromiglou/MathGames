@@ -1,38 +1,57 @@
-
-import  React from "react";
+import  React,  {useEffect, useState} from "react";
 import Phaser from "phaser";
-
-//var game_type = null
-
-export default class GatosCaesEngine extends React.Component {
+import socket from "../../index"
 
 
-    // constructor(props)  {
-    //     super(props)
-    //     //game_type = props.game_type
-    // }
+var game_mode;
+var ai_diff;
 
-    componentDidMount() {
+export const GatosCaesEngine = ({arg_game_mode, arg_ai_diff}) => {
+
+    game_mode = arg_game_mode;
+
+    if (arg_ai_diff === "easy")
+        ai_diff = 0.2
+    else if (arg_ai_diff === "medium")
+        ai_diff = 0.5
+    else
+        ai_diff = 0.8
+
+    const [rendered, setRendered] = useState(false);
+
+    useEffect(() => {
+        if (rendered)
+            return;
 
         let canvasobj = document.getElementById("game_canvas");
+        canvasobj.style.border = "20px solid black";
 
         const config = {
             canvas: canvasobj,
             type: Phaser.WEBGL,
-            width: 1100,
-			height: 855,
+            scale: {
+                mode: Phaser.Scale.FIT,
+                width: 1100,
+                height: 855,
+            },
             backgroundColor: '#4488aa',
-            scene: {
-                preload: this.preload,
-                create: this.create,
-                update: this.update
-            }
+            scene: [GatosCaesScene]
         }
-
         new Phaser.Game(config);
+        setRendered(true);
+    }, [rendered]);
+    
+    return (
+        
+        <canvas id="game_canvas" className="game" />
+    );
+}
 
-    }
 
+class GatosCaesScene extends Phaser.Scene {
+	constructor() {
+		super({key:"GatosCaesScene"});
+	}
 
     preload() {
         this.load.image('square', process.env.PUBLIC_URL + '/game_assets/gatos_caes/square.png')
@@ -44,20 +63,39 @@ export default class GatosCaesEngine extends React.Component {
     create() {
         var INITIAL_BOARD_POS = 60
         var DISTANCE_BETWEEN_SQUARES = 105
+
         // Sound effect played after every move
         this.move_sound = this.sound.add('click', {volume: 0.2});
         // Array that stores the board's clickable positions
         var positions = []
         // Player which is currently playing (0 or 1)
         this.current_player = 0;				
-
+        this.player_turn = true;
         this.player_0_valid_squares = new Set()
         this.player_1_valid_squares = new Set()
-        var player_0_first_move = true
-        var player_1_first_move = true
+        this.player_0_first_move = true
+        this.player_1_first_move = true
 
         var adjacents = new Set()
 
+        if ( game_mode === "online" || game_mode === "amigo" ) {
+            if ( sessionStorage.getItem("starter") === "false" ) {
+                this.player_turn = false;
+            }
+            else {
+                this.player_turn = true
+            }
+
+            socket.emit("start_game", sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
+
+            socket.on("move_piece", (new_pos) => {
+                console.log("Received move: ", new_pos);
+                move(this, adjacents, positions[new_pos], current_player_text);
+            });
+        }
+
+        // temos que adicionar só no fim as imagens dos X centrais, para quando recebemos o new_pos no online podermos mapear logo no positions[new_pos]
+        var tmpPositions = []
         // Loop used to fill the board with clickable squares
         for (var pos_y = 0; pos_y < 8; pos_y++) {
             for (var pos_x = 0; pos_x < 8; pos_x++) {
@@ -65,13 +103,16 @@ export default class GatosCaesEngine extends React.Component {
                 this.player_0_valid_squares.add(String(pos))
                 this.player_1_valid_squares.add(String(pos))
                 if ([27, 28, 35, 36].includes(pos)) {
-                    positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'square').setName(String(pos)).setInteractive());
+                    tmpPositions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'square').setName(String(pos)).setInteractive());
                     positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'center').setName(String(pos)).setInteractive());
                 } else {
                     positions.push(this.add.image(INITIAL_BOARD_POS + DISTANCE_BETWEEN_SQUARES*pos_x, INITIAL_BOARD_POS+DISTANCE_BETWEEN_SQUARES*pos_y, 'square').setName(String(pos)).setInteractive());
                 }
             }
         }
+
+        positions.concat(tmpPositions)
+        
 
         this.add.text(750+20, 60, "É a vez do jogador:", {font: "40px Impact", color: "Orange"});
         var current_player_text = this.add.text(750+95, 120, "Jogador " + this.current_player, {font: "40px Impact", color: "Orange"});
@@ -82,18 +123,27 @@ export default class GatosCaesEngine extends React.Component {
             if (clicked_piece === undefined) {
                 return
             }
-            if (player_0_first_move && this.current_player === 0) {
-                if (["27", "28", "35", "36"].includes(clicked_piece.name)) {
-                    player_0_first_move = false;
+            if (this.player_turn) {
+                if (this.player_0_first_move && this.current_player === 0) {
+                    if (["27", "28", "35", "36"].includes(clicked_piece.name)) {
+                        move(this, adjacents, clicked_piece, current_player_text)
+                        // Emit move just made
+                        if ( game_mode === "online" || game_mode === "amigo" ) 
+                            socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
+                    }
+                } else if (this.player_1_first_move && this.current_player === 1) {
+                    if (!["27", "28", "35", "36"].includes(clicked_piece.name)) {
+                        move(this, adjacents, clicked_piece, current_player_text)
+                        // Emit move just made
+                        if ( game_mode === "online" || game_mode === "amigo" )
+                            socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
+                    }
+                } else if (!(this.player_1_first_move && this.player_0_first_move)) {
                     move(this, adjacents, clicked_piece, current_player_text)
-                }
-            } else if (player_1_first_move && this.current_player === 1) {
-                if (!["27", "28", "35", "36"].includes(clicked_piece.name)) {
-                    player_1_first_move = false;
-                    move(this, adjacents, clicked_piece, current_player_text)
-                }
-            } else if (!(player_1_first_move && player_0_first_move)) {
-                move(this, adjacents, clicked_piece, current_player_text)
+                    // Emit move just made
+                    if ( game_mode === "online" || game_mode === "amigo" )
+                        socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
+                }   
             }
         }, this);
     }
@@ -113,6 +163,12 @@ export default class GatosCaesEngine extends React.Component {
 function move(scene, adjacents, clicked_piece, current_player_text) {
     if ( (scene.player_0_valid_squares.has(clicked_piece.name) && scene.current_player === 0) 
         || (scene.player_1_valid_squares.has(clicked_piece.name) && scene.current_player === 1) ) {
+
+        if (scene.player_0_first_move && scene.current_player === 0)
+            scene.player_0_first_move = false
+        if (scene.player_1_first_move && scene.current_player === 1)
+            scene.player_1_first_move = false
+
         scene.move_sound.play();
         
         // Get new square's position [0..49]
@@ -159,6 +215,7 @@ function move(scene, adjacents, clicked_piece, current_player_text) {
         
         scene.current_player = 1 - scene.current_player
         current_player_text.setText("Jogador " + scene.current_player);
+        scene.player_turn = !scene.player_turn;
 
     }
     
