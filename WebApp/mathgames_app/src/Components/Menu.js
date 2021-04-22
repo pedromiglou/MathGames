@@ -17,8 +17,8 @@ import { v4 as uuidv4 } from 'uuid';
 /* Data and Service */
 import {sidebarData_group1, sidebarData_group2} from '../data/SidebarData.js';
 import AuthService from '../Services/auth.service';
-import FriendsService from './Services/friends.service';
-import NotificationsService from './Services/notifications.service';
+import FriendsService from '../Services/friends.service';
+import NotificationsService from '../Services/notifications.service';
 
 /* Redux */
 import { useDispatch } from 'react-redux';
