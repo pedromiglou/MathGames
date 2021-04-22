@@ -143,3 +143,8 @@ require("./app/routes/notification.routes.js")(app);
 
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
+
+setInterval(function () {
+  sql.query("Select 1");  
+  console.log("controlo query");
+}, 500000);

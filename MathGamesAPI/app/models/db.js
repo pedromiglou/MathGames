@@ -7,7 +7,9 @@ var connection = mysql.createPool({
   port: dbConfig.PORT,
   user: dbConfig.USER,
   password: dbConfig.PASSWORD,
-  database: dbConfig.DB
+  database: dbConfig.DB,
+  timezone: dbConfig.TIMEZONE
+
 });
 
 /*
