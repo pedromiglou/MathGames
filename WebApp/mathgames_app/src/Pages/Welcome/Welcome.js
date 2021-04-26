@@ -75,14 +75,14 @@ function Welcome() {
 									</div> */}
                                     <div id="container">
                                         <Link to="/gamesDashboard">
-                                            <button class="learn-more slide-up-btn">
+                                            <button className="learn-more slide-up-btn">
                                                 <span
-                                                    class="circle"
+                                                    className="circle"
                                                     aria-hidden="true"
                                                 >
-                                                    <span class="icon arrow"></span>
+                                                    <span className="icon arrow"></span>
                                                 </span>
-                                                <span class="button-text">
+                                                <span className="button-text">
                                                     JOGAR AGORA!
                                                 </span>
                                             </button>

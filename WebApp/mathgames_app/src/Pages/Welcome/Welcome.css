@@ -169,6 +169,11 @@
     animation: slideUp 0.8s ease-in-out forwards 1s;
 }
 
+.slide-down-btn {
+    transform: translateY(-300px);
+    animation: slideDown 0.8s ease-in-out forwards 1s;
+}
+
 .half {
     width: 50%;
 }
