@@ -47,7 +47,6 @@ const Profile = () => {
     var geral_e;
     var inventario_e;
     var last_games_e;
-    var preferencias_e;
 
     function geral() {
         setMenuOption("Geral");

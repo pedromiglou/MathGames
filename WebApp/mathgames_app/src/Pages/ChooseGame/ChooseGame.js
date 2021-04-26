@@ -59,10 +59,10 @@ function ChooseGameMode() {
                                 id="allGames"
                                 onClick={allGames}
                                 //class="box foo"
-                                class={
+                                className={
                                     filterOption === "AllGames"
-                                        ? "box foo actived-btn"
-                                        : "box foo"
+                                        ? "box actived-btn"
+                                        : "box up"
                                 }
                             >
                                 Todos os jogos
@@ -71,13 +71,11 @@ function ChooseGameMode() {
                         <div className="col-lg-4 top-button">
                             <button
                                 id="recommendedGames"
-                                // style={{ textDecoration: "underline" }}
                                 onClick={recommendedGames}
-                                //class="box foo testexd"
-                                class={
+                                className={
                                     filterOption === "RecommendedGames"
-                                        ? "box foo actived-btn"
-                                        : "box foo"
+                                        ? "box actived-btn"
+                                        : "box up"
                                 }
                             >
                                 Recomendados
@@ -87,11 +85,10 @@ function ChooseGameMode() {
                             <button
                                 id="mostPlayedGames"
                                 onClick={mostPlayedGames}
-                                //class="box foo"
-                                class={
+                                className={
                                     filterOption === "MostPlayedGames"
-                                        ? "box foo actived-btn"
-                                        : "box foo"
+                                        ? "box actived-btn"
+                                        : "box up"
                                 }
                             >
                                 Mais Jogados

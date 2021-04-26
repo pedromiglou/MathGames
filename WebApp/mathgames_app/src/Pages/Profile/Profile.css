@@ -9,8 +9,11 @@
     padding: 0%;
     margin: 0%;
 
-    /* transform: translateY(1000px);
-    animation: slideInL 0.8s ease forwards 0.5s; */
+/*     transform: translateY(1000px);
+    animation: slideInL 0.8s ease forwards 0.5s;
+  */
+
+    overflow: hidden;
 }
 
 .side-button {
@@ -27,6 +30,9 @@
     padding: 0%;
     margin: 0%;
     text-align: left;
+
+    transform: translateY(-500px);
+    animation: slideInL 0.6s ease forwards 0.5s;
 }
 
 .side-button-2 {
@@ -37,6 +43,11 @@
     margin: 0%;
     text-align: left;
     margin-top: 102.75px;
+
+    color: white;   
+
+    transform: translateY(-500px);
+    animation: slideInL 0.8s ease forwards 0.5s;
 }
 
 .side-button-3 {
@@ -47,6 +58,11 @@
     margin: 0%;
     text-align: left;
     margin-top: 205.5px;
+
+    color: white;
+
+    transform: translateY(-500px);
+    animation: slideInL 1s ease forwards 0.5s;
 }
 
 .side-button:hover {
@@ -77,6 +93,9 @@ hr.solid-pos {
     margin-top: 50px;
     margin-left: 30px;
     width: auto;
+
+    transform: translateY(-1000px);
+    animation: slideDown 0.8s ease forwards 0.5s;
 }
 
 .top-profile img {
@@ -85,8 +104,8 @@ hr.solid-pos {
     height: 200px;
     width: auto;
 
-    transform: translateY(1000px);
-    animation: slideDown 0.8s ease forwards 0.5s;
+    /* transform: translateY(1000px);
+    animation: slideDown 0.8s ease forwards 0.5s; */
 }
 
 .account-name {
@@ -107,6 +126,9 @@ hr.solid-pos {
     padding-top: 70px;
     padding-bottom: 70px;
     margin-left: 30px;
+
+    transform: translateY(1000px);
+    animation: slideUp 0.8s ease forwards 0.5s;
 }
 
 .profile-games img {
@@ -170,7 +192,7 @@ hr.solid-pos {
 
 .last_games_container {
     margin-left: -1px;
-	border: 1px solid black;
+	border: 1px solid #F5F0F0;
 	background-color: #F5F0F0;
 }
 
