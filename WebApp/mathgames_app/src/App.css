@@ -4,7 +4,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: "Lato", sans-serif;
+    font-family: Bubblegum Sans;
 }
 
 html,
@@ -22,6 +22,7 @@ body,
     color: white;
     /* background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab); */
     background: linear-gradient(132deg, #25e68c, #05f5c5, #a64bde);
+    /* background: linear-gradient(132deg, rgba(37, 230, 140, 0.5), rgba(5, 245, 197, 0.5), rgba(166, 75, 222, 0.5)); */
     background-size: 400% 400%;
     animation: gradient 15s ease infinite !important;
 }

@@ -20,9 +20,9 @@ function ChooseGameMode() {
         recommended_e = document.getElementById("recommendedGames");
         mostPlayed_e = document.getElementById("mostPlayedGames");
 
-        allGames_e.style.textDecoration = "underline";
+        /* allGames_e.style.textDecoration = "underline";
         recommended_e.style.textDecoration = "";
-        mostPlayed_e.style.textDecoration = "";
+        mostPlayed_e.style.textDecoration = ""; */
     }
 
     function recommendedGames() {
@@ -32,9 +32,9 @@ function ChooseGameMode() {
         recommended_e = document.getElementById("recommendedGames");
         mostPlayed_e = document.getElementById("mostPlayedGames");
 
-        allGames_e.style.textDecoration = "";
+        /* allGames_e.style.textDecoration = "";
         recommended_e.style.textDecoration = "underline";
-        mostPlayed_e.style.textDecoration = "";
+        mostPlayed_e.style.textDecoration = ""; */
     }
 
     function mostPlayedGames() {
@@ -44,9 +44,9 @@ function ChooseGameMode() {
         recommended_e = document.getElementById("recommendedGames");
         mostPlayed_e = document.getElementById("mostPlayedGames");
 
-        allGames_e.style.textDecoration = "";
+        /* allGames_e.style.textDecoration = "";
         recommended_e.style.textDecoration = "";
-        mostPlayed_e.style.textDecoration = "underline";
+        mostPlayed_e.style.textDecoration = "underline"; */
     }
 
     return (
@@ -71,7 +71,7 @@ function ChooseGameMode() {
                         <div className="col-lg-4 top-button">
                             <button
                                 id="recommendedGames"
-                                style={{ textDecoration: "underline" }}
+                                // style={{ textDecoration: "underline" }}
                                 onClick={recommendedGames}
                                 //class="box foo testexd"
                                 class={

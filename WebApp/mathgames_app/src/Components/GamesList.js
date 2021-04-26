@@ -35,7 +35,6 @@ function GamesList() {
 		if (game.hoover) {
 			return (
 				<>
-					<h2 className="game-title">{game.title}</h2>
 					<div className="row above-img">
 						<div className="col-lg-9 button_playnow">
 							{/* <button className="play-button"> Jogar! </button> */}
@@ -81,6 +80,7 @@ function GamesList() {
 										className="card-img"
 										id={key}
 									/>
+									<h2 className="game-title">{value["title"]}</h2>
 									{showTitle(value)}
 								</div>
 							</Link>
