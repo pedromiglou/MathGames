@@ -1,21 +1,24 @@
 module.exports = app => {
     const bans = require("../controllers/ban.controller.js");
+    var router = require("express").Router();
   
     // Create a new Ban
-    app.post("/bans", bans.create);
+    router.post("/", bans.create);
   
-    // Retrieve all Bans
-    app.get("/bans", bans.findAll);
+    // Retrieve all bans
+    router.get("/", bans.findAll);
   
-    // Retrieve a single Ban with userId
-    app.get("/bans/:userId", bans.findByUserId);
+    // Retrieve a single Ban with id
+    router.get("/:id", bans.findOne);
   
-    // Update a Ban with userId
-    app.put("/bans/:userId", bans.update);
+    // Update a Ban with id
+    router.put("/:id", bans.update);
   
-    // Delete a Ban with userId
-    app.delete("/bans/:userId", bans.delete);
+    // Delete a Ban with id
+    router.delete("/:id", bans.delete);
   
-    // Delete all bans
-    app.delete("/bans", bans.deleteAll);
+    // Delete all Bans
+    router.delete("/", bans.deleteAll);
+  
+    app.use('/api/bans', router);
   };

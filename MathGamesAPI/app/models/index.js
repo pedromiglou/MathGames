@@ -20,5 +20,8 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.user = require("./user.model.js")(sequelize, Sequelize);
+db.ban = require("./ban.model.js")(sequelize, Sequelize);
+
+db.ban.belongsTo(db.user, {through: "users",foreignKey: 'user_id', as: 'user'})
 
 module.exports = db;

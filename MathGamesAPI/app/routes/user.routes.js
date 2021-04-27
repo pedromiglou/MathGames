@@ -18,10 +18,10 @@ module.exports = app => {
     // Update a User with id
     router.put("/:id", users.update);
   
-    // Delete a Tutorial with id
+    // Delete a User with id
     router.delete("/:id", users.delete);
   
-    // Delete all Tutorials
+    // Delete all Users
     router.delete("/", users.deleteAll);
   
 
