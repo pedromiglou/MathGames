@@ -1,6 +1,6 @@
 
 module.exports = (sequelize, Sequelize) => {
-    const Friend = sequelize.define("friend", {
+    const Friend = sequelize.define("Friends", {
       friend1: {
         type: Sequelize.INTEGER,
         allowNull: false,

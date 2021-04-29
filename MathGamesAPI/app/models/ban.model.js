@@ -1,6 +1,6 @@
 
 module.exports = (sequelize, Sequelize) => {
-    const Ban = sequelize.define("ban", {
+    const Ban = sequelize.define("Bans", {
       user_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
