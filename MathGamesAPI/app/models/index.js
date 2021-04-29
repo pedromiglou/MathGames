@@ -22,6 +22,8 @@ db.sequelize = sequelize;
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.ban = require("./ban.model.js")(sequelize, Sequelize);
 db.friend = require("./friend.model.js")(sequelize, Sequelize);
+db.game = require("./game.model.js")(sequelize, Sequelize);
+
 
 db.ban.belongsTo(db.user, {through: "users",foreignKey: 'user_id', as: 'user'});
 db.friend.belongsTo(db.user, {through: "users", foreignKey: 'friend1', as: 'friend_1'})
