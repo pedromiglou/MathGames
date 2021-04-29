@@ -1,21 +1,24 @@
 module.exports = app => {
     const tournamentUsers = require("../controllers/tournamentusers.controller.js");
+    var router = require("express").Router();
   
-    // Create a new tournament User
-    app.post("/tournamentusers", tournamentUsers.create);
+    // Create a new tournament user
+    router.post("/", tournamentUsers.create);
   
     // Retrieve all tournamentUsers
-    app.get("/tournamentusers", tournamentUsers.findAll);
+    router.get("/", tournamentUsers.findAll);
   
-    // Retrieve all Users with tournamentId
-    app.get("/tournamentusers/:tournamentId", tournamentUsers.findByTournamentId);
+    // Retrieve a all users of a tournament with the tournament id
+    router.get("/:id", tournamentUsers.findByTournament);
   
     // Update a tournamentUser with userId
-    app.put("/tournamentusers/:tournamentId/:userId", tournamentUsers.update);
+    //router.put("/:tournamentId/:userId", tournamentUsers.update);
   
-    // Delete a tournamentUser with userId
-    app.delete("/tournamentusers/:tournamentId/:userId", tournamentUsers.delete);
+    // Delete a tournamentUser with Ids
+    router.delete("/:tournamentId/:userId", tournamentUsers.delete);
   
     // Delete all tournamentUsers
-    app.delete("/tournamentusers", tournamentUsers.deleteAll);
+    router.delete("/", tournamentUsers.deleteAll);
+  
+    app.use('/api/tournamentusers', router);
   };
