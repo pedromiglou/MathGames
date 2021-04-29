@@ -24,6 +24,7 @@ db.ban = require("./ban.model.js")(sequelize, Sequelize);
 db.friend = require("./friend.model.js")(sequelize, Sequelize);
 db.game = require("./game.model.js")(sequelize, Sequelize);
 db.game_match = require("./gamematch.model.js")(sequelize, Sequelize);
+db.tournament = require("./tournament.model.js")(sequelize, Sequelize);
 
 
 db.ban.belongsTo(db.user, {through: "users",foreignKey: 'user_id', as: 'user'});
@@ -33,6 +34,8 @@ db.game_match.belongsTo(db.user, {through: "users", foreignKey: 'player1', as: '
 db.game_match.belongsTo(db.user, {through: "users", foreignKey: 'player2', as: 'player_2'})
 db.game_match.belongsTo(db.user, {through: "users", foreignKey: 'winner', as: 'winner_user'})
 db.game_match.belongsTo(db.game, {through: "games", foreignKey: 'game_id', as: 'game'})
-
+db.tournament.belongsTo(db.user, {through: "users", foreignKey: 'winner', as: 'winner_user'})
+db.tournament.belongsTo(db.user, {through: "users", foreignKey: 'creator', as: 'creator_user'})
+db.tournament.belongsTo(db.game, {through: "games", foreignKey: 'game_id', as: 'game'})
 
 module.exports = db;
