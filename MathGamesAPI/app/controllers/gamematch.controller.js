@@ -1,16 +1,19 @@
-const GameMatch = require("../models/gamematch.model.js");
+const db = require("../models");
+const GameMatch = db.game_match;
+const Op = db.Sequelize.Op;
 
-// Create and Save a new Match
+// Create and Save a new GameMatch
 exports.create = (req, res) => {
   // Validate request
   if (!req.body) {
     res.status(400).send({
       message: "Content can not be empty!"
     });
+    return;
   }
 
-  // Create a Match
-  const match = new GameMatch({
+  // Create a GameMatch
+  const gameMatch = {
     player1: req.body.player1,
     player2: req.body.player2,
     winner: req.body.winner,
@@ -18,103 +21,113 @@ exports.create = (req, res) => {
     game_type: req.body.game_type,
     game_id: req.body.game_id,
     actual_state: req.body.actual_state
-  });
+  };
 
-  // Save Match in the database
-  GameMatch.create(match, (err, data) => {
-    if (err)
+  // Save GameMatch in the database
+  GameMatch.create(gameMatch)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while creating the Match."
+          err.message || "Some error occurred while creating the GameMatch."
       });
-    else res.send(data);
-  });
-};
-
-// Retrieve all Games from the database.
-exports.findAll = (req, res) => {
-  GameMatch.getAll((err, data) => {
-    if (err)
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving Games."
-      });
-    else res.send(data);
-  });
-};
-
-// Find a single Match with a MatchId
-exports.findOne = (req, res) => {
-  GameMatch.findById(req.params.matchId, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          message: `Not found Match with id ${req.params.matchId}.`
-        });
-      } else {
-        res.status(500).send({
-          message: "Error retrieving Match with id " + req.params.matchId
-        });
-      }
-    } else res.send(data);
-  });
-};
-
-// Update a Match identified by the matchId in the request
-exports.update = (req, res) => {
-  // Validate Request
-  if (!req.body) {
-    res.status(400).send({
-      message: "Content can not be empty!"
     });
-  }
-
-  console.log(req.body);
-
-  GameMatch.updateById(
-    req.params.matchId,
-    new GameMatch(req.body),
-    (err, data) => {
-      if (err) {
-        if (err.kind === "not_found") {
-          res.status(404).send({
-            message: `Not found Match with id ${req.params.matchId}.`
-          });
-        } else {
-          res.status(500).send({
-            message: "Error updating Match with id " + req.params.matchId
-          });
-        }
-      } else res.send(data);
-    }
-  );
 };
 
-// Delete a Match with the specified matchId in the request
-exports.delete = (req, res) => {
-  GameMatch.remove(req.params.matchId, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          message: `Not found Match with id ${req.params.matchId}.`
-        });
-      } else {
-        res.status(500).send({
-          message: "Could not delete Match with id " + req.params.matchId
-        });
-      }
-    } else res.send({ message: `Match was deleted successfully!` });
-  });
-};
-
-// Delete all Matches from the database.
-exports.deleteAll = (req, res) => {
-  GameMatch.removeAll((err, data) => {
-    if (err)
+// Retrieve all GameMatchs from the database.
+exports.findAll = (req, res) => {
+  GameMatch.findAll()
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while removing all matches."
+          err.message || "Some error occurred while retrieving GameMatchs."
       });
-    else res.send({ message: `All Matches were deleted successfully!` });
-  });
+    });
+};
+
+// Find a single GameMatch with an id
+exports.findOne = (req, res) => {
+  const id = req.params.id;
+
+  GameMatch.findByPk(id)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving GameMatch with id=" + id
+      });
+    });
+};
+
+// Update a GameMatch by the id in the request
+exports.update = (req, res) => {
+  const id = req.params.id;
+
+  GameMatch.update(req.body, {
+    where: { id: id }
+  })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: "GameMatch was updated successfully."
+        });
+      } else {
+        res.send({
+          message: `Cannot update GameMatch with id=${id}. Maybe GameMatch was not found or req.body is empty!`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error updating GameMatch with id=" + id
+      });
+    });
+};
+
+// Delete a GameMatch with the specified id in the request
+exports.delete = (req, res) => {
+  const id = req.params.id;
+
+  GameMatch.destroy({
+    where: { id: id }
+  })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: "GameMatch was deleted successfully!"
+        });
+      } else {
+        res.send({
+          message: `Cannot delete GameMatch with id=${id}. Maybe GameMatch was not found!`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Could not delete GameMatch with id=" + id
+      });
+    });
+};
+
+// Delete all GameMatchs from the database.
+exports.deleteAll = (req, res) => {
+  GameMatch.destroy({
+    where: {},
+    truncate: false
+  })
+    .then(nums => {
+      res.send({ message: `${nums} GameMatchs were deleted successfully!` });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while removing all GameMatchs."
+      });
+    });
 };
