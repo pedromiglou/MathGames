@@ -1,4 +1,6 @@
-const Ban = require("../models/ban.model.js");
+const db = require("../models");
+const Ban = db.ban;
+const Op = db.Sequelize.Op;
 
 // Create and Save a new Ban
 exports.create = (req, res) => {
@@ -7,108 +9,120 @@ exports.create = (req, res) => {
     res.status(400).send({
       message: "Content can not be empty!"
     });
+    return;
   }
 
   // Create a Ban
-  const ban = new Ban({
+  const ban = {
     reason: req.body.reason,
-  });
+    user_id: req.body.user_id
+  };
 
   // Save Ban in the database
-  Ban.create(ban, req.body.user_id, (err, data) => {
-    if (err)
+  Ban.create(ban)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while creating the Ban."
       });
-    else res.send(data);
-  });
+    });
 };
 
 // Retrieve all Bans from the database.
 exports.findAll = (req, res) => {
-  Ban.getAll((err, data) => {
-    if (err)
+  Ban.findAll()
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving the bans."
+          err.message || "Some error occurred while retrieving Bans."
       });
-    else res.send(data);
-  });
-};
-
-// Find ban of a given userId
-exports.findByUserId = (req, res) => {
-  Ban.findByUserId(req.params.userId, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          message: `Not found Ban with user id ${req.params.userId}.`
-        });
-      } else {
-        res.status(500).send({
-          message: "Error retrieving Ban with user id " + req.params.userId
-        });
-      }
-    } else res.send(data);
-  });
-};
-
-// Update a Ban identified by the userId in the request
-exports.update = (req, res) => {
-  // Validate Request
-  if (!req.body) {
-    res.status(400).send({
-      message: "Content can not be empty!"
     });
-  }
-
-  console.log(req.body);
-
-  Ban.updateById(
-    req.params.userId,
-    new Ban(req.body),
-    (err, data) => {
-      if (err) {
-        if (err.kind === "not_found") {
-          res.status(404).send({
-            message: `Not found Ban with userId ${req.params.userId}.`
-          });
-        } else {
-          res.status(500).send({
-            message: "Error updating Ban with userId " + req.params.userId
-          });
-        }
-      } else res.send(data);
-    }
-  );
 };
 
-// Delete a Ban with the specified userId in the request
-exports.delete = (req, res) => {
-  Ban.remove(req.params.userId, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          message: `Not found Ban with userId ${req.params.userId}.`
+// Find a single Ban with an id
+exports.findOne = (req, res) => {
+  const id = req.params.id;
+
+  Ban.findByPk(id)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving Ban with id=" + id
+      });
+    });
+};
+
+// Update a Ban by the id in the request
+exports.update = (req, res) => {
+  const id = req.params.id;
+
+  Ban.update(req.body, {
+    where: { user_id: id }
+  })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: "Ban was updated successfully."
         });
       } else {
-        res.status(500).send({
-          message: "Could not delete Ban with userId " + req.params.userId 
+        res.send({
+          message: `Cannot update Ban with id=${id}. Maybe Ban was not found or req.body is empty!`
         });
       }
-    } else res.send({ message: `Ban was deleted successfully!` });
-  });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error updating Ban with id=" + id
+      });
+    });
+};
+
+// Delete a Ban with the specified id in the request
+exports.delete = (req, res) => {
+  const id = req.params.id;
+
+  Ban.destroy({
+    where: { user_id: id }
+  })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: "Ban was deleted successfully!"
+        });
+      } else {
+        res.send({
+          message: `Cannot delete Ban with id=${id}. Maybe Ban was not found!`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Could not delete Ban with id=" + id
+      });
+    });
 };
 
 // Delete all Bans from the database.
 exports.deleteAll = (req, res) => {
-  Ban.removeAll((err, data) => {
-    if (err)
+  Ban.destroy({
+    where: {},
+    truncate: false
+  })
+    .then(nums => {
+      res.send({ message: `${nums} Bans were deleted successfully!` });
+    })
+    .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while removing all bans."
+          err.message || "Some error occurred while removing all Bans."
       });
-    else res.send({ message: `All Bans were deleted successfully!` });
-  });
+    });
 };

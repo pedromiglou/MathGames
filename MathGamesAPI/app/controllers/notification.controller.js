@@ -1,4 +1,6 @@
-const Notification = require("../models/notification.model.js");
+const db = require("../models");
+const Notification = db.notifications;
+const Op = db.Sequelize.Op;
 
 // Create and Save a new Notification
 exports.create = (req, res) => {
@@ -7,80 +9,101 @@ exports.create = (req, res) => {
     res.status(400).send({
       message: "Content can not be empty!"
     });
+    return;
   }
 
-  var notification = new Notification({
+  let date = new Date();
+  date.setTime( date.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  date = date.toISOString().slice(0, 19).replace('T', ' ');
+  
+  // Create a Notification
+  const notification = {
     sender: req.body.sender,
     receiver: req.body.receiver,
     notification_type: req.body.notification_type,
-    notification_date: req.body.notification_date
-  });
+    notification_date: date
+  };
 
   // Save Notification in the database
-  Notification.create(notification, (err, data) => {
-    if (err)
+  Notification.create(notification)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while creating the Notification."
       });
-    else res.send(data);
-  });
+    });
 };
 
-// Retrieve all Bans from the database.
+// Retrieve all Notifications from the database.
 exports.findAll = (req, res) => {
-  Notification.getAll((err, data) => {
-    if (err)
+  Notification.findAll()
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving the Notifications."
+          err.message || "Some error occurred while retrieving Notifications."
       });
-    else res.send(data);
-  });
+    });
 };
 
-// Find Notifications of a given userId
+// Find a single Notification with an id
 exports.findByUserId = (req, res) => {
-  Notification.findByUserId(req.params.userId, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          message: `Not found Notifications with receiver id ${req.params.userId}.`
-        });
-      } else {
-        res.status(500).send({
-          message: "Error retrieving Notifications with receiver id " + req.params.userId
-        });
-      }
-    } else res.send(data);
-  });
+  const id = req.params.id;
+
+  Notification.findAll({where: {receiver: id}})
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving Notifications received by user id=" + id
+      });
+    });
 };
 
 // Delete a Notification with the specified two user ids
 exports.delete = (req, res) => {
-  Notification.remove(req.params.notificationId, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          message: `Not found Notification with id ${req.params.notificationId}.`
+  const id = req.params.id;
+
+  Notification.destroy({
+    where: { id: id }
+  })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: "Notification was deleted successfully!"
         });
       } else {
-        res.status(500).send({
-          message: "Could not delete Notification with id " + req.params.notificationId
+        res.send({
+          message: `Cannot delete Notification with id=${id}. Maybe Notification was not found!`
         });
       }
-    } else res.send({ message: `Notification was deleted successfully!` });
-  });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Could not delete Notification with id=" + id
+      });
+    });
 };
 
 // Delete all Notifications from the database.
 exports.deleteAll = (req, res) => {
-  Notification.removeAll((err, data) => {
-    if (err)
+  Notification.destroy({
+    where: {},
+    truncate: false
+  })
+    .then(nums => {
+      res.send({ message: `${nums} Notifications were deleted successfully!` });
+    })
+    .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while removing all notifications."
+          err.message || "Some error occurred while removing all Notifications."
       });
-    else res.send({ message: `All Notifications were deleted successfully!` });
-  });
+    });
 };

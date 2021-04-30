@@ -1,24 +1,27 @@
 module.exports = app => {
     const usersranks = require("../controllers/userranks.controller.js");
+    var router = require("express").Router();
   
-    // Create a new User
-    app.post("/usersranks", usersranks.create);
+    // Create a new User rank
+    router.post("/", usersranks.create);
   
     // Retrieve all usersranks
-    app.get("/usersranks", usersranks.findAll);
-
+    router.get("/", usersranks.findAll);
+  
     // Retrieve all ranks of a user with userId
-    app.get("/usersranks/:userId", usersranks.findByUserId);
+    router.get("/:userId", usersranks.findByUserId);
   
     // Retrieve a User rank with userId and gameId
-    app.get("/usersranks/:userId/:gameId", usersranks.findByUserIdGameId);
-  
+    router.get("/:userId/:gameId", usersranks.findByUserIdGameId);
+
     // Update a User rank with userId and gameId
-    app.put("/usersranks/:userId/:gameId", usersranks.update);
+    router.put("/:userId/:gameId", usersranks.update);
   
-    // Delete a User rank with userId and gameId
-    app.delete("/usersranks/:userId/:gameId", usersranks.delete);
+    // Delete a Ban with id
+    router.delete("/:userId/:gameId", usersranks.delete);
   
     // Delete all usersranks
-    app.delete("/usersranks", usersranks.deleteAll);
+    router.delete("/", usersranks.deleteAll);
+  
+    app.use('/api/userranks', router);
   };

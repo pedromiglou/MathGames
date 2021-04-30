@@ -27,6 +27,14 @@ const io = require("socket.io")(server, {
   }
 });
 
+const db = require("./app/models");
+
+db.sequelize.sync();
+// // drop the table if it already exists
+// db.sequelize.sync({ force: true }).then(() => {
+//   console.log("Drop and re-sync db.");
+// });
+
 
 var current_games = {};
 var match_queue = {0: [], 1: []};
@@ -131,6 +139,7 @@ function create_game(user1, user2) {
 }
 
 require("./app/routes/user.routes.js")(app);
+require("./app/routes/ban.routes.js")(app);
 require("./app/routes/game.routes.js")(app);
 require("./app/routes/gamematch.routes.js")(app);
 require("./app/routes/userranks.routes.js")(app);

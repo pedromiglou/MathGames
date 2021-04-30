@@ -1,4 +1,6 @@
-const Tournament = require("../models/tournament.model.js");
+const db = require("../models");
+const Tournament = db.tournament;
+const Op = db.Sequelize.Op;
 
 // Create and Save a new Tournament
 exports.create = (req, res) => {
@@ -7,10 +9,11 @@ exports.create = (req, res) => {
     res.status(400).send({
       message: "Content can not be empty!"
     });
+    return;
   }
 
   // Create a Tournament
-  const tournament = new Tournament({
+  const tournament = {
     name: req.body.name,
     max_users: req.body.max_users,
     private: req.body.private,
@@ -18,103 +21,113 @@ exports.create = (req, res) => {
     game_id: req.body.game_id,
     winner: req.body.winner,
     creator: req.body.creator
-  });
+  };
 
   // Save Tournament in the database
-  Tournament.create(tournament, (err, data) => {
-    if (err)
+  Tournament.create(tournament)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while creating the Tournament."
       });
-    else res.send(data);
-  });
+    });
 };
 
 // Retrieve all Tournaments from the database.
 exports.findAll = (req, res) => {
-  Tournament.getAll((err, data) => {
-    if (err)
+  Tournament.findAll()
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while retrieving Tournaments."
       });
-    else res.send(data);
-  });
-};
-
-// Find a single Tournament with a TournamentId
-exports.findOne = (req, res) => {
-  Tournament.findById(req.params.tournamentId, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          message: `Not found Tournament with id ${req.params.tournamentId}.`
-        });
-      } else {
-        res.status(500).send({
-          message: "Error retrieving Tournament with id " + req.params.tournamentId
-        });
-      }
-    } else res.send(data);
-  });
-};
-
-// Update a Tournament identified by the tournamentId in the request
-exports.update = (req, res) => {
-  // Validate Request
-  if (!req.body) {
-    res.status(400).send({
-      message: "Content can not be empty!"
     });
-  }
-
-  console.log(req.body);
-
-  Tournament.updateById(
-    req.params.tournamentId,
-    new Tournament(req.body),
-    (err, data) => {
-      if (err) {
-        if (err.kind === "not_found") {
-          res.status(404).send({
-            message: `Not found Tournament with id ${req.params.tournamentId}.`
-          });
-        } else {
-          res.status(500).send({
-            message: "Error updating Tournament with id " + req.params.tournamentId
-          });
-        }
-      } else res.send(data);
-    }
-  );
 };
 
-// Delete a Tournament with the specified tournamentId in the request
-exports.delete = (req, res) => {
-  Tournament.remove(req.params.tournamentId, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          message: `Not found Tournament with id ${req.params.tournamentId}.`
+// Find a single Tournament with an id
+exports.findOne = (req, res) => {
+  const id = req.params.id;
+
+  Tournament.findByPk(id)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving Tournament with id=" + id
+      });
+    });
+};
+
+// Update a Tournament by the id in the request
+exports.update = (req, res) => {
+  const id = req.params.id;
+
+  Tournament.update(req.body, {
+    where: { id: id }
+  })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: "Tournament was updated successfully."
         });
       } else {
-        res.status(500).send({
-          message: "Could not delete Tournament with id " + req.params.tournamentId
+        res.send({
+          message: `Cannot update Tournament with id=${id}. Maybe Tournament was not found or req.body is empty!`
         });
       }
-    } else res.send({ message: `Tournament was deleted successfully!` });
-  });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error updating Tournament with id=" + id
+      });
+    });
 };
 
-// Delete all Tournament from the database.
+// Delete a Tournament with the specified id in the request
+exports.delete = (req, res) => {
+  const id = req.params.id;
+
+  Tournament.destroy({
+    where: { id: id }
+  })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: "Tournament was deleted successfully!"
+        });
+      } else {
+        res.send({
+          message: `Cannot delete Tournament with id=${id}. Maybe Tournament was not found!`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Could not delete Tournament with id=" + id
+      });
+    });
+};
+
+// Delete all Tournaments from the database.
 exports.deleteAll = (req, res) => {
-  Tournament.removeAll((err, data) => {
-    if (err)
+  Tournament.destroy({
+    where: {},
+    truncate: false
+  })
+    .then(nums => {
+      res.send({ message: `${nums} Tournaments were deleted successfully!` });
+    })
+    .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while removing all tournaments."
+          err.message || "Some error occurred while removing all Tournaments."
       });
-    else res.send({ message: `All Tournaments were deleted successfully!` });
-  });
+    });
 };

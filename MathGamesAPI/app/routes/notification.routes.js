@@ -1,18 +1,21 @@
 module.exports = app => {
     const notifications = require("../controllers/notification.controller.js");
+    var router = require("express").Router();
   
     // Create a new notification
-    app.post("/notifications", notifications.create);
+    router.post("/", notifications.create);
   
     // Retrieve all notifications
-    app.get("/notifications", notifications.findAll);
+    router.get("/", notifications.findAll);
   
     // Retrieve all notifications a userId has received
-    app.get("/notifications/:userId", notifications.findByUserId);
+    router.get("/:id", notifications.findByUserId);
   
-    // Delete a notificationship of two users
-    app.delete("/notifications/:notificationId", notifications.delete);
+    // Delete a notification
+    router.delete("/:id", notifications.delete);
   
     // Delete all notifications
-    //app.delete("/notifications", notifications.deleteAll);
+    //router.delete("/", notifications.deleteAll);
+  
+    app.use('/api/notifications', router);
   };
