@@ -9,7 +9,7 @@ function GamesList() {
 	const [title, setTitle] = useState(false);
 	const titleState = () => setTitle(!title);
 
-	var history = useHistory()
+	var history = useHistory();
 
 	function changeCard(e, game) {
 		var x2 = document.getElementById(game.id + "_Card");
@@ -35,16 +35,15 @@ function GamesList() {
 
 	function enterGame(value) {
 		value["hoover"] = false;
-		history.push(value["path"])
+		history.push(value["path"]);
 	}
 
 	const showTitle = (game) => {
 		if (game.hoover) {
 			return (
 				<>
-					<h2 className="game-title">{game.title}</h2>
 					<div className="row above-img">
-						<div className="col-lg-9 button_playnow">
+						<div className="col-lg-9 col-sm-9 button_playnow">
 							{/* <button className="play-button"> Jogar! </button> */}
 							<button className="learn-more circle">
 								<span className="circle" aria-hidden="true">
@@ -62,7 +61,7 @@ function GamesList() {
 								</span>
 							</button>
 						</div>
-						<div className="col-lg-3 game_age">
+						<div className="col-lg-3 col-sm-3 game_age">
 							<p> +{game.age} </p>
 						</div>
 					</div>
@@ -75,7 +74,12 @@ function GamesList() {
 		<>
 			<div className="display-games">
 				{Object.entries(games_info).map(([key, value]) => (
-					<Card key={key} id={key + "_Card"} className="button-fix" onClick={() => enterGame(value)}>
+					<Card
+						key={key}
+						id={key + "_Card"}
+						className="button-fix"
+						onClick={() => enterGame(value)}
+					>
 						<div
 							onMouseEnter={(e) => changeCard(e, value)}
 							onMouseLeave={(e) => replaceCard(e, value)}
@@ -86,6 +90,8 @@ function GamesList() {
 								className="card-img"
 								id={key}
 							/>
+							<h2 className="game-title">{value["title"]}</h2>
+
 							{showTitle(value)}
 						</div>
 					</Card>
