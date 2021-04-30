@@ -2,12 +2,8 @@
 	margin: 15px;
 }
 
-.games-list-hidden {
-	overflow: hidden;
-}
-
 .games-list {
-	transform: translateY(1000px);
+	transform: translateY(2000px);
     animation: slideUp 0.8s ease forwards 0.5s;
 }
 
@@ -20,9 +16,8 @@
 .top-bar {
 	/* border: 1px solid #dee2e6; */
 	min-height: 70px;
-	max-height: 70px;
 
-	overflow: hidden;
+	/* overflow: hidden; */
 
 	border-top-left-radius: 10px;
 	border-bottom-left-radius: 10px;
@@ -86,7 +81,7 @@
 	font-size: 1.2rem;
 	padding: 0;
 
-	transform: translateY(300px);
+	transform: translateY(-500px);
     animation: slideDown 0.8s ease forwards 0.5s;
 }
 

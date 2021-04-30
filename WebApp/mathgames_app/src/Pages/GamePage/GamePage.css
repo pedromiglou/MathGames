@@ -11,10 +11,6 @@
     animation: slideInL 0.8s ease forwards 0.5s;
 }
 
-.container-hidden {
-    overflow: hidden;
-}
-
 .animation-slideIn {
     transform: translateY(1000px);
     animation: slideDown 0.8s ease forwards 0.5s;

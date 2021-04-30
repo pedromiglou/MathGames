@@ -347,3 +347,48 @@ span.icons-noname{
 @media only screen and (min-width: 1200px) {
     .example {background: pink;}
 }
+
+
+/* Merdas do Rafa para depois organizar */
+.btn-primary:hover {
+    color: #fff;
+    background-color: #F1F1F1;
+    border-color: #F1F1F1;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #F1F1F1;
+    border-color: #F1F1F1;
+    font-size: 24px;
+}
+
+.btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show > .btn-primary.dropdown-toggle {
+    color: #fff;
+    background-color: #F1F1F1;
+    border-color: #F1F1F1;
+}
+
+.btn-primary:not(:disabled):not(.disabled).active:focus, .btn-primary:not(:disabled):not(.disabled):active:focus, .show > .btn-primary.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0;
+}
+
+.btn-primary.focus, .btn-primary:focus {
+    color: #fff;
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: 0 0 0 0;
+}
+
+#dropdown-menu-align-right:after {
+    display: none;
+}
+
+.col-centered{
+    float: none;
+    margin: auto 0;
+}
+
+.icon_notifications:hover {
+    cursor: pointer;
+}

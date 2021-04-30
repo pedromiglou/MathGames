@@ -139,10 +139,10 @@ const Profile = () => {
                             <div className="col-lg-4 profile-level">
                                 <p className="lvl"> Nivel </p>
                                 <div className="lvl-style row">
-                                    <div className="col-lg-2">
+                                    <div className="col-12 col-sm-12 col-lg-2">
                                         <p>1</p>
                                     </div>
-                                    <div className="col-lg-8">
+                                    <div className="col-12 col-sm-12 col-lg-7">
                                         <div className="progress">
                                             <div
                                                 className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
@@ -156,7 +156,7 @@ const Profile = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-lg-2">
+                                    <div className="col-12 col-sm-12 col-lg-2">
                                         <p>2</p>
                                     </div>
                                 </div>

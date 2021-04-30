@@ -13,8 +13,8 @@ class AuthService {
             body: JSON.stringify(userInfo)
         }).then(r=>r.json()).then(res=> {
             console.log(res)
-            if(res.token) {
-                localStorage.setItem("user", JSON.stringify(res))
+            if(res.user) {
+                localStorage.setItem("user", JSON.stringify(res.user));
                 window.location.assign("http://localhost:3000/");
             } else {
                 window.location.reload();
@@ -38,6 +38,8 @@ class AuthService {
             if(res) {
                 console.log('New User was created')
             }
+            window.location.reload();        
+
         })
     }
 

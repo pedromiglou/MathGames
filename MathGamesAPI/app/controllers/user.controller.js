@@ -2,7 +2,9 @@ const User = require("../models/user.model.js");
 const config = require("../config/auth.config")
 const Role = require("../config/roles")
 
-var jwt = require("jsonwebtoken")
+var jwt = require("jsonwebtoken");
+const Friend = require("../models/friend.model.js");
+
 
 // 
 //Create and Save a new User
@@ -147,7 +149,10 @@ exports.deleteAll = (req, res) => {
 exports.authenticate = (req, res, next) => {
   User.authenticate(req.body.username, req.body.password, (err, user) => { 
     if (user) {
-      return res.send(user)
+      Friend.findByUserId(user.id, (err, data) => {
+          return res.send({user, friends: data});
+      });  
+      //return res.send(user)
     } else {
 
       return res.status(400).send({ message: err })

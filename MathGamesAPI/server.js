@@ -5,6 +5,9 @@ const express = require("express");
 const index = require("./app/routes/index")
 const sql = require("./app/models/db.js");
 const errorHandler = require("./app/config/errorhandler");
+var uuid = require('uuid');
+const { PassThrough } = require("stream");
+const { match } = require("assert");
 
 const app = express();
 app.use(index);
@@ -25,60 +28,94 @@ const io = require("socket.io")(server, {
 });
 
 
-var in_game_users = {};
 var current_games = {};
-
-var match_queue = [];
+var match_queue = {0: [], 1: []};
 var users_info = {}
+var link_current_games = {};
 
+//Connecting new Users
 io.on("connection", (socket) => { 
   console.log("New client connected");
   console.log("id: ", socket.id);
   
-  //socket.emit('connection');
-
-  socket.on("user_id", (user_id) => {
+  //
+  // FRIEND GAME BY LINK SECTION 
+  // 
+  
+  //User sends user_id and want to play with a friend through a link
+  socket.on("friendbylink", (msg) => {
+    var user_id = msg["user_id"]
+    var game_id = msg["game_id"]
     users_info[user_id] = socket.id;
-    match_queue.push(user_id)
+    io.to(socket.id).emit("link_sent", {"match_id": uuid.v4()});
+  })
 
-    while ( match_queue.length >= 2 ) {
-      console.log("Match found.");
-      var player1 = match_queue.shift()
-      var player2 = match_queue.shift()
-      if (player1 !== undefined && player2 !== undefined) {
-        create_game(player1, player2);
-        break;
+  socket.on("entered_link", (msg) => {
+    console.log("User conected through link.")
+    if (msg["user_id"] !== null) {
+      var user_id = msg["user_id"]
+      var match_id = msg["match_id"]
+      users_info[user_id] = socket.id
+
+      if (Object.keys(current_games).includes(match_id)) {
+        var other_user = Object.keys(current_games[match_id])[0];
+        current_games[match_id][user_id] = other_user;
+        current_games[match_id][other_user] = user_id;
+
+        io.to(users_info[other_user]).emit("match_found", {"match_id": match_id, "starter": true});
+        io.to(users_info[user_id]).emit("match_found", {"match_id": match_id, "starter": false});
+
       } else {
-        if (player1 !== undefined) match_queue.unshift(player1)
-        if (player2 !== undefined) match_queue.unshift(player2)
-      }
-    }
-  });
-
-  socket.on("start_game", (user_id, match_id) => {
-    if (Object.keys(current_games).includes(match_id)) {
-      if (Object.keys(current_games[match_id]).includes(user_id)) {
-        console.log("Everythings checks out.");
-        in_game_users[user_id] = socket.id;
-        console.log(in_game_users)
-        console.log(match_queue)
-      }
-    }
-  });
-
-  socket.on("move", (new_pos, user_id, match_id) => {
-    console.log("Received move: ", new_pos);
-    console.log("Received match_id: ", match_id);
-    
-    if (Object.keys(current_games).includes(match_id)) {
-      if (Object.keys(current_games[match_id]).includes(user_id)) {
-        console.log("Everythings checks out.");
-        console.log(current_games[match_id][user_id]);
-        console.log("Sending move to: ", in_game_users[ current_games[match_id][user_id] ]);
-        io.to( in_game_users[ current_games[match_id][user_id] ] ).emit("move_piece", new_pos);
+        current_games[match_id] = {};
+        current_games[match_id][user_id] = "";
       }
     }
   })
+  //
+  // END OF FRIEND GAME BY LINK SECTION 
+  // 
+  
+  //
+  // ONLINE GAME SECTION 
+  // 
+
+  //User says that he wants to play Online and put himself in matchqueue list
+  socket.on("user_id", (msg) => {
+    var user_id = msg["user_id"];
+    var game_id = parseInt(msg["game_id"]);
+    users_info[user_id] = socket.id;
+    match_queue[game_id].push(user_id)
+
+    if ( match_queue[game_id].length >= 2 ) {
+      console.log("Match found.");
+      var player1 = match_queue[game_id].shift()
+      var player2 = match_queue[game_id].shift()
+      if (player1 !== undefined && player2 !== undefined) {
+        create_game(player1, player2);
+      } else {
+        if (player1 !== undefined) match_queue[game_id].unshift(player1)
+        if (player2 !== undefined) match_queue[game_id].unshift(player2)
+      }
+    }
+  });
+
+  //User send user_id and match_id when he joins game to start game
+  socket.on("start_game", (user_id, match_id) => {
+    if (Object.keys(current_games).includes(match_id))
+      if (Object.keys(current_games[match_id]).includes(user_id))
+        user_id[user_id] = socket.id;
+  });
+
+  //User sends match id, userid and new_pos when he wants to make a move in the game
+  socket.on("move", (new_pos, user_id, match_id) => {
+    if (Object.keys(current_games).includes(match_id))
+      if (Object.keys(current_games[match_id]).includes(user_id))
+        io.to( users_info[ current_games[match_id][user_id] ] ).emit("move_piece", new_pos);
+  })
+  
+  //
+  // END OF ONLINE GAME SECTION 
+  // 
 });
 
 function create_game(user1, user2) {
@@ -106,3 +143,8 @@ require("./app/routes/notification.routes.js")(app);
 
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
+
+setInterval(function () {
+  sql.query("Select 1");  
+  console.log("controlo query");
+}, 500000);
