@@ -95,8 +95,7 @@
 /* ------ */
 
 .container-position-fix {
-    position: absolute;
-    margin-top: 0;
+    margin-top: 5%;
     top: 20%;
 }
 
