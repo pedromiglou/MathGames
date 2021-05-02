@@ -134,7 +134,7 @@ function GamePage() {
 						</div>
 					</div>
 					<div className="col-lg-8 player-info-and-modes">
-						<div className="col-lg-12 player-rank">
+						<div className="col-lg-12 player-rank container-hidden">
 							<div className="row">
 								<div className="col-lg-6 set-padding centered">
 									<div>

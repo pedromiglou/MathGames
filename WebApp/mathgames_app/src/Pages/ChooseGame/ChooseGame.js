@@ -13,11 +13,6 @@ function ChooseGame() {
 	var recommended_e;
 	var mostPlayed_e;
 
-
-	// const progress = {
-	// 	width: "50%",
-	// };
-
 	function allGames() {
 		setfilterOption("AllGames");
 
@@ -25,9 +20,9 @@ function ChooseGame() {
 		recommended_e = document.getElementById("recommendedGames");
 		mostPlayed_e = document.getElementById("mostPlayedGames");
 
-		allGames_e.style.textDecoration = "underline";
-		recommended_e.style.textDecoration = "";
-		mostPlayed_e.style.textDecoration = "";
+		/* allGames_e.style.textDecoration = "underline";
+        recommended_e.style.textDecoration = "";
+        mostPlayed_e.style.textDecoration = ""; */
 	}
 
 	function recommendedGames() {
@@ -37,9 +32,9 @@ function ChooseGame() {
 		recommended_e = document.getElementById("recommendedGames");
 		mostPlayed_e = document.getElementById("mostPlayedGames");
 
-		allGames_e.style.textDecoration = "";
-		recommended_e.style.textDecoration = "underline";
-		mostPlayed_e.style.textDecoration = "";
+		/* allGames_e.style.textDecoration = "";
+        recommended_e.style.textDecoration = "underline";
+        mostPlayed_e.style.textDecoration = ""; */
 	}
 
 	function mostPlayedGames() {
@@ -49,43 +44,54 @@ function ChooseGame() {
 		recommended_e = document.getElementById("recommendedGames");
 		mostPlayed_e = document.getElementById("mostPlayedGames");
 
-		allGames_e.style.textDecoration = "";
-		recommended_e.style.textDecoration = "";
-		mostPlayed_e.style.textDecoration = "underline";
+		/* allGames_e.style.textDecoration = "";
+        recommended_e.style.textDecoration = "";
+        mostPlayed_e.style.textDecoration = "underline"; */
 	}
 
 	return (
 		<div className="choose-game-container" id="choose_game_container">
 			<div className="row no-margin centering">
-				<div className="col-lg-8" id="filter_options">
+				<div
+					className="col-lg-8 col-md-12 col-sm-12"
+					id="filter_options"
+				>
 					<div className="row top-bar no-margin">
-						<div className="col-lg-4 top-button">
+						<div className="col-lg-4 col-md-12 col-sm-12 top-button">
 							<button
 								id="allGames"
 								onClick={allGames}
-                                //className="box foo"
-                                className={filterOption === "AllGames" ? "box foo actived-btn" : "box foo" }
+								className={
+									filterOption === "AllGames"
+										? "box actived-btn"
+										: "box up"
+								}
 							>
 								Todos os jogos
 							</button>
 						</div>
-						<div className="col-lg-4 top-button">
+						<div className="col-lg-4 col-md-12 col-sm-12 top-button">
 							<button
 								id="recommendedGames"
-                                style={{ textDecoration: "underline" }}
 								onClick={recommendedGames}
-                                //className="box foo testexd"
-                                className={filterOption === "RecommendedGames" ? "box foo actived-btn" : "box foo" }
+								className={
+									filterOption === "RecommendedGames"
+										? "box actived-btn"
+										: "box up"
+								}
 							>
 								Recomendados
 							</button>
 						</div>
-						<div className="col-lg-4 top-button">
+						<div className="col-lg-4 col-md-12 col-sm-12 top-button">
 							<button
 								id="mostPlayedGames"
 								onClick={mostPlayedGames}
-                                //className="box foo"
-                                className={filterOption === "MostPlayedGames" ? "box foo actived-btn" : "box foo" }
+								className={
+									filterOption === "MostPlayedGames"
+										? "box actived-btn"
+										: "box up"
+								}
 							>
 								Mais Jogados
 							</button>
@@ -114,20 +120,18 @@ function ChooseGame() {
 						</div>
 					</div>
 				</div> */}
-            </div>
-            <div className="container-hidden">
-                <div className="games-list">
-                    {/* TODO: Passar props para filtrar pedido de jogos `a api */}
-                    {filterOption === "AllGames" && <GamesList />}
-                    {filterOption === "RecommendedGames" && <GamesList />}
-                    {filterOption === "MostPlayedGames" && (
-                        // <GamesList />
-                        <h1>ola</h1>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
+			</div>
+			<div className="games-list">
+				{/* TODO: Passar props para filtrar pedido de jogos `a api */}
+				{filterOption === "AllGames" && <GamesList />}
+				{filterOption === "RecommendedGames" && <GamesList />}
+				{filterOption === "MostPlayedGames" && (
+					// <GamesList />
+					<h1>ola</h1>
+				)}
+			</div>
+		</div>
+	);
 }
 
 export default ChooseGame;

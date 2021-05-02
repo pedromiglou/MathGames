@@ -1,27 +1,30 @@
 .container-login {
+	
+	width: 70%;
+	height: 60%;
+
 	position: absolute;
-	width: 100%;
-	min-height: 500px;
-	background-color: #fff;
-
-	/* Vertical align */
 	top: 50%;
-	-ms-transform: translateY(-50%);
-  	transform: translateY(-50%);
-
-	/* Horizontal align */
-	/* ... */
-	left: 25%;
+	left: 50%;
+	-ms-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
 }
 
 .forms-container-login {
-	position: absolute;
+
 	width: 100%;
 	height: 100%;
-	top: 0;
-	left: 0;
-	background-color: #37B6F6	;
+
+	background-color: #37B6F6;
 	border-radius: 25px;
+
+	margin: 0;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-ms-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+
 }
 
 .signin {
@@ -34,10 +37,7 @@
 	justify-content: center;
 	align-items: center;
 
-	z-index: 1px;
-
 	border-radius: 25px;
-
 
 	background-color: #37B6F6;
 	transition: 1s 0.7s ease-in-out;
@@ -58,7 +58,7 @@
 
 	background-color: rgb(113, 88, 226);
 	transition: 1s 0.7s ease-in-out;
-	
+
 }
 
 .signup-side {
@@ -94,6 +94,7 @@
 	z-index: -1;
 	background-color: #37B6F6;
 	transition: 1s 0.7s ease-in-out;
+
 }
 
 form {
