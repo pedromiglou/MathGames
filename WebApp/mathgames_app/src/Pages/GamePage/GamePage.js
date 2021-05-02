@@ -7,7 +7,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./GamePage.css";
 import { games_info } from "../../data/GamesInfo";
 import socket from "../../index"
-import AuthService from "../../Services/auth.service"
 
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
 function GamePage() {
@@ -24,11 +23,6 @@ function GamePage() {
 	//Depois aqui podemos meter conforme as preferencias no perfil
 	const [AIdiff, setAIdiff] = useState("");
 
-	var isSomeoneLogged = false;
-	var resultado = AuthService.getCurrentUser();
-	if (resultado !== null) {
-		isSomeoneLogged = true;
-	}
 	const params = new URLSearchParams(window.location.search);
 	let game_id = params.get("id");
 	const game_info = games_info[game_id];

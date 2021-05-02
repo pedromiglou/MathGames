@@ -5,7 +5,7 @@ import * as FaIcons from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 /* Css */
 import './Menu.css'
@@ -29,8 +29,7 @@ function Navbar() {
     const [user, setUser] = useState(false);
     const [tournament_user, setTournament_user] = useState(false);
     */
-    const [user_authenticated, setUser_authenticated] = useState(false);
-    const [admin, setAdmin] = useState(false);
+    const [user_authenticated, setUser_authenticated] = useState(true);
     const [user, setUser] = useState("");
 
     const [friends, setFriends] = useState([]);
@@ -87,51 +86,39 @@ function Navbar() {
                 type: 'FREEUSER'
             });
         }
-    }, [])
+    }, [dispatch])
 
 	return (
 		<IconContext.Provider value={{color: 'grey'}}>
 			<div id="horizontal_nav_row" className="row sticky-top">
 
-				<div id="row-logo" className="col d-flex align-items-center">
+				<div id="row-logo" className="col-lg-8 d-flex align-items-center">
 					<div className="nav-logo ml-5">
 						<Link to="/">
 							<img  className="logo" src={process.env.PUBLIC_URL + "/images/logo-light.png"}  alt="logo"/>
 						</Link>
 					</div>
-
 				</div>
 
-				{/* <hr className="menu-divider"></hr>  */}                     
-
-				{ admin && <h1>Admin</h1> }
 				{user_authenticated &&
-					<div className="notif">
-						<div className="notif_section">
-							{/*
-							<Link to="/notifications" className="notif_icon">
-								<FaIcons.FaBell/>
-							</Link>
-							*/}
-							{ notifications.length && 
-								<DropdownButton
-									menuAlign="right"
-									title={<FaIcons.FaBell/>}
-									id="dropdown-menu-align-right"
-									className="notif_icon"
-								>
-									<Dropdown.ItemText><h4>Notificações</h4></Dropdown.ItemText>
-									<Dropdown.Divider /> 
-									<Dropdown.ItemText>{
-										<div className="row">
-											{notifications.map(function(notification, index) {
-												var current_date = new Date();
-												current_date.setTime(current_date.getTime() - new Date().getTimezoneOffset()*60*1000);
-												current_date = current_date.getTime() / 60000;
-												var notification_date = new Date(notification.notification_date).getTime() / 60000;
-												var difference = current_date - notification_date;
-												return (
-													<>
+				<div className="col-lg-4">
+					<div className="row h-100">
+						<div title="Notificações" className="col-2 d-flex align-items-center justify-content-center">
+							<span id="notifs-number">{ notifications.length }</span>
+							<DropdownButton	menuAlign="right" title={<FaIcons.FaBell size={42}/>} id="notifs-dropdown" className="navbar-dropdown">
+								<Dropdown.ItemText><h4>Notificações</h4></Dropdown.ItemText>
+								<Dropdown.Divider />
+								{ notifications.length > 0 &&
+								<Dropdown.ItemText>{
+									<div className="row navbar-dropdown-row">
+										{notifications.map(function(notification, index) {
+											var current_date = new Date();
+											current_date.setTime(current_date.getTime() - new Date().getTimezoneOffset()*60*1000);
+											current_date = current_date.getTime() / 60000;
+											var notification_date = new Date(notification.notification_date).getTime() / 60000;
+											var difference = current_date - notification_date;
+											return (
+												<div>
 													<div className="col-9" style={{width: 350, fontSize: 18}}>
 														{ (notification.notification_type === "F" && 
 															<p style={{marginBottom: "0.3em"}}>{notification.sender} enviou-te um pedido de amizade.</p>)
@@ -162,83 +149,31 @@ function Navbar() {
 														</div>
 														
 													</div>
-													</>
-												);
-											})}
+												</div>
+											);
+										})}
+									</div>
+								}</Dropdown.ItemText>
+								}
+								{ notifications.length === 0 &&
+									<Dropdown.ItemText>
+										<div className="row navbar-dropdown-row">
+											<Dropdown.ItemText>Não possui nenhuma notificação.</Dropdown.ItemText>
 										</div>
-									}</Dropdown.ItemText>
-								</DropdownButton>
-							}
-
-							{ !notifications.length && 
-								<DropdownButton
-								menuAlign="right"
-								title={<FaIcons.FaBell/>}
-								id="dropdown-menu-align-right"
-								className="notif_icon"
-							>
-								<Dropdown.ItemText><h4 style={{width: 350}}>Notificações</h4></Dropdown.ItemText>
-								<Dropdown.Divider /> 
-								<Dropdown.ItemText>Não possui nenhuma notificação.</Dropdown.ItemText>
+									</Dropdown.ItemText>
+								}
 							</DropdownButton>
-							}
 						</div>
-					</div>
-				}
-				{user_authenticated &&
-					<div className="friends">
-						<div className="friends_section">
-							{/*
-							<Link to="/friends" className="friends_icon">
-								<FaIcons.FaUserFriends/>
-							</Link>
-							*/}
-							<DropdownButton
-								menuAlign="right"
-								title={<FaIcons.FaUserFriends/>}
-								id="dropdown-menu-align-right"
-								className="friends_icon"
-							>
+						<div title="Amigos" className="col-2 d-flex align-items-center justify-content-center">
+							<DropdownButton	menuAlign="right" title={<FaIcons.FaUserFriends size={42}/>} id="friends-dropdown">
 								<Dropdown.ItemText><div style={{width: 230}}><h4>Amigos</h4></div></Dropdown.ItemText>
 								<Dropdown.Divider />
-								{ notifications.length && 
-									<>
-									{ notifications.filter(function (e) {return e.notification_type === "F"}).length > 0 && 
-										<>
-										<Dropdown.ItemText>
-											{notifications.map(function(notification, index) {
-												return (
-													<>
-													{ notification.notification_type === "F" && 
-														<div className="row" >
-															<div className="col-7">
-																<h5>{notification.sender}</h5>
-															</div>
-															<div className="col-5">
-																<div className="text-right">
-																	<FaIcons.FaCheckCircle onClick={ () => {NotificationsService.accept_friendship(notification); notifyFriendshipSucess(); deleteNotification(index);}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />
-																	<span> </span>
-																	<FaIcons.FaTimesCircle onClick={ () => {NotificationsService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} className="icon_notifications" style={{fontSize: 25}} color="#ff0015" />
-																</div>
-															</div>
-														</div>
-													}
-													</>
-													)
-												})
-											}
-										</Dropdown.ItemText>
-										<Dropdown.Divider />
-										</>
-									}
-									</>  
-								}
-								{ friends.length &&
-									<Dropdown.ItemText>{
-										<div className="row">
-											{friends.map(function(name, index) {
-												return (
-													<>
+								{ friends.length > 0 &&
+								<Dropdown.ItemText>{
+									<div className="row navbar-dropdown-row">
+										{friends.map(function(name, index) {
+											return (
+												<div class="navbar-dropdown-text">
 													<div className="col-9">
 														<h5>{name.username}</h5>
 													</div>
@@ -247,45 +182,50 @@ function Navbar() {
 															<FaIcons.FaEnvelopeSquare className="icon_notifications" style={{fontSize: 25}} />
 														</div>
 													</div>
-													</>
-												);
-											})}
-										</div>
-									}</Dropdown.ItemText>
+												</div>
+											);
+										})}
+									</div>
+								}</Dropdown.ItemText>
 								}
-								{ !friends.length &&
-									<Dropdown.ItemText>Ainda não possui amigos.</Dropdown.ItemText>
+								{ friends.length === 0 &&
+								<Dropdown.ItemText>
+									<div className="row navbar-dropdown-row">
+										<Dropdown.ItemText>Não possui amigos.</Dropdown.ItemText>
+									</div>
+								</Dropdown.ItemText>
 								}
 							</DropdownButton>
 						</div>
+
+						<div className="col-8">
+							<div className="row h-100 d-flex align-items-center mr-3">
+								<div className="col">
+									<div title="Perfil" className="round_profile_logo float-right">
+										<Link to="/profile">
+											<img className="profile_logo" src={process.env.PUBLIC_URL + "/images/user-profile.png"}  alt="logo"/>
+										</Link>
+									</div>
+								</div>
+								<div className="col navbar-account-info">
+									<h5>Nome: {user.username} </h5>
+									<h5>Nivel: {user.account_level} </h5>
+								</div>
+								
+							</div>
+						</div>
 					</div>
+				</div>
 				}
 				
 				{!user_authenticated &&
-					<div className="col d-flex justify-content-end align-items-center mr-5">
-						<hr className="menu-divider"></hr>
-						<Link to="/login">
-							<h2 className="h2-login">Login</h2>
-						</Link>
-					</div>
+				<div className="col d-flex justify-content-end align-items-center mr-5">
+					<hr className="menu-divider-login"></hr>
+					<Link to="/login">
+						<h2 className="h2-login">Login</h2>
+					</Link>
+				</div>
 				}
-				{/* <div className="account_info col">               
-					{user_authenticated &&
-						<div className="info">
-							<h5>Nome: {user.username} </h5>
-							<h5>Nivel: {user.account_level} </h5>  
-						</div> 
-					} 
-
-					
-					{user_authenticated &&
-						<div className="round_profile_logo">
-							<Link to="/profile">
-								<img className="profile_logo" src={process.env.PUBLIC_URL + "/images/user-profile.png"}  alt="logo"/>
-							</Link>
-						</div>
-					}
-				</div> */}
 			</div>
 			{/* <Toaster toastOptions={{
             className: '',

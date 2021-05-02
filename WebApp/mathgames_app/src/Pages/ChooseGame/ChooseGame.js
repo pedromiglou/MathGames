@@ -9,18 +9,18 @@ import "bootstrap/dist/css/bootstrap.min.css";
 function ChooseGame() {
 	const [filterOption, setfilterOption] = useState("RecommendedGames");
 
-	var allGames_e;
-	var recommended_e;
-	var mostPlayed_e;
+	// var allGames_e;
+	// var recommended_e;
+	// var mostPlayed_e;
 
 	function allGames() {
 		setfilterOption("AllGames");
 
-		allGames_e = document.getElementById("allGames");
+		/*allGames_e = document.getElementById("allGames");
 		recommended_e = document.getElementById("recommendedGames");
 		mostPlayed_e = document.getElementById("mostPlayedGames");
 
-		/* allGames_e.style.textDecoration = "underline";
+		allGames_e.style.textDecoration = "underline";
         recommended_e.style.textDecoration = "";
         mostPlayed_e.style.textDecoration = ""; */
 	}
@@ -28,11 +28,12 @@ function ChooseGame() {
 	function recommendedGames() {
 		setfilterOption("RecommendedGames");
 
-		allGames_e = document.getElementById("allGames");
+		
+		/*allGames_e = document.getElementById("allGames");
 		recommended_e = document.getElementById("recommendedGames");
 		mostPlayed_e = document.getElementById("mostPlayedGames");
 
-		/* allGames_e.style.textDecoration = "";
+		allGames_e.style.textDecoration = "";
         recommended_e.style.textDecoration = "underline";
         mostPlayed_e.style.textDecoration = ""; */
 	}
@@ -40,11 +41,11 @@ function ChooseGame() {
 	function mostPlayedGames() {
 		setfilterOption("MostPlayedGames");
 
-		allGames_e = document.getElementById("allGames");
+		/*allGames_e = document.getElementById("allGames");
 		recommended_e = document.getElementById("recommendedGames");
 		mostPlayed_e = document.getElementById("mostPlayedGames");
 
-		/* allGames_e.style.textDecoration = "";
+		allGames_e.style.textDecoration = "";
         recommended_e.style.textDecoration = "";
         mostPlayed_e.style.textDecoration = "underline"; */
 	}

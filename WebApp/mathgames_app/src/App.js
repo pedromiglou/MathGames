@@ -62,6 +62,7 @@ function toggleNav() {
     var sidebarBtn = document.getElementById("sidebarCollapse");
     var main = document.getElementById("content");
     var icons = document.getElementsByClassName("sidebar-icons");
+    var n;
 
     if ( sidebar.classList.contains("active") ) {
         main.style.marginLeft = "65px";
@@ -71,9 +72,9 @@ function toggleNav() {
 
         sidebarBtn.classList.remove("active");
 
-        for (var i = icons.length-1; i >= 0; i--) {
-            icons[i].classList.remove("icons-name");
-            icons[i].classList.add("icons-noname");
+        for (n = icons.length-1; n >= 0; n--) {
+            icons[n].classList.remove("icons-name");
+            icons[n].classList.add("icons-noname");
         }
     } else {
         main.style.marginLeft = "300px";
@@ -83,9 +84,9 @@ function toggleNav() {
 
         sidebarBtn.classList.add("active");
 
-        for (var i = icons.length-1; i >= 0; i--) {
-            icons[i].classList.add("icons-name");
-            icons[i].classList.remove("icons-noname");
+        for (n = icons.length-1; n >= 0; n--) {
+            icons[n].classList.add("icons-name");
+            icons[n].classList.remove("icons-noname");
         }
     }
 }

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./Game.css"
 import "bootstrap/dist/css/bootstrap.min.css";

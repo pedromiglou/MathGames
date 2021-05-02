@@ -16,6 +16,7 @@
     position: sticky;
     top:0px;
     display: flex;
+    color: navy;
 }
 
 /*Bars and Logo */
@@ -51,55 +52,34 @@
     padding: 0.5rem 1rem;
 }
 
-.friends{
-    width: max(15%, 40px);
-    margin-right: max(5%, 20px);
-    height: 100%;
+#notifs-number {
+    font-size: larger;
 }
 
-.friends_section{
-    height: 50%;
-    margin: 25% 0;
+.navbar-dropdown-text {
+    font-size: larger;
 }
 
-.friends_icon{
-    font-size: 24px;
-    background: none;
+#notifs-dropdown:after{
+    display: none;
 }
 
-.notif{
-    width: min(15%, 100px);
-    margin-right: max(5%, 20px);
-    height: 100%;
-    padding: 0.5em 1em;
-}
-
-.notif_section{
-    height: 50%;
-    margin: 25% 0;
-}
-
-.notif_icon{
-    font-size: 24px;
-    background: none;
-}
-
-
-.account_info{
-    height: 100%;
-    display: inline-flex;
+#friends-dropdown:after{
+    display: none;
 }
 
 .round_profile_logo{
-    width: 25%;
-    height: 100%;
-    min-width: 70px;
-    float:right;
+    width: 70px;
+    height: 70px;
 }
 
 .profile_logo{
     width: 100%;
     min-width: 70px;
+}
+
+.navbar-account-info {
+    font-size: x-large;
 }
 
 .h2-login { 
@@ -121,6 +101,13 @@
     height: 100%;
     -webkit-animation: change-color-background 4s infinite;
     animation: change-color-background 10s infinite;
+}
+
+.menu-divider-login{
+    margin-right: 5%;
+    width: 2px;
+    height: 100%;
+    background-color: navy;
 }
 
 /* Global content below horizontal navbar */
@@ -389,8 +376,9 @@ span.icons-noname{
     box-shadow: 0 0 0 0;
 }
 
-#dropdown-menu-align-right:after {
-    display: none;
+.navbar-dropdown-row {
+    width: 20vw;
+    font-size: larger;
 }
 
 .col-centered{
