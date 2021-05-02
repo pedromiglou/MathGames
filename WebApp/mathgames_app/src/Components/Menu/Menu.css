@@ -1,7 +1,3 @@
-.container-fluid{
-    height: 100%;
-    padding:0;
-}
 /* Solucao para o backgroud size
 @media(max-width:767px) {
     html, body, #root, .App {
@@ -20,6 +16,7 @@
     position: sticky;
     top:0px;
     display: flex;
+    color: navy;
 }
 
 /*Bars and Logo */
@@ -43,13 +40,6 @@
     height: 100%;
 }
 
-.menu-bars{
-    align-self: center;
-    font-size: 24px;
-    margin-right: 16px;
-    background: none;
-}
-
 /* horizontal navbar */
 .navbar{
     display: flex;
@@ -62,53 +52,25 @@
     padding: 0.5rem 1rem;
 }
 
-.friends{
-    width: max(15%, 40px);
-    margin-right: max(5%, 20px);
-    height: 100%;
+#notifs-number {
+    font-size: larger;
 }
 
-.friends_section{
-    height: 50%;
-    margin: 25% 0;
+.navbar-dropdown-text {
+    font-size: larger;
 }
 
-.friends_icon{
-    font-size: 24px;
-    background: none;
+#notifs-dropdown:after{
+    display: none;
 }
 
-
-.notif{
-    width: min(15%, 100px);
-    margin-right: max(5%, 20px);
-    height: 100%;
-    padding: 0.5em 1em;
-}
-
-.notif_section{
-    height: 50%;
-    margin: 25% 0;
-}
-
-.notif_icon{
-    font-size: 24px;
-    background: none;
-}
-
-
-.account_info{
-    width: 60%;
-    height: 100%;
-    display: inline-flex;
-    float: right;
+#friends-dropdown:after{
+    display: none;
 }
 
 .round_profile_logo{
-    width: 25%;
-    height: 100%;
-    min-width: 70px;
-    float:right;
+    width: 70px;
+    height: 70px;
 }
 
 .profile_logo{
@@ -116,24 +78,37 @@
     min-width: 70px;
 }
 
-.info{
-    width: 75%;
-    height: 100%;
+.navbar-account-info {
+    font-size: x-large;
 }
 
+.h2-login { 
+    font-family: Bubblegum Sans;
+    font-size: xx-large;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 500;
+}
 
-
+.h2-login:hover {
+    text-decoration: none;
+}
 
 /*------ MENU DIVIDIR----- */
-/*
 .menu-divider{
-    margin: 0;
-    width: 1px;
+    margin-right: 5%;
+    width: 2px;
     height: 100%;
     -webkit-animation: change-color-background 4s infinite;
     animation: change-color-background 10s infinite;
 }
-*/
+
+.menu-divider-login{
+    margin-right: 5%;
+    width: 2px;
+    height: 100%;
+    background-color: navy;
+}
 
 /* Global content below horizontal navbar */
 
@@ -142,7 +117,28 @@
     height: calc(100% - 100px);
 }
 
-/* Vertical Menu Collapsed */
+/* Vertical Menu */
+
+#content {
+    margin-left: 300px;
+}
+
+.menu-bars{
+    width: 40px;
+    height: 40px;
+    margin-left: 16px;
+    margin-top: 30px;
+    align-self: center;
+    font-size: 24px;
+    background: none;
+    position:absolute;
+    z-index: 2000;
+}
+
+.menu-bars:hover{
+    cursor: pointer;
+}
+
 .nav-menu{
     background-color: #F9F9F9;
     height: 100%;
@@ -243,7 +239,6 @@ span.icons-noname{
     animation: disappearAnimation 0.4s forwards;
     width: auto;
 }
-
 /*-----------------------*/
 
 
@@ -320,17 +315,18 @@ span.icons-noname{
     }
 
     .menu-bars{
+        margin-left: 16px;
+        margin-top: 30px;
         align-self: center;
         font-size: 24px;
-        margin-right: 16px;
         background: none;
+        position:absolute;
+        z-index: 2000;
     }
 }
 
 /* Small devices (portrait tablets and large phones, 600px and up) */
 @media only screen and (min-width: 600px) {
-    
-    
 }
 
 /* Medium devices (landscape tablets, 768px and up) */
@@ -380,8 +376,9 @@ span.icons-noname{
     box-shadow: 0 0 0 0;
 }
 
-#dropdown-menu-align-right:after {
-    display: none;
+.navbar-dropdown-row {
+    width: 20vw;
+    font-size: larger;
 }
 
 .col-centered{

@@ -318,8 +318,8 @@ function randomPlay(scene) {
             scene.aiPieces[piece[0]][piece[1]] = true;
             for (var y=0; y<8; y++) {
                 for (var x=0;x<8;x++) {
-                    if (!scene.aiPieces[y][x] && !scene.playerPieces[y][x] && (y==0 || !scene.playerPieces[y-1][x]) &&
-                    (y==7 || !scene.playerPieces[y+1][x]) && (x==0 || !scene.playerPieces[y][x-1]) && (x==7 || !scene.playerPieces[y][x+1])) {
+                    if (!scene.aiPieces[y][x] && !scene.playerPieces[y][x] && (y===0 || !scene.playerPieces[y-1][x]) &&
+                    (y===7 || !scene.playerPieces[y+1][x]) && (x===0 || !scene.playerPieces[y][x-1]) && (x===7 || !scene.playerPieces[y][x+1])) {
                         validSquares2.push([y,x]);
                     }
                 }
@@ -339,18 +339,21 @@ function randomPlay(scene) {
 
 //minimax algorithmn
 function minimax(validSquares, depth, maximizingPlayer, aiPieces, playerPieces) {
-    if (depth == 0 || validSquares.length==0) {
+    var value;
+
+    if (depth === 0 || validSquares.length===0) {
         return heuristic(aiPieces, playerPieces);
     }
+
     if (maximizingPlayer) {
-        var value = -100;
+        value = -100;
         validSquares.forEach((piece) => {
             var validSquares2 = [];
             aiPieces[piece[0]][piece[1]] = true;
             for (var y=0; y<8; y++) {
                 for (var x=0;x<8;x++) {
-                    if (!aiPieces[y][x] && !playerPieces[y][x] && (y==0 || !playerPieces[y-1][x]) &&
-                    (y==7 || !playerPieces[y+1][x]) && (x==0 || !playerPieces[y][x-1]) && (x==7 || !playerPieces[y][x+1])) {
+                    if (!aiPieces[y][x] && !playerPieces[y][x] && (y===0 || !playerPieces[y-1][x]) &&
+                    (y===7 || !playerPieces[y+1][x]) && (x===0 || !playerPieces[y][x-1]) && (x===7 || !playerPieces[y][x+1])) {
                         validSquares2.push([y,x]);
                     }
                 }
@@ -364,14 +367,14 @@ function minimax(validSquares, depth, maximizingPlayer, aiPieces, playerPieces) 
             aiPieces[piece[0]][piece[1]] = false;
         })
     } else {
-        var value = 100;
+        value = 100;
         validSquares.forEach((piece) => {
             var validSquares2 = [];
             playerPieces[piece[0]][piece[1]] = true;
             for (var y=0; y<8; y++) {
                 for (var x=0;x<8;x++) {
-                    if (!aiPieces[y][x] && !playerPieces[y][x] && (y==0 || !aiPieces[y-1][x]) &&
-                    (y==7 || !aiPieces[y+1][x]) && (x==0 || !aiPieces[y][x-1]) && (x==7 || !aiPieces[y][x+1])) {
+                    if (!aiPieces[y][x] && !playerPieces[y][x] && (y===0 || !aiPieces[y-1][x]) &&
+                    (y===7 || !aiPieces[y+1][x]) && (x===0 || !aiPieces[y][x-1]) && (x===7 || !aiPieces[y][x+1])) {
                         validSquares2.push([y,x]);
                     }
                 }
@@ -396,12 +399,12 @@ function heuristic(aiPieces, playerPieces) {
     var countPlayer = 0;
     for (var y=0; y<8; y++) {
         for (var x=0;x<8;x++ ) {
-            if (!playerPieces[y][x] && !aiPieces[y][x] && (y==0 || !aiPieces[y-1][x]) &&
-            (y==7 || !aiPieces[y+1][x]) && (x==0 || !aiPieces[y][x-1]) && (x==7 || !aiPieces[y][x+1])) {
+            if (!playerPieces[y][x] && !aiPieces[y][x] && (y===0 || !aiPieces[y-1][x]) &&
+            (y===7 || !aiPieces[y+1][x]) && (x===0 || !aiPieces[y][x-1]) && (x===7 || !aiPieces[y][x+1])) {
                 countPlayer++;
             }
-            if (!aiPieces[y][x] && !playerPieces[y][x] && (y==0 || !playerPieces[y-1][x]) &&
-            (y==7 || !playerPieces[y+1][x]) && (x==0 || !playerPieces[y][x-1]) && (x==7 || !playerPieces[y][x+1])) {
+            if (!aiPieces[y][x] && !playerPieces[y][x] && (y===0 || !playerPieces[y-1][x]) &&
+            (y===7 || !playerPieces[y+1][x]) && (x===0 || !playerPieces[y][x-1]) && (x===7 || !playerPieces[y][x+1])) {
                 countAI++;
             }
         }
