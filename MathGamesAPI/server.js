@@ -31,7 +31,6 @@ const io = require("socket.io")(server, {
 var current_games = {};
 var match_queue = {0: [], 1: []};
 var users_info = {}
-var link_current_games = {};
 
 //Connecting new Users
 io.on("connection", (socket) => { 
@@ -90,8 +89,11 @@ io.on("connection", (socket) => {
       console.log("Match found.");
       var player1 = match_queue[game_id].shift()
       var player2 = match_queue[game_id].shift()
-      if (player1 !== undefined && player2 !== undefined) {
-        create_game(player1, player2);
+      if (player1 !== undefined && player2 !== undefined ) {
+        if (player1 !== player2) 
+          create_game(game_id, player1, player2);
+        else 
+          match_queue[game_id].unshift(player1)
       } else {
         if (player1 !== undefined) match_queue[game_id].unshift(player1)
         if (player2 !== undefined) match_queue[game_id].unshift(player2)
@@ -110,7 +112,8 @@ io.on("connection", (socket) => {
   socket.on("move", (new_pos, user_id, match_id) => {
     if (Object.keys(current_games).includes(match_id))
       if (Object.keys(current_games[match_id]).includes(user_id))
-        io.to( users_info[ current_games[match_id][user_id] ] ).emit("move_piece", new_pos);
+        if (valid_move(match_id, new_pos))
+          io.to( users_info[ current_games[match_id][user_id] ] ).emit("move_piece", new_pos);
   })
   
   //
@@ -118,16 +121,64 @@ io.on("connection", (socket) => {
   // 
 });
 
-function create_game(user1, user2) {
+function create_game(game_id, user1, user2) {
     var match_id = Object.keys(current_games).length;
     
     current_games[match_id] = {};
+    current_games[match_id]["game_id"] = game_id;
     current_games[match_id][user1] = user2;
     current_games[match_id][user2] = user1;
-    current_games[match_id]['started'] = false;
+    current_games[match_id]['state'] = {
+      'blocked_pos': [],
+      'current_pos': 18
+    };
     
     io.to(users_info[user1]).emit("match_found", {"match_id": match_id, "starter": true});
     io.to(users_info[user2]).emit("match_found", {"match_id": match_id, "starter": false});
+}
+
+
+function valid_move(match_id, new_pos) {
+  new_pos = parseInt(new_pos)
+
+  //Verificar o jogo
+  if (current_games[match_id]["game_id"] === 0) {
+    //RASTROS
+    if (!current_games[match_id]['state']['blocked_pos'].includes(new_pos)) {
+      var current_pos = current_games[match_id]['state']['current_pos'];
+      var valid_squares = [current_pos-6, current_pos-7, current_pos-8, current_pos+6, current_pos+7, current_pos+8, current_pos-1, current_pos+1]
+      
+      if ( [0,1,2,3,4,5,6].includes(current_pos) ) {
+          valid_squares.delete(current_pos-6);
+          valid_squares.delete(current_pos-7);
+          valid_squares.delete(current_pos-8);
+      }
+
+      if ( [42,43,44,45,46,47,48].includes(current_pos) ) {
+          valid_squares.delete(current_pos+6);
+          valid_squares.delete(current_pos+7);
+          valid_squares.delete(current_pos+8);
+      }
+
+      if ( [0,7,14,21,28,35,42].includes(current_pos) ) {
+          valid_squares.delete(current_pos-8);
+          valid_squares.delete(current_pos-1);
+          valid_squares.delete(current_pos+6);
+      }
+
+      if ( [6,13,20,27,34,41,48].includes(current_pos) ) {
+          valid_squares.delete(current_pos-6);
+          valid_squares.delete(current_pos+1);
+          valid_squares.delete(current_pos+8);
+      }
+      if (valid_squares.includes(new_pos)) {
+        current_games[match_id]['state']['blocked_pos'].push(new_pos)
+        current_games[match_id]['state']['current_pos'] = new_pos
+        return true
+      }
+    }
+  }
+  return false
 }
 
 require("./app/routes/user.routes.js")(app);
