@@ -4,12 +4,12 @@ create table User (
     email varchar(30) NOT NULL,
     password varchar(30) NOT NULL,
     avatar int,
-    ranking int NOT NULL,
-    account_type char NOT NULL,
+    account_level int DEFAULT 0,
+    account_type char DEFAULT 'U',
     unique (username),
     unique (email),
     PRIMARY KEY (id),
-    check (ranking >= 0)
+    check (account_level >= 0)
 );
 
 -- eventually create a stored procedure
@@ -98,4 +98,16 @@ create table UserHasRank(
     foreign key(user_id) references User(id),
     foreign key(game_id) references Game(id),
     check (ranking >= 0)
+);
+
+create table Notifications(
+    id int NOT NULL AUTO_INCREMENT,
+    sender int NOT NULL,
+    receiver int NOT NULL,
+    notification_type char NOT NULL,
+    notification_date datetime NOT NULL,
+    primary key(id),
+    foreign key(sender) references User(id),
+    foreign key(receiver) references User(id),
+    check (sender != receiver)
 );

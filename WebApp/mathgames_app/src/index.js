@@ -1,11 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import Menu from './Menu.js';
+import App from './App.js';
 import reportWebVitals from './reportWebVitals';
 
 
-ReactDOM.render(<Menu />, document.getElementById('root'));
+import io from "socket.io-client";
+let socket = io("http://localhost:4000");
+export default socket;
+
+ReactDOM.render(<App />, document.getElementById('root'));
 
 
 // If you want to start measuring performance in your app, pass a function

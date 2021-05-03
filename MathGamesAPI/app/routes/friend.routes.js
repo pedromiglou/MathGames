@@ -1,18 +1,21 @@
 module.exports = app => {
     const friends = require("../controllers/friend.controller.js");
+    var router = require("express").Router();
   
     // Create a new friendship
-    app.post("/friends", friends.create);
+    router.post("/", friends.create);
   
     // Retrieve all friends
-    app.get("/friends", friends.findAll);
+    router.get("/", friends.findAll);
   
     // Retrieve all friends of a userId
-    app.get("/friends/:userId", friends.findByUserId);
+    router.get("/:id", friends.findByUserId);
   
     // Delete a friendship of two users
-    app.delete("/friends/:friendId1/:friendId2", friends.delete);
+    router.delete("/:friendId1/:friendId2", friends.delete);
   
     // Delete all friends
-    app.delete("/friends", friends.deleteAll);
+    router.delete("/", friends.deleteAll);
+  
+    app.use('/api/friends', router);
   };

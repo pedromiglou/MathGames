@@ -1,44 +1,75 @@
-import React, {useState, useEffect} from "react";
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import "./Game.css"
 import "bootstrap/dist/css/bootstrap.min.css";
-import RastrosEngine from "../../Components/Engines/RastrosEngine";
-import GatosCaesEngine from "../../Components/Engines/GatosCaesEngine";
-import socketIOClient from "socket.io-client";
-const ENDPOINT = "http://127.0.0.1:4000";
+import { RastrosEngine } from "../../Components/Engines/RastrosEngine";
+import { GatosCaesEngine } from "../../Components/Engines/GatosCaesEngine";
+import socket from "../../index"
+
+function Game()  {
+    const [game_ready_to_start, setReady] = useState(false);
+    const url = new URLSearchParams(window.location.search);
+	let match_id = url.get("id");
+
+    let history = useHistory()
+    var params = history.location.state
+    var game_id, game_mode, ai_diff;
 
 
-function Game() {
-    const [response, setResponse] = useState("");
+    if ( match_id !== null ) {
+        console.log("tou aqui")
+        game_id = parseInt( url.get("g") );
+        game_mode = "amigo";
+        ai_diff = undefined;
+    }
+    else {
+        if (params !== undefined) {
+            game_id = parseInt( params.game_id );
+            game_mode = params.game_mode;
+            ai_diff = params.ai_diff;
+        }
+        // else {
+            // Necessario devido ao memo/Botao de encolher menu
+        //    game_id = parseInt( url.get("g") )
+        //}
+    }
 
-    useEffect(() => {
-        const socket = socketIOClient(ENDPOINT);
-        socket.on("FromAPI", data => {
-            setResponse(data);
-        });
-    }, []);
+    // Game is ready to start when both players are connected
+    if ( game_ready_to_start === false ) {
+        if ( match_id !== null ) {
+            game_mode = "amigo"
+            socket.emit("entered_link", {"user_id": sessionStorage.getItem("user_id"), "match_id": match_id, "game_id": game_id})
 
-
-    var game = "rastros";
-    var game_mode = "AI";
-
-    if ( game === "rastros" )
-        return (
-            <div>           
-                <p>
-                It's <time dateTime={response}>{response}</time>
-                </p> 
-                <RastrosEngine game_type={game_mode}></RastrosEngine>
-            </div>
-        );
-    if ( game === "gatoscaes" )
+            socket.on("match_found", (msg) => {
+                sessionStorage.setItem('match_id', msg['match_id']);
+                sessionStorage.setItem('starter', msg['starter']);
+                setReady(true)
+            })
+        } else {
+            setReady(true)
+        }
         return (
             <div>
-                <p>
-                It's <time dateTime={response}>{response}</time>
-                </p>
-                <GatosCaesEngine game_type={game_mode}></GatosCaesEngine>
+                <h1>Waiting for game...</h1>
             </div>
         );
+    } else {
+        if ( game_id === 0 ) {
+            return (
+                <div>
+                    <RastrosEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></RastrosEngine>
+                </div>
+            );
+        }
+        if ( game_id === 1 ) {
+            return (
+                <div>
+                    <GatosCaesEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></GatosCaesEngine>
+                </div>
+            );
+        }
+    }
+    
 }
 
 export default Game;
