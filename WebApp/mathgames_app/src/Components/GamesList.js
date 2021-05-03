@@ -1,107 +1,104 @@
 import { React, useState } from "react";
-import { Container, Card } from "react-bootstrap";
-import {Route, Link} from "react-router-dom";
+import { Card } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
+import { games_info } from "../data/GamesInfo";
 
 import "./GamesList.css";
 
-const games_list = [
-    {
-        id: 0,
-        title: "Game 1",
-        img: process.env.PUBLIC_URL + "/images/mathGames.png",
-        hoover: false,
-        path: '/gamePage',
-    },
-    {
-        id: 1,
-        title: "Game 2",
-        img: process.env.PUBLIC_URL + "/images/mathGames.png",
-        hoover: false,
-        path: '/gamePage',
-    },
-    {
-        id: 2,
-        title: "Game 2",
-        img: process.env.PUBLIC_URL + "/images/mathGames.png",
-        hoover: false,
-        path: '/gamePage',
-    },
-    {
-        id: 3,
-        title: "Game 2",
-        img: process.env.PUBLIC_URL + "/images/mathGames.png",
-        hoover: false,
-        path: '/gamePage',
-    },
-    {
-        id: 4,
-        title: "Game 2",
-        img: process.env.PUBLIC_URL + "/images/mathGames.png",
-        hoover: false,
-        path: '/gamePage',
-    },
-];
-
 function GamesList() {
-    const [title, setTitle] = useState(false);
-    const titleState = () => setTitle(!title);
+	const [title, setTitle] = useState(false);
+	const titleState = () => setTitle(!title);
 
-    function changeCard(e, game) {
-        var x = document.getElementById(game.id);
-        x.style.width = "350px";
-        x.style.height = "350px";
-        x.style.opacity = "0.5";
-        x.style.backgroundColor = "aquat";
+	var history = useHistory();
 
-        games_list[game.id]["hoover"] = true;
-        titleState();
-    }
+	function changeCard(e, game) {
+		var x2 = document.getElementById(game.id + "_Card");
+		x2.style.boxShadow = "10px 5px 5px grey";
 
-    function replaceCard(e, game) {
-        var x = document.getElementById(game.id);
-        x.style.margin = "0px";
-        x.style.width = "300px";
-        x.style.height = "300px";
-        x.style.opacity = "1";
-        x.style.backgroundColor = "white";
+		var x = document.getElementById(game.id);
+		x.style.opacity = "0.5";
 
-        games_list[game.id]["hoover"] = false;
-        titleState();
-    }
+		game.hoover = true;
+		titleState();
+	}
 
-    const showTitle = (game) => {
-        if (game.hoover) {
-            return <h1 className="game-title">{game.title}</h1>;
-        }
-    };
+	function replaceCard(e, game) {
+		var x2 = document.getElementById(game.id + "_Card");
+		x2.style.boxShadow = "";
 
-    return (
-        <>
-        <Container className="display-games container">
-            {games_list.map((game) => (
-                <Card key={game.id}>
-                    <Route>
-                        <Link to={game.path}>
-                            <div
-                                onMouseEnter={(e) => changeCard(e, game)}
-                                onMouseLeave={(e) => replaceCard(e, game)}
-                            >
-                                <img
-                                    src={game.img}
-                                    alt="Info"
-                                    className="card-img"
-                                    id={game.id}
-                                />
-                                {showTitle(game)}
-                            </div> 
-                        </Link>
-                    </Route>    
-                </Card>
-            ))}
-        </Container>
-        
-        </>
-    );
+		var x = document.getElementById(game.id);
+		x.style.opacity = "1";
+
+		game.hoover = false;
+		titleState();
+	}
+
+	function enterGame(value) {
+		value["hoover"] = false;
+		history.push(value["path"]);
+	}
+
+	const showTitle = (game) => {
+		if (game.hoover) {
+			return (
+				<>
+					<div className="row above-img">
+						<div className="col-lg-9 col-sm-9 button_playnow">
+							{/* <button className="play-button"> Jogar! </button> */}
+							<button className="learn-more circle">
+								<span className="circle" aria-hidden="true">
+									<span className="icon arrow"></span>
+								</span>
+								<span
+									className="button-text"
+									style={{
+										color: "white",
+										marginLeft: "5px",
+										fontFamily: "Bubblegum Sans",
+									}}
+								>
+									Jogar Agora
+								</span>
+							</button>
+						</div>
+						<div className="col-lg-3 col-sm-3 game_age">
+							<p> +{game.age} </p>
+						</div>
+					</div>
+				</>
+			);
+		}
+	};
+
+	return (
+		<>
+			<div className="display-games">
+				{Object.entries(games_info).map(([key, value]) => (
+					<Card
+						key={key}
+						id={key + "_Card"}
+						className="button-fix"
+						onClick={() => enterGame(value)}
+					>
+						<div
+							onMouseEnter={(e) => changeCard(e, value)}
+							onMouseLeave={(e) => replaceCard(e, value)}
+						>
+							<img
+								src={value["img"]}
+								alt="Info"
+								className="card-img"
+								id={key}
+							/>
+							<h2 className="game-title">{value["title"]}</h2>
+
+							{showTitle(value)}
+						</div>
+					</Card>
+				))}
+			</div>
+		</>
+	);
 }
 
 export default GamesList;

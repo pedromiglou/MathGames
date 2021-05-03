@@ -1,0 +1,67 @@
+$t: 1s;
+$d: 0.08em;
+$n: 3;
+$e: cubic-bezier(0.86, 0, 0.07, 1);
+$front: #EDAB5F; //#4fc5fc
+$back: #f7d7b2; //rgb(147, 180, 191);
+html {
+    background: white;
+}
+
+.popout {
+    font-family: Bubblegum Sans;
+    font-weight: 900;
+
+    /* background-color: #ca4246 !important;
+    background-image: linear-gradient(132deg, #a64bde, #66e312, #05f5c5) !important;
+    background-size: 100% !important; 
+    background-repeat: repeat !important;
+    background-size: 400% 400% !important;
+    animation: gradient 15s ease infinite !important; */
+
+    animation: slideUp 0.8s ease-in-out forwards 0.8s;
+
+    @keyframes ani {
+        0% {
+            transform: translate3d(0, 0, 0);
+            text-shadow: 0em 0em 0 $back;
+            color: $front;
+        }
+        30% {
+            transform: translate3d(0, 0, 0);
+            text-shadow: 0em 0em 0 $back;
+            color: $front;
+        }
+        70% {
+            transform: translate3d($d, -$d, 0);
+            text-shadow: -$d $d $back;
+            color: $front;
+        }
+        100% {
+            transform: translate3d($d, -$d, 0);
+            text-shadow: -$d $d $back;
+            color: $front;
+        }
+    }
+    span {
+        position: relative;
+        display: inline-block;
+        animation: ani $t infinite alternate $e;
+        @for $i from 1 through $n {
+            &:nth-last-child(#{$i}n) {
+                animation-delay: -$t * $i/$n/2;
+            }
+        }
+        font-family: Bubblegum Sans;
+        font-size: 50px;
+    }
+}
+
+@keyframes slideUp {
+    0% {
+        transform: translateY(300px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}

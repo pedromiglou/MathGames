@@ -1,0 +1,391 @@
+/* Solucao para o backgroud size
+@media(max-width:767px) {
+    html, body, #root, .App {
+        height: 1000px;
+    }
+}
+*/
+
+/* Global horizontal Navbar */
+#horizontal_nav_row.row{
+    background-color: #F1F1F1;
+    margin:0;
+    height: 100px;
+    width: 100%;
+    position: -webkit-sticky;
+    position: sticky;
+    top:0px;
+    display: flex;
+    color: navy;
+}
+
+/*Bars and Logo */
+#row-logo.row{
+    margin:0;
+    padding: 8px 16px;
+    width: min(50%, 400px);
+    min-width: 250px;
+}
+
+.nav-logo{
+    width: min(80%, 350px);
+    min-width: 100px;
+    height: auto;
+    align-items: center;
+}
+
+.logo{
+    width: 100%;
+    min-width: 100px;
+    height: 100%;
+}
+
+/* horizontal navbar */
+.navbar{
+    display: flex;
+    width: 30%;
+    max-width: calc(100% - 400px);
+    height: 100%;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    padding: 0.5rem 1rem;
+}
+
+#notifs-number {
+    font-size: larger;
+}
+
+.navbar-dropdown-text {
+    font-size: larger;
+}
+
+#notifs-dropdown:after{
+    display: none;
+}
+
+#friends-dropdown:after{
+    display: none;
+}
+
+.round_profile_logo{
+    width: 70px;
+    height: 70px;
+}
+
+.profile_logo{
+    width: 100%;
+    min-width: 70px;
+}
+
+.navbar-account-info {
+    font-size: x-large;
+}
+
+.h2-login { 
+    font-family: Bubblegum Sans;
+    font-size: xx-large;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 500;
+}
+
+.h2-login:hover {
+    text-decoration: none;
+}
+
+/*------ MENU DIVIDIR----- */
+.menu-divider{
+    margin-right: 5%;
+    width: 2px;
+    height: 100%;
+    -webkit-animation: change-color-background 4s infinite;
+    animation: change-color-background 10s infinite;
+}
+
+.menu-divider-login{
+    margin-right: 5%;
+    width: 2px;
+    height: 100%;
+    background-color: navy;
+}
+
+/* Global content below horizontal navbar */
+
+#content.row{
+    margin:0;
+    height: calc(100% - 100px);
+}
+
+/* Vertical Menu */
+
+#content {
+    margin-left: 300px;
+}
+
+.menu-bars{
+    width: 40px;
+    height: 40px;
+    margin-left: 16px;
+    margin-top: 30px;
+    align-self: center;
+    font-size: 24px;
+    background: none;
+    position:absolute;
+    z-index: 2000;
+}
+
+.menu-bars:hover{
+    cursor: pointer;
+}
+
+.nav-menu{
+    background-color: #F9F9F9;
+    height: 100%;
+    position: fixed;
+    margin-right: 0 !important;
+}
+
+.nav-menu-items{
+    width: 100%;
+    height: 100%;
+}
+
+.nav-menu.collapsed{
+    width: 65px;
+    transition: 600ms; 
+}
+.nav-menu.active{
+    width: 300px;
+    transition: 700ms;
+}
+
+.nav-item{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    height: 70px;
+    margin: 4px 0;
+    background: #F9F9F9;
+    font-weight: lighter;
+    letter-spacing: 2px;
+    transition: 1s box-shadow;
+}
+
+
+.nav-item:hover{
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.nav-item::after{
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    bottom:0;
+    left: 0;
+    transform: scale(0,1);
+}
+
+.nav-item:hover::after{
+    transform: scale(1,1);
+    transition: transform 1s ease;
+    -webkit-animation: change-color-background 4s infinite;
+    animation: change-color-background 4s infinite;
+}
+
+.nav-text{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    list-style: none;
+    height: 60px;    
+}
+
+.nav-text a{
+    text-decoration: none;
+    color: #2C96C7;
+    font-size: 20px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: .5rem 1rem;
+}
+
+.subicon svg{
+    width: 24px;
+    height: 24px;
+}
+
+hr{
+    margin:0;
+}
+
+/* Appear and disappear animations */
+span.icons-name{
+    margin-left: 16px;
+    -webkit-animation: appearAnimation 0.4s forwards;
+    animation: appearAnimation 0.4s forwards;
+    width: auto;
+}
+
+span.icons-noname{
+    margin-left: 16px;
+    -webkit-animation: disappearAnimation 0.4s forwards;
+    animation: disappearAnimation 0.4s forwards;
+    width: auto;
+}
+/*-----------------------*/
+
+
+/* KEYFRAMES */
+
+@keyframes disappearAnimation {
+    0%   {opacity: 1;}
+    100% {opacity: 0;}
+}
+
+@keyframes appearAnimation {
+    0%   {opacity: 0;}
+    25%  {opacity: 0.1;}
+    50%  {opacity: 0.3;}
+    75%  {opacity: 0.6;}
+    100% {opacity: 1;}
+}
+
+@keyframes change-color-background {
+    100%{
+        background-color: #075C7A;
+    }
+    90%{
+        background-color: #054473;
+    }
+    80%{
+        background-color: #04347A;
+    }
+    70%{
+        background-color: #012080;
+    }
+    60%{
+        background-color: #0078C2;
+    }
+    50%{
+        background-color: #0065E0;
+    }
+    40%{
+        background-color: #0061E0;
+    }
+    30%{
+        background-color: #0083E0;
+    }
+    20%{
+        background-color: #00CAE0;
+    }
+    10%{
+        background-color: #00E0D5;
+    }
+    0%{
+        background-color: #16F5EA;
+    }
+}
+
+/* media queries */
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+    /*Bars and Logo */
+    #row-logo.row{
+        margin:0;
+        padding: 8px 16px;
+        width: 100%;
+    }
+
+    .nav-logo{
+        width: calc(80% - 40px);
+        height: auto;
+    }
+
+    .logo{
+        width: 100%;
+        min-width: 100px;
+        height: 100%;
+    }
+
+    .menu-bars{
+        margin-left: 16px;
+        margin-top: 30px;
+        align-self: center;
+        font-size: 24px;
+        background: none;
+        position:absolute;
+        z-index: 2000;
+    }
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+    .example {background: blue;}
+} 
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+    .example {background: orange;}
+} 
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+    .example {background: pink;}
+}
+
+
+/* Merdas do Rafa para depois organizar */
+.btn-primary:hover {
+    color: #fff;
+    background-color: #F1F1F1;
+    border-color: #F1F1F1;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #F1F1F1;
+    border-color: #F1F1F1;
+    font-size: 24px;
+}
+
+.btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show > .btn-primary.dropdown-toggle {
+    color: #fff;
+    background-color: #F1F1F1;
+    border-color: #F1F1F1;
+}
+
+.btn-primary:not(:disabled):not(.disabled).active:focus, .btn-primary:not(:disabled):not(.disabled):active:focus, .show > .btn-primary.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0;
+}
+
+.btn-primary.focus, .btn-primary:focus {
+    color: #fff;
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: 0 0 0 0;
+}
+
+.navbar-dropdown-row {
+    width: 20vw;
+    font-size: larger;
+}
+
+.col-centered{
+    float: none;
+    margin: auto 0;
+}
+
+.icon_notifications:hover {
+    cursor: pointer;
+}

@@ -1,117 +1,131 @@
-const TournamentUser = require("../models/tournamentusers.model.js");
+const db = require("../models");
+const TournamentUser = db.tournament_users;
+const Op = db.Sequelize.Op;
 
-// Create and Save a new Tournament user
+// Create and Save a new TournamentUser
 exports.create = (req, res) => {
   // Validate request
   if (!req.body) {
     res.status(400).send({
       message: "Content can not be empty!"
     });
+    return;
   }
 
-  // Create a Tournament User
-  const tournamentuser = new TournamentUser({
+  // Create a TournamentUser
+  const tournamentUser = {
     user_id: req.body.user_id,
     tournament_id: req.body.tournament_id,
     eliminated: req.body.eliminated
-  });
+  };
 
-  // Save Tournament Match in the database
-  TournamentUser.create(tournamentuser, (err, data) => {
-    if (err)
+  // Save TournamentUser in the database
+  TournamentUser.create(tournamentUser)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while creating the TournamentUser."
       });
-    else res.send(data);
-  });
-};
-
-// Retrieve all Tournament User from the database.
-exports.findAll = (req, res) => {
-  TournamentUser.getAll((err, data) => {
-    if (err)
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving users."
-      });
-    else res.send(data);
-  });
-};
-
-// Find all users of a tournament id
-exports.findByTournamentId = (req, res) => {
-  TournamentUser.findByTournamentId(req.params.tournamentId, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          message: `Not found Users with tournament_id ${req.params.tournamentId}.`
-        });
-      } else {
-        res.status(500).send({
-          message: "Error retrieving Users with tournament id " + req.params.tournamentId
-        });
-      }
-    } else res.send(data);
-  });
-};
-
-// Update a Match identified by the match_id
-exports.update = (req, res) => {
-  // Validate Request
-  if (!req.body) {
-    res.status(400).send({
-      message: "Content can not be empty!"
     });
-  }
-
-  console.log(req.body);
-
-  TournamentUser.updateByUserIdTournamentId(
-    req.params.userId,
-    req.params.tournamentId,
-    req.body.eliminated,
-    (err, data) => {
-      if (err) {
-        if (err.kind === "not_found") {
-          res.status(404).send({
-            message: `Not found User with id ${req.params.userId} and Tournament with id ${req.params.tournamentId}.`
-          });
-        } else {
-          res.status(500).send({
-            message: "Error updating User with id" + req.params.userId + "and Tournament with id " + req.params.tournamentId
-          });
-        }
-      } else res.send(data);
-    }
-  );
 };
 
-// Delete a Tournament User with the specified matchId in the request
-exports.delete = (req, res) => {
-  TournamentUser.remove(req.params.userId, req.params.tournamentId, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          message: `Not found User with id ${req.params.userId} and Tournament with id ${req.params.tournamentId}.`
-        });
-      } else {
-        res.status(500).send({
-          message: "Could not delete User with id" + req.params.userId + "and Tournament with id " + req.params.tournamentId
-        });
-      }
-    } else res.send({ message: `TournamentUser was deleted successfully!` });
-  });
-};
-
-// Delete all Tournament Users from the database.
-exports.deleteAll = (req, res) => {
-  TournamentUser.removeAll((err, data) => {
-    if (err)
+// Retrieve all TournamentUsers from the database.
+exports.findAll = (req, res) => {
+  TournamentUser.findAll()
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while removing all tournament users."
+          err.message || "Some error occurred while retrieving TournamentUsers."
       });
-    else res.send({ message: `All Tournament Users were deleted successfully!` });
-  });
+    });
+};
+
+// Find a single TournamentUser with an id
+exports.findByTournament = (req, res) => {
+  const id = req.params.id;
+
+  TournamentUser.findAll({where: {tournament_id: id} })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving TournamentUser with tournament id=" + id
+      });
+    });
+};
+
+// Update a TournamentUser by the id in the request
+exports.update = (req, res) => {
+  const tournament_id = req.params.tournamentId;
+  const user_id = req.params.userId;
+
+  TournamentUser.update(req.body, {
+    where: { tournament_id: tournament_id, user_id: user_id }
+  })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: "TournamentUser was updated successfully."
+        });
+      } else {
+        res.send({
+          message: `Cannot update TournamentUser with id=${id}. Maybe TournamentUser was not found or req.body is empty!`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error updating TournamentUser with id=" + id
+      });
+    });
+};
+
+// Delete a TournamentUser with the specified id in the request
+exports.delete = (req, res) => {
+  const tournament_id = req.params.tournamentId;
+  const user_id = req.params.userId;
+
+  TournamentUser.destroy({
+    where: { tournament_id: tournament_id, user_id: user_id }
+  })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: "TournamentUser was deleted successfully!"
+        });
+      } else {
+        res.send({
+          message: `Cannot delete TournamentUser with id=${id}. Maybe TournamentUser was not found!`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Could not delete TournamentUser with id=" + id
+      });
+    });
+};
+
+// Delete all TournamentUseres from the database.
+exports.deleteAll = (req, res) => {
+  TournamentUser.destroy({
+    where: {},
+    truncate: false
+  })
+    .then(nums => {
+      res.send({ message: `${nums} TournamentUseres were deleted successfully!` });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while removing all TournamentUseres."
+      });
+    });
 };

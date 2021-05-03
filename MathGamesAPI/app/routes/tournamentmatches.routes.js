@@ -1,21 +1,24 @@
 module.exports = app => {
-    const tournamentMatches = require("../controllers/tournamentmatches.controller.js");
+    const tournamentmatches = require("../controllers/tournamentmatches.controller.js");
+    var router = require("express").Router();
   
-    // Create a new tournament Match
-    app.post("/tournamentmatches", tournamentMatches.create);
+    // Create a new tournament match
+    router.post("/", tournamentmatches.create);
   
-    // Retrieve all tournamentMatches
-    app.get("/tournamentmatches", tournamentMatches.findAll);
+    // Retrieve all tournamentmatches
+    router.get("/", tournamentmatches.findAll);
   
-    // Retrieve all tournamentMatch with tournamentId
-    app.get("/tournamentmatches/:tournamentId", tournamentMatches.findByTournamentId);
+    // Retrieve a all matches of a tournament with the tournament id
+    router.get("/:id", tournamentmatches.findByTournament);
   
     // Update a tournamentMatch with matchId
-    app.put("/tournamentmatches/:matchId", tournamentMatches.update);
+    router.put("/:id", tournamentmatches.update);
   
     // Delete a tournamentMatch with matchId
-    app.delete("/tournamentmatches/:matchId", tournamentMatches.delete);
+    router.delete("/:id", tournamentmatches.delete);
   
-    // Delete all tournamentMatches
-    app.delete("/tournamentmatches", tournamentMatches.deleteAll);
+    // Delete all tournamentmatches
+    router.delete("/", tournamentmatches.deleteAll);
+  
+    app.use('/api/tournamentmatches', router);
   };

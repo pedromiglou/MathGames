@@ -1,31 +1,23 @@
-class rastrosState {
-    constructor(blocked_squares, piece, depth) {
-        this.blocked_squares = blocked_squares;
-        this.piece = piece;
-        this.validSquares = [];
-        for (var y = piece[0]-1; y<=piece[0]+1; y++) {
-            for (var x = piece[1]-1; x<=piece[1]+1; x++) {
-                if (!this.blocked_squares.find(element => element[0] == y && element[1] == x)) {
-                    if (!(y==piece[0] && x==piece[1]) && y>=0 && y<=6 && x>=0 && x<=6) {
-                        this.validSquares.push([y,x]);
-                    }
-                }
-            }
-        }
-        this.depth = depth;
-    }
-}
+    /*
+    easy -> 20% good plays
+    medium -> 50% good plays
+    hard -> 80% good plays
+    */
 
 class rastrosAI {
-    constructor(player) {
+    constructor(player, probabilityOfGoodMove) {
         //get goal
         if (player == 1) {
             this.goal = [6,0];
+            this.otherGoal = [0,6];
         } else if (player == 2) {
             this.goal = [0,6];
+            this.otherGoal = [6,0];
         } else {
             throw Error("Invalid player number");
         }
+
+        this.probabilityOfGoodMove = probabilityOfGoodMove;
 
         // Array that stores the board
         this.board = []
@@ -43,11 +35,18 @@ class rastrosAI {
         
         this.piece = [2, 4];
 
-        this.blocked_squares = [];
+        this.blocked_squares = [[false,false,false,false,false,false,false],
+                                [false,false,false,false,false,false,false],
+                                [false,false,false,false,false,false,false],
+                                [false,false,false,false,false,false,false],
+                                [false,false,false,false,false,false,false],
+                                [false,false,false,false,false,false,false],
+                                [false,false,false,false,false,false,false]];
 
         this.fieldUpdate([2,4]);
     }
 
+    //print the field in the console
     printField() {
         var s = "  0 1 2 3 4 5 6\n";
         for (var pos_y = 0; pos_y < 7; pos_y++) {
@@ -62,123 +61,132 @@ class rastrosAI {
     }
     
     //update board, blocked_squares, piece coordinates and validSquares
-    fieldUpdate(new_pos) {
+    fieldUpdate(piece) {
         // Squares which have been blocked
-        this.blocked_squares.push(new_pos);
+        this.blocked_squares[piece[0]][piece[1]] = true;
 
         this.board[this.piece[0]][this.piece[1]] = "B";
 
         // piece coordinates
-        this.piece = [new_pos[0], new_pos[1]];
-        this.board[new_pos[0]][new_pos[1]] = "P";
+        this.piece = piece;
+        this.board[piece[0]][piece[1]] = "P";
 
-        // Squares to where the moving piece can currently move
         this.validSquares = [];
-        for (var y = new_pos[0]-1; y<=new_pos[0]+1; y++) {
-            for (var x = new_pos[1]-1; x<=new_pos[1]+1; x++) {
-                if (!this.blocked_squares.find(element => element[0] == y && element[1] == x)) {
-                    if (!(y==new_pos[0] && x==new_pos[1]) && y>=0 && y<=6 && x>=0 && x<=6) {
-                        this.validSquares.push([y,x]);
-                    }
+        for (var y = piece[0]-1; y<=piece[0]+1; y++) {
+            for (var x = piece[1]-1; x<=piece[1]+1; x++) {
+                if (y>=0 && y<=6 && x>=0 && x<=6 && !this.blocked_squares[y][x]) {
+                    this.validSquares.push([y,x]);
                 }
             }
         }
-
-        this.state = new rastrosState(this.blocked_squares, this.piece, 0);
     }
 
     //check if game ended
-    ended(state) {
-        if ((state.piece.toString() == "6,0" && this.goal.toString() == "6,0") || (state.piece.toString() == "0,6" && this.goal.toString() == "0,6")) {
-            return 1;
-        } else if ((state.piece.toString() == "0,6" && this.goal.toString() == "6,0") || (state.piece.toString() == "6,0" && this.goal.toString() == "0,6") || state.validSquares.length == 0) {
-            return -1;
+    ended(piece, validSquares) {
+        if (piece[0] == this.goal[0] && piece[1] == this.goal[1]) {
+            return 99;
+        } else if ((piece[0] == this.otherGoal[0] && piece[1] == this.otherGoal[1]) || validSquares.length == 0) {
+            return -99;
         } else {
-            return 0;
+            return 98 - Math.pow(piece[0]-this.goal[0], 2) - Math.pow(piece[1] - this.goal[1], 2);
         }
     }
 
-    randomPlay2() {
+    //make a play using the AI
+    makePlay() {
+        var startTime=new Date();
         var chosen = null;
-        var score = -1;
 
-        //console.log(this.validSquares);
-
-        this.validSquares.forEach( (element) => {
-            var state = new rastrosState(this.blocked_squares.concat([element]), element, 0);
-            var newScore = this.search(state, 3);
-            if (newScore >= score) {
-                chosen = element;
-                score = newScore;
-            }
-        });
-
-        //console.log(chosen);
-
-        this.fieldUpdate(chosen);
-        return chosen;
-    }
-
-    /*
-    //not that random of a play
-    randomPlay() {
-        var chosen = this.validSquares.reduce((accumulator, current) => {
-            if (accumulator === undefined) {
-                return current;
-            }
-            if (Math.pow(accumulator[0]-this.goal[0], 2) + Math.pow(accumulator[1] - this.goal[1], 2) < Math.pow(current[0]-this.goal[0], 2) + Math.pow(current[1] - this.goal[1], 2)) {
-                return accumulator;
+        if (Math.random()>this.probabilityOfGoodMove) {
+            if ((Math.pow(this.goal[0]-this.piece[0], 2) + Math.pow(this.goal[1]-this.piece[1],2)<=8) ||
+                (Math.pow(this.otherGoal[0]-this.piece[0], 2) + Math.pow(this.otherGoal[1]-this.piece[1],2)<=8)) {
+                    chosen = this.validSquares.reduce((accumulator, current) => {
+                        if (Math.pow(accumulator[0]-this.goal[0], 2) + Math.pow(accumulator[1] - this.goal[1], 2) < Math.pow(current[0]-this.goal[0], 2) + Math.pow(current[1] - this.goal[1], 2)) {
+                            return accumulator;
+                        } else {
+                            return current;
+                        }
+                    });
             } else {
-                return current;
+                chosen = this.validSquares[Math.floor(Math.random() * this.validSquares.length)];
             }
-        });
-        this.fieldUpdate(chosen);
-        return chosen;
-    }*/
+        } else {
+            var score = -100;
 
-    /*
-    fácil -> move-se sempre em direção ao goal
-    médio -> o mesmo mas se estiver perto de cada um dos goals pensa em fazer jogadas que garantam a vitória/evitem a derrota
-    difícil -> começa a pensar mais cedo e também tem cuidado em ficar encurralado
-    */
-    
-    //oldState -> rastros state object, limit -> depth search depth limit
-    search(oldState, limit) {
-        //number of validSquares
-        var size = oldState.validSquares.length;
-        var sum = 0;
+            this.validSquares.forEach( (element) => {
+                this.blocked_squares[element[0]][element[1]] = true;
+                var validSquares = [];
+                for (var y = element[0]-1; y<=element[0]+1; y++) {
+                    for (var x = element[1]-1; x<=element[1]+1; x++) {
+                        if (y>=0 && y<=6 && x>=0 && x<=6 && !this.blocked_squares[y][x]) {
+                            validSquares.push([y,x]);
+                        }
+                    }
+                }
 
-        //calcular uma probabilidade de vitória para uma jogada
-        oldState.validSquares.forEach(element => {
-            var newState = new rastrosState(oldState.blocked_squares.concat([element]), element, oldState.depth+1);
-            if (newState.depth == limit || this.ended(newState)!=0) {
-                sum += this.ended(newState);
-            } else {
-                sum += this.search(newState, limit);
-            }
-        });
-        return sum/size;
-    }
-    
-    //if close to a goal try to get a winning play
-    tryToWin() {
-        if (Math.pow(this.piece[0]-this.goal[0],2) <=4 && Math.pow(this.piece[1]-this.goal[1],2) <=4) {
-            
+                var newScore = this.minimax(validSquares, element, 9, false);
+                if (newScore >= score) {
+                    chosen = element;
+                    score = newScore;
+                }
+                this.blocked_squares[element[0]][element[1]] = false;
+            });
         }
+
+        console.log(Math.round(new Date()-startTime));
+
+        this.fieldUpdate(chosen);
+        return chosen;
     }
 
-    //if close to a enemy goal try to make a saving play
-    tryNotToLose() {
-
+    //minimax algorithmn
+    minimax(validSquares, piece, depth, maximizingPlayer) {
+        var x = this.ended(piece, validSquares);
+        if (depth == 0 || x==99 || x==-99) {
+            return x;
+        }
+        if (maximizingPlayer) {
+            var value = -100;
+            validSquares.forEach((element) => {
+                this.blocked_squares[element[0]][element[1]] = true;
+                var validSquares2 = [];
+                for (var y = element[0]-1; y<=element[0]+1; y++) {
+                    for (var x = element[1]-1; x<=element[1]+1; x++) {
+                        if (y>=0 && y<=6 && x>=0 && x<=6 && !this.blocked_squares[y][x]) {
+                            validSquares2.push([y,x]);
+                        }
+                    }
+                }
+                var newValue = this.minimax(validSquares2, element, depth-1, false);
+                if (newValue > value) {
+                    value = newValue;
+                }
+                this.blocked_squares[element[0]][element[1]] = false;
+            })
+        } else {
+            var value = 100;
+            validSquares.forEach((element) => {
+                this.blocked_squares[element[0]][element[1]] = true;
+                var validSquares2 = [];
+                for (var y = element[0]-1; y<=element[0]+1; y++) {
+                    for (var x = element[1]-1; x<=element[1]+1; x++) {
+                        if (y>=0 && y<=6 && x>=0 && x<=6 && !this.blocked_squares[y][x]) {
+                            validSquares2.push([y,x]);
+                        }
+                    }
+                }
+                var newValue = this.minimax(validSquares2, element, depth-1, true);
+                if (newValue < value) {
+                    value = newValue;
+                }
+                this.blocked_squares[element[0]][element[1]] = false;
+            })
+        }
+        return value;
     }
-
-    //if cornered try to make the enemy lose first
-    cornered() {
-
-    }
-
 }
 
+//click the button in the html test file
 function buttonClick() {
     var play = document.getElementById("onlyInput").value;
 
@@ -189,26 +197,25 @@ function buttonClick() {
     AI.fieldUpdate(play)
     AI.printField();
 
-    if (AI.ended(AI.state)) {
-        console.log("gg")
+    if (AI.ended(AI.piece, AI.validSquares)==99 || AI.ended(AI.piece, AI.validSquares)==-99) {
+        console.log("gg1")
     } else {
         console.log("AI played:")
-        AI.randomPlay2();
+        AI.makePlay();
         AI.printField();
 
-        if (AI.ended(AI.state)) {
-            console.log("gg")
+        if (AI.ended(AI.piece, AI.validSquares)==99 || AI.ended(AI.piece, AI.validSquares)==-99) {
+            console.log("gg2")
         }
     }
-    
 }
 
 var playerNumber = 1;
-var AI = new rastrosAI(playerNumber);
+var AI = new rastrosAI(playerNumber, 0.5);
 AI.printField();
 
 if (playerNumber==1) {
     console.log("AI played:")
-    AI.randomPlay2();
+    AI.makePlay();
     AI.printField();
 }

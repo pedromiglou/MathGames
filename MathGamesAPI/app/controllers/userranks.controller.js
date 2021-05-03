@@ -1,4 +1,6 @@
-const UserRank = require("../models/userranks.model.js");
+const db = require("../models");
+const UserRank = db.user_ranks;
+const Op = db.Sequelize.Op;
 
 // Create and Save a new UserRank
 exports.create = (req, res) => {
@@ -7,128 +9,139 @@ exports.create = (req, res) => {
     res.status(400).send({
       message: "Content can not be empty!"
     });
+    return;
   }
 
   // Create a UserRank
-  const userrank = new UserRank({
+  const userRank = {
     ranking: req.body.ranking,
-  });
+    user_id: req.body.user_id,
+    game_id: req.body.game_id
+  };
 
   // Save UserRank in the database
-  UserRank.create(userrank, req.body.user_id, req.body.game_id, (err, data) => {
-    if (err)
+  UserRank.create(userRank)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while creating the UserRank."
       });
-    else res.send(data);
-  });
+    });
 };
 
-// Retrieve all UsersRanks from the database.
+// Retrieve all UserRanks from the database.
 exports.findAll = (req, res) => {
-  UserRank.getAll((err, data) => {
-    if (err)
+  UserRank.findAll()
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving users ranks."
+          err.message || "Some error occurred while retrieving UserRanks."
       });
-    else res.send(data);
-  });
+    });
 };
 
 // Find all ranks of a given userId
 exports.findByUserId = (req, res) => {
-  UserRank.findByUserId(req.params.userId, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          message: `Not found User Rank with user id ${req.params.userId}.`
-        });
-      } else {
-        res.status(500).send({
-          message: "Error retrieving User Rank with user id " + req.params.userId
-        });
-      }
-    } else res.send(data);
-  });
+  const id = req.params.userId;
+
+  UserRank.findAll({ where: {user_id: id}})
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving UserRank with id=" + id
+      });
+    });
 };
 
 // Find a single User Rank by a specific userId and gameId
 exports.findByUserIdGameId = (req, res) => {
-    UserRank.findByUserIdGameId(req.params.userId, req.params.gameId, (err, data) => {
-      if (err) {
-        if (err.kind === "not_found") {
-          res.status(404).send({
-            message: `Not found User Rank with user_id ${req.params.userId} and game_id ${req.params.gameId}.`
-          });
-        } else {
-          res.status(500).send({
-            message: "Error retrieving User Rank with user_id " + req.params.userId + " game_id " + req.params.gameId
-          });
-        }
-      } else res.send(data);
-    });
+    const userId = req.params.userId;
+    const gameId = req.params.gameId;
+  
+    UserRank.findAll({ where: [{user_id: userId}, {game_id: gameId} ]})
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({
+          message: "Error retrieving UserRank with user id=" + userId + " and game id=" + gameId
+        });
+      });
   };
-
-
 
 // Update a UserRank identified by the userId and gameId in the request
 exports.update = (req, res) => {
-  // Validate Request
-  if (!req.body) {
-    res.status(400).send({
-      message: "Content can not be empty!"
-    });
-  }
+  const userId = req.params.userId;
+  const gameId = req.params.gameId;
 
-  console.log(req.body);
-
-  UserRank.updateByUserIdGameId(
-    req.params.userId,
-    req.params.gameId,
-    new UserRank(req.body),
-    (err, data) => {
-      if (err) {
-        if (err.kind === "not_found") {
-          res.status(404).send({
-            message: `Not found User Rank with userId ${req.params.userId} and gameId ${req.params.gameId}.`
-          });
-        } else {
-          res.status(500).send({
-            message: "Error updating User Rank with userId " + req.params.userId + " gameId " + req.params.gameId
-          });
-        }
-      } else res.send(data);
-    }
-  );
-};
-
-// Delete a User Rank with the specified userId and gameId in the request
-exports.delete = (req, res) => {
-  UserRank.remove(req.params.userId, req.params.gameId, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          message: `Not found User Rank with userId ${req.params.userId} and gameId ${req.params.gameId}.`
+  UserRank.update(req.body, {
+    where: [{ user_id: userId }, {game_id: gameId}]
+  })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: "UserRank was updated successfully."
         });
       } else {
-        res.status(500).send({
-          message: "Could not delete User Rank with userId " + req.params.userId + " gameId " + req.params.gameId
+        res.send({
+          message: `Cannot update UserRank with user id=${userId} and game id=${gameId}. Maybe UserRank was not found or req.body is empty!`
         });
       }
-    } else res.send({ message: `UserRank was deleted successfully!` });
-  });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error updating UserRank with user id=" + userId + " and game id=" + gameId
+      });
+    });
 };
 
-// Delete all UsersRanks from the database.
+// Delete a UserRank with the specified id in the request
+exports.delete = (req, res) => {
+  const userId = req.params.userId;
+  const gameId = req.params.gameId;
+
+  UserRank.destroy({
+    where: [{ user_id: userId }, {game_id: gameId}]
+  })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: "UserRank was deleted successfully!"
+        });
+      } else {
+        res.send({
+          message: `Cannot delete UserRank with user id=${userId} and game id=${gameId}. Maybe UserRank was not found!`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Could not delete UserRank with user id=" + userId + " and game id=" + gameId
+      });
+    });
+};
+
+// Delete all UserRanks from the database.
 exports.deleteAll = (req, res) => {
-  UserRank.removeAll((err, data) => {
-    if (err)
+  UserRank.destroy({
+    where: {},
+    truncate: false
+  })
+    .then(nums => {
+      res.send({ message: `${nums} UserRanks were deleted successfully!` });
+    })
+    .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while removing all users ranks."
+          err.message || "Some error occurred while removing all UserRanks."
       });
-    else res.send({ message: `All Users Ranks were deleted successfully!` });
-  });
+    });
 };

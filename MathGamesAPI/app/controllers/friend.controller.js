@@ -1,4 +1,7 @@
-const Friend = require("../models/friend.model.js");
+const db = require("../models");
+const Friend = db.friend;
+const User = db.user;
+const Op = db.Sequelize.Op;
 
 // Create and Save a new Friend
 exports.create = (req, res) => {
@@ -7,87 +10,117 @@ exports.create = (req, res) => {
     res.status(400).send({
       message: "Content can not be empty!"
     });
+    return;
   }
 
   var friend = null;
   // Create a Friend
   if (req.body.friend1 > req.body.friend2) {
-    friend = new Friend({
+    friend = {
       friend1: req.body.friend2,
       friend2: req.body.friend1
-    });
+    };
   } else {
-    friend = new Friend({
+    friend = {
       friend1: req.body.friend1,
       friend2: req.body.friend2
-    });
+    };
   }
-
   // Save Friend in the database
-  Friend.create(friend.friend1, friend.friend2, (err, data) => {
-    if (err)
+  Friend.create(friend)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while creating the Friend."
       });
-    else res.send(data);
-  });
+    });
 };
 
-// Retrieve all Bans from the database.
+// Retrieve all Friends from the database.
 exports.findAll = (req, res) => {
-  Friend.getAll((err, data) => {
-    if (err)
+  Friend.findAll()
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving the friends."
+          err.message || "Some error occurred while retrieving Friends."
       });
-    else res.send(data);
-  });
+    });
 };
 
 // Find friends of a given userId
 exports.findByUserId = (req, res) => {
-  Friend.findByUserId(req.params.userId, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          message: `Not found Friends with user id ${req.params.userId}.`
-        });
-      } else {
-        res.status(500).send({
-          message: "Error retrieving Friends with user id " + req.params.userId
-        });
-      }
-    } else res.send(data);
-  });
+  const id = req.params.id;
+  Friend.findAll({ where: { [Op.or]: [{ friend1: id}, {friend2: id} ] }})
+  .then(data => {
+      var data = data.map(element => {
+        if (element.friend1 !== parseInt(id)) {
+          return element.friend1;
+        } else {
+          return element.friend2;
+        }
+      });
+      User.findAll({attributes: ['id', 'username', 'avatar', 'account_level'], where: {id: data} })
+      .then( users => {
+        res.send(users)
+      })
+      .catch(err => {
+          res.status(500).send({
+              message: "Error retreving users."
+          })
+      })
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving Friend with id=" + id
+      });
+    });
 };
 
-// Delete a Friend with the specified two user ids
+// Delete a Friend with the specified id in the request
 exports.delete = (req, res) => {
-  Friend.remove(req.params.friendId1, req.params.friendId2, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          message: `Not found Friendship with userId ${req.params.friendId1} and userId ${req.params.friendId2}.`
+  const friendId1 = req.params.friendId1;
+  const friendId2 = req.params.friendId2;
+
+  Friend.destroy({
+    where: { [Op.or]: [{ [Op.and]: [{friend1: friendId1, friend2: friendId2}]}, {[Op.and]: [{friend2: friendId1, friend1: friendId2}] }] }
+  })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: "Friendship was deleted successfully!"
         });
       } else {
-        res.status(500).send({
-          message: "Could not delete Friendship with userId " + req.params.friendId1 + " and userId " + req.params.friendId2
+        res.send({
+          message: `Cannot delete Friendship between with id=${friendId1} and id=${friendId2}. Maybe Friendship was not found!`
         });
       }
-    } else res.send({ message: `Friendship was deleted successfully!` });
-  });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: `Could not delete Friendship between with id=${friendId1} and id=${friendId2}`
+      });
+    });
 };
 
 // Delete all Friends from the database.
 exports.deleteAll = (req, res) => {
-  Friend.removeAll((err, data) => {
-    if (err)
+  Friend.destroy({
+    where: {},
+    truncate: false
+  })
+    .then(nums => {
+      res.send({ message: `${nums} Friends were deleted successfully!` });
+    })
+    .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while removing all friendships."
+          err.message || "Some error occurred while removing all Friends."
       });
-    else res.send({ message: `All Friends were deleted successfully!` });
-  });
+    });
 };
