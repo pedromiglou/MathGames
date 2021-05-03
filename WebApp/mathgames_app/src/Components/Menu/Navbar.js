@@ -10,9 +10,6 @@ import toast from 'react-hot-toast';
 /* Css */
 import './Menu.css'
 
-/* Uuid */
-import { v4 as uuidv4 } from 'uuid';
-
 /* Data and Service */
 import AuthService from '../../Services/auth.service';
 import FriendsService from '../../Services/friends.service';
@@ -69,9 +66,6 @@ function Navbar() {
             var response = await NotificationsService.getNotifications(current_user.id);
             setNotifications(response);
         }
-
-        if (sessionStorage.getItem('user_id') === null)
-            sessionStorage.setItem('user_id', uuidv4());		
 
 		if (current_user !== null) {
             setUser_authenticated(true);

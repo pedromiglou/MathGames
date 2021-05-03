@@ -1,14 +1,14 @@
 
 class NotificationsService {
     async getNotifications(userId) {
-        var url = 'http://localhost:4000/notifications/' + userId;
+        var url = 'http://localhost:4000/api/notifications/' + userId;
         var res = await fetch(url);
         return res.json();
     }
     
     
     delete(notificationId) {
-        var url = 'http://localhost:4000/notifications/' + notificationId;
+        var url = 'http://localhost:4000/api/notifications/' + notificationId;
         fetch(url, {
             method:'DELETE'
         });
@@ -21,7 +21,7 @@ class NotificationsService {
             friend2: notification.receiver,
         }
 
-        var url = 'http://localhost:4000/friends/';
+        var url = 'http://localhost:4000/api/friends/';
         fetch(url, {
             method:'POST',
             headers:{'Content-type':'application/json'},
@@ -29,7 +29,7 @@ class NotificationsService {
         });        
         
 
-        url = 'http://localhost:4000/notifications/' + notification.id;
+        url = 'http://localhost:4000/api/notifications/' + notification.id;
         fetch(url, {
             method:'DELETE'
         });

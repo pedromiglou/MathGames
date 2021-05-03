@@ -109,7 +109,7 @@ class GatosCaesScene extends Phaser.Scene {
                 this.player_turn = true
             }
 
-            socket.emit("start_game", sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
+            socket.emit("start_game", {"user_id": sessionStorage.getItem("user_id"),"match_id": sessionStorage.getItem("match_id")});
 
             socket.on("move_piece", (new_pos) => {
                 console.log("Received move: ", new_pos);

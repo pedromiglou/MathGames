@@ -53,7 +53,7 @@ io.on("connection", (socket) => {
   socket.on("friendbylink", (msg) => {
     var user_id = msg["user_id"]
     var game_id = msg["game_id"]
-    users_info[user_id] = socket.id;
+    users_info[user_id] = {"socket": socket.id, "username": null};
     io.to(socket.id).emit("link_sent", {"match_id": uuid.v4()});
   })
 
@@ -62,19 +62,18 @@ io.on("connection", (socket) => {
     if (msg["user_id"] !== null) {
       var user_id = msg["user_id"]
       var match_id = msg["match_id"]
-      users_info[user_id] = socket.id
+      var game_id = msg["game_id"]
+      users_info[user_id] = {"socket": socket.id, "username": null}
 
       if (Object.keys(current_games).includes(match_id)) {
-        var other_user = Object.keys(current_games[match_id])[0];
+        var other_user = Object.keys(current_games[match_id])[1];
         current_games[match_id][user_id] = other_user;
         current_games[match_id][other_user] = user_id;
 
-        io.to(users_info[other_user]).emit("match_found", {"match_id": match_id, "starter": true});
-        io.to(users_info[user_id]).emit("match_found", {"match_id": match_id, "starter": false});
+        initiate_game(match_id, other_user, user_id)
 
       } else {
-        current_games[match_id] = {};
-        current_games[match_id][user_id] = "";
+        create_game(match_id, game_id, user_id, null)
       }
     }
   })
@@ -90,7 +89,7 @@ io.on("connection", (socket) => {
   socket.on("user_id", (msg) => {
     var user_id = msg["user_id"];
     var game_id = parseInt(msg["game_id"]);
-    users_info[user_id] = socket.id;
+    users_info[user_id] = {"socket": socket.id, "username": null};
     match_queue[game_id].push(user_id)
 
     if ( match_queue[game_id].length >= 2 ) {
@@ -99,7 +98,7 @@ io.on("connection", (socket) => {
       var player2 = match_queue[game_id].shift()
       if (player1 !== undefined && player2 !== undefined ) {
         if (player1 !== player2) 
-          create_game(game_id, player1, player2);
+          create_game(null, game_id, player1, player2);
         else 
           match_queue[game_id].unshift(player1)
       } else {
@@ -109,84 +108,144 @@ io.on("connection", (socket) => {
     }
   });
 
-  //User send user_id and match_id when he joins game to start game
-  socket.on("start_game", (user_id, match_id) => {
+  //User send username, user_id and match_id when he joins game to start game
+  socket.on("start_game", (msg) => {
+    var username = msg["username"];
+    var user_id = msg["user_id"];
+    var match_id = msg["match_id"];
     if (Object.keys(current_games).includes(match_id))
       if (Object.keys(current_games[match_id]).includes(user_id))
-        user_id[user_id] = socket.id;
+        users_info[user_id] = {"socket": socket.id, "username": username};
   });
 
   //User sends match id, userid and new_pos when he wants to make a move in the game
   socket.on("move", (new_pos, user_id, match_id) => {
     if (Object.keys(current_games).includes(match_id))
       if (Object.keys(current_games[match_id]).includes(user_id))
-        if (valid_move(match_id, new_pos))
-          io.to( users_info[ current_games[match_id][user_id] ] ).emit("move_piece", new_pos);
+        if (valid_move(user_id, match_id, new_pos))
+          io.to( users_info[ current_games[match_id][user_id] ]["socket"] ).emit("move_piece", new_pos);
   })
+
   
   //
   // END OF ONLINE GAME SECTION 
   // 
 });
 
-function create_game(game_id, user1, user2) {
-    var match_id = Object.keys(current_games).length;
+
+function create_game(match_id, game_id, user1, user2) {
+    if (match_id === null)
+      match_id = Object.keys(current_games).length;
     
     current_games[match_id] = {};
     current_games[match_id]["game_id"] = game_id;
     current_games[match_id][user1] = user2;
     current_games[match_id][user2] = user1;
-    current_games[match_id]['state'] = {
-      'blocked_pos': [],
-      'current_pos': 18
-    };
+    if (game_id === 0) {
+      current_games[match_id]['state'] = {
+        'blocked_pos': new Set(),
+        'current_pos': 18,
+        'valid_squares': new Set([10, 11, 12, 17, 19, 24, 25, 26])
+      };
+    }
     
-    io.to(users_info[user1]).emit("match_found", {"match_id": match_id, "starter": true});
-    io.to(users_info[user2]).emit("match_found", {"match_id": match_id, "starter": false});
+    if (user1 !== null && user2 !== null)
+      initiate_game(match_id, user1, user2)
+}
+
+function initiate_game(match_id, user1, user2) {
+    io.to(users_info[user1]["socket"]).emit("match_found", {"match_id": match_id, "starter": true});
+    io.to(users_info[user2]["socket"]).emit("match_found", {"match_id": match_id, "starter": false});
 }
 
 
-function valid_move(match_id, new_pos) {
+
+function valid_move(user_id, match_id, new_pos) {
   new_pos = parseInt(new_pos)
 
   //Verificar o jogo
   if (current_games[match_id]["game_id"] === 0) {
     //RASTROS
-    if (!current_games[match_id]['state']['blocked_pos'].includes(new_pos)) {
-      var current_pos = current_games[match_id]['state']['current_pos'];
-      var valid_squares = [current_pos-6, current_pos-7, current_pos-8, current_pos+6, current_pos+7, current_pos+8, current_pos-1, current_pos+1]
+    var valid_squares = current_games[match_id]['state']['valid_squares']
+    var blocked_pos = current_games[match_id]['state']['blocked_pos']
+    blocked_pos.add(new_pos)
+
+    if (valid_squares.has(new_pos)) {
+      valid_squares.clear()
+    
+      // Add all possible positions
+      valid_squares.add(new_pos-6);
+      valid_squares.add(new_pos-7);
+      valid_squares.add(new_pos-8);
+
+      valid_squares.add(new_pos+6);
+      valid_squares.add(new_pos+7);
+      valid_squares.add(new_pos+8);
+
+      valid_squares.add(new_pos-1);
+      valid_squares.add(new_pos+1);
       
-      if ( [0,1,2,3,4,5,6].includes(current_pos) ) {
-          valid_squares.delete(current_pos-6);
-          valid_squares.delete(current_pos-7);
-          valid_squares.delete(current_pos-8);
+      // Remove invalid squares (edge cases)
+      if ( [0,1,2,3,4,5,6].includes(new_pos) ) {
+          valid_squares.delete(new_pos-6);
+          valid_squares.delete(new_pos-7);
+          valid_squares.delete(new_pos-8);
       }
 
-      if ( [42,43,44,45,46,47,48].includes(current_pos) ) {
-          valid_squares.delete(current_pos+6);
-          valid_squares.delete(current_pos+7);
-          valid_squares.delete(current_pos+8);
+      if ( [42,43,44,45,46,47,48].includes(new_pos) ) {
+          valid_squares.delete(new_pos+6);
+          valid_squares.delete(new_pos+7);
+          valid_squares.delete(new_pos+8);
       }
 
-      if ( [0,7,14,21,28,35,42].includes(current_pos) ) {
-          valid_squares.delete(current_pos-8);
-          valid_squares.delete(current_pos-1);
-          valid_squares.delete(current_pos+6);
+      if ( [0,7,14,21,28,35,42].includes(new_pos) ) {
+          valid_squares.delete(new_pos-8);
+          valid_squares.delete(new_pos-1);
+          valid_squares.delete(new_pos+6);
       }
 
-      if ( [6,13,20,27,34,41,48].includes(current_pos) ) {
-          valid_squares.delete(current_pos-6);
-          valid_squares.delete(current_pos+1);
-          valid_squares.delete(current_pos+8);
+      if ( [6,13,20,27,34,41,48].includes(new_pos) ) {
+          valid_squares.delete(new_pos-6);
+          valid_squares.delete(new_pos+1);
+          valid_squares.delete(new_pos+8);
       }
-      if (valid_squares.includes(new_pos)) {
-        current_games[match_id]['state']['blocked_pos'].push(new_pos)
-        current_games[match_id]['state']['current_pos'] = new_pos
-        return true
-      }
+
+      // Remove blocked squares
+      blocked_pos.forEach(square => valid_squares.delete(square));
+
+      current_games[match_id]['state']['blocked_pos'] = blocked_pos
+      current_games[match_id]['state']['current_pos'] = new_pos
+      current_games[match_id]['state']['valid_squares'] = valid_squares
+
+      // Check for win conditions
+      if (new_pos === 6 || new_pos === 42 || set_diff(valid_squares, blocked_pos).size === 0) {
+        console.log("FINNISH GAME")
+        console.log(users_info[user_id])
+        console.log(users_info[user_id]["username"])
+        finnish_game(match_id, user_id, new_pos);
+        return false;
+      } 
+
+      return true
     }
+    return false
   }
-  return false
+  return true
+}
+
+
+function finnish_game(match_id, winner, new_pos) {
+  io.to( users_info[ current_games[match_id][winner] ]["socket"] ).emit("move_piece", new_pos);
+  if (winner == undefined) {
+    current_games.delete(match_id)
+  } else {
+    console.log(winner)
+  }
+}
+
+
+function set_diff(a, b) {
+  return new Set( [...a].filter(x => !b.has(x)) )
 }
 
 require("./app/routes/user.routes.js")(app);

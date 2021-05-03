@@ -1,12 +1,16 @@
 import  React, {useEffect, useState} from "react";
 import Phaser from "phaser";
 import socket from "../../index"
+import AuthService from '../../Services/auth.service';
+import user from "../../store/modules/user/reducer";
 
 var game_mode;
 var ai_diff;
+var user1;
 
 export const RastrosEngine = ({arg_game_mode, arg_ai_diff}) => {
     game_mode = arg_game_mode;
+    user1 = AuthService.getCurrentUser();
 
     if (arg_ai_diff === "easy")
         ai_diff = 0.2
@@ -15,6 +19,8 @@ export const RastrosEngine = ({arg_game_mode, arg_ai_diff}) => {
     else
         ai_diff = 0.8
 
+
+    
     const [rendered, setRendered] = useState(false);
 
     useEffect(() => {
@@ -104,7 +110,7 @@ class RastrosScene extends Phaser.Scene {
             else
                 this.player.add(1);
 
-            socket.emit("start_game", sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
+            socket.emit("start_game", { "username": user1.username, "user_id": sessionStorage.getItem("user_id"),"match_id": sessionStorage.getItem("match_id")});
             socket.on("move_piece", (new_pos) => {
                 console.log("Received move: ", new_pos);
                 this.move(this.positions[new_pos]);
@@ -137,18 +143,17 @@ class RastrosScene extends Phaser.Scene {
         // Triggered when the player clicks
         this.input.on('pointerdown', function(pointer, currentlyOver) {
             var clicked_piece = currentlyOver[0];
-            console.log("cliquei")
-            if (clicked_piece !== undefined)
-                console.log(clicked_piece.name)
             if (!this.player.has(this.current_player))
                 return;
 
             if ( this.validate_click(clicked_piece) )
                 if ( this.move(clicked_piece) ) {
                     // Emit move just made
-                    if ( game_mode === "online" || game_mode === "amigo" )
+                    if ( game_mode === "online" || game_mode === "amigo" ) {
+                        console.log("vou mandar move")
                         socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
-
+                    
+                    }
                     // Process AI move
                     if ( game_mode === "ai" && !this.is_finished )
                         this.move( this.positions[ randomPlay(this.valid_squares, AI_blocked_squares, clicked_piece) ] );
@@ -277,6 +282,7 @@ class RastrosScene extends Phaser.Scene {
             delay: 0
         }, this);
         this.positions.forEach(x => x.disableInteractive());
+
     }
 }
 
@@ -297,7 +303,7 @@ function randomPlay(valid_squares, AI_blocked_squares, piece) {
     var tmpSquares = Array.from(valid_squares).map(x => [(parseInt(x)-(parseInt(x)%7))/7, parseInt(x)%7]);
 
 
-    if (Math.random()>ai_diff) {         // [0..1] Prob   0.2->EASY     0.5->medium      0.8->dificil
+    if (Math.random()>ai_diff) {         
         if ((Math.pow(0-piece_y, 2) + Math.pow(6-piece_x,2)<=8) ||
             (Math.pow(6-piece_y, 2) + Math.pow(0-piece_x,2)<=8)) {
                 chosen = tmpSquares.reduce((accumulator, current) => {

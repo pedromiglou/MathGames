@@ -57,6 +57,7 @@ function GamePage() {
 			socket.emit("friendbylink", {"user_id": sessionStorage.getItem("user_id"), "game_id": game_id})
 
 			socket.on("link_sent", (msg) => {
+				console.log(msg)
 				history.push({
 					pathname: "/game/?g="+game_id+"&id="+msg['match_id'], 
 					state: {

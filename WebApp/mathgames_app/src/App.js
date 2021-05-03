@@ -19,11 +19,19 @@ import Login from './Pages/Login/Login';
 import GamePage from './Pages/GamePage/GamePage';
 import Profile from './Pages/Profile/Profile';
 
+/* Uuid */
+import { v4 as uuidv4 } from 'uuid';
+
+
 /* Redux */
 import { Provider } from 'react-redux';
 import store from './store';
 
 function App() {
+
+    if (sessionStorage.getItem('user_id') === null)
+            sessionStorage.setItem('user_id', uuidv4());		
+
     return(
         <Provider store={store}>
             <BrowserRouter>
@@ -44,7 +52,7 @@ function App() {
                         <Switch>
                             <Route exact path='/' component={withRouter(Welcome)} />
                             <Route exact path='/gamesDashboard' component={withRouter(ChooseGame)} />
-                            <Route path='/game/:g:id' component={withRouter(Game)} />
+                            <Route path='/game/' component={withRouter(Game)} />
                             <Route exact path='/login' component={withRouter(Login)} />
                             <Route exact path='/gamePage' component={withRouter(GamePage)}/>
                             <Route exact path='/profile' component={withRouter(Profile)}/>

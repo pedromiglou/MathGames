@@ -15,6 +15,7 @@ function Game()  {
     var params = history.location.state
     var game_id, game_mode, ai_diff;
 
+
     if ( match_id !== null ) {
         console.log("tou aqui")
         game_id = parseInt( url.get("g") );
@@ -26,17 +27,18 @@ function Game()  {
             game_id = parseInt( params.game_id );
             game_mode = params.game_mode;
             ai_diff = params.ai_diff;
-        } else {
-            // Necessario devido ao memo/Botao de encolher menu
-            game_id = parseInt( url.get("g") )
         }
+        // else {
+            // Necessario devido ao memo/Botao de encolher menu
+        //    game_id = parseInt( url.get("g") )
+        //}
     }
 
     // Game is ready to start when both players are connected
     if ( game_ready_to_start === false ) {
         if ( match_id !== null ) {
             game_mode = "amigo"
-            socket.emit("entered_link", {"user_id": sessionStorage.getItem("user_id"), "match_id": match_id})
+            socket.emit("entered_link", {"user_id": sessionStorage.getItem("user_id"), "match_id": match_id, "game_id": game_id})
 
             socket.on("match_found", (msg) => {
                 sessionStorage.setItem('match_id', msg['match_id']);

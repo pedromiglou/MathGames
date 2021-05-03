@@ -7,17 +7,17 @@ class AuthService {
             password: password,
         }
         
-        fetch('http://localhost:4000/login', {
+        fetch('http://localhost:4000/api/users/login', {
             method:'POST',
             headers:{'Content-type':'application/json'},
             body: JSON.stringify(userInfo)
         }).then(r=>r.json()).then(res=> {
             console.log(res)
-            if(res.user) {
-                localStorage.setItem("user", JSON.stringify(res.user));
+            if(res) {
+                localStorage.setItem("user", JSON.stringify(res));
                 window.location.assign("http://localhost:3000/");
             } else {
-                window.location.reload();
+                //window.location.reload();
             }
         })
     }
@@ -30,7 +30,7 @@ class AuthService {
             password: password,
         }
         
-        fetch('http://localhost:4000/register', {
+        fetch('http://localhost:4000/api/users/register', {
             method:'POST',
             headers:{'Content-type':'application/json'},
             body: JSON.stringify(userInfo)
