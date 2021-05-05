@@ -57,6 +57,7 @@ function Game()  {
         if ( game_id === 0 ) {
             return (
                 <div>
+                    <canvas width="1100" height="750" id="game_canvas" className="game" style={{ border: '20px solid black' }} ></canvas>
                     <RastrosEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></RastrosEngine>
                 </div>
             );
