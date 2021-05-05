@@ -62,17 +62,10 @@ class RastrosScene extends Phaser.Scene {
         // Positions referencing the last movement made
         this.last_played = new Set();
         // Stores whether the game has finished or not
-        this.is_finished = false;
+        this.game_over = false;
 
-        this.AI_blocked_squares = [[false,false,false,false,false,false,false],
-                                [false,false,false,false,false,false,false],
-                                [false,false,false,false,false,false,false],
-                                [false,false,false,false,false,false,false],
-                                [false,false,false,false,false,false,false],
-                                [false,false,false,false,false,false,false],
-                                [false,false,false,false,false,false,false]];
     }
-    
+
     create() {
         this.squares_group = this.add.group();
 
@@ -122,7 +115,7 @@ class RastrosScene extends Phaser.Scene {
         // Fill in the moving piece
         this.player_piece = this.add.image(this.INITIAL_BOARD_POS + this.DISTANCE_BETWEEN_SQUARES*4, this.INITIAL_BOARD_POS+this.DISTANCE_BETWEEN_SQUARES*2, 'piece').setName('player_piece').setInteractive();
         this.player_piece.on('pointerup', this.click_piece, this);
-        
+
         // Fill in accessory text
         if (this.player.size===1)
             this.add.text(750+20, 30, "És o jogador " + this.player.values().next().value, {font: "40px Impact", color: "Orange"});
@@ -130,7 +123,10 @@ class RastrosScene extends Phaser.Scene {
         this.current_player_text = this.add.text(750+95, 180, "Jogador " + this.current_player, {font: "40px Impact", color: "Orange"});
     }
 
-    update() {}
+    update() {
+        if ( !this.game_over && game_mode === "ai" && !this.player.has(this.current_player) )
+            this.move( this.squares_group.getChildren()[ this.rastrosAI.randomPlay(ai_diff, this.valid_squares, this.player_piece) ] );
+    }
 
     click_square(clicked_square) {
         if ( !this.clicked_piece_flag )
@@ -232,7 +228,7 @@ class RastrosScene extends Phaser.Scene {
     }
 
     finish_game(current_pos) {
-        this.is_finished = true;
+        this.game_over = true;
         this.valid_squares.clear();
         this.player.clear();
 

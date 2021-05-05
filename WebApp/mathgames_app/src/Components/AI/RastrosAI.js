@@ -1,13 +1,23 @@
 export default class RastrosAI {
+	constructor(){
+		this.AI_blocked_squares = [[false,false,false,false,false,false,false],
+									[false,false,false,false,false,false,false],
+									[false,false,false,false,false,false,false],
+									[false,false,false,false,false,false,false],
+									[false,false,false,false,false,false,false],
+									[false,false,false,false,false,false,false],
+									[false,false,false,false,false,false,false]];
+	}
+
 	//make a play using the AI
-	randomPlay(ai_diff, valid_squares, AI_blocked_squares, piece) {
+	randomPlay(ai_diff, valid_squares, piece) {
 		var chosen = null;
 		var INITIAL_BOARD_POS = 60;
 		var DISTANCE_BETWEEN_SQUARES = 105;
 
 		var piece_x = ( piece.x - INITIAL_BOARD_POS )/ DISTANCE_BETWEEN_SQUARES;
 		var piece_y = ( piece.y - INITIAL_BOARD_POS )/ DISTANCE_BETWEEN_SQUARES;
-		AI_blocked_squares[piece_y][piece_x] = true;
+		this.AI_blocked_squares[piece_y][piece_x] = true;
 
 		var tmpSquares = Array.from(valid_squares).map(x => [(parseInt(x)-(parseInt(x)%7))/7, parseInt(x)%7]);
 
@@ -29,33 +39,33 @@ export default class RastrosAI {
 			var score = -100;
 
 			tmpSquares.forEach( (element) => {
-				AI_blocked_squares[element[0]][element[1]] = true;
+				this.AI_blocked_squares[element[0]][element[1]] = true;
 				var validSquares = [];
 				for (var y = element[0]-1; y<=element[0]+1; y++) {
 					for (var x = element[1]-1; x<=element[1]+1; x++) {
-						if (y>=0 && y<=6 && x>=0 && x<=6 && !AI_blocked_squares[y][x]) {
+						if (y>=0 && y<=6 && x>=0 && x<=6 && !this.AI_blocked_squares[y][x]) {
 							validSquares.push([y,x]);
 						}
 					}
 				}
 
-				var newScore = this.minimax(validSquares, element, 9, false, AI_blocked_squares);
+				var newScore = this.minimax(validSquares, element, 9, false, this.AI_blocked_squares);
 				if (newScore >= score) {
 					chosen = element;
 					score = newScore;
 				}
-				AI_blocked_squares[element[0]][element[1]] = false;
+				this.AI_blocked_squares[element[0]][element[1]] = false;
 			});
 		}
 
-		AI_blocked_squares[chosen[0]][chosen[1]] = true;
+		this.AI_blocked_squares[chosen[0]][chosen[1]] = true;
 
 		return chosen[0]*7+chosen[1];
 	}
 
 
 	//minimax algorithmn
-	minimax(validSquares, piece, depth, maximizingPlayer, AI_blocked_squares) {
+	minimax(validSquares, piece, depth, maximizingPlayer) {
 		var x = this.ended(piece, validSquares);
 
 		if (depth === 0 || x===99 || x===-99) {
@@ -67,38 +77,38 @@ export default class RastrosAI {
 		if (maximizingPlayer) {
 			value = -100;
 			validSquares.forEach((element) => {
-				AI_blocked_squares[element[0]][element[1]] = true;
+				this.AI_blocked_squares[element[0]][element[1]] = true;
 				var validSquares2 = [];
 				for (var y = element[0]-1; y<=element[0]+1; y++) {
 					for (x = element[1]-1; x<=element[1]+1; x++) {
-						if (y>=0 && y<=6 && x>=0 && x<=6 && !AI_blocked_squares[y][x]) {
+						if (y>=0 && y<=6 && x>=0 && x<=6 && !this.AI_blocked_squares[y][x]) {
 							validSquares2.push([y,x]);
 						}
 					}
 				}
-				var newValue = this.minimax(validSquares2, element, depth-1, false, AI_blocked_squares);
+				var newValue = this.minimax(validSquares2, element, depth-1, false, this.AI_blocked_squares);
 				if (newValue > value) {
 					value = newValue;
 				}
-				AI_blocked_squares[element[0]][element[1]] = false;
+				this.AI_blocked_squares[element[0]][element[1]] = false;
 			})
 		} else {
 			value = 100;
 			validSquares.forEach((element) => {
-				AI_blocked_squares[element[0]][element[1]] = true;
+				this.AI_blocked_squares[element[0]][element[1]] = true;
 				var validSquares2 = [];
 				for (var y = element[0]-1; y<=element[0]+1; y++) {
 					for (x = element[1]-1; x<=element[1]+1; x++) {
-						if (y>=0 && y<=6 && x>=0 && x<=6 && !AI_blocked_squares[y][x]) {
+						if (y>=0 && y<=6 && x>=0 && x<=6 && !this.AI_blocked_squares[y][x]) {
 							validSquares2.push([y,x]);
 						}
 					}
 				}
-				var newValue = this.minimax(validSquares2, element, depth-1, true, AI_blocked_squares);
+				var newValue = this.minimax(validSquares2, element, depth-1, true, this.AI_blocked_squares);
 				if (newValue < value) {
 					value = newValue;
 				}
-				AI_blocked_squares[element[0]][element[1]] = false;
+				this.AI_blocked_squares[element[0]][element[1]] = false;
 			})
 		}
 		return value;
