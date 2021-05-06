@@ -1,9 +1,8 @@
-import  React, {useEffect} from "react";
+import  React, { useEffect } from "react";
 import Phaser from "phaser";
 import socket from "../../index"
 import AuthService from '../../Services/auth.service';
 import RastrosAI from "../AI/RastrosAI";
-import { ThemeConsumer } from "react-bootstrap/esm/ThemeProvider";
 
 var game_mode;
 var ai_diff;
@@ -13,7 +12,6 @@ export const RastrosEngine = ({arg_game_mode, arg_ai_diff}) => {
     useEffect(() => {
         game_mode = arg_game_mode;
         user = AuthService.getCurrentUser();
-        console.log(user);
 
         if (arg_ai_diff === "easy")
             ai_diff = 0.2
@@ -25,6 +23,7 @@ export const RastrosEngine = ({arg_game_mode, arg_ai_diff}) => {
         const config = {
             canvas: document.getElementById("game_canvas"),
             type: Phaser.WEBGL,
+            scale: {mode: Phaser.Scale.FIT},
             backgroundColor: '#4488aa',
             scene: [RastrosScene]
         }
@@ -79,6 +78,7 @@ class RastrosScene extends Phaser.Scene {
             this.player.add(1);
             this.player.add(2);
         }
+
         // Must be later changed to allow player to choose which side he is on
         if ( game_mode === 'ai' )
             this.player.add(1);
@@ -90,6 +90,7 @@ class RastrosScene extends Phaser.Scene {
                 this.player.add(1);
 
             socket.emit("start_game", { "user_id": sessionStorage.getItem("user_id"),"match_id": sessionStorage.getItem("match_id")});
+
             socket.on("move_piece", (new_pos) => {
                 console.log("Received move: ", new_pos);
                 this.move(this.squares_group.getChildren()[new_pos]);
@@ -104,13 +105,10 @@ class RastrosScene extends Phaser.Scene {
                 var pos = pos_y*7+pos_x;
                 if (pos === 6)
                     img = this.squares_group.create(this.INITIAL_BOARD_POS + this.DISTANCE_BETWEEN_SQUARES*pos_x, this.INITIAL_BOARD_POS+this.DISTANCE_BETWEEN_SQUARES*pos_y, 'p2').setInteractive().setName(String(pos));
-                    //img = this.add.image(this.INITIAL_BOARD_POS + this.DISTANCE_BETWEEN_SQUARES*pos_x, this.INITIAL_BOARD_POS+this.DISTANCE_BETWEEN_SQUARES*pos_y, 'p2').setName(String(pos)).setInteractive();
                 else if (pos === 42)
                     img = this.squares_group.create(this.INITIAL_BOARD_POS + this.DISTANCE_BETWEEN_SQUARES*pos_x, this.INITIAL_BOARD_POS+this.DISTANCE_BETWEEN_SQUARES*pos_y, 'p1').setInteractive().setName(String(pos));
-                    //img = this.add.image(this.INITIAL_BOARD_POS + this.DISTANCE_BETWEEN_SQUARES*pos_x, this.INITIAL_BOARD_POS+this.DISTANCE_BETWEEN_SQUARES*pos_y, 'p1').setName(String(pos)).setInteractive();
                 else
                     img = this.squares_group.create(this.INITIAL_BOARD_POS + this.DISTANCE_BETWEEN_SQUARES*pos_x, this.INITIAL_BOARD_POS+this.DISTANCE_BETWEEN_SQUARES*pos_y, 'square').setInteractive().setName(String(pos));
-                    //img = this.add.image(this.INITIAL_BOARD_POS + this.DISTANCE_BETWEEN_SQUARES*pos_x, this.INITIAL_BOARD_POS+this.DISTANCE_BETWEEN_SQUARES*pos_y, 'square').setName(String(pos)).setInteractive();
                 img.on('pointerup', function () {scene.click_square(this)});
             }
         }
@@ -151,7 +149,7 @@ class RastrosScene extends Phaser.Scene {
     click_piece() {
         if (!this.player.has(this.current_player))
                 return;
-        
+
         if (!this.clicked_piece_flag)
             this.valid_squares.forEach(square => this.squares_group.getChildren()[square].setTint(0x00FF00));
         else
@@ -181,45 +179,24 @@ class RastrosScene extends Phaser.Scene {
         this.player_piece.setPosition(clicked_square.x, clicked_square.y);
 
         // Get new square's position [0..49]
-        var current_pos = parseInt( clicked_square.name )
-        this.valid_squares.clear()
+        var current_pos = parseInt( clicked_square.name );
+        this.valid_squares.clear();
 
         // Add all possible positions
-        this.valid_squares.add(current_pos-6);
-        this.valid_squares.add(current_pos-7);
-        this.valid_squares.add(current_pos-8);
+        [current_pos-6, current_pos-7, current_pos-8, current_pos+6, current_pos+7, current_pos+8, current_pos-1, current_pos+1].forEach(this.valid_squares.add, this.valid_squares);
 
-        this.valid_squares.add(current_pos+6);
-        this.valid_squares.add(current_pos+7);
-        this.valid_squares.add(current_pos+8);
-
-        this.valid_squares.add(current_pos-1);
-        this.valid_squares.add(current_pos+1);
-        
         // Remove invalid squares (edge cases)
-        if ( [0,1,2,3,4,5,6].includes(current_pos) ) {
-            this.valid_squares.delete(current_pos-6);
-            this.valid_squares.delete(current_pos-7);
-            this.valid_squares.delete(current_pos-8);
-        }
+        if ( [0,1,2,3,4,5,6].includes(current_pos) )
+            [current_pos-6, current_pos-7, current_pos-8].forEach(this.valid_squares.delete, this.valid_squares);
 
-        if ( [42,43,44,45,46,47,48].includes(current_pos) ) {
-            this.valid_squares.delete(current_pos+6);
-            this.valid_squares.delete(current_pos+7);
-            this.valid_squares.delete(current_pos+8);
-        }
+        if ( [42,43,44,45,46,47,48].includes(current_pos) )
+            [current_pos+6, current_pos+7, current_pos+8].forEach(this.valid_squares.delete, this.valid_squares);
 
-        if ( [0,7,14,21,28,35,42].includes(current_pos) ) {
-            this.valid_squares.delete(current_pos-8);
-            this.valid_squares.delete(current_pos-1);
-            this.valid_squares.delete(current_pos+6);
-        }
+        if ( [0,7,14,21,28,35,42].includes(current_pos) )
+            [current_pos-8, current_pos-1, current_pos+6].forEach(this.valid_squares.delete, this.valid_squares);
 
-        if ( [6,13,20,27,34,41,48].includes(current_pos) ) {
-            this.valid_squares.delete(current_pos-6);
-            this.valid_squares.delete(current_pos+1);
-            this.valid_squares.delete(current_pos+8);
-        }
+        if ( [6,13,20,27,34,41,48].includes(current_pos) )
+            [current_pos-6, current_pos+1, current_pos+8].forEach(this.valid_squares.delete, this.valid_squares);
 
         // Remove blocked squares
         this.blocked_squares.forEach(square => this.valid_squares.delete(square));

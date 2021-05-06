@@ -1,12 +1,14 @@
 export default class RastrosAI {
 	constructor(){
-		this.AI_blocked_squares = [[false,false,false,false,false,false,false],
-									[false,false,false,false,false,false,false],
-									[false,false,false,false,false,false,false],
-									[false,false,false,false,false,false,false],
-									[false,false,false,false,false,false,false],
-									[false,false,false,false,false,false,false],
-									[false,false,false,false,false,false,false]];
+		this.AI_blocked_squares = [
+			[false,false,false,false,false,false,false],
+			[false,false,false,false,false,false,false],
+			[false,false,false,false,false,false,false],
+			[false,false,false,false,false,false,false],
+			[false,false,false,false,false,false,false],
+			[false,false,false,false,false,false,false],
+			[false,false,false,false,false,false,false]
+		];
 	}
 
 	//make a play using the AI

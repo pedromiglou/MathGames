@@ -17,7 +17,6 @@ function Game()  {
 
 
     if ( match_id !== null ) {
-        console.log("tou aqui")
         game_id = parseInt( url.get("g") );
         game_mode = "amigo";
         ai_diff = undefined;
@@ -28,10 +27,6 @@ function Game()  {
             game_mode = params.game_mode;
             ai_diff = params.ai_diff;
         }
-        // else {
-            // Necessario devido ao memo/Botao de encolher menu
-        //    game_id = parseInt( url.get("g") )
-        //}
     }
 
     // Game is ready to start when both players are connected
@@ -65,6 +60,7 @@ function Game()  {
         if ( game_id === 1 ) {
             return (
                 <div>
+                    <canvas width="1100" height="750" id="game_canvas" className="game" style={{ border: '20px solid black' }} ></canvas>
                     <GatosCaesEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></GatosCaesEngine>
                 </div>
             );
