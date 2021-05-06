@@ -3,15 +3,17 @@ import Phaser from "phaser";
 import socket from "../../index"
 import AuthService from '../../Services/auth.service';
 import RastrosAI from "../AI/RastrosAI";
+import { ThemeConsumer } from "react-bootstrap/esm/ThemeProvider";
 
 var game_mode;
 var ai_diff;
-var user1;
+var user;
 
 export const RastrosEngine = ({arg_game_mode, arg_ai_diff}) => {
     useEffect(() => {
         game_mode = arg_game_mode;
-        user1 = AuthService.getCurrentUser();
+        user = AuthService.getCurrentUser();
+        console.log(user);
 
         if (arg_ai_diff === "easy")
             ai_diff = 0.2
@@ -63,12 +65,13 @@ class RastrosScene extends Phaser.Scene {
         this.last_played = new Set();
         // Stores whether the game has finished or not
         this.game_over = false;
+        this.mycount = 0;
 
     }
 
     create() {
         this.squares_group = this.add.group();
-
+    
         // Sound effect played after every move
         this.move_sound = this.sound.add('click', {volume: 0.2});
 
@@ -86,7 +89,7 @@ class RastrosScene extends Phaser.Scene {
             else
                 this.player.add(1);
 
-            socket.emit("start_game", { "username": user1.username, "user_id": sessionStorage.getItem("user_id"),"match_id": sessionStorage.getItem("match_id")});
+            socket.emit("start_game", { "user_id": sessionStorage.getItem("user_id"),"match_id": sessionStorage.getItem("match_id")});
             socket.on("move_piece", (new_pos) => {
                 console.log("Received move: ", new_pos);
                 this.move(this.squares_group.getChildren()[new_pos]);
@@ -121,10 +124,12 @@ class RastrosScene extends Phaser.Scene {
             this.add.text(750+20, 30, "És o jogador " + this.player.values().next().value, {font: "40px Impact", color: "Orange"});
         this.add.text(750+20, 120, "É a vez do jogador:", {font: "40px Impact", color: "Orange"});
         this.current_player_text = this.add.text(750+95, 180, "Jogador " + this.current_player, {font: "40px Impact", color: "Orange"});
+
     }
 
     update() {
-        if ( !this.game_over && game_mode === "ai" && !this.player.has(this.current_player) )
+        this.mycount += 1;
+        if ( this.mycount >= 2 && !this.game_over && game_mode === "ai" && !this.player.has(this.current_player) )
             this.move( this.squares_group.getChildren()[ this.rastrosAI.randomPlay(ai_diff, this.valid_squares, this.player_piece) ] );
     }
 
@@ -156,6 +161,7 @@ class RastrosScene extends Phaser.Scene {
     }
 
     move(clicked_square) {
+        this.mycount = 0;
         this.move_sound.play();
 
         // Update blocked squares
@@ -220,7 +226,7 @@ class RastrosScene extends Phaser.Scene {
 
         // Check for win conditions
         if (current_pos === 6 || current_pos === 42 || set_diff(this.valid_squares, this.blocked_squares).size === 0) {
-            this.finish_game(this, current_pos);
+            this.finish_game(current_pos);
         }   else {
             this.current_player = (this.current_player===1 ? 2:1)
             this.current_player_text.setText("Jogador " + this.current_player);
@@ -231,14 +237,13 @@ class RastrosScene extends Phaser.Scene {
         this.game_over = true;
         this.valid_squares.clear();
         this.player.clear();
+        var winner = this.current_player;
 
         if (current_pos === 42)
-            var winner = 1
-        else if (current_pos === 6)
+            winner = 1
+        if (current_pos === 6)
             winner = 2
-        else
-            winner = this.current_player
-    
+
         this.text = this.add.text(0, 0, "O jogador " + winner + " ganhou.", {font: "80px Impact", color: "Red"});
         this.tweens.add ({
             targets: this.text,
