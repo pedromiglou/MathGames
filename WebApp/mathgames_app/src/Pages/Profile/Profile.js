@@ -2,6 +2,8 @@ import { React, useState } from "react";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Profile.css";
+import Avatar from "../../Components/Avatar";
+
 
 const Profile = () => {
     const [menuOption, setMenuOption] = useState("Geral");
@@ -125,15 +127,20 @@ const Profile = () => {
                     <div className="col-lg-9 no-margins profile ">
                         <div className="container row container-hidden top-profile">
                             <div className="col-lg-8 row">
-                                <img
+                                <div className="col-lg-4">
+                                    <Avatar />
+                                {/* <img
                                     src={
                                         process.env.PUBLIC_URL +
                                         "/images/user-profile.png"
                                     }
                                     alt="profile_image"
-                                />
-                                <div className="account-name">
-                                    <h1>Nome</h1>
+                                /> */}
+                                </div>
+                                <div className="col-lg-8">
+                                    <div className="account-name">
+                                        <h1>Nome</h1>
+                                    </div>
                                 </div>
                             </div>
                             <div className="col-lg-4 profile-level">
@@ -162,7 +169,7 @@ const Profile = () => {
                                 </div>
                             </div>
                         </div>
-                        <hr class="solid" />
+                        <hr className="solid" />
                         <div className="row profile-games">
                             <img
                                 src={
@@ -175,7 +182,7 @@ const Profile = () => {
                                 <p>Jogo</p>
                             </div>
                         </div>
-                        <hr class="solid solid-pos" />
+                        <hr className="solid solid-pos" />
                         <div className="row profile-games">
                             <img
                                 src={
@@ -188,7 +195,7 @@ const Profile = () => {
                                 <p>Jogo</p>
                             </div>
                         </div>
-                        <hr class="solid solid-pos" />
+                        <hr className="solid solid-pos" />
                         <div className="row profile-games">
                             <img
                                 src={
