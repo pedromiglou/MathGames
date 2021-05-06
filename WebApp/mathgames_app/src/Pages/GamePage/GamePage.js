@@ -7,10 +7,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./GamePage.css";
 import { games_info } from "../../data/GamesInfo";
 import socket from "../../index"
+import AuthService from '../../Services/auth.service';
 
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
 function GamePage() {
 	var history = useHistory();
+	var user = AuthService.getCurrentUser();
+
 
 	const dif_options = [
 		{ label: "easy", value: "easy" },
@@ -54,7 +57,10 @@ function GamePage() {
 	
 	function find_match() {
 		if (gameMode === "amigo") {
-			socket.emit("friendbylink", {"user_id": sessionStorage.getItem("user_id"), "game_id": game_id})
+			if (user === null)
+				socket.emit("friendbylink", {"user_id": sessionStorage.getItem("user_id"), "game_id": game_id})
+			else
+				socket.emit("friendbylink", {"user_id": String(user.id), "game_id": game_id})
 
 			socket.on("link_sent", (msg) => {
 				console.log(msg)
@@ -68,7 +74,10 @@ function GamePage() {
 				})
 			})
 		} else if (gameMode === "online") {
-			socket.emit("user_id", {"user_id": sessionStorage.getItem("user_id"), "game_id": game_id})
+			if (user === null)
+				socket.emit("user_id", {"user_id": sessionStorage.getItem("user_id"), "game_id": game_id})
+			else
+				socket.emit("user_id", {"user_id": String(user.id), "game_id": game_id})
 
 			socket.on("match_found", (msg) => {
 				console.log("Match found!");

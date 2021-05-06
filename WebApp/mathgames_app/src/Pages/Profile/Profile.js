@@ -1,52 +1,37 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Profile.css";
+import AuthService from "../../Services/auth.service"
+import UserService from "../../Services/user.service"
 
 const Profile = () => {
     const [menuOption, setMenuOption] = useState("Geral");
-
-    const lastgames_test = [
-        {
-            id: 1,
-            date: "19/01/2020",
-            game: "Yote",
-            result: "Vitoria",
-            exp: "1000",
-        },
-        {
-            id: 2,
-            date: "20/05/2020",
-            game: "Rastros",
-            result: "Derrota",
-            exp: "500",
-        },
-        {
-            id: 3,
-            date: "20/05/2020",
-            game: "Yote",
-            result: "Derrota",
-            exp: "50",
-        },
-        {
-            id: 4,
-            date: "20/05/2021",
-            game: "Rastros",
-            result: "Vitoria",
-            exp: "500",
-        },
-        {
-            id: 5,
-            date: "1/05/2020",
-            game: "Rastros",
-            result: "Derrota",
-            exp: "500",
-        },
-    ];
+    const [user, setUser] = useState("");
+    const [games, setGames] = useState([]);
 
     var geral_e;
     var inventario_e;
     var last_games_e;
+
+
+    // Tem de colocar no redux o tipo de user
+    useEffect(() => {
+		var current_user = AuthService.getCurrentUser();
+		setUser(current_user);
+
+		// Load user games history
+        async function fetchApiLastGames() {
+            console.log(current_user.id)
+            var response = await UserService.getLastGames(current_user.id);
+            setGames(response);
+        }
+
+        if (current_user !== null) {
+            fetchApiLastGames();
+        }
+
+    }, [])
 
     function geral() {
         setMenuOption("Geral");
@@ -81,6 +66,7 @@ const Profile = () => {
         inventario_e.style.backgroundColor = "rgb(63, 63, 63)";
         last_games_e.style.backgroundColor = "#7158e2";
     }
+
 
     return (
         <div className="hero-container">
@@ -239,33 +225,41 @@ const Profile = () => {
                                     <div className="col col-2">Exp. Ganha</div>
                                     <div className="col col-2">Detalhes</div>
                                 </li>
-                                {Object.entries(lastgames_test).map(
+                                {Object.entries(games).length === 0 
+                                    ? <p>O seu histório de jogos é vazio!</p>
+                                    :
+                                    Object.entries(games).map(
                                     ([key, value]) => (
                                         <li
                                             className={
-                                                value["result"] === "Vitoria"
+                                                value["winner"] === user.id
                                                     ? "won table-row history-box foo-history-win"
                                                     : "lost table-row history-box foo-history-lose"
                                             }
                                             key={key}
                                         >
                                             <div className="col col-2">
-                                                {value["date"]}
+                                                {value["createdAt"]}
                                             </div>
                                             <div className="col col-2">
-                                                {value["game"]}
+                                                {value["game_id"] === 0
+                                                    ? "Rastros" : value["game_id"] === 1 ?
+                                                        "Gatos&Cães" : "Outro"}
                                             </div>
                                             <div className="col col-2">
-                                                {value["result"]}
+                                                { value["winner"] === user.id
+                                                            ? "Vitória"
+                                                            : "Derrota"}
                                             </div>
                                             <div className="col col-2">
-                                                +{value["exp"]}
+                                                +{value["winner"] === user.id
+                                                            ? "100"
+                                                            : "30"}
                                             </div>
                                             <div className="col col-2">
                                                 <button
                                                     className={
-                                                        value["result"] ===
-                                                        "Vitoria"
+                                                        value["winner"] === user.id
                                                             ? "won-button table-row"
                                                             : "lost-button table-row"
                                                     }
@@ -283,6 +277,9 @@ const Profile = () => {
             </div>
         </div>
     );
+
+
+    
 };
 
 export default Profile;

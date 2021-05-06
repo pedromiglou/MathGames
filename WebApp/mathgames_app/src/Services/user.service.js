@@ -1,7 +1,20 @@
 
-class NotificationsService {
+class UserService {
+    async getFriends(userId) {
+        var url = 'http://localhost:4000/api/friends/' + userId;
+        var res = await fetch(url);
+        return res.json();
+    }
+
+
     async getNotifications(userId) {
         var url = 'http://localhost:4000/api/notifications/' + userId;
+        var res = await fetch(url);
+        return res.json();
+    }
+
+    async getLastGames(userId) {
+        var url = 'http://localhost:4000/api/matches?userid=' + userId;
         var res = await fetch(url);
         return res.json();
     }
@@ -36,7 +49,7 @@ class NotificationsService {
         return;
         
     }
-    
+ 
 }
 
-export default new NotificationsService();
+export default new UserService();
