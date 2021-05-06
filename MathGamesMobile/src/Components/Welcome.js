@@ -1,15 +1,16 @@
 import * as React from 'react';
-import {Button, View} from 'react-native';
+import {Button, View, Text} from 'react-native';
 
-function HomeScreen({ navigation }) {
+function Welcome({ navigation }) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Text>Bem-vindos ao MathGames!</Text>
         <Button
           onPress={() => navigation.navigate('Notifications')}
-          title="Go to notifications"
+          title="Play now"
         />
       </View>
     );
   }
 
-export default HomeScreen;
+export default Welcome;

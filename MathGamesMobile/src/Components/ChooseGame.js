@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Button, View} from 'react-native';
 
-function NotificationsScreen({ navigation }) {
+function ChooseGame({ navigation }) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Button onPress={() => navigation.goBack()} title="Go back home" />
@@ -9,4 +9,4 @@ function NotificationsScreen({ navigation }) {
     );
   }
 
-export default NotificationsScreen;
+export default ChooseGame;
