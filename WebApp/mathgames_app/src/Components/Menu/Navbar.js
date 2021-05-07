@@ -12,7 +12,8 @@ import './Menu.css'
 
 /* Data and Service */
 import AuthService from '../../Services/auth.service';
-import UserService from '../../Services/user.service'
+import FriendsService from '../../Services/friends.service';
+import NotificationsService from '../../Services/notifications.service';
 
 /* Redux */
 import { useDispatch } from 'react-redux';
@@ -49,21 +50,6 @@ function Navbar() {
         setNotifications(newNotifications);
     }
 
-	const getLevel = (account_level) => {
-		var contador = 1;
-		if (typeof account_level !== "undefined") {
-			while (true) {
-				var minimo = contador === 1 ? 0 : 400 * Math.pow(contador, 1.1);
-				var maximo = 400 * Math.pow(contador+1, 1.1);
-				if ( (minimo <= account_level) && (account_level < maximo)) {
-					return contador;
-				}
-				contador++;
-			}
-		} else 
-			return 0;
-	}
-
     // Tem de colocar no redux o tipo de user
     useEffect(() => {
 		var current_user = AuthService.getCurrentUser();
@@ -71,13 +57,13 @@ function Navbar() {
 
 		// Load user friends list
         async function fetchApiFriends() {
-            var response = await UserService.getFriends(current_user.id);
+            var response = await FriendsService.getFriends(current_user.id);
             setFriends(response);
         }
 
 		// Load user notifications
         async function fetchApiNotifications() {
-            var response = await UserService.getNotifications(current_user.id);
+            var response = await NotificationsService.getNotifications(current_user.id);
             setNotifications(response);
         }
 
@@ -146,14 +132,14 @@ function Navbar() {
 													<div className="col-3" style={{width: 100}} >
 														<div className="text-right text-bottom" style={{height: "30px", marginTop: "40%"}}>
 															{ (notification.notification_type === "F" && 
-																<FaIcons.FaCheckCircle onClick={ () => {UserService.accept_friendship(notification); notifyFriendshipSucess(); deleteNotification(index);}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
+																<FaIcons.FaCheckCircle onClick={ () => {NotificationsService.accept_friendship(notification); notifyFriendshipSucess(); deleteNotification(index);}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															|| (notification.notification_type === "T" && 
 																<FaIcons.FaCheckCircle  className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															|| (notification.notification_type === "P" && 
 																<FaIcons.FaCheckCircle className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															}
 															<span> </span>
-															<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {UserService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25}} color="#ff0015" />
+															<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {NotificationsService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25}} color="#ff0015" />
 														</div>
 														
 													</div>
@@ -217,7 +203,7 @@ function Navbar() {
 								</div>
 								<div className="col navbar-account-info">
 									<h5>Nome: {user.username} </h5>
-									<h5>Nivel: {getLevel(user.account_level)} </h5>
+									<h5>Nivel: {user.account_level} </h5>
 								</div>
 								
 							</div>

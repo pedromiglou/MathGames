@@ -1,15 +1,14 @@
 import  React,  {useEffect, useState} from "react";
 import Phaser from "phaser";
 import socket from "../../index"
-import AuthService from '../../Services/auth.service';
 
-var user1;
+
 var game_mode;
 var ai_diff;
 
 export const GatosCaesEngine = ({arg_game_mode, arg_ai_diff}) => {
+
     game_mode = arg_game_mode;
-    user1 = AuthService.getCurrentUser();
 
     if (arg_ai_diff === "easy")
         ai_diff = 0.2
@@ -110,10 +109,7 @@ class GatosCaesScene extends Phaser.Scene {
                 this.player_turn = true
             }
 
-            if (user1 === null)
-                socket.emit("start_game", { "user_id": sessionStorage.getItem("user_id"),"match_id": sessionStorage.getItem("match_id"),  "account_player": false});
-            else
-                socket.emit("start_game", { "user_id": String(user1.id), "match_id": sessionStorage.getItem("match_id"), "account_player": true});
+            socket.emit("start_game", {"user_id": sessionStorage.getItem("user_id"),"match_id": sessionStorage.getItem("match_id")});
 
             socket.on("move_piece", (new_pos) => {
                 console.log("Received move: ", new_pos);
@@ -145,6 +141,8 @@ class GatosCaesScene extends Phaser.Scene {
         var current_player_text = this.add.text(750+95, 120, "Jogador " + this.current_player, {font: "40px Impact", color: "Orange"});
         
 
+        console.log("inicio")
+        console.log(this.player_0_valid_squares)
         // Triggered when the player clicks
         this.input.on('pointerdown', function(pointer, currentlyOver) {
             var clicked_piece = currentlyOver[0];
@@ -158,11 +156,7 @@ class GatosCaesScene extends Phaser.Scene {
                     if (["27", "28", "35", "36"].includes(clicked_piece.name)) {
                         if (move(this, adjacents, clicked_piece, current_player_text)) {
                             if ( game_mode === "online" || game_mode === "amigo" )
-                                if (user1 === null)
-                                    socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
-                                else
-                                    socket.emit("move", clicked_piece.name, String(user1.id), sessionStorage.getItem("match_id"));
-
+                                socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
                         
                             if ( game_mode === "ai" )
                                 move(this, adjacents, this.positions[ randomPlay(this) ], current_player_text)
@@ -172,10 +166,7 @@ class GatosCaesScene extends Phaser.Scene {
                     if (!["27", "28", "35", "36"].includes(clicked_piece.name)) {
                         if (move(this, adjacents, clicked_piece, current_player_text)) {
                             if ( game_mode === "online" || game_mode === "amigo" )
-                                if (user1 === null)
-                                    socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
-                                else
-                                    socket.emit("move", clicked_piece.name, String(user1.id), sessionStorage.getItem("match_id"));
+                                socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
                         
                             if ( game_mode === "ai" )
                                 move(this, adjacents, this.positions[ randomPlay(this) ], current_player_text)
@@ -184,10 +175,7 @@ class GatosCaesScene extends Phaser.Scene {
                 } else if (!(this.player_1_first_move && this.player_0_first_move)) {
                     if (move(this, adjacents, clicked_piece, current_player_text)) {
                         if ( game_mode === "online" || game_mode === "amigo" )
-                            if (user1 === null)
-                                socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
-                            else
-                                socket.emit("move", clicked_piece.name, String(user1.id), sessionStorage.getItem("match_id"));
+                            socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
                     
                         if ( game_mode === "ai" )
                             move(this, adjacents, this.positions[ randomPlay(this) ], current_player_text)
@@ -210,6 +198,8 @@ class GatosCaesScene extends Phaser.Scene {
 
 
 function move(scene, adjacents, clicked_piece, current_player_text) {
+    console.log("aqui")
+    console.log(scene.player_0_valid_squares)
     if ( (scene.player_0_valid_squares.has(clicked_piece.name) && scene.current_player === 0) 
         || (scene.player_1_valid_squares.has(clicked_piece.name) && scene.current_player === 1) ) {
 

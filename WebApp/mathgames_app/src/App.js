@@ -18,8 +18,6 @@ import Game from './Pages/Game/Game';
 import Login from './Pages/Login/Login';
 import GamePage from './Pages/GamePage/GamePage';
 import Profile from './Pages/Profile/Profile';
-import Podium from './Pages/Podium/Podium';
-
 
 /* Uuid */
 import { v4 as uuidv4 } from 'uuid';
@@ -37,7 +35,7 @@ function App() {
     return(
         <Provider store={store}>
             <BrowserRouter>
-                <div className="wrapper">
+                <div class="wrapper">
                     <div id="sidebarCollapse" className="menu-bars" onClick={toggleNav}>
                         <IconContext.Provider value={{color: 'grey'}}>
                             <FaIcons.FaBars/>
@@ -58,7 +56,6 @@ function App() {
                             <Route exact path='/login' component={withRouter(Login)} />
                             <Route exact path='/gamePage' component={withRouter(GamePage)}/>
                             <Route exact path='/profile' component={withRouter(Profile)}/>
-                            <Route exact path='/podium' component={withRouter(Podium)}/>
                         </Switch>
                     </div>
 
