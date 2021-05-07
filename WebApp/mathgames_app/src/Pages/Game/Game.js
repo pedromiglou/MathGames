@@ -5,8 +5,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { RastrosEngine } from "../../Components/Engines/RastrosEngine";
 import { GatosCaesEngine } from "../../Components/Engines/GatosCaesEngine";
 import socket from "../../index"
+import AuthService from '../../Services/auth.service';
 
 function Game()  {
+    var user = AuthService.getCurrentUser();
     const [game_ready_to_start, setReady] = useState(false);
     const url = new URLSearchParams(window.location.search);
 	let match_id = url.get("id");
@@ -15,19 +17,18 @@ function Game()  {
     var params = history.location.state
     var game_id, game_mode, ai_diff;
 
-
     if ( match_id !== null ) {
-        console.log("tou aqui")
+        //FriendByLink
         game_id = parseInt( url.get("g") );
         game_mode = "amigo";
         ai_diff = undefined;
     }
     else {
-        if (params !== undefined) {
-            game_id = parseInt( params.game_id );
-            game_mode = params.game_mode;
-            ai_diff = params.ai_diff;
-        }
+        //if (params !== undefined) {
+        game_id = parseInt( params.game_id );
+        game_mode = params.game_mode;
+        ai_diff = params.ai_diff;
+        //}
         // else {
             // Necessario devido ao memo/Botao de encolher menu
         //    game_id = parseInt( url.get("g") )
@@ -37,8 +38,10 @@ function Game()  {
     // Game is ready to start when both players are connected
     if ( game_ready_to_start === false ) {
         if ( match_id !== null ) {
-            game_mode = "amigo"
-            socket.emit("entered_link", {"user_id": sessionStorage.getItem("user_id"), "match_id": match_id, "game_id": game_id})
+            if (user === null)
+                socket.emit("entered_link", {"user_id": sessionStorage.getItem("user_id"), "match_id": match_id, "game_id": game_id})
+            else
+                socket.emit("entered_link", {"user_id": String(user.id), "match_id": match_id, "game_id": game_id})
 
             socket.on("match_found", (msg) => {
                 sessionStorage.setItem('match_id', msg['match_id']);

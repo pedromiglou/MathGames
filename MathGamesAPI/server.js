@@ -28,6 +28,10 @@ const io = require("socket.io")(server, {
 });
 
 const db = require("./app/models");
+const { Console } = require("console");
+const GameMatch = db.game_match;
+const User = db.user;
+
 
 db.sequelize.sync();
 // // drop the table if it already exists
@@ -53,7 +57,7 @@ io.on("connection", (socket) => {
   socket.on("friendbylink", (msg) => {
     var user_id = msg["user_id"]
     var game_id = msg["game_id"]
-    users_info[user_id] = {"socket": socket.id, "username": null};
+    users_info[user_id] =  socket.id;
     io.to(socket.id).emit("link_sent", {"match_id": uuid.v4()});
   })
 
@@ -63,17 +67,17 @@ io.on("connection", (socket) => {
       var user_id = msg["user_id"]
       var match_id = msg["match_id"]
       var game_id = msg["game_id"]
-      users_info[user_id] = {"socket": socket.id, "username": null}
+      users_info[user_id] = socket.id
 
       if (Object.keys(current_games).includes(match_id)) {
         var other_user = Object.keys(current_games[match_id])[1];
-        current_games[match_id][user_id] = other_user;
-        current_games[match_id][other_user] = user_id;
+        current_games[match_id][user_id] = [other_user];
+        current_games[match_id][other_user] = [user_id];
 
         initiate_game(match_id, other_user, user_id)
 
       } else {
-        create_game(match_id, game_id, user_id, null)
+        create_game(match_id, game_id, user_id, null, "amigo")
       }
     }
   })
@@ -87,9 +91,10 @@ io.on("connection", (socket) => {
 
   //User says that he wants to play Online and put himself in matchqueue list
   socket.on("user_id", (msg) => {
+    console.log(msg)
     var user_id = msg["user_id"];
     var game_id = parseInt(msg["game_id"]);
-    users_info[user_id] = {"socket": socket.id, "username": null};
+    users_info[user_id] = socket.id;
     match_queue[game_id].push(user_id)
 
     if ( match_queue[game_id].length >= 2 ) {
@@ -98,7 +103,7 @@ io.on("connection", (socket) => {
       var player2 = match_queue[game_id].shift()
       if (player1 !== undefined && player2 !== undefined ) {
         if (player1 !== player2) 
-          create_game(null, game_id, player1, player2);
+          create_game(null, game_id, player1, player2, "online");
         else 
           match_queue[game_id].unshift(player1)
       } else {
@@ -110,20 +115,26 @@ io.on("connection", (socket) => {
 
   //User send username, user_id and match_id when he joins game to start game
   socket.on("start_game", (msg) => {
-    var username = msg["username"];
+    console.log(msg)
     var user_id = msg["user_id"];
     var match_id = msg["match_id"];
+    var account_player = msg["account_player"]
     if (Object.keys(current_games).includes(match_id))
       if (Object.keys(current_games[match_id]).includes(user_id))
-        users_info[user_id] = {"socket": socket.id, "username": username};
+        current_games[match_id][user_id] = [ current_games[match_id][user_id][0], account_player]
+        users_info[user_id] = socket.id
+    
   });
 
   //User sends match id, userid and new_pos when he wants to make a move in the game
   socket.on("move", (new_pos, user_id, match_id) => {
+    console.log("RECEBI NOVO MOVE")
     if (Object.keys(current_games).includes(match_id))
       if (Object.keys(current_games[match_id]).includes(user_id))
         if (valid_move(user_id, match_id, new_pos))
-          io.to( users_info[ current_games[match_id][user_id] ]["socket"] ).emit("move_piece", new_pos);
+          io.to( users_info[ current_games[match_id][user_id][0] ] ).emit("move_piece", new_pos);
+          if (current_games[match_id]['state']['isFinnished'])
+            finnish_game(match_id) 
   })
 
   
@@ -133,38 +144,51 @@ io.on("connection", (socket) => {
 });
 
 
-function create_game(match_id, game_id, user1, user2) {
-    if (match_id === null)
-      match_id = Object.keys(current_games).length;
-    
-    current_games[match_id] = {};
-    current_games[match_id]["game_id"] = game_id;
-    current_games[match_id][user1] = user2;
-    current_games[match_id][user2] = user1;
-    if (game_id === 0) {
-      current_games[match_id]['state'] = {
-        'blocked_pos': new Set(),
-        'current_pos': 18,
-        'valid_squares': new Set([10, 11, 12, 17, 19, 24, 25, 26])
-      };
-    }
-    
-    if (user1 !== null && user2 !== null)
-      initiate_game(match_id, user1, user2)
+function create_game(match_id, game_id, user1, user2, game_type) {
+
+  if (match_id === null)
+    match_id = Object.keys(current_games).length;
+  
+  current_games[match_id] = {};
+  current_games[match_id]["game_id"] = game_id;
+  current_games[match_id]["game_type"] = game_type;
+  current_games[match_id][user1] = [user2];
+  current_games[match_id][user2] = [user1];
+  current_games[match_id]['state'] = {
+    'player1': user1,
+    'player2': user2,
+    'winner': "",
+    'isFinnished': false
+  }
+  if (game_id === 0) {
+    current_games[match_id]['state']['blocked_pos'] = new Set()
+    current_games[match_id]['state']['current_pos'] = 18
+    current_games[match_id]['state']['valid_squares'] = new Set([10, 11, 12, 17, 19, 24, 25, 26])
+  } else if (game_id === 1) {
+    current_games[match_id]['state']['current_player'] = user1
+    current_games[match_id]['state']['player_0_valid_squares'] = new Set(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63"])
+    current_games[match_id]['state']['player_1_valid_squares'] = new Set(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63"])
+    current_games[match_id]['state']['player_0_first_move'] = true
+    current_games[match_id]['state']['player_1_first_move'] = true
+  }
+  
+  if (user1 !== null && user2 !== null)
+    initiate_game(match_id, user1, user2)
 }
 
 function initiate_game(match_id, user1, user2) {
-    io.to(users_info[user1]["socket"]).emit("match_found", {"match_id": match_id, "starter": true});
-    io.to(users_info[user2]["socket"]).emit("match_found", {"match_id": match_id, "starter": false});
+    io.to(users_info[user1]).emit("match_found", {"match_id": match_id, "starter": true});
+    io.to(users_info[user2]).emit("match_found", {"match_id": match_id, "starter": false});
 }
 
 
 
 function valid_move(user_id, match_id, new_pos) {
-  new_pos = parseInt(new_pos)
 
   //Verificar o jogo
   if (current_games[match_id]["game_id"] === 0) {
+    new_pos = parseInt(new_pos)
+
     //RASTROS
     var valid_squares = current_games[match_id]['state']['valid_squares']
     var blocked_pos = current_games[match_id]['state']['blocked_pos']
@@ -213,34 +237,132 @@ function valid_move(user_id, match_id, new_pos) {
       // Remove blocked squares
       blocked_pos.forEach(square => valid_squares.delete(square));
 
+      // Update game state
       current_games[match_id]['state']['blocked_pos'] = blocked_pos
       current_games[match_id]['state']['current_pos'] = new_pos
       current_games[match_id]['state']['valid_squares'] = valid_squares
 
       // Check for win conditions
       if (new_pos === 6 || new_pos === 42 || set_diff(valid_squares, blocked_pos).size === 0) {
-        console.log("FINNISH GAME")
-        console.log(users_info[user_id])
-        console.log(users_info[user_id]["username"])
-        finnish_game(match_id, user_id, new_pos);
-        return false;
+        current_games[match_id]['state']['isFinnished'] = true
+        if (new_pos === 6)
+          current_games[match_id]['state']['winner'] = current_games[match_id]['state']['player2']
+        else if (new_pos === 42)
+          current_games[match_id]['state']['winner'] = current_games[match_id]['state']['player1']
+        else
+          current_games[match_id]['state']['winner'] = user_id
       } 
 
       return true
     }
     return false
+  } else if (current_games[match_id]["game_id"] === 1) {
+
+    if ( (current_games[match_id]['state']['player_0_valid_squares'].has(new_pos) && current_games[match_id]['state']['current_player'] === user_id) 
+        || (current_games[match_id]['state']['player_1_valid_squares'].has(new_pos) && current_games[match_id]['state']['current_player'] === user_id) ) {
+
+        console.log("valido")
+        if (current_games[match_id]['state']['player_0_first_move'] && current_games[match_id]['state']['player1'] === user_id)
+          current_games[match_id]['state']['player_0_first_move'] = false
+        if (current_games[match_id]['state']['player_1_first_move'] && current_games[match_id]['state']['player2'] === user_id)
+          current_games[match_id]['state']['player_1_first_move'] = false
+        
+        // Get new square's position [0..49]
+        var adjacents = new Set()
+        var current_pos = parseInt(new_pos)
+
+        current_games[match_id]['state']['player_0_valid_squares'].delete(String(current_pos))
+        current_games[match_id]['state']['player_1_valid_squares'].delete(String(current_pos))
+        adjacents.add(String(current_pos-1))
+        adjacents.add(String(current_pos+1))
+        adjacents.add(String(current_pos-8))
+        adjacents.add(String(current_pos+8))
+
+        // Remove invalid squares (edge cases)
+        if ( [0,1,2,3,4,5,6,7].includes(current_pos) ) {
+            adjacents.delete(String(current_pos-8));
+        }
+
+        if ( [56,57,58,59,60,61,62,63].includes(current_pos) ) {
+            adjacents.delete(String(current_pos+8));
+        }
+
+        if ( [0,8,16,24,32,40,48,56].includes(current_pos) ) {
+            adjacents.delete(String(current_pos-1));
+        }
+
+        if ( [7,15,23,31,39,47,55].includes(current_pos) ) {
+            adjacents.delete(String(current_pos+1));
+        }
+        
+        // Add player piece to new square
+        if (current_games[match_id]['state']['player1'] === user_id) {
+            current_games[match_id]['state']['player_1_valid_squares'] = set_diff(current_games[match_id]['state']['player_1_valid_squares'], adjacents)
+            if (current_games[match_id]['state']['player_1_valid_squares'].size === 0) {
+              current_games[match_id]['state']['isFinnished'] = true
+              current_games[match_id]['state']['winner'] = current_games[match_id]['state']['player1']
+            }
+        } else {
+            current_games[match_id]['state']['player_0_valid_squares'] = set_diff(current_games[match_id]['state']['player_0_valid_squares'], adjacents)
+            if (current_games[match_id]['state']['player_0_valid_squares'].size === 0) {
+              current_games[match_id]['state']['isFinnished'] = true
+              current_games[match_id]['state']['winner'] = current_games[match_id]['state']['player2']
+
+            }
+        }
+
+         
+        if (current_games[match_id]['state']['current_player'] === current_games[match_id]['state']['player1'])
+          current_games[match_id]['state']['current_player'] = current_games[match_id]['state']['player2']
+        else
+          current_games[match_id]['state']['current_player'] = current_games[match_id]['state']['player1']
+        
+        return true
+      }
+      return false
   }
   return true
 }
 
 
-function finnish_game(match_id, winner, new_pos) {
-  io.to( users_info[ current_games[match_id][winner] ]["socket"] ).emit("move_piece", new_pos);
-  if (winner == undefined) {
-    current_games.delete(match_id)
-  } else {
-    console.log(winner)
+function finnish_game(match_id) {
+  var winner = current_games[match_id]['state']['winner'] 
+  var player1 = current_games[match_id]['state']['player1']
+  var player_1_account_player = current_games[match_id][player1][1]
+  var player2 = current_games[match_id]['state']['player2'] 
+  var player_2_account_player = current_games[match_id][player2][1]
+  var game_id = current_games[match_id]['game_id']
+  var game_type = current_games[match_id]['game_type']
+
+  console.log(player1)
+  console.log(player_1_account_player)
+  console.log(player2)
+  console.log(player_2_account_player)
+
+  // Create a GameMatch
+  var gameMatch = {
+    player1: parseInt(player1),
+    player2: parseInt(player2),
+    winner: parseInt(winner),
+    game_type: game_type,
+    game_id: game_id
+  };
+
+  console.log(gameMatch)
+  if (player_1_account_player === true || player_2_account_player === true) {
+    if (!player_1_account_player) {
+      gameMatch["player1"] = null
+    }
+    if (!player_2_account_player) {
+      gameMatch["player2"] = null
+    }
+
+    // Save GameMatch in the database
+    GameMatch.create(gameMatch)
   }
+
+  delete current_games[match_id]
+
 }
 
 
