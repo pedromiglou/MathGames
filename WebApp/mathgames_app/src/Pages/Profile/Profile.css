@@ -93,7 +93,6 @@ hr.solid-pos {
     margin-top: 50px;
     margin-left: 30px;
     width: auto;
-    height: 10%;
 
     transform: translateY(-1000px);
     animation: slideDown 0.8s ease forwards 0.5s;
