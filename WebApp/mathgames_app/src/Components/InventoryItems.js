@@ -1,30 +1,34 @@
-import { React } from "react";
+import { React, useState } from "react";
 import { Card } from "react-bootstrap";
 
-function Avatar() {
-    console.log("ola");
-    const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+import { hatItems } from "../data/hatItems";
 
-    const listItems = numbers.map((key) => (
-        <Card
-            key={key}
-            id={key + "_Card"}
-            /* className="button-fix" */
-            /* onClick={() => enterGame(value)} */
-        >
-            <div>
-                {/* <img
-                        src={value["img"]}
-                        alt="Info"
-                        className="card-img"
-                        id={key}
-                    /> */}
-                <h2 >{key}</h2>
-            </div>
-        </Card>
-    ));
+import './InventoryItems.css'
 
-    return listItems;
-}
+const InventoryItems = (props) => {
+	//const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+	
 
-export default Avatar;
+
+	function listHats() {
+
+		return hatItems.map((x) => {
+			return (
+				<Card
+					key={x.id}
+					id={x.id + "_item"}
+					className="item-card"
+					onClick={() => props.www(x.name)}
+				>
+					<div className="card-descr">
+						<img src={x.img} alt={x.name} className="item-img" />
+					</div>
+				</Card>
+			);
+		});
+	}
+
+	return <div className="inv-items">{listHats()}</div>;
+};
+
+export default InventoryItems;

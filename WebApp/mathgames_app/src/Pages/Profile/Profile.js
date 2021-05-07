@@ -15,6 +15,7 @@ const Profile = () => {
     const [invOption, setInvOption] = useState("Chapeus");
     const [user, setUser] = useState("");
     const [games, setGames] = useState([]);
+    const [hat, setHat] = useState("MagicianHat");
 
     var geral_e;
     var inventario_e;
@@ -72,6 +73,17 @@ const Profile = () => {
         inventario_e.style.backgroundColor = "rgb(63, 63, 63)";
         last_games_e.style.backgroundColor = "#7158e2";
     }
+
+
+    function teste(name) {
+        setHat(name);
+
+        console.log(name);
+        console.log(hat);
+        console.log(hat);
+
+    }
+
 
 
     return (
@@ -199,7 +211,7 @@ const Profile = () => {
                         <div className="row ">
                             <div className="col-lg-5 avatar-display container">
                                 <h1>Nome</h1>
-                                <Avatar />
+                                <Avatar hatName={hat}/>
                             </div>
 
                             <div className="col-lg-7 invetory-options">
@@ -228,8 +240,8 @@ const Profile = () => {
 
                                 <div className="inv-list">
                                     {invOption === "Chapeus" && (
-                                        <div className="inv-items">
-                                            <InventoryItems />
+                                        <div >
+                                            <InventoryItems www={teste}/>
                                         </div>
                                     )}
                                 </div>

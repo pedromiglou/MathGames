@@ -83,7 +83,7 @@ function MagicianHat(props) {
    		</group>
 	)
 }
-
+ 
 function WitchHat(props) {
 	const group = useRef();
 	const { nodes, materials } = useGLTF(process.env.PUBLIC_URL + 'avatar_assets/hats/witchHat.glb')
@@ -171,19 +171,21 @@ function Image() {
 }
   
 
-function Avatar() {
-	//const texture = useLoader(THREE.TextureLoader, img1)
-	/* const someComponent = React.lazy(() => import('./texture/texture1.jpg'));  
+function Avatar(props) {
 
-	console.log(someComponent); */
+
+	if (props.hatName === "MagicianHat") {
+		var hat = <MagicianHat />
+
+	} else {
+		var hat = <WitchHat />
+	}
 
 	return (
 		<Canvas>
 			<Suspense fallback={null}>
 				<OrbitControls />
 				<ambientLight intensity={0.5} />
-
-				
 
 				{/* texture={useLoader(THREE.TextureLoader, img1)} */}
 				<Head position={[0, 1.5, 0]} args={[1, 1, 1]} />
@@ -199,13 +201,17 @@ function Avatar() {
 				<Plane args={[5, 5]} position={[0, -3.5, 0]} color="black" />
 				
 				{/* <Shoe />  */}
-				<MagicianHat />
-				{/* <WitchHat />  */}
+				{/* <MagicianHat /> */}
+				{/* <WitchHat /> */}
 				{/* <AviatorGlasses /> */}
 				<SunGlasses />
+				{hat}
+				
 			</Suspense>
 		</Canvas>
 	);
 }
+
+	
 
 export default Avatar;

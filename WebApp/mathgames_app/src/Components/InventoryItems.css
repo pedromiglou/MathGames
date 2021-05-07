@@ -1,14 +1,46 @@
 .flex-container {
-    display: flex;
-    flex-wrap: wrap;
-    background-color: DodgerBlue;
+	display: flex;
+	flex-wrap: wrap;
+	background-color: DodgerBlue;
 }
 
 .flex-container > div {
-    background-color: #f1f1f1;
-    width: 100px;
-    margin: 10px;
-    text-align: center;
-    line-height: 75px;
-    font-size: 30px;
-  }
+	background-color: #f1f1f1;
+	width: 100px;
+	margin: 10px;
+	text-align: center;
+	line-height: 75px;
+	font-size: 30px;
+}
+
+.item-card {
+	width: auto;
+	height: 70px;
+}
+
+
+.card-descr {
+	height: 100%;
+	width: 100%;
+}
+
+.item-card {
+	background-color: transparent !important;
+	border: 0px !important;
+}
+
+.item-img {
+	width: 95px;
+	height: 75px;
+
+	border-radius: 10%;
+}
+
+.item-img::before {
+	font-size: initial;
+	color: black;
+}
+
+* {
+    transition: all 0.1s;
+}

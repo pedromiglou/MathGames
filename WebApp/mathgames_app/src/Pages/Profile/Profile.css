@@ -218,7 +218,7 @@ hr.solid-pos {
 .inventory {
     width: 100%;
     background-color: #394d5e;
-    min-height: 500px;
+    min-height: 550px;
 }
 
 .invetory-options {
@@ -230,6 +230,8 @@ hr.solid-pos {
     margin-right: 20px;
     margin-bottom: 50px;
 
+    height: 100%;
+
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 
 }
@@ -239,7 +241,8 @@ hr.solid-pos {
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: center;
-    overflow: scroll;
+
+    height: 100%;
 }
 
 .inv-items > div {
