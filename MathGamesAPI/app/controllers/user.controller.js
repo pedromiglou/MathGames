@@ -4,6 +4,23 @@ const Op = db.Sequelize.Op;
 const config = require("../config/auth.config")
 var jwt = require("jsonwebtoken");
 
+const getPagination = (page, size) => {
+  const limit = size ? +size : 3;
+  const offset = page ? page * limit : 0;
+
+  return { limit, offset };
+};
+
+const getPagingData = (data, page, limit) => {
+  const { count: totalItems, rows: users } = data;
+  const currentPage = page ? +page : 0;
+  const totalPages = Math.ceil(totalItems / limit);
+
+  return { totalItems, users, totalPages, currentPage };
+};
+
+
+
 // Create and Save a new User
 exports.create = (req, res) => {
   // Validate request
@@ -37,9 +54,13 @@ exports.create = (req, res) => {
 // Retrieve all Users from the database.
 exports.findAll = (req, res) => {
   if (typeof req.query.orderby !== "undefined") {
-    User.findAll({order: [[req.query.orderby, 'DESC']]})
+    const { page, size } = req.query;
+    const username = !req.query.username ? "": req.query.username+"%";
+    const { limit, offset } = getPagination(page, size);
+    User.findAndCountAll({attributes: ['id', 'username', 'avatar', 'account_level', 'account_type'] , where: {username: { [Op.like]: `%${username}` } }, order: [[req.query.orderby, 'DESC']], limit, offset})
     .then(data => {
-      res.send(data);
+      const response = getPagingData(data, page, limit);
+      res.send(response);
     })
     .catch(err => {
       res.status(500).send({
@@ -48,7 +69,7 @@ exports.findAll = (req, res) => {
       });
     });
   } else {
-    User.findAll()
+    User.findAll({attributes: ['username', 'avatar', 'account_level', 'account_type']})
       .then(data => {
         res.send(data);
       })
@@ -67,7 +88,8 @@ exports.findOne = (req, res) => {
 
   User.findByPk(id)
     .then(data => {
-      res.send(data);
+      const { password, ...userWithoutPassword } = data.dataValues;
+      res.send(userWithoutPassword);
     })
     .catch(err => {
       res.status(500).send({

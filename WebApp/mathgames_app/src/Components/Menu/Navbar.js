@@ -54,8 +54,8 @@ function Navbar() {
 		var contador = 1;
 		if (typeof account_level !== "undefined") {
 			while (true) {
-				var minimo = contador === 1 ? 0 : 400 * Math.pow(contador, 1.1);
-				var maximo = 400 * Math.pow(contador+1, 1.1);
+				var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
+				var maximo = 400 * Math.pow(contador, 1.1);
 				if ( (minimo <= account_level) && (account_level < maximo)) {
 					return contador;
 				}
