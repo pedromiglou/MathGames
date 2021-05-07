@@ -51,16 +51,18 @@ function Game()  {
     } else {
         if ( game_id === 0 ) {
             return (
-                <div>
-                    <canvas width="1100" height="750" id="game_canvas" className="game" style={{ border: '20px solid black' }} ></canvas>
-                    <RastrosEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></RastrosEngine>
+                <div class="container container-main">
+                    <div id="my_div_game" class="container-canvas" style={{width: '1100px', height: '755px'}}>
+                        <canvas id="game_canvas" className="game" style={{ border: '5px solid black' }} ></canvas>
+                        <RastrosEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></RastrosEngine>
+                    </div>
                 </div>
             );
         }
         if ( game_id === 1 ) {
             return (
-                <div>
-                    <canvas width="1100" height="750" id="game_canvas" className="game" style={{ border: '20px solid black' }} ></canvas>
+                <div id="my_div_game" style={{width: '1200px', height: '855px'}}>
+                    <canvas id="game_canvas" className="game" style={{ border: '5px solid black' }} ></canvas>
                     <GatosCaesEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></GatosCaesEngine>
                 </div>
             );

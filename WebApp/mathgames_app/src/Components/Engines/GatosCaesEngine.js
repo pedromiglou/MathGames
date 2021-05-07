@@ -1,17 +1,17 @@
 import  React, { useEffect } from "react";
 import Phaser from "phaser";
 import socket from "../../index"
-import AuthService from '../../Services/auth.service';
+//import AuthService from '../../Services/auth.service';
 import GatosCaesAI from "../AI/GatosCaesAI";
 
 var game_mode;
 var ai_diff;
-var user;
+//var user;
 
 export const GatosCaesEngine = ({arg_game_mode, arg_ai_diff}) => {
     useEffect(() => {
         game_mode = arg_game_mode;
-        user = AuthService.getCurrentUser();
+        //user = AuthService.getCurrentUser();
 
         if (arg_ai_diff === "easy")
             ai_diff = 0.2
@@ -21,9 +21,12 @@ export const GatosCaesEngine = ({arg_game_mode, arg_ai_diff}) => {
             ai_diff = 0.8
 
         const config = {
+            parent: document.getElementById("my_div_game"),
             canvas: document.getElementById("game_canvas"),
             type: Phaser.WEBGL,
-            scale: {mode: Phaser.Scale.FIT},
+            scale: {
+                mode: Phaser.Scale.RESIZE
+            },
             backgroundColor: '#4488aa',
             scene: [GatosCaesScene]
         }
@@ -32,7 +35,6 @@ export const GatosCaesEngine = ({arg_game_mode, arg_ai_diff}) => {
     
     return (<></>);
 }
-
 
 class GatosCaesScene extends Phaser.Scene {
 	constructor() {
@@ -54,9 +56,12 @@ class GatosCaesScene extends Phaser.Scene {
         // Stores the player which can move in a given turn
         this.current_player = 0;
 
+        this.game_over = false;
+
         this.valid_squares = {0: new Set(), 1: new Set()};
         this.player_0_first_move = true
         this.player_1_first_move = true
+        this.mycount = 0;
     }
 
     create() {
@@ -84,7 +89,7 @@ class GatosCaesScene extends Phaser.Scene {
 
             socket.on("move_piece", (new_pos) => {
                 console.log("Received move: ", new_pos);
-                this.move(this, this.squares_group.getChildren()[new_pos]);
+                this.move(this.squares_group.getChildren()[new_pos]);
             });
         }
 
@@ -97,7 +102,6 @@ class GatosCaesScene extends Phaser.Scene {
                 var pos = pos_y*8+pos_x;
                 if ([27, 28, 35, 36].includes(pos))
                     img = this.squares_group.create(this.INITIAL_BOARD_POS + this.DISTANCE_BETWEEN_SQUARES*pos_x, this.INITIAL_BOARD_POS+this.DISTANCE_BETWEEN_SQUARES*pos_y, 'center').setInteractive().setName(String(pos));
-                    //tmpPositions.push(this.add.image(this.INITIAL_BOARD_POS + this.DISTANCE_BETWEEN_SQUARES*pos_x, this.INITIAL_BOARD_POS+this.DISTANCE_BETWEEN_SQUARES*pos_y, 'center').setInteractive().setName(String(pos)));
                 else
                     img = this.squares_group.create(this.INITIAL_BOARD_POS + this.DISTANCE_BETWEEN_SQUARES*pos_x, this.INITIAL_BOARD_POS+this.DISTANCE_BETWEEN_SQUARES*pos_y, 'square').setInteractive().setName(String(pos));
                 img.on('pointerup', function () {scene.click_square(this)});
@@ -106,11 +110,15 @@ class GatosCaesScene extends Phaser.Scene {
             }
         }
 
-        this.add.text(750+20, 60, "É a vez do jogador:", {font: "40px Impact", color: "Orange"});
-        this.current_player_text = this.add.text(750+95, 120, "Jogador " + this.current_player, {font: "40px Impact", color: "Orange"});
+        this.add.text(855+20, 60, "É a vez do jogador:", {font: "40px Impact", color: "Orange"});
+        this.current_player_text = this.add.text(855+95, 120, "Jogador " + this.current_player, {font: "40px Impact", color: "Orange"});
     }
     
-    update() {}
+    update() {
+        this.mycount += 1;
+        if ( this.mycount >= 2 && !this.game_over && game_mode === "ai" && !this.player.has(this.current_player) )
+            this.move( this.squares_group.getChildren()[ this.gcAI.randomPlay(ai_diff, this.valid_squares[this.current_player]) ] );
+    }
 
     click_square(clicked_square) {
         if (!this.player.has(this.current_player))
@@ -122,28 +130,25 @@ class GatosCaesScene extends Phaser.Scene {
             if ( this.player_1_first_move && this.current_player === 1 && ["27", "28", "35", "36"].includes(clicked_square.name) )
                 return;
             this.move( clicked_square );
+            if ( game_mode === "online" || game_mode === "amigo" )
+                socket.emit("move", clicked_square.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
         }
-        if ( game_mode === "online" || game_mode === "amigo" )
-            socket.emit("move", clicked_square.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
-    
-        if ( game_mode === "ai" )
-            this.move( this.squares_group.getChildren()[ this.gcAI.randomPlay(ai_diff, this.valid_squares[this.current_player]) ] )
     }
 
     move(clicked_square) {
-        // var adjacents = new Set();
+        this.mycount = 0;
+        this.move_sound.play();
 
+        // Update first move variables
         if (this.player_0_first_move && !this.current_player)
             this.player_0_first_move = false
         if (this.player_1_first_move && this.current_player)
             this.player_1_first_move = false
-
-        this.move_sound.play();
         
         // Get new square's position [0..49]
         var current_pos = parseInt(clicked_square.name)
 
-        // adjacents.clear()
+        // Remove played position from both player's valid squares
         this.valid_squares[0].delete( current_pos )
         this.valid_squares[1].delete( current_pos )
         
@@ -151,26 +156,31 @@ class GatosCaesScene extends Phaser.Scene {
         this.add.sprite(clicked_square.x, clicked_square.y, 'cat_dog', this.current_player);
 
         var tmpPieceCoords = [(current_pos-(current_pos%8))/8, current_pos%8];
-        console.log("----------------------------------------")
-        console.log(current_pos);
-        console.log(this.valid_squares[1 - this.current_player]);
-        console.log(set_diff(this.valid_squares[1 - this.current_player], new Set([current_pos, current_pos-1, current_pos+1, current_pos-8, current_pos+8])));
-        console.log("----------------------------------------")
+
+        // Remove adjacent squares from opponent's valid moves
         this.valid_squares[1 - this.current_player] = set_diff(this.valid_squares[1 - this.current_player], new Set([current_pos-1, current_pos+1, current_pos-8, current_pos+8]))
 
-        if (this.valid_squares[1 - this.current_player].size === 0)
+        // If win condition has been met => Game Over
+        if (this.valid_squares[1 - this.current_player].size === 0) {
             this.finish_game(this);
-        
-        this.gcAI.playerPieces[tmpPieceCoords[0]][tmpPieceCoords[1]] = true;
-        if (game_mode == "ai" && !this.player.has(this.current_player))
-            this.gcAI.aiPieces[tmpPieceCoords[0]][tmpPieceCoords[1]] = true;
+            return;
+        }
 
+        // Update AI's data structures
+        if ( game_mode === "ai" ) {
+            this.gcAI.playerPieces[tmpPieceCoords[0]][tmpPieceCoords[1]] = true;
+            if (!this.player.has(this.current_player))
+                this.gcAI.aiPieces[tmpPieceCoords[0]][tmpPieceCoords[1]] = true;
+        }
+
+        // Update player text
         this.current_player = 1 - this.current_player;
         this.current_player_text.setText("Jogador " + this.current_player);
     }
 
-    finish_game() {    
-        this.text = this.add.text(0, 0, "O jogador " + this.current_player+1 + " ganhou.", {font: "80px Impact", color: "Red"});
+    finish_game() {   
+        this.game_over = true; 
+        this.text = this.add.text(0, 0, "O jogador " + this.current_player++ + " ganhou.", {font: "80px Impact", color: "Red"});
         this.tweens.add ({
             targets: this.text,
             x: 230,

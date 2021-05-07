@@ -1,17 +1,17 @@
 import  React, { useEffect } from "react";
 import Phaser from "phaser";
 import socket from "../../index"
-import AuthService from '../../Services/auth.service';
+//import AuthService from '../../Services/auth.service';
 import RastrosAI from "../AI/RastrosAI";
 
 var game_mode;
 var ai_diff;
-var user;
+//var user;
 
 export const RastrosEngine = ({arg_game_mode, arg_ai_diff}) => {
     useEffect(() => {
         game_mode = arg_game_mode;
-        user = AuthService.getCurrentUser();
+        //user = AuthService.getCurrentUser();
 
         if (arg_ai_diff === "easy")
             ai_diff = 0.2
@@ -20,13 +20,16 @@ export const RastrosEngine = ({arg_game_mode, arg_ai_diff}) => {
         else
             ai_diff = 0.8
 
-        const config = {
-            canvas: document.getElementById("game_canvas"),
-            type: Phaser.WEBGL,
-            scale: {mode: Phaser.Scale.FIT},
-            backgroundColor: '#4488aa',
-            scene: [RastrosScene]
-        }
+            const config = {
+                parent: document.getElementById("my_div_game"),
+                canvas: document.getElementById("game_canvas"),
+                type: Phaser.WEBGL,
+                scale: {
+                    mode: Phaser.Scale.RESIZE
+                },
+                backgroundColor: '#4488aa',
+                scene: [RastrosScene]
+            }
         new Phaser.Game(config);
     }, [arg_game_mode, arg_ai_diff]);
     
@@ -199,7 +202,7 @@ class RastrosScene extends Phaser.Scene {
             [current_pos-6, current_pos+1, current_pos+8].forEach(this.valid_squares.delete, this.valid_squares);
 
         // Remove blocked squares
-        this.blocked_squares.forEach(square => this.valid_squares.delete(square));
+        this.blocked_squares.forEach(this.valid_squares.delete, this.valid_squares);
 
         // Check for win conditions
         if (current_pos === 6 || current_pos === 42 || set_diff(this.valid_squares, this.blocked_squares).size === 0) {
