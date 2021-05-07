@@ -1,5 +1,7 @@
+const bcrypt = require("bcrypt");
+
 module.exports = (sequelize, Sequelize) => {
-    const User2 = sequelize.define("Users", {
+    const User = sequelize.define("Users", {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -17,7 +19,7 @@ module.exports = (sequelize, Sequelize) => {
         unique: true
       },
       password: {
-        type: Sequelize.STRING(30),
+        type: Sequelize.STRING(100),
         allowNull: false
       },
       avatar: {
@@ -42,9 +44,33 @@ module.exports = (sequelize, Sequelize) => {
         defaultValue: "U"
       }
     }, {
-      timestamps: false
+      timestamps: false,
+      hooks: {
+        beforeCreate: async (user) => {
+         if (user.password) {
+          console.log("aqui");
+          const salt = await bcrypt.genSaltSync(10, 'a');
+          user.password = bcrypt.hashSync(user.password, salt);
+         }
+        },
+        beforeBulkUpdate:async (user) => {
+         if (user.attributes.password) {
+          const salt = await bcrypt.genSaltSync(10, 'a');
+          user.attributes.password = bcrypt.hashSync(user.attributes.password, salt);
+         }
+        }
+       },
+       instanceMethods: {
+        validPassword: (password) => {
+         return bcrypt.compareSync(password, this.password);
+        }
+       }
     });
     
-    return User2;
+    User.prototype.validPassword = async (password, hash) => {
+      return await bcrypt.compareSync(password, hash);
+     }
+
+    return User;
   };
 

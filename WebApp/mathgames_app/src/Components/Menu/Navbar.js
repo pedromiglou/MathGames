@@ -49,6 +49,21 @@ function Navbar() {
         setNotifications(newNotifications);
     }
 
+	const getLevel = (account_level) => {
+		var contador = 1;
+		if (typeof account_level !== "undefined") {
+			while (true) {
+				var minimo = contador === 1 ? 0 : 400 * Math.pow(contador, 1.1);
+				var maximo = 400 * Math.pow(contador+1, 1.1);
+				if ( (minimo <= account_level) && (account_level < maximo)) {
+					return contador;
+				}
+				contador++;
+			}
+		} else 
+			return 0;
+	}
+
     // Tem de colocar no redux o tipo de user
     useEffect(() => {
 		var current_user = AuthService.getCurrentUser();
@@ -202,7 +217,7 @@ function Navbar() {
 								</div>
 								<div className="col navbar-account-info">
 									<h5>Nome: {user.username} </h5>
-									<h5>Nivel: {user.account_level} </h5>
+									<h5>Nivel: {getLevel(user.account_level)} </h5>
 								</div>
 								
 							</div>
