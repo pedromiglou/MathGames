@@ -304,77 +304,78 @@ function GamePage() {
 						</div>
 						<div className="col-lg-12 game-mode">
 							<IconContext.Provider  value={{color: 'white'}}>
-							
-							</IconContext.Provider>
-							<h2 className="title-gamemode">Escolhe modo de jogo</h2>
-							<div className="row">
-								<div className="col-lg-6 centered set-padding">
-							
-									<Card id="online" className="mode-card" onClick={() => changeMode("online")}>
-										<div>
-										
-											<i className="mode-icon"><RiIcons.RiSwordFill/></i>
-										
-											<h2>
-												Competitivo
-											</h2>
-										</div>
-									</Card>
-								</div>
+								<h2 className="title-gamemode">Escolhe modo de jogo</h2>
+								<div className="row">
+									<div className="col-lg-6 centered set-padding">
+								
+										<Card id="online" className="mode-card" onClick={() => changeMode("online")}>
+											<div>
+											
+												<i className="mode-icon"><RiIcons.RiSwordFill/></i>
+											
+												<h2>
+													Competitivo
+												</h2>
+											</div>
+										</Card>
+									</div>
 
-								<div className="col-lg-6 centered set-padding">
-									<Card id="offline" className="mode-card" onClick={() => changeMode("offline")}>
-										<div>
-											
-											<i className="mode-icon"><FaIcons.FaUserFriends/></i>
-											
-											<h2>
-												No mesmo computador
-											</h2>
-											
+									<div className="col-lg-6 centered set-padding">
+										<Card id="offline" className="mode-card" onClick={() => changeMode("offline")}>
+											<div>
+												
+												<i className="mode-icon"><FaIcons.FaUserFriends/></i>
+												
+												<h2>
+													No mesmo computador
+												</h2>
+												
+											</div>
+										</Card>
+										<div id="choose_names" className="choose_names" onChange={(e) => changeDif(e)} style={{display: "none"}}>
+											<input placeholder="nome jogador 1" className="name" onChange={(e) => setName1(e.target.value)} ></input>
+											<input placeholder="nome jogador 2" className="name" onChange={(e) => setName2(e.target.value)}></input>
 										</div>
-									</Card>
-									<div id="choose_names" className="choose_names" onChange={(e) => changeDif(e)} style={{display: "none"}}>
-										<input placeholder="nome jogador 1" className="name" onChange={(e) => setName1(e.target.value)} ></input>
-										<input placeholder="nome jogador 2" className="name" onChange={(e) => setName2(e.target.value)}></input>
 									</div>
 								</div>
-							</div>
-							<div className="row">
-								<div className="col-lg-6 centered set-padding">
-									<Card id="amigo" className="mode-card" onClick={() => changeMode("amigo")}>
-										<div>
-											<i className="mode-icon"><FiIcons.FiLink/></i>
-											
-											<h2>
-												Gerar link de convite
-											</h2>
-											
-										</div>
-									</Card>
+								<div className="row">
+									<div className="col-lg-6 centered set-padding">
+										<Card id="amigo" className="mode-card" onClick={() => changeMode("amigo")}>
+											<div>
+												<i className="mode-icon"><FiIcons.FiLink/></i>
+												
+												<h2>
+													Gerar link de convite
+												</h2>
+												
+											</div>
+										</Card>
+									</div>
+									<div className="col-lg-6 centered set-padding">
+										<Card id="ai" className="mode-card" onClick={() => changeMode("ai")}>
+											<div>
+												<i className="mode-icon"><FaIcons.FaRobot/></i>
+												
+												<h2>
+													Contra o computador
+												</h2>
+											</div>
+										</Card>
+										{/* fazer isto com divs para ficar igual á parte de cima */}
+										<select id="sel_dif" className="select-dif" onChange={(e) => changeDif(e)} style={{display: "none"}}>
+											{dif_options.map((option) => (
+												<option key={option.label} value={option.value}>{option.label}</option>
+											))}
+										</select>
+									</div>
 								</div>
-								<div className="col-lg-6 centered set-padding">
-									<Card id="ai" className="mode-card" onClick={() => changeMode("ai")}>
-										<div>
-											 <i className="mode-icon"><FaIcons.FaRobot/></i>
-											
-											<h2>
-												Contra o computador
-											</h2>
-										</div>
-									</Card>
-									{/* fazer isto com divs para ficar igual á parte de cima */}
-									<select id="sel_dif" className="select-dif" onChange={(e) => changeDif(e)} style={{display: "none"}}>
-										{dif_options.map((option) => (
-											<option key={option.label} value={option.value}>{option.label}</option>
-										))}
-									</select>
+								<div className="div-button">
+									<button id="button-play" className="button-play disabled" onClick={() => find_match()}>Jogar</button>
 								</div>
-							</div>
-							<div className="div-button">
-								<button id="button-play" className="button-play disabled" onClick={() => find_match()}>Jogar</button>
-							</div>
+							
+							</IconContext.Provider>
 						</div>
+						
 					</div>
 				</div>
 			</div>

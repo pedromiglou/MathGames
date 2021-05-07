@@ -7,6 +7,10 @@ import { GatosCaesEngine } from "../../Components/Engines/GatosCaesEngine";
 import socket from "../../index"
 import AuthService from '../../Services/auth.service';
 
+import { Card } from "react-bootstrap";
+import * as FaIcons from "react-icons/fa";
+import {IconContext} from 'react-icons';
+
 function Game()  {
     var user = AuthService.getCurrentUser();
     const [game_ready_to_start, setReady] = useState(false);
@@ -35,6 +39,19 @@ function Game()  {
         //}
     }
 
+    function copy() {
+        var link = document.getElementById("link");
+
+        
+        link.select();
+        link.setSelectionRange(0, 99999); /* For mobile devices */
+
+        document.execCommand("copy");
+
+        /* Alert the copied text */
+        alert("O link foi copiado!");
+    }
+
     // Game is ready to start when both players are connected
     if ( game_ready_to_start === false ) {
         if ( match_id !== null ) {
@@ -52,14 +69,41 @@ function Game()  {
             setReady(true)
         }
         return (
-            <div>
-                <h1>Waiting for game...</h1>
+            <div className="col-lg-12 link-geral-position">
+                <IconContext.Provider  value={{color: 'white'}}>
+                    
+                    <div className="link-card">
+                        <h2>Copia o link para convidar alguém!</h2>
+                        <hr className="link-hr"></hr>
+                        <div className="bottom-link row">
+                            <input className="link" id="link" value="teste.com"></input>
+                            <div className="div-link-button">
+                                <button id="button-copy" className="button-copy" onClick={() => copy()}><i className="copy-icon"><FaIcons.FaCopy/></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </IconContext.Provider>
             </div>
         );
     } else {
+        //testar cena do link -> Dps pode-se apagar
         // return (
-        //     <div>
-        //         <h1>Waiting for game...</h1>
+        //     <div className="col-lg-12 link-geral-position">
+        //         <IconContext.Provider  value={{color: 'white'}}>
+                    
+        //             <div className="link-card">
+        //                 <h2>Copia o link para convidar alguém!</h2>
+        //                 <hr className="link-hr"></hr>
+        //                 <div className="bottom-link row">
+        //                     <input className="link" id="link" value="teste.com"></input>
+        //                     <div className="div-link-button">
+        //                         <button id="button-copy" className="button-copy" onClick={() => copy()}><i className="copy-icon"><FaIcons.FaCopy/></i></button>
+        //                     </div>
+        //                 </div>
+        //             </div>
+                    
+        //         </IconContext.Provider>
         //     </div>
         // );
         if ( game_id === 0 ) {
