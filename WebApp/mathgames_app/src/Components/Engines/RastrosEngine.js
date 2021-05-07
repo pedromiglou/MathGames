@@ -110,7 +110,11 @@ class RastrosScene extends Phaser.Scene {
             else
                 this.player.add(1);
 
-            socket.emit("start_game", { "username": user1.username, "user_id": sessionStorage.getItem("user_id"),"match_id": sessionStorage.getItem("match_id")});
+            if (user1 === null)
+                socket.emit("start_game", { "user_id": sessionStorage.getItem("user_id"),"match_id": sessionStorage.getItem("match_id"),  "account_player": false});
+            else
+                socket.emit("start_game", { "user_id": String(user1.id), "match_id": sessionStorage.getItem("match_id"), "account_player": true});
+
             socket.on("move_piece", (new_pos) => {
                 console.log("Received move: ", new_pos);
                 this.move(this.positions[new_pos]);
@@ -151,8 +155,12 @@ class RastrosScene extends Phaser.Scene {
                     // Emit move just made
                     if ( game_mode === "online" || game_mode === "amigo" ) {
                         console.log("vou mandar move")
-                        socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
-                    
+
+                        if (user1 === null)
+                            socket.emit("move", clicked_piece.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
+                        else
+                            socket.emit("move", clicked_piece.name, String(user1.id), sessionStorage.getItem("match_id"));
+
                     }
                     // Process AI move
                     if ( game_mode === "ai" && !this.is_finished )

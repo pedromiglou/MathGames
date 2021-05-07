@@ -7,14 +7,13 @@ module.exports = (sequelize, Sequelize) => {
         primaryKey: true
       },
       player1: {
-        type: Sequelize.INTEGER,
-        allowNull: false
+        type: Sequelize.INTEGER
       },
       player2: {
         type: Sequelize.INTEGER,
         validate: {
             isDiferent() {
-                if (this.player1 == this.player2) {
+                if (this.player1 == this.player2 && (this.player1 !== null && this.player2 !== null) ) {
                     throw new Error("Players are the same")
                 }
             }
@@ -30,30 +29,16 @@ module.exports = (sequelize, Sequelize) => {
             }
         }
       },
-      number_moves: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        validate: {
-            isNotNegative() {
-                if (this.number_moves < 0) {
-                    throw new Error("Number of moves cannot be < 0.")
-                }
-            }
-        }
-      },
       game_type: {
-        type: Sequelize.CHAR(1),
+        type: Sequelize.STRING(10),
         allowNull: false
       },
       game_id: {
         type: Sequelize.INTEGER,
         allowNull: false
-      },
-      actual_state: {
-        type: Sequelize.STRING(500)
       }
     }, {
-      timestamps: false
+      timestamps: true
     });
     
     return GameMatch;
