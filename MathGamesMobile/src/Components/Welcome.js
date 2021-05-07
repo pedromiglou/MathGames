@@ -33,15 +33,15 @@ function Welcome({ navigation }) {
           resizeMode = {'contain'}
           source={require('./../../public/images/logo-light.png')}
         />
-        
-        <Text style={{fontSize: 30, padding: 10, textAlign:'center'}}>Bem-vindos ao MathGames!</Text>
-        <Image
-          style={styles2.image}
-          resizeMode = {'contain'}
-          source={require('./../../public/images/header_img.png')}
-        />
-        <Text style={{fontSize: 20, padding: 10,  textAlign:'center'}}>Sejam muito bem-vindos à plataforma MathGames. Aqui podem encontrar vários jogos matemáticos para jogarem e se divertirem. Podem jogar competitivamente, criar torneios, jogar com amigos entre outras coisas. Esperemos que se divirtam!</Text>
 
+        <Text style={{fontSize: 30, padding: 10, textAlign:'center'}}>Bem-vindos ao MathGames!</Text>
+
+        <Image
+              style={styles2.image}
+              resizeMode = {'contain'}
+              source={require('./../../public/images/header_img.png')}/>
+
+        <Text style={{fontSize: 20, padding: 10,  textAlign:'center'}}>Sejam muito bem-vindos à plataforma MathGames. Aqui podem encontrar vários jogos matemáticos para jogarem e se divertirem. Podem jogar competitivamente, criar torneios, jogar com amigos entre outras coisas. Esperemos que se divirtam!</Text>
         
         <Button
           onPress={() => navigation.navigate('Jogos')}
