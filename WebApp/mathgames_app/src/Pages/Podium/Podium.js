@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import "./Podium.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import UsersService from '../../Services/users.service';
+import UserService from '../../Services/user.service';
 
 function Podium() {
 	
@@ -14,14 +14,13 @@ function Podium() {
 
 	useEffect(() => {
 		async function fetchApiUsers() {
-            var response = await UsersService.getUsers();
+            var response = await UserService.getUsers();
             setUsers(response);
 			setUsersFiltered(response);
 			setNumberClassification(0);
         };
 
 		fetchApiUsers();
-		console.log(users);
 	}, [])
 
 	function filterUsers(e) {
