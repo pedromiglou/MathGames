@@ -2,8 +2,7 @@ import React, { useRef, Suspense} from "react";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 
-import img from './texture/texture1.jpg'
-
+import img1 from './texture/texture1.jpg'
 
 import * as THREE from 'three';
 
@@ -18,14 +17,24 @@ const Head = ({ position, args, color }) => {
 	);
 };
 
-const Box = ({ position, args, color, texture }) => {
+const Box = ({ position, args, color, tex }) => {
+	const texture = useLoader(THREE.TextureLoader, img1);
 
-	return (
-		<mesh position={position}>
-			<boxBufferGeometry attach="geometry" args={args}/>
-			<meshLambertMaterial attach="material" color={color} map={texture}/>
-		</mesh>
-	);
+	if(tex) {
+		return (
+			<mesh position={position}>
+				<boxBufferGeometry attach="geometry" args={args}/>
+				<meshLambertMaterial attach="material" color={color} map={texture} toneMapped={false}/>
+			</mesh>
+		);
+	} else {
+		return (
+			<mesh position={position}>
+				<boxBufferGeometry attach="geometry" args={args}/>
+				<meshLambertMaterial attach="material" color={color} />
+			</mesh>
+		);
+	}
 };
 
 
@@ -155,37 +164,39 @@ function SunGlasses(props) {
 
 
 function Image() {
-	const texture = useLoader(THREE.TextureLoader, img)
+	const texture = useLoader(THREE.TextureLoader, img1)
 	return (
-	  <mesh>
-		<planeBufferGeometry attach="geometry" args={[4, 4]} />
-		<meshBasicMaterial attach="material" map={texture} toneMapped={false} />
-	  </mesh>
+	  texture
 	)
 }
   
 
 function Avatar() {
-	//const texture = useLoader(THREE.TextureLoader, img2)
+	//const texture = useLoader(THREE.TextureLoader, img1)
+	/* const someComponent = React.lazy(() => import('./texture/texture1.jpg'));  
+
+	console.log(someComponent); */
 
 	return (
 		<Canvas>
-			<OrbitControls />
-			<ambientLight intensity={0.5} />
-			
 			<Suspense fallback={null}>
+				<OrbitControls />
+				<ambientLight intensity={0.5} />
+
 				
+
+				{/* texture={useLoader(THREE.TextureLoader, img1)} */}
 				<Head position={[0, 1.5, 0]} args={[1, 1, 1]} />
 
-				<Box args={[2, 2, 1]} texture={useLoader(THREE.TextureLoader, img)}/>
+				<Box args={[2, 2, 1]} tex={true}/>
 
-				<Box args={[0.9, 2, 1]} position={[-0.5, -2, 0]} color="grey" />
+				<Box args={[0.9, 2, 1]} position={[-0.5, -2, 0]} color="grey"/>
 				<Box args={[0.9, 2, 1]} position={[0.5, -2, 0]} color="grey" />
 
 				<Box args={[0.75, 2, 1]} position={[-1.375, 0, 0]} color="white" />
 				<Box args={[0.75, 2, 1]} position={[1.375, 0, 0]} color="white" />
 
-				<Plane args={[5, 5]} position={[0, -3.5, 0]} color="black" /> 
+				<Plane args={[5, 5]} position={[0, -3.5, 0]} color="black" />
 				
 				{/* <Shoe />  */}
 				<MagicianHat />

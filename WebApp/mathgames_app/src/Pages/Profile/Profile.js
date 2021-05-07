@@ -3,12 +3,16 @@ import { React, useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Profile.css";
 import Avatar from "../../Components/Avatar";
+import InventoryItems from "../../Components/InventoryItems";
 
 import AuthService from "../../Services/auth.service"
 import UserService from "../../Services/user.service"
 
+
+
 const Profile = () => {
     const [menuOption, setMenuOption] = useState("Geral");
+    const [invOption, setInvOption] = useState("Chapeus");
     const [user, setUser] = useState("");
     const [games, setGames] = useState([]);
 
@@ -115,13 +119,6 @@ const Profile = () => {
                             <div className="col-lg-8 row">
                                 <div className="col-lg-4">
                                     <Avatar />
-                                {/* <img
-                                    src={
-                                        process.env.PUBLIC_URL +
-                                        "/images/user-profile.png"
-                                    }
-                                    alt="profile_image"
-                                /> */}
                                 </div>
                                 <div className="col-lg-8">
                                     <div className="account-name">
@@ -198,24 +195,44 @@ const Profile = () => {
                 )}
 
                 {menuOption === "Inventario" && (
-                    <div className="col-lg-9 no-margins">
-                        <div className="container profile">
-                            <div className="input-field_profile">
-                                <input type="text" value="Password" readOnly />
+                    <div className="col-lg-9 no-margins inventory">
+                        <div className="row ">
+                            <div className="col-lg-5 avatar-display container">
+                                <h1>Nome</h1>
+                                <Avatar />
                             </div>
-                            <div className="input-field_profile">
-                                <input
-                                    type="text"
-                                    value="Password Nova"
-                                    readOnly
-                                />
-                            </div>
-                            <div className="input-field_profile">
-                                <input
-                                    type="text"
-                                    value="Confirmar Password Nova"
-                                    readOnly
-                                />
+
+                            <div className="col-lg-7 invetory-options">
+                                <div className="row">
+                                    <div className="col-lg-4">
+                                        <button>Chapeus</button>
+                                    </div>
+                                    <div className="col-lg-4">
+                                        <button>Camisolas</button>
+                                    </div>
+                                    <div className="col-lg-4">
+                                        <button>Calcas</button>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-lg-4">
+                                        <button>Acessorios</button>
+                                    </div>
+                                    <div className="col-lg-4">
+                                        <button>Tabuleiros</button>
+                                    </div>
+                                    <div className="col-lg-4">
+                                        <button>Pecas</button>
+                                    </div>
+                                </div>
+
+                                <div className="inv-list">
+                                    {invOption === "Chapeus" && (
+                                        <div className="inv-items">
+                                            <InventoryItems />
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -114,6 +114,8 @@ hr.solid-pos {
     margin-left: 30px;
     margin-top: auto;
     margin-bottom: auto;
+
+    padding-top: 40px;
 }
 
 .account-name h1 {
@@ -152,7 +154,7 @@ hr.solid-pos {
 
 .profile-level {
     text-align: center;
-    margin-top: 50px;
+    margin-top: 40px;
 }
 
 .profile-level p {
@@ -161,7 +163,6 @@ hr.solid-pos {
 
 .lvl {
     margin-bottom: 0;
-    margin-top: 1rem;
 }
 
 .progress {
@@ -196,6 +197,60 @@ hr.solid-pos {
 	border: 1px solid #F5F0F0;
 	background-color: #F5F0F0;
 }
+
+
+
+
+.avatar-display {
+    padding-top: 30px;
+}
+
+.avatar-display > div  {
+    height: 350px !important;
+}
+
+.avatar-display > h1  {
+    text-align: center;
+}
+
+
+
+.inventory {
+    width: 100%;
+    background-color: #394d5e;
+    min-height: 500px;
+}
+
+.invetory-options {
+    padding-top: 30px;
+}
+
+.inv-list {
+    margin-top: 20px;
+    margin-right: 20px;
+    margin-bottom: 50px;
+
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+}
+
+.inv-items {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    overflow: scroll;
+}
+
+.inv-items > div {
+    background-color: #f1f1f1;
+    width: 100px;
+    margin: 10px;
+    text-align: center;
+    line-height: 75px;
+    font-size: 30px;
+}
+
 
 .box {
     position: relative;
