@@ -36,7 +36,8 @@ exports.create = (req, res) => {
 
 // Retrieve all Users from the database.
 exports.findAll = (req, res) => {
-  User.findAll()
+  if (typeof req.query.orderby !== "undefined") {
+    User.findAll({order: [[req.query.orderby, 'DESC']]})
     .then(data => {
       res.send(data);
     })
@@ -46,6 +47,18 @@ exports.findAll = (req, res) => {
           err.message || "Some error occurred while retrieving Users."
       });
     });
+  } else {
+    User.findAll()
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while retrieving Users."
+        });
+      });
+  }
 };
 
 // Find a single User with an id
@@ -134,19 +147,21 @@ exports.deleteAll = (req, res) => {
 // Login
 //
 exports.authenticate = (req, res, next) => {
-  authenticate(req.body.username, req.body.password, (err, user) => { 
-    if (user) {
-      return res.send(user)
+  authenticate(req.body.username, req.body.password).then(response => { 
+    if (!response) {
+      return res.status(500).send({msg: 'Username or password is incorrect'})
     } else {
-      return res.status(400).send({ message: err })
+      return res.send(response)
     }
   })
 }
 
-
+/*
 const authenticate = (username, password, result) => {
   User.findAll({where: {username:  username }}).then(user => {
-      if (user[0].password === password) {
+    console.log(user[0].validPassword(password));
+      if (await user[0].validPassword(user[0].password, password)) {
+      //if (user[0].password === password) {
         const token = jwt.sign({ id: user[0].id, account_type: user[0].account_type }, config.secret);
         const { password, ...userWithoutPassword } = user[0].dataValues;
         result(null,{
@@ -160,6 +175,44 @@ const authenticate = (username, password, result) => {
     result('Username or password is incorrect', null);
   });
 }
+*/
+const authenticate = (username, password) => {
+  return new Promise((resolve, reject) => {
+   try {
+    User.findOne({
+    where: {
+     username: username // user email
+    }
+    }).then(async (response) => {
+     if (!response) {
+      resolve(false);
+     } else {
+       if (!response.dataValues.password || 
+        !await response.validPassword(password.toString(), 
+         response.dataValues.password)) {
+          resolve(false);
+       } else {
+        const token = jwt.sign({ id: response.id, account_type: response.account_type }, config.secret);
+        const { password, ...userWithoutPassword } = response.dataValues;
+        resolve({
+            ...userWithoutPassword,
+            token
+        });
+       }
+      }
+     })
+    } catch (error) {
+    const response = {
+     status: 500,
+     data: {},
+    error: {
+     message: "user match failed"
+    }
+    };
+   reject(response);
+   }
+  })
+ }
 
 
 //
