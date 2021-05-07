@@ -1,15 +1,13 @@
-import React, { useRef, useState, useMemo } from "react";
+import React, { useRef, Suspense} from "react";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
-import { Suspense } from "react";
-import { Html } from "@react-three/drei";
+import img from './texture/texture1.jpg'
 
-import * as THREE from 'three'
 
-import { TextureLoader } from 'three/src/loaders/TextureLoader.js'
+import * as THREE from 'three';
+
+
 
 const Head = ({ position, args, color }) => {
 	return (
@@ -20,14 +18,16 @@ const Head = ({ position, args, color }) => {
 	);
 };
 
-const Box = ({ position, args, color }) => {
+const Box = ({ position, args, color, texture }) => {
+
 	return (
 		<mesh position={position}>
-			<boxBufferGeometry attach="geometry" args={args} />
-			<meshLambertMaterial attach="material" color={color} />
+			<boxBufferGeometry attach="geometry" args={args}/>
+			<meshLambertMaterial attach="material" color={color} map={texture}/>
 		</mesh>
 	);
 };
+
 
 const Plane = ({ position, args, color }) => {
 	const mesh = useRef();
@@ -154,18 +154,19 @@ function SunGlasses(props) {
 }
 
 
+function Image() {
+	const texture = useLoader(THREE.TextureLoader, img)
+	return (
+	  <mesh>
+		<planeBufferGeometry attach="geometry" args={[4, 4]} />
+		<meshBasicMaterial attach="material" map={texture} toneMapped={false} />
+	  </mesh>
+	)
+}
+  
+
 function Avatar() {
-	/* const loader = new THREE.TextureLoader();
-	loader.load('https://threejsfundamentals.org/threejs/resources/images/wall.jpg', (texture) => {
-	  const material = new THREE.MeshBasicMaterial({
-		map: texture,
-	  });
-	});
-	
-	
-	//const texture = useLoader(THREE.TextureLoader, img);
-	const [texture] = useLoader(THREE.TextureLoader, img);
-	console.log(texture);  */
+	//const texture = useLoader(THREE.TextureLoader, img2)
 
 	return (
 		<Canvas>
@@ -173,10 +174,10 @@ function Avatar() {
 			<ambientLight intensity={0.5} />
 			
 			<Suspense fallback={null}>
-
+				
 				<Head position={[0, 1.5, 0]} args={[1, 1, 1]} />
 
-				<Box args={[2, 2, 1]} color="brown" />
+				<Box args={[2, 2, 1]} texture={useLoader(THREE.TextureLoader, img)}/>
 
 				<Box args={[0.9, 2, 1]} position={[-0.5, -2, 0]} color="grey" />
 				<Box args={[0.9, 2, 1]} position={[0.5, -2, 0]} color="grey" />
@@ -184,13 +185,13 @@ function Avatar() {
 				<Box args={[0.75, 2, 1]} position={[-1.375, 0, 0]} color="white" />
 				<Box args={[0.75, 2, 1]} position={[1.375, 0, 0]} color="white" />
 
-				<Plane args={[5, 5]} position={[0, -3.5, 0]} color="black" />
-
+				<Plane args={[5, 5]} position={[0, -3.5, 0]} color="black" /> 
+				
 				{/* <Shoe />  */}
-				<MagicianHat /> 
-				 {/* <WitchHat />  */}
-				<AviatorGlasses />
-				 {/* <SunGlasses />  */}
+				<MagicianHat />
+				{/* <WitchHat />  */}
+				{/* <AviatorGlasses /> */}
+				<SunGlasses />
 			</Suspense>
 		</Canvas>
 	);
