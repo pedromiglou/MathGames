@@ -19,8 +19,8 @@ class UserService {
         return res.json();
     }
     
-    async getUsers() {
-        var url = 'http://localhost:4000/api/users?orderby=account_level';
+    async getUsers(username, page, pageSize) {
+        var url = 'http://localhost:4000/api/users?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username;
         var res = await fetch(url);
         return res.json();
     }
