@@ -334,11 +334,6 @@ function finnish_game(match_id) {
   var game_id = current_games[match_id]['game_id']
   var game_type = current_games[match_id]['game_type']
 
-  console.log(player1)
-  console.log(player_1_account_player)
-  console.log(player2)
-  console.log(player_2_account_player)
-
   // Create a GameMatch
   var gameMatch = {
     player1: parseInt(player1),
@@ -348,7 +343,6 @@ function finnish_game(match_id) {
     game_id: game_id
   };
 
-  console.log(gameMatch)
   if (player_1_account_player === true || player_2_account_player === true) {
     if (!player_1_account_player) {
       gameMatch["player1"] = null
