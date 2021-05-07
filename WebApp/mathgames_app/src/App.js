@@ -49,7 +49,7 @@ function App() {
                         <Sidemenu/>
                     </nav>
 
-                    <div id="content">
+                    <div id="content" className="content">
                         <Switch>
                             <Route exact path='/' component={withRouter(Welcome)} />
                             <Route exact path='/gamesDashboard' component={withRouter(ChooseGame)} />
