@@ -8,12 +8,10 @@ import Pagination from "@material-ui/lab/Pagination";
 function Podium() {
 	
 	const [users, setUsers] = useState([]);
-	//const [usersFiltered, setUsersFiltered] = useState([]);
 	var [numberClassification, setNumberClassification] = useState([]);
 	
 	const [page, setPage] = useState(1);
 	const [count, setCount] = useState(0);
-	const [pageSize, setPageSize] = useState(3);
 	
 	const handlePageChange = (event, value) => {
 		setPage(value);
@@ -21,12 +19,10 @@ function Podium() {
 	
 	const retrieveUsers = () => {
 		async function fetchApiUsers() {
-			console.log("entrei aqui");
 			let username = document.getElementById("filter_username").value;
             var response = await UserService.getUsers(username,parseInt(page)-1, 10);
             setUsers(response.users);
 			setCount(response.totalPages)
-			//setUsersFiltered(response.users);
 			setNumberClassification((parseInt(page)-1)*10);
         };
 
@@ -35,7 +31,7 @@ function Podium() {
 
 	useEffect(
 		retrieveUsers
-	, [page, pageSize])
+	, [page])
 
 	return (
 		<div>
