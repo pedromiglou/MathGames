@@ -149,7 +149,7 @@ exports.deleteAll = (req, res) => {
 exports.authenticate = (req, res, next) => {
   authenticate(req.body.username, req.body.password).then(response => { 
     if (!response) {
-      return res.status(500).send({msg: 'Username or password is incorrect'})
+      return res.status(403).send({msg: 'Username or password is incorrect'})
     } else {
       return res.send(response)
     }

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import {IconContext} from 'react-icons';
 import * as FaIcons from 'react-icons/fa';
+import * as FiIcons from "react-icons/fi";
 import { Link } from 'react-router-dom';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -60,8 +61,14 @@ function Navbar() {
 				}
 				contador++;
 			}
-		} else 
+		} else {
 			return 0;
+		}
+	}
+
+	function run_logout() {
+		localStorage.removeItem("user");
+		window.location.assign("http://localhost:3000/")
 	}
 
     // Tem de colocar no redux o tipo de user
@@ -219,7 +226,7 @@ function Navbar() {
 									<h5>Nome: {user.username} </h5>
 									<h5>Nivel: {getLevel(user.account_level)} </h5>
 								</div>
-								
+								<FiIcons.FiLogOut  className="icon_notifications"  size={42} onClick={run_logout}/>
 							</div>
 						</div>
 					</div>

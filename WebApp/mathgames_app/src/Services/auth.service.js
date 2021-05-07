@@ -6,29 +6,12 @@ class AuthService {
             username: username,
             password: password,
         }
-        /*
-        fetch('http://localhost:4000/api/users/login', {
-            method:'POST',
-            headers:{'Content-type':'application/json'},
-            body: JSON.stringify(userInfo)
-        }).then(r=>r.json()).then(res=> {
-            console.log(res)
-            if(res.id) {
-                localStorage.setItem("user", JSON.stringify(res));
-                console.log("vou return")
-                return true
-                //window.location.assign("http://localhost:3000/");
-            } else {
-                return false
-                //window.location.reload();
-            }
-        })*/
 
-        var res = (await fetch('http://localhost:4000/api/users/login', {
+        var res = await fetch('http://localhost:4000/api/users/login', {
             method:'POST',
             headers:{'Content-type':'application/json'},
             body: JSON.stringify(userInfo)
-        }))
+        })
 
         var json = await res.json()
         
@@ -36,35 +19,34 @@ class AuthService {
             localStorage.setItem("user", JSON.stringify(json));
             console.log("vou return")
             return true
-            //window.location.assign("http://localhost:3000/");
         } else {
             return false
-            //window.location.reload();
         }
 
     }
 
 
-    register(username, email, password) {
+    async register(username, email, password) {
         let userInfo= {
             username: username,
             email: email,
             password: password,
         }
         
-        fetch('http://localhost:4000/api/users/register', {
+
+        var res = await fetch('http://localhost:4000/api/users/register', {
             method:'POST',
             headers:{'Content-type':'application/json'},
             body: JSON.stringify(userInfo)
-        }).then(r=>r.json()).then(res=> {
-            if(res) {
-                console.log('New User was created')
-                return true
-            }
-            return false
-            //window.location.reload();        
-
         })
+        console.log(res)
+        var json = await res.json()
+        
+        console.log(json)
+        if(json.id) {
+            return true
+        }
+        return false
     }
 
     getCurrentUser() {

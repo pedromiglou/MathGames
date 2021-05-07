@@ -8,37 +8,43 @@ function Login() {
     const [signIn, setSignIn] = useState(true);
     const [errorLogin, setErroLogin] = useState(false);
     const [errorRegisto, setErroRegisto] = useState(false);
+    const [sucessoRegisto, setSucessoRegisto] = useState(false);
 
     async function login() {
-        //setErroLogin(false);
+        setErroRegisto(false);
+        setErroLogin(false)
         var response = await AuthService.login(
             document.getElementById("nomeUtilizadorLogin").value,
             document.getElementById("passwordLogin").value
         )   
         
-        console.log(response)
-        if (response) {
-            if (response === true)
-                window.location.assign("http://localhost:3000/");
-            else
-                setErroLogin(true);
+        if (response === true)
+            window.location.assign("http://localhost:3000/");
+        else {
+            setErroLogin(true);
         }
     }
 
+    
+
     async function register() {
-        //setErroRegisto(false);
+        setErroRegisto(false);
+        setErroLogin(false)
         var response = await AuthService.register(
             document.getElementById("nomeUtilizadorRegisto").value,
             document.getElementById("emailRegisto").value,
             document.getElementById("passwordRegisto").value
         )
 
-        if (response) {
-            if (response === true)
-                window.location.reload();        
-            else
-                setErroRegisto(true);
-        }
+        if (response === true) {
+            document.getElementById('nomeUtilizadorRegisto').value = ''
+            document.getElementById('emailRegisto').value = ''
+            document.getElementById('passwordRegisto').value = ''
+            document.getElementById('change_button').click()
+            setSucessoRegisto(true);
+            }
+        else
+            setErroRegisto(true);
     }
 
     function toggle_sign_up() {
@@ -74,24 +80,24 @@ function Login() {
         }
     }
 
-    function run_register() {
-        register()
-    }
 
-    function run_login() {
-        login()      
-    }
-    
     return (
         <div>
             {errorLogin === true 
-                ? <div className="alert alert-danger" role="alert"> Erro Login </div> 
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "60%", textAlign:"center", fontSize:"22px"}}> 
+                Ocorreu um erro no seu processo login. As suas credênciais são inválidas.
+                 </div> 
                 : null}
 
             {errorRegisto === true 
-                ? <div className="alert alert-danger" role="alert">
-                Erro Register
-            </div> : null}
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "60%", textAlign:"center", fontSize:"22px"}}>
+                Ocorreu um erro no seu processo registo. Username/Email já se encontram em utilização.
+                 </div> : null}
+
+            {sucessoRegisto === true 
+                ? <div className="alert alert-success" role="alert" style={{margin:"10px auto", width: "60%", textAlign:"center", fontSize:"22px"}}>
+                A sua conta foi criada com sucesso! 
+                </div> : null}
 
             <div className="container container-login">
             <div className="forms-container-login">
@@ -110,7 +116,7 @@ function Login() {
                             type="button"
                             value="Entrar"
                             className="btn-login solid"
-                            onClick={run_login}
+                            onClick={login}
                         >Entrar</button>
                     </form>
                 </div>
@@ -134,7 +140,7 @@ function Login() {
                             type="button"
                             value="Registar"
                             className="btn-login solid"
-                            onClick={run_register}
+                            onClick={register}
                         >Registar</button>
                     </form>
                 </div>
@@ -144,6 +150,7 @@ function Login() {
                     id="toggle_side"
                 >
                     <button
+                        id="change_button"
                         className="btn-login transparent"
                         onClick={toggle_sign_up}
                     >
