@@ -57,6 +57,11 @@ function Game()  {
             </div>
         );
     } else {
+        // return (
+        //     <div>
+        //         <h1>Waiting for game...</h1>
+        //     </div>
+        // );
         if ( game_id === 0 ) {
             return (
                 <div>
