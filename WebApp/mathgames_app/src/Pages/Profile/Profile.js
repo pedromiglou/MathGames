@@ -148,7 +148,7 @@ const Profile = () => {
                                 </div>
                             </div>
                         </div>
-                        <hr class="solid" />
+                        <hr className="solid" />
                         <div className="row profile-games">
                             <img
                                 src={
@@ -161,7 +161,7 @@ const Profile = () => {
                                 <p>Jogo</p>
                             </div>
                         </div>
-                        <hr class="solid solid-pos" />
+                        <hr className="solid solid-pos" />
                         <div className="row profile-games">
                             <img
                                 src={
@@ -174,7 +174,7 @@ const Profile = () => {
                                 <p>Jogo</p>
                             </div>
                         </div>
-                        <hr class="solid solid-pos" />
+                        <hr className="solid solid-pos" />
                         <div className="row profile-games">
                             <img
                                 src={

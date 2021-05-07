@@ -35,7 +35,7 @@ function App() {
     return(
         <Provider store={store}>
             <BrowserRouter>
-                <div class="wrapper">
+                <div className="wrapper">
                     <div id="sidebarCollapse" className="menu-bars" onClick={toggleNav}>
                         <IconContext.Provider value={{color: 'grey'}}>
                             <FaIcons.FaBars/>

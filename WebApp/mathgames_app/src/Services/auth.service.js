@@ -1,25 +1,47 @@
 
 class AuthService {
-    login(username, password) {
+    async login(username, password) {
 
         let userInfo= {
             username: username,
             password: password,
         }
-        
+        /*
         fetch('http://localhost:4000/api/users/login', {
             method:'POST',
             headers:{'Content-type':'application/json'},
             body: JSON.stringify(userInfo)
         }).then(r=>r.json()).then(res=> {
             console.log(res)
-            if(res) {
+            if(res.id) {
                 localStorage.setItem("user", JSON.stringify(res));
-                window.location.assign("http://localhost:3000/");
+                console.log("vou return")
+                return true
+                //window.location.assign("http://localhost:3000/");
             } else {
+                return false
                 //window.location.reload();
             }
-        })
+        })*/
+
+        var res = (await fetch('http://localhost:4000/api/users/login', {
+            method:'POST',
+            headers:{'Content-type':'application/json'},
+            body: JSON.stringify(userInfo)
+        }))
+
+        var json = await res.json()
+        
+        if(json.id) {
+            localStorage.setItem("user", JSON.stringify(json));
+            console.log("vou return")
+            return true
+            //window.location.assign("http://localhost:3000/");
+        } else {
+            return false
+            //window.location.reload();
+        }
+
     }
 
 
@@ -37,8 +59,10 @@ class AuthService {
         }).then(r=>r.json()).then(res=> {
             if(res) {
                 console.log('New User was created')
+                return true
             }
-            window.location.reload();        
+            return false
+            //window.location.reload();        
 
         })
     }
