@@ -128,7 +128,6 @@ function GamePage() {
 				socket.emit("friendbylink", {"user_id": String(user.id), "game_id": game_id})
 
 			socket.on("link_sent", (msg) => {
-				console.log(msg)
 				history.push({
 					pathname: "/game/?g="+game_id+"&id="+msg['match_id'], 
 					state: {
@@ -189,11 +188,7 @@ function GamePage() {
 	
 	useEffect(() => {
 		function checkNames(){
-			if (name1 !== "" && name2 !== ""){
-				return true;
-			} else {
-				return false;
-			}
+			return (name1 !== "" && name2 !== "")
 		}
 		
 		var res = checkNames();

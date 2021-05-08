@@ -32,7 +32,6 @@ export const RastrosEngine = ({arg_game_mode, arg_ai_diff}) => {
             }
         new Phaser.Game(config);
     }, [arg_game_mode, arg_ai_diff]);
-    
     return (<></>);
 }
 
@@ -101,6 +100,11 @@ class RastrosScene extends Phaser.Scene {
                 console.log("Received move: ", new_pos);
                 this.move(this.squares_group.getChildren()[new_pos]);
             });
+
+            socket.on("match_endby_invalid_move", (msg) => {
+                var match_result = msg["match_result"]
+                console.log(match_result)
+            })
         }
 
         var img;
