@@ -23,11 +23,11 @@ export const RastrosEngine = ({arg_game_mode, arg_ai_diff}) => {
             const config = {
                 parent: document.getElementById("my_div_game"),
                 canvas: document.getElementById("game_canvas"),
+                transparent: true,
                 type: Phaser.WEBGL,
                 scale: {
                     mode: Phaser.Scale.RESIZE
                 },
-                backgroundColor: '#4488aa',
                 scene: [RastrosScene]
             }
         new Phaser.Game(config);
@@ -49,8 +49,8 @@ class RastrosScene extends Phaser.Scene {
         this.load.image('blocked', process.env.PUBLIC_URL + '/game_assets/rastros/blocked.png');
         this.load.audio('click', [process.env.PUBLIC_URL + '/game_assets/rastros/move.wav']);
 
-        this.INITIAL_BOARD_POS = 60;
-        this.DISTANCE_BETWEEN_SQUARES = 105;
+        this.INITIAL_BOARD_POS = 37 + 20;
+        this.DISTANCE_BETWEEN_SQUARES = 75 + 2;
         this.rastrosAI = new RastrosAI();
 
         // Players which can move the piece
@@ -122,9 +122,9 @@ class RastrosScene extends Phaser.Scene {
 
         // Fill in accessory text
         if (this.player.size===1)
-            this.add.text(750+20, 30, "És o jogador " + this.player.values().next().value, {font: "40px Impact", color: "Orange"});
-        this.add.text(750+20, 120, "É a vez do jogador:", {font: "40px Impact", color: "Orange"});
-        this.current_player_text = this.add.text(750+95, 180, "Jogador " + this.current_player, {font: "40px Impact", color: "Orange"});
+            this.add.text(601+20, 30, "És o jogador " + this.player.values().next().value, {font: "40px Impact", color: "Orange"});
+        this.add.text(601+10, 120, "É a vez do jogador:", {font: "40px Impact", color: "Orange"});
+        this.current_player_text = this.add.text(601+75, 180, "Jogador " + this.current_player, {font: "40px Impact", color: "Orange"});
 
     }
 
@@ -224,11 +224,11 @@ class RastrosScene extends Phaser.Scene {
         if (current_pos === 6)
             winner = 2
 
-        this.text = this.add.text(0, 0, "O jogador " + winner + " ganhou.", {font: "80px Impact", color: "Red"});
+        this.text = this.add.text(0, 0, "O jogador " + winner + " ganhou.", {font: "60px Impact", color: "Red"});
         this.tweens.add ({
             targets: this.text,
-            x: 230,
-            y: 270,
+            x: 50,
+            y: 250,
             durations: 2000,
             ease: "Elastic",
             easeParams: [1.5, 0.5],

@@ -23,11 +23,11 @@ export const GatosCaesEngine = ({arg_game_mode, arg_ai_diff}) => {
         const config = {
             parent: document.getElementById("my_div_game"),
             canvas: document.getElementById("game_canvas"),
+            transparent: true,
             type: Phaser.WEBGL,
             scale: {
                 mode: Phaser.Scale.RESIZE
             },
-            backgroundColor: '#4488aa',
             scene: [GatosCaesScene]
         }
         new Phaser.Game(config);
@@ -45,10 +45,10 @@ class GatosCaesScene extends Phaser.Scene {
         this.load.image('square', process.env.PUBLIC_URL + '/game_assets/gatos_caes/square.png')
 		this.load.image('center', process.env.PUBLIC_URL + '/game_assets/gatos_caes/center_square.png')
         this.load.audio('click', [process.env.PUBLIC_URL + '/game_assets/rastros/move.wav']);
-        this.load.spritesheet('cat_dog', process.env.PUBLIC_URL + '/game_assets/gatos_caes/cat_dog.png', { frameWidth: 100, frameHeight: 100 });
+        this.load.spritesheet('cat_dog', process.env.PUBLIC_URL + '/game_assets/gatos_caes/cat_dog.png', { frameWidth: 74, frameHeight: 74 });
 
-        this.INITIAL_BOARD_POS = 60
-        this.DISTANCE_BETWEEN_SQUARES = 105
+        this.INITIAL_BOARD_POS = 37 + 5;
+        this.DISTANCE_BETWEEN_SQUARES = 75 + 2;
         this.gcAI = new GatosCaesAI();
 
         // Players which can move the piece
@@ -110,8 +110,10 @@ class GatosCaesScene extends Phaser.Scene {
             }
         }
 
-        this.add.text(855+20, 60, "É a vez do jogador:", {font: "40px Impact", color: "Orange"});
-        this.current_player_text = this.add.text(855+95, 120, "Jogador " + this.current_player, {font: "40px Impact", color: "Orange"});
+        if (this.player.size===1)
+            this.add.text(624+60, 30, "És o jogador " + (this.player.values().next().value+1), {font: "40px Impact", color: "Orange"});
+        this.add.text(624+40, 120, "É a vez do jogador:", {font: "40px Impact", color: "Orange"});
+        this.current_player_text = this.add.text(624+95, 180, "Jogador " + this.current_player, {font: "40px Impact", color: "Orange"});
     }
     
     update() {
@@ -148,6 +150,20 @@ class GatosCaesScene extends Phaser.Scene {
         // Get new square's position [0..49]
         var current_pos = parseInt(clicked_square.name)
 
+        var adjacents = new Set([current_pos-1, current_pos+1, current_pos-8, current_pos+8]);
+
+        if ( [0,1,2,3,4,5,6,7].includes(current_pos) )
+            adjacents.delete(current_pos-8);
+
+        if ( [56,57,58,59,60,61,62,63].includes(current_pos) )
+            adjacents.delete(current_pos+8);
+
+        if ( [0,8,16,24,32,40,48,56].includes(current_pos) )
+            adjacents.delete(current_pos-1);
+
+        if ( [7,15,23,31,39,47,55].includes(current_pos) )
+            adjacents.delete(current_pos+1);
+
         // Remove played position from both player's valid squares
         this.valid_squares[0].delete( current_pos )
         this.valid_squares[1].delete( current_pos )
@@ -158,7 +174,7 @@ class GatosCaesScene extends Phaser.Scene {
         var tmpPieceCoords = [(current_pos-(current_pos%8))/8, current_pos%8];
 
         // Remove adjacent squares from opponent's valid moves
-        this.valid_squares[1 - this.current_player] = set_diff(this.valid_squares[1 - this.current_player], new Set([current_pos-1, current_pos+1, current_pos-8, current_pos+8]))
+        this.valid_squares[1 - this.current_player] = set_diff(this.valid_squares[1 - this.current_player], adjacents)
 
         // If win condition has been met => Game Over
         if (this.valid_squares[1 - this.current_player].size === 0) {
@@ -175,16 +191,16 @@ class GatosCaesScene extends Phaser.Scene {
 
         // Update player text
         this.current_player = 1 - this.current_player;
-        this.current_player_text.setText("Jogador " + this.current_player);
+        this.current_player_text.setText("Jogador " + (this.current_player+1));
     }
 
     finish_game() {   
         this.game_over = true; 
-        this.text = this.add.text(0, 0, "O jogador " + this.current_player++ + " ganhou.", {font: "80px Impact", color: "Red"});
+        this.text = this.add.text(0, 0, "O jogador " + (this.current_player+1) + " ganhou.", {font: "70px Impact", color: "Red"});
         this.tweens.add ({
             targets: this.text,
-            x: 230,
-            y: 270,
+            x: 45,
+            y: 265,
             durations: 2000,
             ease: "Elastic",
             easeParams: [1.5, 0.5],
