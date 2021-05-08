@@ -1,4 +1,12 @@
 {
   "name": "MathGamesMobile",
-  "displayName": "MathGamesMobile"
+  "displayName": "MathGamesMobile",
+  "expo": {
+    "name": "MathGamesMobile",
+    "slug": "MathGamesMobile",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
 }

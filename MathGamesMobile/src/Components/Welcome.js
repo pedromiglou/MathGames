@@ -44,7 +44,7 @@ function Welcome({ navigation }) {
         <Text style={{fontSize: 20, padding: 10,  textAlign:'center'}}>Sejam muito bem-vindos à plataforma MathGames. Aqui podem encontrar vários jogos matemáticos para jogarem e se divertirem. Podem jogar competitivamente, criar torneios, jogar com amigos entre outras coisas. Esperemos que se divirtam!</Text>
         
         <Button
-          onPress={() => navigation.navigate('Jogos')}
+          onPress={() => navigation.navigate('GameDashboard')}
           title="Jogar Agora"
         />
       </ScrollView>

@@ -1,27 +1,26 @@
 import * as React from 'react';
-
-import { createDrawerNavigator , DrawerContentScrollView, DrawerItemList} from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
-import Welcome from "./Components/Welcome";
-import GameDashboard from "./Components/GameDashboard";
-import ChooseGame from './Components/ChooseGame';
+import { createStackNavigator } from '@react-navigation/stack';
+import Welcome from './components/Welcome';
+import GameDashboard from './components/GameDashboard';
+import ChooseGame from './components/ChooseGame';
 
-const Drawer = createDrawerNavigator();
+const Stack = createStackNavigator();
 
-const Drawer2 = createDrawerNavigator();
-
-//fix this
-export default function App() {
+function App() {
   return (
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Início" >
-        <Drawer.Screen name="Início" component={Welcome} />
-        <Drawer.Screen name="Jogos" component={GameDashboard} />
-        <Drawer.Screen name="Torneios" component={Welcome} />
-        <Drawer.Screen name="Classificações" component={Welcome} />
-        <Drawer.Screen name="Definições" component={Welcome} />
-        <Drawer.Screen name="Quem somos" component={Welcome} />
-      </Drawer.Navigator>
+      <Stack.Navigator>
+        <Stack.Screen name="Welcome" component={Welcome} />
+        <Stack.Screen name="GameDashboard" component={GameDashboard} />
+        <Stack.Screen name="ChooseGame" component={ChooseGame} />
+        <Stack.Screen name="Tournaments" component={Welcome} />
+        <Stack.Screen name="Rankings" component={Welcome} />
+        <Stack.Screen name="Settings" component={Welcome} />
+        <Stack.Screen name="About us" component={Welcome} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
+
+export default App;
