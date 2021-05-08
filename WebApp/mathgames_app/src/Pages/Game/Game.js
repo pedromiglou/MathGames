@@ -7,7 +7,6 @@ import { GatosCaesEngine } from "../../Components/Engines/GatosCaesEngine";
 import socket from "../../index"
 import AuthService from '../../Services/auth.service';
 
-import { Card } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
 import {IconContext} from 'react-icons';
 
@@ -22,21 +21,14 @@ function Game()  {
     var game_id, game_mode, ai_diff;
 
     if ( match_id !== null ) {
-        //FriendByLink
         game_id = parseInt( url.get("g") );
         game_mode = "amigo";
         ai_diff = undefined;
     }
     else {
-        //if (params !== undefined) {
         game_id = parseInt( params.game_id );
         game_mode = params.game_mode;
         ai_diff = params.ai_diff;
-        //}
-        // else {
-            // Necessario devido ao memo/Botao de encolher menu
-        //    game_id = parseInt( url.get("g") )
-        //}
     }
 
     function copy() {
@@ -108,15 +100,21 @@ function Game()  {
         // );
         if ( game_id === 0 ) {
             return (
-                <div>
-                    <RastrosEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></RastrosEngine>
+                <div class="container container-main">
+                    <div id="my_div_game" class="container-canvas mt-3" style={{width: '1100px', height: '577px'}}>
+                        <canvas id="game_canvas" className="game"></canvas>
+                        <RastrosEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></RastrosEngine>
+                    </div>
                 </div>
             );
         }
         if ( game_id === 1 ) {
             return (
-                <div>
-                    <GatosCaesEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></GatosCaesEngine>
+                <div class="container container-main">
+                    <div id="my_div_game" class="container-canvas mt-2" style={{width: '1200px', height: '624px'}}>
+                        <canvas id="game_canvas" className="game"></canvas>
+                        <GatosCaesEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></GatosCaesEngine>
+                    </div>
                 </div>
             );
         }
