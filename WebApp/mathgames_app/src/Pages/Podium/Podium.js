@@ -21,7 +21,6 @@ function Podium() {
 	};
 	
 	function friend_request(friend2) {
-		console.log("aqui");
 		UserService.make_friend_request(current_user.id, friend2);
 	}
 
@@ -39,8 +38,9 @@ function Podium() {
             setFriends(response);
         };
 
-		
-		fetchApiFriends(current_user.id)
+		if (current_user !== null) {
+			fetchApiFriends(current_user.id)
+		}
 		fetchApiUsers();
 	}
 
@@ -98,12 +98,17 @@ function Podium() {
 								{user.account_level} pontos
 							</div>
 							<div class="col-sm 1">
-								{ friends.some(e => e.id === user.id) &&
-									<span>Amigo</span>
-								} 
-								{ (!friends.some(e => e.id === user.id) && user.id !== current_user.id ) &&
-									<span className="do_friend_request" onClick={() => {friend_request(user.id)}}>Pedir amizade</span>
-								} 
+								{ current_user !== null &&
+									<>
+									{ friends.some(e => e.id === user.id) &&
+										<span>Amigo</span>
+									} 
+									{ (!friends.some(e => e.id === user.id) && user.id !== current_user.id ) &&
+										<span className="do_friend_request" onClick={() => {friend_request(user.id)}}>Pedir amizade</span>
+									} 
+									</>	
+								}
+								
 							</div>
 						</li>
 					)
