@@ -56,22 +56,22 @@ function Podium() {
 	return (
 		<div>
 			<br></br>
-			<div class="row justify-content-center">
-				<div class="col-12 col-md-10 col-lg-8">
+			<div className="row justify-content-center">
+				<div className="col-12 col-md-10 col-lg-8">
 					<form onSubmit={submitFunction}>
-						<div class="card-body row no-gutters align-items-center">
-							<div class="col">
-								<input class="form-control form-control-lg" id="filter_username" type="search" placeholder="Procurar por username"/>
+						<div className="card-body row no-gutters align-items-center">
+							<div className="col">
+								<input className="form-control form-control-lg" id="filter_username" type="search" placeholder="Procurar por username"/>
 							</div>
-							<div class="col-auto">
-								<button id="searchButton" onClick={retrieveUsers} class="btn btn-lg btn-success" type="button">Procurar</button>
+							<div className="col-auto">
+								<button id="searchButton" onClick={retrieveUsers} className="btn btn-lg btn-success" type="button">Procurar</button>
 							</div>
 						</div>
 					</form>
 				</div>
 			</div>
 
-			<ul class="list-group" style={{color: "#2C96C7", fontSize: 23}}>
+			<ul className="list-group" style={{color: "#2C96C7", fontSize: 23}}>
 				{users.map(function(user, index) {
 					numberClassification++;
 					var contador = 1;
@@ -84,17 +84,17 @@ function Podium() {
 						contador++;
 					}
 					return (
-						<li class="list-group-item d-flex justify-content-between align-items-center row">
-							<div class="col-sm-1">
+						<li className="list-group-item d-flex justify-content-between align-items-center row">
+							<div className="col-sm-1">
 								<span className="badge badge-primary badge-pill">{numberClassification}</span>
 							</div>
-							<div class="col-sm-7">
+							<div className="col-sm-7">
 								{user.username}
 							</div>
-							<div class="col-sm 1">
+							<div className="col-sm 1">
 								Nível {contador}
 							</div>
-							<div class="col-sm 2">
+							<div className="col-sm 2">
 								{user.account_level} pontos
 							</div>
 							<div class="col-sm 1">
@@ -110,7 +110,7 @@ function Podium() {
 					})
 				}
 			</ul>
-			<div class="row justify-content-center">
+			<div className="row justify-content-center">
 				<Pagination
 				className="my-3"
 				count={count}

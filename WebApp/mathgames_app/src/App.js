@@ -31,7 +31,7 @@ import store from './store';
 function App() {
 
     if (sessionStorage.getItem('user_id') === null)
-            sessionStorage.setItem('user_id', uuidv4());		
+        sessionStorage.setItem('user_id', uuidv4());		
 
     return(
         <Provider store={store}>
