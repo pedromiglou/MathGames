@@ -29,6 +29,11 @@ function Podium() {
 		fetchApiUsers();
 	}
 
+	function submitFunction(event) {
+		event.preventDefault();
+		document.getElementById("searchButton").click();
+	}
+
 	useEffect(
 		retrieveUsers
 	, [page])
@@ -38,16 +43,13 @@ function Podium() {
 			<br></br>
 			<div class="row justify-content-center">
 				<div class="col-12 col-md-10 col-lg-8">
-					<form>
+					<form onSubmit={submitFunction}>
 						<div class="card-body row no-gutters align-items-center">
-							<div class="col-auto">
-								<i class="fas fa-search h4 text-body"></i>
-							</div>
 							<div class="col">
-								<input class="form-control form-control-lg" id="filter_username" type="search" placeholder="Procurar por username" />
+								<input class="form-control form-control-lg" id="filter_username" type="search" placeholder="Procurar por username"/>
 							</div>
 							<div class="col-auto">
-								<button onClick={retrieveUsers} class="btn btn-lg btn-success" type="button">Procurar</button>
+								<button id="searchButton" onClick={retrieveUsers} class="btn btn-lg btn-success" type="button">Procurar</button>
 							</div>
 						</div>
 					</form>

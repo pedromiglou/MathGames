@@ -46,7 +46,6 @@ db.friend.belongsTo(db.user, {through: "users", foreignKey: 'friend1', as: 'frie
 db.friend.belongsTo(db.user, {through: "users", foreignKey: 'friend2', as: 'friend_2'})
 db.game_match.belongsTo(db.user, {through: "users", foreignKey: 'player1', as: 'player_1'})
 db.game_match.belongsTo(db.user, {through: "users", foreignKey: 'player2', as: 'player_2'})
-db.game_match.belongsTo(db.user, {through: "users", foreignKey: 'winner', as: 'winner_user'})
 db.game_match.belongsTo(db.game, {through: "games", foreignKey: 'game_id', as: 'game'})
 db.tournament.belongsTo(db.user, {through: "users", foreignKey: 'winner', as: 'winner_user'})
 db.tournament.belongsTo(db.user, {through: "users", foreignKey: 'creator', as: 'creator_user'})

@@ -128,7 +128,6 @@ io.on("connection", (socket) => {
 
   //User sends match id, userid and new_pos when he wants to make a move in the game
   socket.on("move", (new_pos, user_id, match_id) => {
-    console.log("RECEBI NOVO MOVE")
     if (Object.keys(current_games).includes(match_id))
       if (Object.keys(current_games[match_id]).includes(user_id))
         if (valid_move(user_id, match_id, new_pos))
@@ -246,11 +245,11 @@ function valid_move(user_id, match_id, new_pos) {
       if (new_pos === 6 || new_pos === 42 || set_diff(valid_squares, blocked_pos).size === 0) {
         current_games[match_id]['state']['isFinnished'] = true
         if (new_pos === 6)
-          current_games[match_id]['state']['winner'] = current_games[match_id]['state']['player2']
+          current_games[match_id]['state']['winner'] = "2"
         else if (new_pos === 42)
-          current_games[match_id]['state']['winner'] = current_games[match_id]['state']['player1']
+          current_games[match_id]['state']['winner'] = "1"
         else
-          current_games[match_id]['state']['winner'] = user_id
+          current_games[match_id]['state']['winner'] = (user_id === current_games[match_id]['state']['player1']) ? "1" : "2"
       } 
 
       return true
@@ -300,13 +299,13 @@ function valid_move(user_id, match_id, new_pos) {
             current_games[match_id]['state']['player_1_valid_squares'] = set_diff(current_games[match_id]['state']['player_1_valid_squares'], adjacents)
             if (current_games[match_id]['state']['player_1_valid_squares'].size === 0) {
               current_games[match_id]['state']['isFinnished'] = true
-              current_games[match_id]['state']['winner'] = current_games[match_id]['state']['player1']
+              current_games[match_id]['state']['winner'] = "1"
             }
         } else {
             current_games[match_id]['state']['player_0_valid_squares'] = set_diff(current_games[match_id]['state']['player_0_valid_squares'], adjacents)
             if (current_games[match_id]['state']['player_0_valid_squares'].size === 0) {
               current_games[match_id]['state']['isFinnished'] = true
-              current_games[match_id]['state']['winner'] = current_games[match_id]['state']['player2']
+              current_games[match_id]['state']['winner'] = "2"
 
             }
         }
@@ -326,6 +325,7 @@ function valid_move(user_id, match_id, new_pos) {
 
 
 function finnish_game(match_id) {
+  console.log("finnish game")
   var winner = current_games[match_id]['state']['winner'] 
   var player1 = current_games[match_id]['state']['player1']
   var player_1_account_player = current_games[match_id][player1][1]
@@ -338,7 +338,7 @@ function finnish_game(match_id) {
   var gameMatch = {
     player1: parseInt(player1),
     player2: parseInt(player2),
-    winner: parseInt(winner),
+    winner: winner,
     game_type: game_type,
     game_id: game_id
   };
@@ -354,6 +354,10 @@ function finnish_game(match_id) {
     // Save GameMatch in the database
     GameMatch.create(gameMatch)
   }
+
+
+  console.log(gameMatch)
+
 
   delete current_games[match_id]
 

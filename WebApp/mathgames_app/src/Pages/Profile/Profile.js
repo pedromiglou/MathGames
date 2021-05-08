@@ -232,9 +232,11 @@ const Profile = () => {
                                     ([key, value]) => (
                                         <li
                                             className={
-                                                value["winner"] === user.id
+                                                ((value["winner"] === "1" && value["player1"] === user.id) || (value["winner"] === "2" && value["player2"] === user.id) )
                                                     ? "won table-row history-box foo-history-win"
-                                                    : "lost table-row history-box foo-history-lose"
+                                                    : ((value["winner"] === "2" && value["player1"] === user.id) || (value["winner"] === "1" && value["player2"] === user.id) ) 
+                                                    ? "lost table-row history-box foo-history-lose"
+                                                    : "draw table-row history-box foo-history-draw"
                                             }
                                             key={key}
                                         >
@@ -247,21 +249,29 @@ const Profile = () => {
                                                         "Gatos&Cães" : "Outro"}
                                             </div>
                                             <div className="col col-2">
-                                                { value["winner"] === user.id
+                                                { ((value["winner"] === "1" && value["player1"] === user.id) || (value["winner"] === "2" && value["player2"] === user.id) )
                                                             ? "Vitória"
-                                                            : "Derrota"}
+                                                            : ((value["winner"] === "2" && value["player1"] === user.id) || (value["winner"] === "1" && value["player2"] === user.id) ) 
+                                                            ? "Derrota"
+                                                            : "Empate"
+                                                            }
                                             </div>
                                             <div className="col col-2">
-                                                +{value["winner"] === user.id
+                                                +{((value["winner"] === "1" && value["player1"] === user.id) || (value["winner"] === "2" && value["player2"] === user.id) )
                                                             ? "100"
-                                                            : "30"}
+                                                            : ((value["winner"] === "2" && value["player1"] === user.id) || (value["winner"] === "1" && value["player2"] === user.id) ) 
+                                                            ? "30"
+                                                            : "45"
+                                                            }
                                             </div>
                                             <div className="col col-2">
                                                 <button
                                                     className={
-                                                        value["winner"] === user.id
+                                                        ((value["winner"] === "1" && value["player1"] === user.id) || (value["winner"] === "2" && value["player2"] === user.id) )
                                                             ? "won-button table-row"
-                                                            : "lost-button table-row"
+                                                            : ((value["winner"] === "2" && value["player1"] === user.id) || (value["winner"] === "1" && value["player2"] === user.id) ) 
+                                                            ? "lost-button table-row"
+                                                            : "draw-button table-row"
                                                     }
                                                 >
                                                     Detalhes
