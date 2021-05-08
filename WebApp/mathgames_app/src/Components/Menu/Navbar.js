@@ -188,7 +188,7 @@ function Navbar() {
 									<div className="row navbar-dropdown-row">
 										{friends.map(function(name, index) {
 											return (
-												<div class="navbar-dropdown-text">
+												<div className="navbar-dropdown-text">
 													<div className="col-9">
 														<h5>{name.username}</h5>
 													</div>

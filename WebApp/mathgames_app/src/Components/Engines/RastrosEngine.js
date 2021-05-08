@@ -19,7 +19,6 @@ export const RastrosEngine = ({arg_game_mode, arg_ai_diff}) => {
     else
         ai_diff = 0.8
 
-
     
     const [rendered, setRendered] = useState(false);
 
@@ -42,6 +41,7 @@ export const RastrosEngine = ({arg_game_mode, arg_ai_diff}) => {
             scene: [RastrosScene]
         }
         new Phaser.Game(config);
+        console.log("foiaqui3")
         setRendered(true);
     }, [rendered]);
     
@@ -119,6 +119,11 @@ class RastrosScene extends Phaser.Scene {
                 console.log("Received move: ", new_pos);
                 this.move(this.positions[new_pos]);
             });
+
+            socket.on("match_endby_invalid_move", (msg) => {
+                var match_result = msg["match_result"]
+                console.log(match_result)
+            })
         }
 
 
@@ -412,3 +417,4 @@ function ended(piece, validSquares) {
         return 98 - Math.pow(piece[0]-0, 2) - Math.pow(piece[1] - 6, 2);
     }
 }
+
