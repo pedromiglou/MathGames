@@ -125,22 +125,22 @@ function Navbar() {
 								<Dropdown.Divider />
 								{ notifications.length > 0 &&
 								<Dropdown.ItemText>{
-									<div className="row navbar-dropdown-row">
+									<div className="navbar-dropdown-row">
 										{notifications.map(function(notification, index) {
 											var current_date = new Date();
-											current_date.setTime(current_date.getTime() - new Date().getTimezoneOffset()*60*1000);
+											//current_date.setTime(current_date.getTime() - new Date().getTimezoneOffset()*60*1000);
 											current_date = current_date.getTime() / 60000;
-											var notification_date = new Date(notification.notification_date).getTime() / 60000;
+											var notification_date = new Date(notification.createdAt).getTime() / 60000;
 											var difference = current_date - notification_date;
 											return (
-												<div>
-													<div className="col-9" style={{width: 350, fontSize: 18}}>
+												<div className="row">
+													<div className="col-9" style={{fontSize: 18}}>
 														{ (notification.notification_type === "F" && 
-															<p style={{marginBottom: "0.3em"}}>{notification.sender} enviou-te um pedido de amizade.</p>)
+															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} enviou-te um pedido de amizade.</p>)
 														|| (notification.notification_type === "T" && 
-															<p style={{marginBottom: "0.3em"}}>{notification.sender} convidou-te para participares no seu torneio.</p>)
+															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} convidou-te para participares no seu torneio.</p>)
 														|| (notification.notification_type === "P" && 
-															<p style={{marginBottom: "0.3em"}}>{notification.sender} convidou-te para jogares.</p>)
+															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} convidou-te para jogares.</p>)
 														}
 														{ (difference < 60 &&
 															<p style={{fontSize: 13}}>há { Number.parseInt(difference)} minutos</p>)
@@ -150,8 +150,8 @@ function Navbar() {
 															<p style={{fontSize: 13}}>há { Number.parseInt(difference/(60*24))} dia</p>)   
 														}
 													</div>
-													<div className="col-3" style={{width: 100}} >
-														<div className="text-right text-bottom" style={{height: "30px", marginTop: "40%"}}>
+													<div className="col-3" >
+														<div className="text-right text-bottom" style={{marginTop: "20%"}}>
 															{ (notification.notification_type === "F" && 
 																<FaIcons.FaCheckCircle onClick={ () => {UserService.accept_friendship(notification); notifyFriendshipSucess(); deleteNotification(index);}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															|| (notification.notification_type === "T" && 
@@ -185,22 +185,16 @@ function Navbar() {
 								<Dropdown.Divider />
 								{ friends.length > 0 &&
 								<Dropdown.ItemText>{
-									<div className="row navbar-dropdown-row">
+										<ul style={{fontSize:20}}>
 										{friends.map(function(name, index) {
 											return (
-												<div className="navbar-dropdown-text">
-													<div className="col-9">
-														<h5>{name.username}</h5>
-													</div>
-													<div className="col-3">
-														<div className="text-right">
-															<FaIcons.FaEnvelopeSquare className="icon_notifications" style={{fontSize: 25}} />
-														</div>
-													</div>
-												</div>
+												<li class="list-group-item d-flex justify-content-between align-items-center" style={{border: 0, padding: 5}}>
+													{name.username}
+													<FaIcons.FaEnvelopeSquare className="icon_notifications" style={{fontSize: 25}} />
+												</li>
 											);
 										})}
-									</div>
+										</ul>
 								}</Dropdown.ItemText>
 								}
 								{ friends.length === 0 &&

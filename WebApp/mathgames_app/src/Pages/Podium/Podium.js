@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 
 import "./Podium.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import UserService from '../../Services/user.service';
 import Pagination from "@material-ui/lab/Pagination";
 
+import AuthService from '../../Services/auth.service';
+import UserService from '../../Services/user.service';
+
 function Podium() {
-	
+	var current_user = AuthService.getCurrentUser();
 	const [users, setUsers] = useState([]);
+	const [friends, setFriends] = useState([]);
 	var [numberClassification, setNumberClassification] = useState([]);
 	
 	const [page, setPage] = useState(1);
@@ -17,6 +20,11 @@ function Podium() {
 		setPage(value);
 	};
 	
+	function friend_request(friend2) {
+		console.log("aqui");
+		UserService.make_friend_request(current_user.id, friend2);
+	}
+
 	const retrieveUsers = () => {
 		async function fetchApiUsers() {
 			let username = document.getElementById("filter_username").value;
@@ -26,6 +34,13 @@ function Podium() {
 			setNumberClassification((parseInt(page)-1)*10);
         };
 
+		async function fetchApiFriends(userId) {
+            var response = await UserService.getFriends(userId);
+            setFriends(response);
+        };
+
+		
+		fetchApiFriends(current_user.id)
 		fetchApiUsers();
 	}
 
@@ -82,8 +97,13 @@ function Podium() {
 							<div className="col-sm 2">
 								{user.account_level} pontos
 							</div>
-							<div className="col-sm 1">
-								Pedir amizade
+							<div class="col-sm 1">
+								{ friends.some(e => e.id === user.id) &&
+									<span>Amigo</span>
+								} 
+								{ (!friends.some(e => e.id === user.id) && user.id !== current_user.id ) &&
+									<span className="do_friend_request" onClick={() => {friend_request(user.id)}}>Pedir amizade</span>
+								} 
 							</div>
 						</li>
 					)

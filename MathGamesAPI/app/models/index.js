@@ -7,16 +7,12 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   dialect: dbConfig.dialect,
   operatorsAliases: false,
   dialectOptions: {
-    useUTC: false, //for reading from database
+    // useUTC: false, //for reading from database
     dateStrings: true,
-    typeCast: function (field, next) { // for reading from database
-      if (field.type === 'DATETIME') {
-        return field.string()
-      }
-        return next()
-      },
+    typeCast: true,
+    timezone: "utc"
   },
-  timezone: '+01:00',
+  timezone: "+01:00", //for writing to database
   pool: {
     max: dbConfig.pool.max,
     min: dbConfig.pool.min,
