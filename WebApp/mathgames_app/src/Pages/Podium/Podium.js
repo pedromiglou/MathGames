@@ -51,7 +51,7 @@ function Podium() {
 
 	useEffect(
 		retrieveUsers
-	, [page])
+	, [page, current_user])
 
 	return (
 		<div>
@@ -97,7 +97,7 @@ function Podium() {
 							<div className="col-sm 2">
 								{user.account_level} pontos
 							</div>
-							<div class="col-sm 1">
+							<div className="col-sm 1">
 								{ current_user !== null &&
 									<>
 									{ friends.some(e => e.id === user.id) &&

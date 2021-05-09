@@ -37,6 +37,12 @@ exports.create = (req, res) => {
 // Retrieve all GameMatchs from the database.
 exports.findAll = (req, res) => {
   const user_id = req.query.userid;
+  if (user_id !== null && parseInt(user_id) !== parseInt(req.userId)) {
+    res.status(401).send({
+      message: "Unauthorized!"
+    });
+    return;
+  }
   var whereCondition = user_id ? { [Op.or]: [{ player1: user_id}, {player2: user_id} ] } : null;
   var limitCondition = user_id ? 5 : null;
   var orderCondition = user_id ?  [["createdAt", 'DESC']]  : null;
