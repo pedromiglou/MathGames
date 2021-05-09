@@ -2,13 +2,27 @@ import { React, useState, useEffect } from "react";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Profile.css";
+import Avatar from "../../Components/Avatar";
+import InventoryItems from "../../Components/InventoryItems";
+
+import { games_info } from "../../data/GamesInfo";
+
 import AuthService from "../../Services/auth.service"
 import UserService from "../../Services/user.service"
 
+
+
 const Profile = () => {
     const [menuOption, setMenuOption] = useState("Geral");
+    const [invOption, setInvOption] = useState("Chapeus");
     const [user, setUser] = useState("");
     const [games, setGames] = useState([]);
+
+    const [hat, setHat] = useState("MagicianHat");
+    const [shirt, setShirt] = useState("");
+    const [color, setColor] = useState("#FFAF00");
+    const [accessorie, setAccessorie] = useState("None");
+    const [trouser, setTrouser] = useState("#808080");
 
     var geral_e;
     var inventario_e;
@@ -91,6 +105,22 @@ const Profile = () => {
 	}
 
 
+    function changeHat(hatName) {
+        setHat(hatName);
+    }
+
+    function changeShirt(shirtName) {
+        setShirt(shirtName);
+    }
+
+    function changeAccessorie(accessorieName) {
+        setAccessorie(accessorieName);
+    }
+
+    function changeTrousers(trousersName) {
+        setTrouser(trousersName);
+    }
+
     return (
         <div className="hero-container">
             <div className="header">
@@ -105,7 +135,7 @@ const Profile = () => {
             <div className="row profile-border profile-container">
                 <div className="col-lg-3 side">
                     <button
-                        className="side-button box foo"
+                        className="side-button box up-1"
                         type="button"
                         onClick={geral}
                         id="Geral"
@@ -114,7 +144,7 @@ const Profile = () => {
                         Geral
                     </button>
                     <button
-                        className="side-button-2 box foo"
+                        className="side-button-2 box up-1"
                         type="button"
                         onClick={inventario}
                         id="Inventario"
@@ -122,7 +152,7 @@ const Profile = () => {
                         Inventario
                     </button>
                     <button
-                        className="side-button-3 box foo"
+                        className="side-button-3 box up-1"
                         type="button"
                         onClick={last_games}
                         id="Last_Games"
@@ -134,15 +164,13 @@ const Profile = () => {
                     <div className="col-lg-9 no-margins profile ">
                         <div className="container row container-hidden top-profile">
                             <div className="col-lg-8 row">
-                                <img
-                                    src={
-                                        process.env.PUBLIC_URL +
-                                        "/images/user-profile.png"
-                                    }
-                                    alt="profile_image"
-                                />
-                                <div className="account-name">
-                                    <h1>{user.username}</h1>
+                                <div className="col-lg-4 avatar-geral">
+                                    <Avatar skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser}/>
+                                </div>
+                                <div className="col-lg-8">
+                                    <div className="account-name">
+                                        <h1>{user.username}</h1>
+                                    </div>
                                 </div>
                             </div>
                             <div className="col-lg-4 profile-level">
@@ -172,66 +200,109 @@ const Profile = () => {
                             </div>
                         </div>
                         <hr className="solid" />
-                        <div className="row profile-games">
-                            <img
-                                src={
-                                    process.env.PUBLIC_URL +
-                                    "/images/mathGames.png"
-                                }
-                                alt="game_image"
-                            />
-                            <div className="game-name">
-                                <p>Jogo</p>
-                            </div>
-                        </div>
-                        <hr className="solid solid-pos" />
-                        <div className="row profile-games">
-                            <img
-                                src={
-                                    process.env.PUBLIC_URL +
-                                    "/images/mathGames.png"
-                                }
-                                alt="game_image"
-                            />
-                            <div className="game-name">
-                                <p>Jogo</p>
-                            </div>
-                        </div>
-                        <hr className="solid solid-pos" />
-                        <div className="row profile-games">
-                            <img
-                                src={
-                                    process.env.PUBLIC_URL +
-                                    "/images/mathGames.png"
-                                }
-                                alt="game_image"
-                            />
-                            <div className="game-name">
-                                <p>Jogo</p>
-                            </div>
-                        </div>
+                        {Object.entries(games_info).map(([key, value]) => (	
+			
+                            <>
+                                <div className="row profile-games">
+                                    <img
+                                        src={value["img"]}
+                                        alt="Info"
+                                        id={key}
+                                    />
+                                    <div className="game-name">
+                                        <p>{value["title"]}</p>
+                                    </div>
+                                </div>
+                                <hr className="solid solid-pos" />
+                            </>
+                            )
+                        )}
+                        
                     </div>
                 )}
 
                 {menuOption === "Inventario" && (
-                    <div className="col-lg-9 no-margins">
-                        <div className="container profile">
-                            <div className="input-field_profile">
-                                <input type="text" value="Password" readOnly />
+                    <div className="col-lg-9 no-margins inventory">
+                        <div className="row no-margins">
+                            <div className="col-lg-5 avatar-display container">
+                                <h1>{user.username}</h1>
+                                    <Avatar skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser}/>
+                                <div className="container skin-pallette" id="skin-pallette">
+                                    <h3>Cor de pele</h3>
+                                    <span className="dot-1" onClick={() => setColor("#FFAF00")}></span>
+                                    <span className="dot-2" onClick={() => setColor("#694028")}></span>
+                                    <span className="dot-3" onClick={() => setColor("#B1A7FF")}></span>
+                                    <span className="dot-4" onClick={() => setColor("#12EED4")}></span>
+                                </div>
                             </div>
-                            <div className="input-field_profile">
-                                <input
-                                    type="text"
-                                    value="Password Nova"
-                                    readOnly
-                                />
-                            </div>
-                            <div className="input-field_profile">
-                                <input
-                                    type="text"
-                                    value="Confirmar Password Nova"
-                                    readOnly
-                                />
+
+                            <div className="col-lg-7 invetory-options">
+                                <div className="row">
+                                    <div className="col-lg-4 options-items" onClick={() => setInvOption("Chapeus")}>
+                                        <div className="options-text">
+                                            <span className={invOption === "Chapeus" ? ("option-active") : ''}>Chapeus</span>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-4 options-items" onClick={() => setInvOption("Camisolas")}>
+                                        <div className="options-text">
+                                            <span className={invOption === "Camisolas" ? ("option-active") : ''}>Camisolas</span>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-4 options-items" onClick={() => setInvOption("Calcas")}>
+                                        <div className="options-text">
+                                            <span className={invOption === "Calcas" ? ("option-active") : ''}>Calcas</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-lg-4 options-items" onClick={() => setInvOption("Acessorios")}>
+                                        <div className="options-text">
+                                            <span className={invOption === "Acessorios" ? ("option-active") : ''}>Acessorios</span>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-4 options-items" onClick={() => setInvOption("Tabuleiros")}>
+                                        <div className="options-text">
+                                            <span className={invOption === "Tabuleiros" ? ("option-active") : ''}>Tabuleiros</span>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-4 options-items" onClick={() => setInvOption("Pecas")}>
+                                        <div className="options-text">
+                                            <span className={invOption === "Pecas" ? ("option-active") : ''}>Pecas</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="inv-list">
+                                    {invOption === "Chapeus" && (
+                                        <div >
+                                            <InventoryItems option={"Chapeus"} hatName={changeHat} current={hat} />
+                                        </div>
+                                    )}
+                                    {invOption === "Camisolas" && (
+                                        <div >
+                                            <InventoryItems option={"Camisolas"} shirtName={changeShirt} current={shirt} />
+                                        </div>
+                                    )}
+                                    {invOption === "Acessorios" && (
+                                        <div >
+                                            <InventoryItems option={"Acessorios"} accessorieName={changeAccessorie} current={accessorie} />
+                                        </div>
+                                    )}
+                                    {invOption === "Calcas" && (
+                                        <div >
+                                            <InventoryItems option={"Calcas"} trouserName={changeTrousers} current={trouser} />
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="row save-cancel-btns">
+                                    <div className="col-lg-6 col-sm-12">
+                                        <button className="btn save-btn"> Salvar </button>
+                                    </div>
+                                    <div className="col-lg-6 col-sm-12">
+                                        <button className="btn cancel-btn"> Cancelar </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -249,7 +320,7 @@ const Profile = () => {
                                     <div className="col col-2">Detalhes</div>
                                 </li>
                                 {Object.entries(games).length === 0 
-                                    ? <p>O seu histório de jogos é vazio!</p>
+                                    ? <p className="no-games-found">O seu histório de jogos é vazio!</p>
                                     :
                                     Object.entries(games).map(
                                     ([key, value]) => (
