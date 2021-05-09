@@ -220,7 +220,11 @@ function Navbar() {
 									<h5>Nome: {user.username} </h5>
 									<h5>Nivel: {getLevel(user.account_level)} </h5>
 								</div>
-								<FiIcons.FiLogOut  className="icon_notifications"  size={42} onClick={run_logout}/>
+								<Link to="/">
+									<h2 onClick={run_logout} className="h2-login">Logout <IconContext.Provider value={{color: '#007bff'}}><FiIcons.FiLogOut className="icon_notifications"  size={42} /></IconContext.Provider>
+									</h2>
+								</Link>
+								
 							</div>
 						</div>
 					</div>
@@ -231,7 +235,9 @@ function Navbar() {
 				<div className="col d-flex justify-content-end align-items-center mr-5">
 					<hr className="menu-divider-login"></hr>
 					<Link to="/login">
-						<h2 className="h2-login">Login</h2>
+						<h2 className="h2-login">Login <IconContext.Provider value={{color: '#007bff'}}><FiIcons.FiLogIn className="icon_notifications"  size={42} /></IconContext.Provider>
+						</h2>
+						
 					</Link>
 				</div>
 				}
