@@ -141,19 +141,19 @@ io.on("connection", (socket) => {
         if (valid_move(user_id, match_id, new_pos)) {
           io.to( users_info[ current_games[match_id]['users'][user_id][0] ] ).emit("move_piece", new_pos);
           if (current_games[match_id]['state']['isFinnished'])
-            finnish_game(match_id)
+            finnish_game(match_id, "valid_move")
         } else {
           //Move is not valid. Match will end and oponnent will win.
           current_games[match_id]['state']['isFinnished'] = true
           current_games[match_id]['state']['winner'] = (user_id === current_games[match_id]['state']['player1']) ? "2" : "1"
 
           //Tell this user that his movement was invalid and he lost the match
-          io.to( users_info[ user_id ] ).emit("match_endby_invalid_move", {"match_result": "lost"});
+          //io.to( users_info[ user_id ] ).emit("match_endby_invalid_move", {"match_result": "lost"});
 
           //Tell oponnent that he have won the match by "default"
-          io.to( users_info[ current_games[match_id]['users'][user_id][0] ] ).emit("match_endby_invalid_move", {"match_result": "win"});
+          //io.to( users_info[ current_games[match_id]['users'][user_id][0] ] ).emit("match_endby_invalid_move", {"match_result": "win"});
 
-          finnish_game(match_id)
+          finnish_game(match_id, "invalid_move")
         }
   })
 
@@ -362,8 +362,8 @@ function valid_move(user_id, match_id, new_pos) {
 }
 
 
-function finnish_game(match_id) {
-  console.log("finnish game")
+//endMode: ["invalid_move", "valid_move"]
+async function finnish_game(match_id, endMode) {
   var winner = current_games[match_id]['state']['winner'] 
   var player1 = current_games[match_id]['state']['player1']
   var player_1_account_player = current_games[match_id]['users'][player1][1]
@@ -390,12 +390,26 @@ function finnish_game(match_id) {
     }
 
     // Save GameMatch in the database
-    GameMatch.create(gameMatch)
+    var res = await GameMatch.create(gameMatch)
+    
+    var player1_final_result;
+    var player2_final_result;
+    if (winner === "1") {
+      player1_final_result = "win"
+      player2_final_result = "lost"
+    } else if (winner === "2") {
+      player1_final_result = "lost"
+      player2_final_result = "win"
+    } else {
+      player1_final_result = "draw"
+      player2_final_result = "draw"
+    }
+  
+    if (player_1_account_player)
+      io.to(users_info[player1]).emit("match_end", {"match_id": match_id, "match_result": player1_final_result, "endMode": endMode});
+    if (player_2_account_player)
+      io.to(users_info[player2]).emit("match_end", {"match_id": match_id, "match_result": player2_final_result, "endMode": endMode});
   }
-
-
-  console.log(gameMatch)
-
 
   delete current_games[match_id]
 

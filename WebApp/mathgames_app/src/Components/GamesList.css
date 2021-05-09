@@ -115,7 +115,7 @@ p.game-descritpion{
 	top: -25px;
 	left: 0;
 	width: 2px;
-	height: 135%;
+	height: 115%;
 	background-color: white;
 	transform-origin: top;
 	transition: .7s ease-in-out;
@@ -139,7 +139,7 @@ p.game-descritpion{
 	bottom: -25px;
 	right: 0;
 	width: 2px;
-	height: 135%;
+	height: 120%;
 	background-color: white;
 	transform-origin: left;
 	transition: .7s ease-in-out;
@@ -148,4 +148,25 @@ p.game-descritpion{
 
 * {
 	transition: all 0.3s ease-out;
+}
+
+/* enquanto ha jogos tobedone */
+.card-img.disabled{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.working-icon{
+	font-size: 8rem;
+}
+
+.game-dashboard-disabled{
+	background-color: gray;
+    border: 3px solid white;
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.game-dashboard-disabled:hover{
+	cursor: not-allowed;
 }

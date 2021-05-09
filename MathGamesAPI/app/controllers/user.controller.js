@@ -178,26 +178,6 @@ exports.authenticate = (req, res, next) => {
   })
 }
 
-/*
-const authenticate = (username, password, result) => {
-  User.findAll({where: {username:  username }}).then(user => {
-    console.log(user[0].validPassword(password));
-      if (await user[0].validPassword(user[0].password, password)) {
-      //if (user[0].password === password) {
-        const token = jwt.sign({ id: user[0].id, account_type: user[0].account_type }, config.secret);
-        const { password, ...userWithoutPassword } = user[0].dataValues;
-        result(null,{
-            ...userWithoutPassword,
-            token
-        });
-    } else {
-      result('Username or password is incorrect',null)
-    }
-  }).catch(err => {
-    result('Username or password is incorrect', null);
-  });
-}
-*/
 const authenticate = (username, password) => {
   return new Promise((resolve, reject) => {
    try {
@@ -214,7 +194,7 @@ const authenticate = (username, password) => {
          response.dataValues.password)) {
           resolve(false);
        } else {
-        const token = jwt.sign({ id: response.id, account_type: response.account_type }, config.secret);
+        const token = jwt.sign({ id: response.id, account_type: response.account_type }, config.secret, {expiresIn: 86400});
         const { password, ...userWithoutPassword } = response.dataValues;
         resolve({
             ...userWithoutPassword,
@@ -243,3 +223,6 @@ const authenticate = (username, password) => {
 exports.register = (req, res) => {
   this.create(req, res)
 }
+
+
+

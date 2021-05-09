@@ -124,10 +124,38 @@ function Game()  {
         }
         if ( game_id === 1 ) {
             return (
-                <div className="container container-main">
-                    <div id="my_div_game" class="container-canvas mt-2" style={{width: '1200px', height: '624px'}}>
-                        <canvas id="game_canvas" className="game"></canvas>
-                        <GatosCaesEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></GatosCaesEngine>
+                <div className="container-fluid">
+                    <div className="row">
+                        <div className="col-3 mt-4">
+                            <div className="row h-75 d-flex justify-content-center">
+                                <div className="col">
+                                    <div className="row d-flex justify-content-center">
+                                        {sessionStorage.getItem("starter")==="false" && <h5>Player 1</h5>}
+                                        {sessionStorage.getItem("starter")==="true"  && <h5>Player 2</h5>}
+                                    </div>
+                                    <div className="row d-flex justify-content-center">
+                                        <h5 className="name-text">{opponent !== undefined && opponent}</h5>
+                                        <h5 className="name-text">{opponent === undefined && sessionStorage.getItem('opponent')}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row h-25 d-flex justify-content-center">
+                                <div className="col">
+                                    <div className="row d-flex justify-content-center">
+                                        {sessionStorage.getItem("starter")==="true" && <h5>Player 1 (Tu)</h5>}
+                                        {sessionStorage.getItem("starter")==="false"  && <h5>Player 2 (Tu)</h5>}
+                                    </div>
+                                    <div className="row d-flex justify-content-center">
+                                        <h5 className="name-text">{player}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-9">
+                            <div id="my_div_game" className="container-canvas" style={{width: '1200px', height: '624px'}}>
+                            <GatosCaesEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></GatosCaesEngine>
+                            </div>
+                        </div>
                     </div>
                 </div>
             );

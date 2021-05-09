@@ -186,10 +186,10 @@ function Navbar() {
 								{ friends.length > 0 &&
 								<Dropdown.ItemText>{
 										<ul style={{fontSize:20}}>
-										{friends.map(function(name, index) {
+										{friends.map(function(user, index) {
 											return (
-												<li class="list-group-item d-flex justify-content-between align-items-center" style={{border: 0, padding: 5}}>
-													{name.username}
+												<li key={user.id} class="list-group-item d-flex justify-content-between align-items-center" style={{border: 0, padding: 5}}>
+													{user.username}
 													<FaIcons.FaEnvelopeSquare className="icon_notifications" style={{fontSize: 25}} />
 												</li>
 											);
@@ -220,7 +220,11 @@ function Navbar() {
 									<h5>Nome: {user.username} </h5>
 									<h5>Nivel: {getLevel(user.account_level)} </h5>
 								</div>
-								<FiIcons.FiLogOut  className="icon_notifications"  size={42} onClick={run_logout}/>
+								<Link to="/">
+									<h2 onClick={run_logout} className="h2-login">Logout <IconContext.Provider value={{color: '#007bff'}}><FiIcons.FiLogOut className="icon_notifications"  size={42} /></IconContext.Provider>
+									</h2>
+								</Link>
+								
 							</div>
 						</div>
 					</div>
@@ -231,7 +235,9 @@ function Navbar() {
 				<div className="col d-flex justify-content-end align-items-center mr-5">
 					<hr className="menu-divider-login"></hr>
 					<Link to="/login">
-						<h2 className="h2-login">Login</h2>
+						<h2 className="h2-login">Login <IconContext.Provider value={{color: '#007bff'}}><FiIcons.FiLogIn className="icon_notifications"  size={42} /></IconContext.Provider>
+						</h2>
+						
 					</Link>
 				</div>
 				}

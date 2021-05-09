@@ -41,12 +41,9 @@ module.exports = (sequelize, Sequelize) => {
       timestamps: true,
       hooks: {
         afterCreate: async (game_match) => {
-          console.log("entrei aqui");
-          console.log(game_match);
           let winner = game_match.winner;
           let player1 = game_match.player1;
           let player2 = game_match.player2;
-          console.log(winner);
           if (winner !== "X") {
             //alguem ganhou
             if (player1 !== null && player2 !== null ) {
@@ -54,27 +51,27 @@ module.exports = (sequelize, Sequelize) => {
               let loser = winner === "1" ? player2 : player1;
               let winner_id = winner === "1" ? player1: player2;
               // winner recebe 100xp loser recebe 30xp
-              sequelize.models.Users.increment('account_level', { by: 100, where: { id: winner_id}})
-              sequelize.models.Users.increment('account_level', { by: 30, where: { id: loser}})
+              await sequelize.models.Users.increment('account_level', { by: 100, where: { id: winner_id}})
+              await sequelize.models.Users.increment('account_level', { by: 30, where: { id: loser}})
             }
             if (player1 !== null && player2 === null ) {
               // player2 nao tem conta
               if (winner === "1") {
                 // player 1 recebe 100xp
-                sequelize.models.Users.increment('account_level', { by: 100, where: { id: player1}})
+                await sequelize.models.Users.increment('account_level', { by: 100, where: { id: player1}})
               } else {
                 // player 1 recebe 30xp
-                sequelize.models.Users.increment('account_level', { by: 30, where: { id: player1}})
+                await sequelize.models.Users.increment('account_level', { by: 30, where: { id: player1}})
               }
             }
             if (player1 === null && player2 !== null ) {
               // player1 nao tem conta
               if (winner === "2") {
                 // player2 recebe 100xp
-                sequelize.models.Users.increment('account_level', { by: 100, where: { id: player2}})
+                await sequelize.models.Users.increment('account_level', { by: 100, where: { id: player2}})
               } else {
                 // player 2 recebe 30xp
-                sequelize.models.Users.increment('account_level', { by: 30, where: { id: player2}})
+                await sequelize.models.Users.increment('account_level', { by: 30, where: { id: player2}})
               }
             }
 
@@ -83,14 +80,14 @@ module.exports = (sequelize, Sequelize) => {
             if (player1 !== null && player2 !== null ) {
               // ambos tem conta
               // players recebem 45xp
-              sequelize.models.Users.increment('account_level', { by: 45, where: { id: player1}})
-              sequelize.models.Users.increment('account_level', { by: 45, where: { id: player2}})
+              await sequelize.models.Users.increment('account_level', { by: 45, where: { id: player1}})
+              await sequelize.models.Users.increment('account_level', { by: 45, where: { id: player2}})
             }
             if (player1 !== null && player2 === null) {
-              sequelize.models.Users.increment('account_level', { by: 45, where: { id: player1}})
+              await sequelize.models.Users.increment('account_level', { by: 45, where: { id: player1}})
             }
             if (player1 === null && player2 !== null ) {
-              sequelize.models.Users.increment('account_level', { by: 45, where: { id: player2}})
+              await sequelize.models.Users.increment('account_level', { by: 45, where: { id: player2}})
             }
           }
         }
