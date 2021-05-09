@@ -1,3 +1,5 @@
+const { authJwt } = require("../middleware");
+
 module.exports = app => {
     const matches = require("../controllers/gamematch.controller.js");
     var router = require("express").Router();
@@ -6,7 +8,7 @@ module.exports = app => {
     router.post("/", matches.create);
   
     // Retrieve all matches
-    router.get("/", matches.findAll);
+    router.get("/", authJwt.verifyToken, matches.findAll);
   
     // Retrieve match by id
     router.get("/:id", matches.findOne);
