@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./Game.css"
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -13,6 +13,7 @@ import {IconContext} from 'react-icons';
 
 function Game()  {
     var user = AuthService.getCurrentUser();
+    console.log(user);
     const [game_ready_to_start, setReady] = useState(false);
     
     const url = new URLSearchParams(window.location.search);
@@ -20,17 +21,20 @@ function Game()  {
 
     let history = useHistory()
     var params = history.location.state
-    var game_id, game_mode, ai_diff;
+    var game_id, game_mode, ai_diff, player, opponent;
 
     if ( match_id !== null ) {
         game_id = parseInt( url.get("g") );
         game_mode = "amigo";
         ai_diff = undefined;
+        player = user !== null ? user.username : player = "Guest_" + sessionStorage.getItem("user_id");
     }
     else {
         game_id = parseInt( params.game_id );
         game_mode = params.game_mode;
         ai_diff = params.ai_diff;
+        player = params.player;
+        opponent = params.opponent;
     }
 
     function copy() {
@@ -45,10 +49,6 @@ function Game()  {
         alert("O link foi copiado!");
     }
 
-    console.log(game_ready_to_start)
-    console.log(match_id)
-    console.log(match_id == null)
-    console.log(user === null)
     // Game is ready to start when both players are connected
     if ( game_ready_to_start === false ) {
         if ( match_id !== null ) {
@@ -61,7 +61,7 @@ function Game()  {
                 console.log("Match_Found")
                 sessionStorage.setItem('match_id', msg['match_id']);
                 sessionStorage.setItem('starter', msg['starter']);
-                console.log("foiaqui1")
+                sessionStorage.setItem('opponent', msg['opponent'])
                 setReady(true)
             })
         } else {
@@ -70,7 +70,6 @@ function Game()  {
         return (
             <div className="col-lg-12 link-geral-position">
                 <IconContext.Provider  value={{color: 'white'}}>
-                    
                     <div className="link-card">
                         <h2>Copia o link para convidar alguém!</h2>
                         <hr className="link-hr"></hr>
@@ -81,24 +80,51 @@ function Game()  {
                             </div>
                         </div>
                     </div>
-                    
                 </IconContext.Provider>
             </div>
         );
     } else {
         if ( game_id === 0 ) {
             return (
-                <div class="container container-main">
-                    <div id="my_div_game" class="container-canvas mt-3" style={{width: '1100px', height: '577px'}}>
-                        <canvas id="game_canvas" className="game"></canvas>
-                        <RastrosEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></RastrosEngine>
+                <div className="container-fluid">
+                    <div className="row">
+                        <div className="col-3 mt-4">
+                            <div className="row h-75 d-flex justify-content-center">
+                                <div className="col">
+                                    <div className="row d-flex justify-content-center">
+                                        {sessionStorage.getItem("starter")==="false" && <h5>Player 1</h5>}
+                                        {sessionStorage.getItem("starter")==="true"  && <h5>Player 2</h5>}
+                                    </div>
+                                    <div className="row d-flex justify-content-center">
+                                        <h5 className="name-text">{opponent !== undefined && opponent}</h5>
+                                        <h5 className="name-text">{opponent === undefined && sessionStorage.getItem('opponent')}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row h-25 d-flex justify-content-center">
+                                <div className="col">
+                                    <div className="row d-flex justify-content-center">
+                                        {sessionStorage.getItem("starter")==="true" && <h5>Player 1 (Tu)</h5>}
+                                        {sessionStorage.getItem("starter")==="false"  && <h5>Player 2 (Tu)</h5>}
+                                    </div>
+                                    <div className="row d-flex justify-content-center">
+                                        <h5 className="name-text">{player}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-9">
+                            <div id="my_div_game" className="container-canvas" style={{width: '1100px', height: '577px'}}>
+                                <RastrosEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></RastrosEngine>
+                            </div>
+                        </div>
                     </div>
                 </div>
             );
         }
         if ( game_id === 1 ) {
             return (
-                <div class="container container-main">
+                <div className="container container-main">
                     <div id="my_div_game" class="container-canvas mt-2" style={{width: '1200px', height: '624px'}}>
                         <canvas id="game_canvas" className="game"></canvas>
                         <GatosCaesEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></GatosCaesEngine>

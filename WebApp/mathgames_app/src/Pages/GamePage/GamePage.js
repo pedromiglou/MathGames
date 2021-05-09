@@ -134,6 +134,8 @@ function GamePage() {
 						game_id: game_id,
 						game_mode: gameMode,
 						ai_diff: AIdiff,
+						player: user !== null ? user.username : "Guest_" + sessionStorage.getItem("user_id"),
+						opponent: msg['opponent']
 					  } 
 				})
 			})
@@ -153,7 +155,9 @@ function GamePage() {
 					state: {
 						game_id: game_id,
 						game_mode: gameMode,
-						ai_diff: AIdiff
+						ai_diff: AIdiff,
+						player: user !== null ? user.username : "Guest_" + sessionStorage.getItem("user_id"),
+						opponent: msg['opponent']
 						}  
 					})
 			})
@@ -164,7 +168,9 @@ function GamePage() {
 				state: {
 					game_id: game_id,
 					game_mode: gameMode,
-					ai_diff: AIdiff
+					ai_diff: AIdiff,
+					player: gameMode==="ai" ? user.username : name1,
+					opponent: gameMode==="ai" ? "AI " + AIdiff + " difficulty" : name2,
 					}  
 				})
 		}

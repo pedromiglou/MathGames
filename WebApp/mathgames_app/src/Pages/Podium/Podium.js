@@ -51,7 +51,7 @@ function Podium() {
 
 	useEffect(
 		retrieveUsers
-	, [page])
+	, [page, current_user])
 
 	return (
 		<div>

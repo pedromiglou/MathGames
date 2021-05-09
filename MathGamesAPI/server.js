@@ -198,8 +198,24 @@ function create_game(match_id, game_id, user1, user2, game_type) {
 }
 
 function initiate_game(match_id, user1, user2) {
-    io.to(users_info[user1]).emit("match_found", {"match_id": match_id, "starter": true});
-    io.to(users_info[user2]).emit("match_found", {"match_id": match_id, "starter": false});
+  User.findByPk(user1).then(value => {
+    if (value !== null) {
+      io.to(users_info[user2]).emit("match_found", {"match_id": match_id, "starter": false, "opponent": value.username});
+    }
+    else {
+      io.to(users_info[user2]).emit("match_found", {"match_id": match_id, "starter": false, "opponent": "Guest_" + user1});
+    }
+  }).catch(error => {});
+
+  User.findByPk(user2).then(value => {
+    if (value !== null)
+      io.to(users_info[user1]).emit("match_found", {"match_id": match_id, "starter": true, "opponent": value.username});
+    else
+      io.to(users_info[user1]).emit("match_found", {"match_id": match_id, "starter": true, "opponent": "Guest_" + user2});
+  }).catch(error => {});
+
+  // io.to(users_info[user1]).emit("match_found", {"match_id": match_id, "starter": true});
+  // io.to(users_info[user2]).emit("match_found", {"match_id": match_id, "starter": false});
 }
 
 
