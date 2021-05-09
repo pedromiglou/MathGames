@@ -88,11 +88,17 @@
     font-style: normal;
     font-variant: normal;
     font-weight: 500;
+    display: inline;
 }
 
 .h2-login:hover {
     text-decoration: none;
 }
+
+/*to fix
+.icon_notifications:hover {
+    color: primary !important;
+}*/
 
 /*------ MENU DIVIDIR----- */
 .menu-divider{
