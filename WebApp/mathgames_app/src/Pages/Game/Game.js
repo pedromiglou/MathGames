@@ -7,7 +7,6 @@ import { GatosCaesEngine } from "../../Components/Engines/GatosCaesEngine";
 import socket from "../../index"
 import AuthService from '../../Services/auth.service';
 
-import { Card } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
 import {IconContext} from 'react-icons';
 

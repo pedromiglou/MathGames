@@ -4,7 +4,7 @@ export const games_info =
         0: {
             id: 0,
             title: "Rastros",
-            img: process.env.PUBLIC_URL + "/images/mathGames.png",
+            img: process.env.PUBLIC_URL + "/images/games/rastros.png",
             hoover: false,
             path: '/gamePage?id=0',
             description: "Jogadores partilham as peças e efetuam uma corrida com uma “bola”, na tentativa de marcar um “auto-golo” ou de encurralar o adversário.",
@@ -13,8 +13,8 @@ export const games_info =
     
         1: {
             id: 1,
-            title: "Gatos&Caes",
-            img: process.env.PUBLIC_URL + "/images/mathGames.png",
+            title: "Gatos&Cães",
+            img: process.env.PUBLIC_URL + "/images/games/gatosecaes.png",
             hoover: false,
             path: '/gamePage?id=1',
             description: "Jogo de estratégia que tem como objetivo colocar por último uma peça no tabuleiro, deixando o adversário sem mais opções de jogada.",
@@ -24,7 +24,7 @@ export const games_info =
         2: {
             id: 2,
             title: "Yoté",
-            img: process.env.PUBLIC_URL + "/images/mathGames.png",
+            img: process.env.PUBLIC_URL + "/images/games/yote.png",
             hoover: false,
             path: '/gamePage?id=2',
             description: "O objetivo principal é capturar todas as peças do adversário ou bloquear as que restam. Neste caso vence aquele que tiver maior número de peças capturadas.",
@@ -34,7 +34,7 @@ export const games_info =
         3: {
             id: 3,
             title: "Produto",
-            img: process.env.PUBLIC_URL + "/images/mathGames.png",
+            img: process.env.PUBLIC_URL + "/images/games/produto.png",
             hoover: false,
             path: '/gamePage?id=3',
             description: "Permite a prática de exercícios de otimização. O objetivo é obter o maior produto, entre elementos dos maiores grupos da respetiva cor.",
@@ -44,7 +44,7 @@ export const games_info =
         4: {
             id: 4,
             title: "Avanço",
-            img: process.env.PUBLIC_URL + "/images/mathGames.png",
+            img: process.env.PUBLIC_URL + "/images/games/avanco.png",
             hoover: false,
             path: '/gamePage?id=4',
             description: "Este jogo, em que as capturas não são obrigatórias mas sim estratégicas, tem como principal objetivo chegar em primeiro lugar à primeira linha do adversário.",
@@ -54,7 +54,7 @@ export const games_info =
         5: {
             id: 5,
             title: "Avanço",
-            img: process.env.PUBLIC_URL + "/images/mathGames.png",
+            img: process.env.PUBLIC_URL + "/images/games/avanco.png",
             hoover: false,
             path: '/gamePage?id=4',
             description: "Este jogo, em que as capturas não são obrigatórias mas sim estratégicas, tem como principal objetivo chegar em primeiro lugar à primeira linha do adversário.",
@@ -64,7 +64,7 @@ export const games_info =
         6: {
             id: 6,
             title: "Avanço",
-            img: process.env.PUBLIC_URL + "/images/mathGames.png",
+            img: process.env.PUBLIC_URL + "/images/games/avanco.png",
             hoover: false,
             path: '/gamePage?id=4',
             description: "Este jogo, em que as capturas não são obrigatórias mas sim estratégicas, tem como principal objetivo chegar em primeiro lugar à primeira linha do adversário.",
@@ -74,7 +74,7 @@ export const games_info =
         7: {
             id: 7,
             title: "Avanço",
-            img: process.env.PUBLIC_URL + "/images/mathGames.png",
+            img: process.env.PUBLIC_URL + "/images/games/avanco.png",
             hoover: false,
             path: '/gamePage?id=4',
             description: "Este jogo, em que as capturas não são obrigatórias mas sim estratégicas, tem como principal objetivo chegar em primeiro lugar à primeira linha do adversário.",
