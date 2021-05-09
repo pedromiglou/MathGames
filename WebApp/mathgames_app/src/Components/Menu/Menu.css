@@ -88,11 +88,17 @@
     font-style: normal;
     font-variant: normal;
     font-weight: 500;
+    display: inline;
 }
 
 .h2-login:hover {
     text-decoration: none;
 }
+
+/*to fix
+.icon_notifications:hover {
+    color: primary !important;
+}*/
 
 /*------ MENU DIVIDIR----- */
 .menu-divider{
@@ -123,21 +129,7 @@
     margin-left: 300px;
 }
 
-.menu-bars{
-    width: 40px;
-    height: 40px;
-    margin-left: 16px;
-    margin-top: 30px;
-    align-self: center;
-    font-size: 24px;
-    background: none;
-    position:absolute;
-    z-index: 2000;
-}
 
-.menu-bars:hover{
-    cursor: pointer;
-}
 
 .nav-menu{
     background-color: #F9F9F9;
@@ -312,16 +304,6 @@ span.icons-noname{
         width: 100%;
         min-width: 100px;
         height: 100%;
-    }
-
-    .menu-bars{
-        margin-left: 16px;
-        margin-top: 30px;
-        align-self: center;
-        font-size: 24px;
-        background: none;
-        position:absolute;
-        z-index: 2000;
     }
 }
 

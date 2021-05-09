@@ -1,0 +1,8 @@
+.list-group {
+	margin-left: 5%;
+	margin-right: 5%;
+}
+
+.do_friend_request:hover {
+	cursor: pointer;
+}

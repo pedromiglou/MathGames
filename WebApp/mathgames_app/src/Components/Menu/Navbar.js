@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import {IconContext} from 'react-icons';
 import * as FaIcons from 'react-icons/fa';
+import * as FiIcons from "react-icons/fi";
 import { Link } from 'react-router-dom';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -12,8 +13,7 @@ import './Menu.css'
 
 /* Data and Service */
 import AuthService from '../../Services/auth.service';
-import FriendsService from '../../Services/friends.service';
-import NotificationsService from '../../Services/notifications.service';
+import UserService from '../../Services/user.service'
 
 /* Redux */
 import { useDispatch } from 'react-redux';
@@ -50,6 +50,27 @@ function Navbar() {
         setNotifications(newNotifications);
     }
 
+	const getLevel = (account_level) => {
+		var contador = 1;
+		if (typeof account_level !== "undefined") {
+			while (true) {
+				var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
+				var maximo = 400 * Math.pow(contador, 1.1);
+				if ( (minimo <= account_level) && (account_level < maximo)) {
+					return contador;
+				}
+				contador++;
+			}
+		} else {
+			return 0;
+		}
+	}
+
+	function run_logout() {
+		localStorage.removeItem("user");
+		window.location.assign("http://localhost:3000/")
+	}
+
     // Tem de colocar no redux o tipo de user
     useEffect(() => {
 		var current_user = AuthService.getCurrentUser();
@@ -57,13 +78,13 @@ function Navbar() {
 
 		// Load user friends list
         async function fetchApiFriends() {
-            var response = await FriendsService.getFriends(current_user.id);
+            var response = await UserService.getFriends(current_user.id);
             setFriends(response);
         }
 
 		// Load user notifications
         async function fetchApiNotifications() {
-            var response = await NotificationsService.getNotifications(current_user.id);
+            var response = await UserService.getNotifications(current_user.id);
             setNotifications(response);
         }
 
@@ -104,22 +125,22 @@ function Navbar() {
 								<Dropdown.Divider />
 								{ notifications.length > 0 &&
 								<Dropdown.ItemText>{
-									<div className="row navbar-dropdown-row">
+									<div className="navbar-dropdown-row">
 										{notifications.map(function(notification, index) {
 											var current_date = new Date();
-											current_date.setTime(current_date.getTime() - new Date().getTimezoneOffset()*60*1000);
+											//current_date.setTime(current_date.getTime() - new Date().getTimezoneOffset()*60*1000);
 											current_date = current_date.getTime() / 60000;
-											var notification_date = new Date(notification.notification_date).getTime() / 60000;
+											var notification_date = new Date(notification.createdAt).getTime() / 60000;
 											var difference = current_date - notification_date;
 											return (
-												<div>
-													<div className="col-9" style={{width: 350, fontSize: 18}}>
+												<div className="row">
+													<div className="col-9" style={{fontSize: 18}}>
 														{ (notification.notification_type === "F" && 
-															<p style={{marginBottom: "0.3em"}}>{notification.sender} enviou-te um pedido de amizade.</p>)
+															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} enviou-te um pedido de amizade.</p>)
 														|| (notification.notification_type === "T" && 
-															<p style={{marginBottom: "0.3em"}}>{notification.sender} convidou-te para participares no seu torneio.</p>)
+															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} convidou-te para participares no seu torneio.</p>)
 														|| (notification.notification_type === "P" && 
-															<p style={{marginBottom: "0.3em"}}>{notification.sender} convidou-te para jogares.</p>)
+															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} convidou-te para jogares.</p>)
 														}
 														{ (difference < 60 &&
 															<p style={{fontSize: 13}}>há { Number.parseInt(difference)} minutos</p>)
@@ -129,17 +150,17 @@ function Navbar() {
 															<p style={{fontSize: 13}}>há { Number.parseInt(difference/(60*24))} dia</p>)   
 														}
 													</div>
-													<div className="col-3" style={{width: 100}} >
-														<div className="text-right text-bottom" style={{height: "30px", marginTop: "40%"}}>
+													<div className="col-3" >
+														<div className="text-right text-bottom" style={{marginTop: "20%"}}>
 															{ (notification.notification_type === "F" && 
-																<FaIcons.FaCheckCircle onClick={ () => {NotificationsService.accept_friendship(notification); notifyFriendshipSucess(); deleteNotification(index);}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
+																<FaIcons.FaCheckCircle onClick={ () => {UserService.accept_friendship(notification); notifyFriendshipSucess(); deleteNotification(index);}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															|| (notification.notification_type === "T" && 
 																<FaIcons.FaCheckCircle  className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															|| (notification.notification_type === "P" && 
 																<FaIcons.FaCheckCircle className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															}
 															<span> </span>
-															<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {NotificationsService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25}} color="#ff0015" />
+															<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {UserService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25}} color="#ff0015" />
 														</div>
 														
 													</div>
@@ -164,22 +185,16 @@ function Navbar() {
 								<Dropdown.Divider />
 								{ friends.length > 0 &&
 								<Dropdown.ItemText>{
-									<div className="row navbar-dropdown-row">
-										{friends.map(function(name, index) {
+										<ul style={{fontSize:20}}>
+										{friends.map(function(user, index) {
 											return (
-												<div class="navbar-dropdown-text">
-													<div className="col-9">
-														<h5>{name.username}</h5>
-													</div>
-													<div className="col-3">
-														<div className="text-right">
-															<FaIcons.FaEnvelopeSquare className="icon_notifications" style={{fontSize: 25}} />
-														</div>
-													</div>
-												</div>
+												<li key={user.id} class="list-group-item d-flex justify-content-between align-items-center" style={{border: 0, padding: 5}}>
+													{user.username}
+													<FaIcons.FaEnvelopeSquare className="icon_notifications" style={{fontSize: 25}} />
+												</li>
 											);
 										})}
-									</div>
+										</ul>
 								}</Dropdown.ItemText>
 								}
 								{ friends.length === 0 &&
@@ -203,8 +218,12 @@ function Navbar() {
 								</div>
 								<div className="col navbar-account-info">
 									<h5>Nome: {user.username} </h5>
-									<h5>Nivel: {user.account_level} </h5>
+									<h5>Nivel: {getLevel(user.account_level)} </h5>
 								</div>
+								<Link to="/">
+									<h2 onClick={run_logout} className="h2-login">Logout <IconContext.Provider value={{color: '#007bff'}}><FiIcons.FiLogOut className="icon_notifications"  size={42} /></IconContext.Provider>
+									</h2>
+								</Link>
 								
 							</div>
 						</div>
@@ -216,7 +235,9 @@ function Navbar() {
 				<div className="col d-flex justify-content-end align-items-center mr-5">
 					<hr className="menu-divider-login"></hr>
 					<Link to="/login">
-						<h2 className="h2-login">Login</h2>
+						<h2 className="h2-login">Login <IconContext.Provider value={{color: '#007bff'}}><FiIcons.FiLogIn className="icon_notifications"  size={42} /></IconContext.Provider>
+						</h2>
+						
 					</Link>
 				</div>
 				}

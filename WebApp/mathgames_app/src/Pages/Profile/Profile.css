@@ -382,14 +382,17 @@ h2 small {
 }
 
 .won {
-    /* background-color: #66ff00; */
     color: #66ff00;
     font-weight: bolder;
 }
 
+.draw {
+    color: #f7e700;
+    font-weight: bolder;
+}
+
 .lost {
-    /* background-color: #ef0107; */
-    /* background-color: rgb(255, 0, 0);opacity:0.8; */
+
     color: #ef0107;
     font-weight: bolder;
 }
@@ -398,6 +401,14 @@ h2 small {
     background-color: white;
     color: black;
     border: 2px solid #66ff00;
+    border-radius: 8px;
+    width: 100%;
+}
+
+.draw-button {
+    background-color: white;
+    color: black;
+    border: 2px solid #f7e700;
     border-radius: 8px;
     width: 100%;
 }
@@ -460,6 +471,16 @@ h2 small {
     animation: top-right-win 3s infinite;
 }
 
+.foo-history-draw::before {
+    -webkit-transform-origin: 0 100%;
+    animation: bottom-left-draw 3s infinite;
+}
+
+.foo-history-draw::after {
+    -webkit-transform-origin: 100% 0%;
+    animation: top-right-draw 3s infinite;
+}
+
 @keyframes top-right-win {
     0% {
         border-top: 3px solid #7cfc00;
@@ -511,6 +532,61 @@ h2 small {
     100% {
         border-bottom: 3px solid #324f17;
         border-left: 3px solid #324f17;
+    }
+}
+
+
+@keyframes top-right-draw {
+    0% {
+        border-top: 3px solid #f8fc00;
+        border-right: 3px solid #f8fc00;
+    }
+    20% {
+        border-top: 3px solid #e0ff2f;
+        border-right: 3px solid #e0ff2f;
+    }
+    40% {
+        border-top: 3px solid #f9fc5a;
+        border-right: 3px solid #f9fc5a;
+    }
+    60% {
+        border-top: 3px solid #999a65;
+        border-right: 3px solid #999a65;
+    }
+    80% {
+        border-top: 3px solid #6f7023;
+        border-right: 3px solid #6f7023;
+    }
+    100% {
+        border-top: 3px solid #879602;
+        border-right: 3px solid #879602;
+    }
+}
+
+@keyframes bottom-left-draw {
+    0% {
+        border-bottom: 3px solid #f8fc00;
+        border-left: 3px solid #f8fc00;
+    }
+    20% {
+        border-bottom: 3px solid #e0ff2f;
+        border-left: 3px solid #e0ff2f;
+    }
+    40% {
+        border-bottom: 3px solid #f9fc5a;
+        border-left: 3px solid #f9fc5a;
+    }
+    60% {
+        border-bottom: 3px solid #999a65;
+        border-left: 3px solid #999a65;
+    }
+    80% {
+        border-bottom: 3px solid #6f7023;
+        border-left: 3px solid #6f7023;
+    }
+    100% {
+        border-bottom: 3px solid #879602;
+        border-left: 3px solid #879602;
     }
 }
 
