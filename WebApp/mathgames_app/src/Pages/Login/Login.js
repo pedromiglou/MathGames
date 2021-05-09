@@ -1,4 +1,4 @@
-import { React, useState, useEffect} from "react";
+import { React, useState } from "react";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Login.css";
@@ -46,6 +46,7 @@ function Login() {
         else
             setErroRegisto(true);
     }
+
 
     function toggle_sign_up() {
         setSignIn(!signIn);
@@ -122,7 +123,7 @@ function Login() {
                 </div>
 
                 <div id="signup_id" className="signup">
-                    <form action="#" className="sign-in-form" >
+                    <form action="#" className="sign-in-form">
                         <h2 className="title">Registar</h2>
                         <div className="input-field">
                             <i className="fas fa-user"></i>

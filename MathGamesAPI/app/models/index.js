@@ -7,16 +7,12 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   dialect: dbConfig.dialect,
   operatorsAliases: false,
   dialectOptions: {
-    useUTC: false, //for reading from database
+    // useUTC: false, //for reading from database
     dateStrings: true,
-    typeCast: function (field, next) { // for reading from database
-      if (field.type === 'DATETIME') {
-        return field.string()
-      }
-        return next()
-      },
+    typeCast: true,
+    timezone: "utc"
   },
-  timezone: '+01:00',
+  timezone: "+01:00", //for writing to database
   pool: {
     max: dbConfig.pool.max,
     min: dbConfig.pool.min,
@@ -46,7 +42,6 @@ db.friend.belongsTo(db.user, {through: "users", foreignKey: 'friend1', as: 'frie
 db.friend.belongsTo(db.user, {through: "users", foreignKey: 'friend2', as: 'friend_2'})
 db.game_match.belongsTo(db.user, {through: "users", foreignKey: 'player1', as: 'player_1'})
 db.game_match.belongsTo(db.user, {through: "users", foreignKey: 'player2', as: 'player_2'})
-db.game_match.belongsTo(db.user, {through: "users", foreignKey: 'winner', as: 'winner_user'})
 db.game_match.belongsTo(db.game, {through: "games", foreignKey: 'game_id', as: 'game'})
 db.tournament.belongsTo(db.user, {through: "users", foreignKey: 'winner', as: 'winner_user'})
 db.tournament.belongsTo(db.user, {through: "users", foreignKey: 'creator', as: 'creator_user'})

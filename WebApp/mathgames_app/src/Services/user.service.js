@@ -35,7 +35,7 @@ class UserService {
 
     accept_friendship(notification) {
         let friends= {
-            friend1: notification.sender_id,
+            friend1: notification.sender_user.sender_id,
             friend2: notification.receiver,
         }
 
@@ -53,6 +53,23 @@ class UserService {
         });
         return;
         
+    }
+
+    make_friend_request(friend1, friend2) {
+        let friends= {
+            sender: friend1,
+            receiver: friend2,
+            notification_type: "F"
+        }
+
+        var url = 'http://localhost:4000/api/notifications/';
+        fetch(url, {
+            method:'POST',
+            headers:{'Content-type':'application/json'},
+            body: JSON.stringify(friends)
+        });
+
+        return;        
     }
  
 }

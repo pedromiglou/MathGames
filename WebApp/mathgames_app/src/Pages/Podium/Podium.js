@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 
 import "./Podium.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import UserService from '../../Services/user.service';
 import Pagination from "@material-ui/lab/Pagination";
 
+import AuthService from '../../Services/auth.service';
+import UserService from '../../Services/user.service';
+
 function Podium() {
-	
+	var current_user = AuthService.getCurrentUser();
 	const [users, setUsers] = useState([]);
+	const [friends, setFriends] = useState([]);
 	var [numberClassification, setNumberClassification] = useState([]);
 	
 	const [page, setPage] = useState(1);
@@ -17,6 +20,10 @@ function Podium() {
 		setPage(value);
 	};
 	
+	function friend_request(friend2) {
+		UserService.make_friend_request(current_user.id, friend2);
+	}
+
 	const retrieveUsers = () => {
 		async function fetchApiUsers() {
 			let username = document.getElementById("filter_username").value;
@@ -26,7 +33,20 @@ function Podium() {
 			setNumberClassification((parseInt(page)-1)*10);
         };
 
+		async function fetchApiFriends(userId) {
+            var response = await UserService.getFriends(userId);
+            setFriends(response);
+        };
+
+		if (current_user !== null) {
+			fetchApiFriends(current_user.id)
+		}
 		fetchApiUsers();
+	}
+
+	function submitFunction(event) {
+		event.preventDefault();
+		document.getElementById("searchButton").click();
 	}
 
 	useEffect(
@@ -36,25 +56,22 @@ function Podium() {
 	return (
 		<div>
 			<br></br>
-			<div class="row justify-content-center">
-				<div class="col-12 col-md-10 col-lg-8">
-					<form>
-						<div class="card-body row no-gutters align-items-center">
-							<div class="col-auto">
-								<i class="fas fa-search h4 text-body"></i>
+			<div className="row justify-content-center">
+				<div className="col-12 col-md-10 col-lg-8">
+					<form onSubmit={submitFunction}>
+						<div className="card-body row no-gutters align-items-center">
+							<div className="col">
+								<input className="form-control form-control-lg" id="filter_username" type="search" placeholder="Procurar por username"/>
 							</div>
-							<div class="col">
-								<input class="form-control form-control-lg" id="filter_username" type="search" placeholder="Procurar por username" />
-							</div>
-							<div class="col-auto">
-								<button onClick={retrieveUsers} class="btn btn-lg btn-success" type="button">Procurar</button>
+							<div className="col-auto">
+								<button id="searchButton" onClick={retrieveUsers} className="btn btn-lg btn-success" type="button">Procurar</button>
 							</div>
 						</div>
 					</form>
 				</div>
 			</div>
 
-			<ul class="list-group" style={{color: "#2C96C7", fontSize: 23}}>
+			<ul className="list-group" style={{color: "#2C96C7", fontSize: 23}}>
 				{users.map(function(user, index) {
 					numberClassification++;
 					var contador = 1;
@@ -67,28 +84,38 @@ function Podium() {
 						contador++;
 					}
 					return (
-						<li class="list-group-item d-flex justify-content-between align-items-center row">
-							<div class="col-sm-1">
+						<li className="list-group-item d-flex justify-content-between align-items-center row">
+							<div className="col-sm-1">
 								<span className="badge badge-primary badge-pill">{numberClassification}</span>
 							</div>
-							<div class="col-sm-7">
+							<div className="col-sm-7">
 								{user.username}
 							</div>
-							<div class="col-sm 1">
+							<div className="col-sm 1">
 								Nível {contador}
 							</div>
-							<div class="col-sm 2">
+							<div className="col-sm 2">
 								{user.account_level} pontos
 							</div>
 							<div class="col-sm 1">
-								Pedir amizade
+								{ current_user !== null &&
+									<>
+									{ friends.some(e => e.id === user.id) &&
+										<span>Amigo</span>
+									} 
+									{ (!friends.some(e => e.id === user.id) && user.id !== current_user.id ) &&
+										<span className="do_friend_request" onClick={() => {friend_request(user.id)}}>Pedir amizade</span>
+									} 
+									</>	
+								}
+								
 							</div>
 						</li>
 					)
 					})
 				}
 			</ul>
-			<div class="row justify-content-center">
+			<div className="row justify-content-center">
 				<Pagination
 				className="my-3"
 				count={count}

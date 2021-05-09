@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./Game.css"
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -10,9 +10,11 @@ import AuthService from '../../Services/auth.service';
 import * as FaIcons from "react-icons/fa";
 import {IconContext} from 'react-icons';
 
+
 function Game()  {
     var user = AuthService.getCurrentUser();
     const [game_ready_to_start, setReady] = useState(false);
+    
     const url = new URLSearchParams(window.location.search);
 	let match_id = url.get("id");
 
@@ -21,26 +23,18 @@ function Game()  {
     var game_id, game_mode, ai_diff;
 
     if ( match_id !== null ) {
-        //FriendByLink
         game_id = parseInt( url.get("g") );
         game_mode = "amigo";
         ai_diff = undefined;
     }
     else {
-        //if (params !== undefined) {
         game_id = parseInt( params.game_id );
         game_mode = params.game_mode;
         ai_diff = params.ai_diff;
-        //}
-        // else {
-            // Necessario devido ao memo/Botao de encolher menu
-        //    game_id = parseInt( url.get("g") )
-        //}
     }
 
     function copy() {
         var link = document.getElementById("link");
-
         
         link.select();
         link.setSelectionRange(0, 99999); /* For mobile devices */
@@ -51,6 +45,10 @@ function Game()  {
         alert("O link foi copiado!");
     }
 
+    console.log(game_ready_to_start)
+    console.log(match_id)
+    console.log(match_id == null)
+    console.log(user === null)
     // Game is ready to start when both players are connected
     if ( game_ready_to_start === false ) {
         if ( match_id !== null ) {
@@ -60,8 +58,10 @@ function Game()  {
                 socket.emit("entered_link", {"user_id": String(user.id), "match_id": match_id, "game_id": game_id})
 
             socket.on("match_found", (msg) => {
+                console.log("Match_Found")
                 sessionStorage.setItem('match_id', msg['match_id']);
                 sessionStorage.setItem('starter', msg['starter']);
+                console.log("foiaqui1")
                 setReady(true)
             })
         } else {
@@ -75,7 +75,7 @@ function Game()  {
                         <h2>Copia o link para convidar alguém!</h2>
                         <hr className="link-hr"></hr>
                         <div className="bottom-link row">
-                            <input className="link" id="link" value="teste.com"></input>
+                            <input readOnly={true} className="link" id="link" value={"http://localhost:3000/game/?"+url.toString()}></input>
                             <div className="div-link-button">
                                 <button id="button-copy" className="button-copy" onClick={() => copy()}><i className="copy-icon"><FaIcons.FaCopy/></i></button>
                             </div>
@@ -86,36 +86,23 @@ function Game()  {
             </div>
         );
     } else {
-        //testar cena do link -> Dps pode-se apagar
-        // return (
-        //     <div className="col-lg-12 link-geral-position">
-        //         <IconContext.Provider  value={{color: 'white'}}>
-                    
-        //             <div className="link-card">
-        //                 <h2>Copia o link para convidar alguém!</h2>
-        //                 <hr className="link-hr"></hr>
-        //                 <div className="bottom-link row">
-        //                     <input className="link" id="link" value="teste.com"></input>
-        //                     <div className="div-link-button">
-        //                         <button id="button-copy" className="button-copy" onClick={() => copy()}><i className="copy-icon"><FaIcons.FaCopy/></i></button>
-        //                     </div>
-        //                 </div>
-        //             </div>
-                    
-        //         </IconContext.Provider>
-        //     </div>
-        // );
         if ( game_id === 0 ) {
             return (
-                <div>
-                    <RastrosEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></RastrosEngine>
+                <div class="container container-main">
+                    <div id="my_div_game" class="container-canvas mt-3" style={{width: '1100px', height: '577px'}}>
+                        <canvas id="game_canvas" className="game"></canvas>
+                        <RastrosEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></RastrosEngine>
+                    </div>
                 </div>
             );
         }
         if ( game_id === 1 ) {
             return (
-                <div>
-                    <GatosCaesEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></GatosCaesEngine>
+                <div class="container container-main">
+                    <div id="my_div_game" class="container-canvas mt-2" style={{width: '1200px', height: '624px'}}>
+                        <canvas id="game_canvas" className="game"></canvas>
+                        <GatosCaesEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></GatosCaesEngine>
+                    </div>
                 </div>
             );
         }
@@ -123,4 +110,6 @@ function Game()  {
     
 }
 
+
 export default Game;
+
