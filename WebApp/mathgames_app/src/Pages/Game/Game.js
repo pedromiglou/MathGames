@@ -88,12 +88,13 @@ function Game()  {
             return (
                 <div className="container-fluid">
                     <div className="row">
-                        <div className="col-3 mt-4">
+                    <div className="col-3 mt-4">
                             <div className="row h-75 d-flex justify-content-center">
                                 <div className="col">
                                     <div className="row d-flex justify-content-center">
-                                        {sessionStorage.getItem("starter")==="false" && <h5>Player 1</h5>}
-                                        {sessionStorage.getItem("starter")==="true"  && <h5>Player 2</h5>}
+                                        {game_mode !== "offline" && sessionStorage.getItem("starter")==="false" && <h5>Player 1</h5>}
+                                        {game_mode !== "offline" && sessionStorage.getItem("starter")==="true"  && <h5>Player 2</h5>}
+                                        {game_mode === "offline" && <h5>Player 2</h5>}
                                     </div>
                                     <div className="row d-flex justify-content-center">
                                         <h5 className="name-text">{opponent !== undefined && opponent}</h5>
@@ -104,8 +105,9 @@ function Game()  {
                             <div className="row h-25 d-flex justify-content-center">
                                 <div className="col">
                                     <div className="row d-flex justify-content-center">
-                                        {sessionStorage.getItem("starter")==="true" && <h5>Player 1 (Tu)</h5>}
-                                        {sessionStorage.getItem("starter")==="false"  && <h5>Player 2 (Tu)</h5>}
+                                        {game_mode !== "offline" && sessionStorage.getItem("starter")==="true" && <h5>Player 1 (Tu)</h5>}
+                                        {game_mode !== "offline" && sessionStorage.getItem("starter")==="false"&& <h5>Player 2 (Tu)</h5>}
+                                        {game_mode === "offline" && <h5>Player 1</h5>}
                                     </div>
                                     <div className="row d-flex justify-content-center">
                                         <h5 className="name-text">{player}</h5>
@@ -130,8 +132,9 @@ function Game()  {
                             <div className="row h-75 d-flex justify-content-center">
                                 <div className="col">
                                     <div className="row d-flex justify-content-center">
-                                        {sessionStorage.getItem("starter")==="false" && <h5>Player 1</h5>}
-                                        {sessionStorage.getItem("starter")==="true"  && <h5>Player 2</h5>}
+                                        {game_mode !== "offline" && sessionStorage.getItem("starter")==="false" && <h5>Player 1</h5>}
+                                        {game_mode !== "offline" && sessionStorage.getItem("starter")==="true"  && <h5>Player 2</h5>}
+                                        {game_mode === "offline" && <h5>Player 2</h5>}
                                     </div>
                                     <div className="row d-flex justify-content-center">
                                         <h5 className="name-text">{opponent !== undefined && opponent}</h5>
@@ -142,8 +145,9 @@ function Game()  {
                             <div className="row h-25 d-flex justify-content-center">
                                 <div className="col">
                                     <div className="row d-flex justify-content-center">
-                                        {sessionStorage.getItem("starter")==="true" && <h5>Player 1 (Tu)</h5>}
-                                        {sessionStorage.getItem("starter")==="false"  && <h5>Player 2 (Tu)</h5>}
+                                        {game_mode !== "offline" && sessionStorage.getItem("starter")==="true" && <h5>Player 1 (Tu)</h5>}
+                                        {game_mode !== "offline" && sessionStorage.getItem("starter")==="false"&& <h5>Player 2 (Tu)</h5>}
+                                        {game_mode === "offline" && <h5>Player 1</h5>}
                                     </div>
                                     <div className="row d-flex justify-content-center">
                                         <h5 className="name-text">{player}</h5>
@@ -166,4 +170,3 @@ function Game()  {
 
 
 export default Game;
-

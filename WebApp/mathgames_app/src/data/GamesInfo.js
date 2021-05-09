@@ -10,7 +10,8 @@ export const games_info =
             path: '/gamePage?id=0',
             description: "Jogadores partilham as peças e efetuam uma corrida com uma “bola”, na tentativa de marcar um “auto-golo” ou de encurralar o adversário.",
             age: 6,
-            toBeDone: false
+            toBeDone: false,
+            dificulty: 20
             
         },
     
@@ -22,7 +23,8 @@ export const games_info =
             path: '/gamePage?id=1',
             description: "Jogo de estratégia que tem como objetivo colocar por último uma peça no tabuleiro, deixando o adversário sem mais opções de jogada.",
             age: 6,
-            toBeDone: false
+            toBeDone: false,
+            dificulty: 40
         },
     
         2: {

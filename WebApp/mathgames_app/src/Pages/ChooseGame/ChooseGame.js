@@ -129,8 +129,7 @@ function ChooseGame() {
 				{filterOption === "AllGames" && <GamesList />}
 				{filterOption === "RecommendedGames" && <GamesList />}
 				{filterOption === "MostPlayedGames" && (
-					// <GamesList />
-					<h1>ola</h1>
+					 <GamesList />
 				)}
 			</div>
 		</div>

@@ -169,7 +169,7 @@ function GamePage() {
 					game_id: game_id,
 					game_mode: gameMode,
 					ai_diff: AIdiff,
-					player: gameMode==="ai" ? user.username : name1,
+					player: gameMode==="ai" ? user !== null ? user.username : "Guest_" + sessionStorage.getItem("user_id") : name1,
 					opponent: gameMode==="ai" ? "AI " + AIdiff + " difficulty" : name2,
 					}  
 				})
@@ -214,7 +214,7 @@ function GamePage() {
 						<h1 className="game-Name"> {game_info["title"]} </h1>
 						<img
 							src={
-								process.env.PUBLIC_URL + "/images/mathGames.png"
+								game_info["img"]
 							}
 							alt="Info"
 							className="rank-img"
@@ -225,6 +225,7 @@ function GamePage() {
 						<hr></hr>
 						<div className="col-lg-12 game-caracteristics">
 							<p className="game-caract"> Caracteristicas </p>
+
 							<div className="progress caract">
 								<div
 									className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
@@ -232,7 +233,7 @@ function GamePage() {
 									aria-valuenow="75"
 									aria-valuemin="0"
 									aria-valuemax="100"
-									style={{ width: "50%" }}
+									style={{ width: game_info["dificulty"]+"%" }}
 								>
 									<span>Dificuldade</span>
 								</div>
@@ -246,19 +247,7 @@ function GamePage() {
 									aria-valuemax="100"
 									style={{ width: "50%" }}
 								>
-									<span>Dificuldade</span>
-								</div>
-							</div>
-							<div className="progress caract">
-								<div
-									className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
-									role="progressbar"
-									aria-valuenow="75"
-									aria-valuemin="0"
-									aria-valuemax="100"
-									style={{ width: "50%"}}
-								>
-									<span>Dificuldade</span>
+									<span>Idade</span>
 								</div>
 							</div>
 						</div>
