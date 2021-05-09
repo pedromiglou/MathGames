@@ -8,6 +8,7 @@ import InventoryItems from "../../Components/InventoryItems";
 import AuthService from "../../Services/auth.service"
 import UserService from "../../Services/user.service"
 
+import policeHat from "../../Components/Avatar/Hats/PoliceHat";
 
 
 const Profile = () => {
@@ -15,7 +16,12 @@ const Profile = () => {
     const [invOption, setInvOption] = useState("Chapeus");
     const [user, setUser] = useState("");
     const [games, setGames] = useState([]);
+
     const [hat, setHat] = useState("MagicianHat");
+    const [shirt, setShirt] = useState("");
+    const [color, setColor] = useState("#FFAF00");
+    const [accessorie, setAccessorie] = useState("None");
+    const [trouser, setTrouser] = useState("#808080");
 
     var geral_e;
     var inventario_e;
@@ -75,16 +81,21 @@ const Profile = () => {
     }
 
 
-    function teste(name) {
-        setHat(name);
-
-        console.log(name);
-        console.log(hat);
-        console.log(hat);
-
+    function changeHat(hatName) {
+        setHat(hatName);
     }
 
+    function changeShirt(shirtName) {
+        setShirt(shirtName);
+    }
 
+    function changeAccessorie(accessorieName) {
+        setAccessorie(accessorieName);
+    }
+
+    function changeTrousers(trousersName) {
+        setTrouser(trousersName);
+    }
 
     return (
         <div className="hero-container">
@@ -130,7 +141,7 @@ const Profile = () => {
                         <div className="container row container-hidden top-profile">
                             <div className="col-lg-8 row">
                                 <div className="col-lg-4">
-                                    <Avatar />
+                                    <Avatar skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser}/>
                                 </div>
                                 <div className="col-lg-8">
                                     <div className="account-name">
@@ -208,42 +219,85 @@ const Profile = () => {
 
                 {menuOption === "Inventario" && (
                     <div className="col-lg-9 no-margins inventory">
-                        <div className="row ">
+                        <div className="row no-margins">
                             <div className="col-lg-5 avatar-display container">
                                 <h1>Nome</h1>
-                                <Avatar hatName={hat}/>
+                                    <Avatar skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser}/>
+                                <div className="container skin-pallette" id="skin-pallette">
+                                    <h3>Cor de pele</h3>
+                                    <span className="dot-1" onClick={() => setColor("#FFAF00")}></span>
+                                    <span className="dot-2" onClick={() => setColor("#694028")}></span>
+                                    <span className="dot-3" onClick={() => setColor("#B1A7FF")}></span>
+                                    <span className="dot-4" onClick={() => setColor("#12EED4")}></span>
+                                </div>
                             </div>
 
                             <div className="col-lg-7 invetory-options">
                                 <div className="row">
-                                    <div className="col-lg-4">
-                                        <button>Chapeus</button>
+                                    <div className="col-lg-4 options-items" onClick={() => setInvOption("Chapeus")}>
+                                        <div className="options-text">
+                                            <span className={invOption === "Chapeus" ? ("option-active") : ''}>Chapeus</span>
+                                        </div>
                                     </div>
-                                    <div className="col-lg-4">
-                                        <button>Camisolas</button>
+                                    <div className="col-lg-4 options-items" onClick={() => setInvOption("Camisolas")}>
+                                        <div className="options-text">
+                                            <span className={invOption === "Camisolas" ? ("option-active") : ''}>Camisolas</span>
+                                        </div>
                                     </div>
-                                    <div className="col-lg-4">
-                                        <button>Calcas</button>
+                                    <div className="col-lg-4 options-items" onClick={() => setInvOption("Calcas")}>
+                                        <div className="options-text">
+                                            <span className={invOption === "Calcas" ? ("option-active") : ''}>Calcas</span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-4">
-                                        <button>Acessorios</button>
+                                    <div className="col-lg-4 options-items" onClick={() => setInvOption("Acessorios")}>
+                                        <div className="options-text">
+                                            <span className={invOption === "Acessorios" ? ("option-active") : ''}>Acessorios</span>
+                                        </div>
                                     </div>
-                                    <div className="col-lg-4">
-                                        <button>Tabuleiros</button>
+                                    <div className="col-lg-4 options-items" onClick={() => setInvOption("Tabuleiros")}>
+                                        <div className="options-text">
+                                            <span className={invOption === "Tabuleiros" ? ("option-active") : ''}>Tabuleiros</span>
+                                        </div>
                                     </div>
-                                    <div className="col-lg-4">
-                                        <button>Pecas</button>
+                                    <div className="col-lg-4 options-items" onClick={() => setInvOption("Pecas")}>
+                                        <div className="options-text">
+                                            <span className={invOption === "Pecas" ? ("option-active") : ''}>Pecas</span>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div className="inv-list">
                                     {invOption === "Chapeus" && (
                                         <div >
-                                            <InventoryItems www={teste}/>
+                                            <InventoryItems option={"Chapeus"} hatName={changeHat} current={hat} />
                                         </div>
                                     )}
+                                    {invOption === "Camisolas" && (
+                                        <div >
+                                            <InventoryItems option={"Camisolas"} shirtName={changeShirt} current={shirt} />
+                                        </div>
+                                    )}
+                                    {invOption === "Acessorios" && (
+                                        <div >
+                                            <InventoryItems option={"Acessorios"} accessorieName={changeAccessorie} current={accessorie} />
+                                        </div>
+                                    )}
+                                    {invOption === "Calcas" && (
+                                        <div >
+                                            <InventoryItems option={"Calcas"} trouserName={changeTrousers} current={trouser} />
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="row save-cancel-btns">
+                                    <div className="col-lg-6 col-sm-12">
+                                        <button className="btn save-btn"> Salvar </button>
+                                    </div>
+                                    <div className="col-lg-6 col-sm-12">
+                                        <button className="btn cancel-btn"> Cancelar </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

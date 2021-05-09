@@ -22,7 +22,11 @@
 .card-descr {
 	height: 100%;
 	width: 100%;
+	position: relative;
+	border-radius: 10%;
+
 }
+
 
 .item-card {
 	background-color: transparent !important;
@@ -32,8 +36,22 @@
 .item-img {
 	width: 95px;
 	height: 75px;
-
 	border-radius: 10%;
+}
+
+.item-img-locked {
+	width: 95px;
+	height: 75px;
+	border-radius: 10%;
+
+	opacity: 0.3;
+}
+
+.item-img-current {
+	width: 95px;
+	height: 75px;
+	border-radius: 10%;
+	border: 2px solid #4cbb17;
 }
 
 .item-img::before {
@@ -44,3 +62,19 @@
 * {
     transition: all 0.1s;
 }
+
+.lockIcon {
+	position: absolute;
+	z-index: 1;
+	left: 0;
+	right: 0;
+}
+
+.checkIcon {
+	position: absolute;
+	z-index: 1;
+	left: 0;
+	right: 0;
+	color:#4cbb17;
+}
+
