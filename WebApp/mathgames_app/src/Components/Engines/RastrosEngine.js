@@ -23,9 +23,8 @@ export const RastrosEngine = ({arg_game_mode, arg_ai_diff}) => {
 
             const config = {
                 parent: document.getElementById("my_div_game"),
-                canvas: document.getElementById("game_canvas"),
                 transparent: true,
-                type: Phaser.WEBGL,
+                type: Phaser.AUTO,
                 scale: {
                     mode: Phaser.Scale.RESIZE
                 },
@@ -130,8 +129,8 @@ class RastrosScene extends Phaser.Scene {
         this.player_piece.on('pointerup', this.click_piece, this);
 
         // Fill in accessory text
-        if (this.player.size===1)
-            this.add.text(601+20, 30, "És o jogador " + this.player.values().next().value, {font: "40px Impact", color: "Orange"});
+        //if (this.player.size===1)
+            //this.add.text(601+20, 30, "És o jogador " + this.player.values().next().value, {font: "40px Impact", color: "Orange"});
         this.add.text(601+10, 120, "É a vez do jogador:", {font: "40px Impact", color: "Orange"});
         this.current_player_text = this.add.text(601+75, 180, "Jogador " + this.current_player, {font: "40px Impact", color: "Orange"});
 
