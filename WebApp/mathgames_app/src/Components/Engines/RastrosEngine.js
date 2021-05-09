@@ -2,6 +2,7 @@ import  React, { useEffect } from "react";
 import Phaser from "phaser";
 import socket from "../../index"
 import AuthService from '../../Services/auth.service';
+import UserService from '../../Services/user.service';
 import RastrosAI from "../AI/RastrosAI";
 
 var game_mode;
@@ -101,9 +102,10 @@ class RastrosScene extends Phaser.Scene {
                 this.move(this.squares_group.getChildren()[new_pos]);
             });
 
-            socket.on("match_endby_invalid_move", (msg) => {
-                var match_result = msg["match_result"]
-                console.log(match_result)
+            socket.on("match_end", (msg) => {
+                if (this.game_over === false)
+                    this.finish_game(null, msg["endMode"], msg["match_result"])
+                atualizarUserInfo();
             })
         }
 
@@ -216,37 +218,58 @@ class RastrosScene extends Phaser.Scene {
 
         // Check for win conditions
         if (current_pos === 6 || current_pos === 42 || set_diff(this.valid_squares, this.blocked_squares).size === 0) {
-            this.finish_game(current_pos);
+            this.finish_game(current_pos, "valid_move", null);
         }   else {
             this.current_player = (this.current_player===1 ? 2:1)
             this.current_player_text.setText("Jogador " + this.current_player);
         }
     }
 
-    finish_game(current_pos) {
+    finish_game(current_pos, cause, message) {
         this.game_over = true;
         this.valid_squares.clear();
         this.player.clear();
-        var winner = this.current_player;
+        
+        if ( cause === "valid_move") {
+            var winner = this.current_player;
 
-        if (current_pos === 42)
-            winner = 1
-        if (current_pos === 6)
-            winner = 2
+            if (current_pos === 42)
+                winner = 1
+            if (current_pos === 6)
+                winner = 2
 
-        this.text = this.add.text(0, 0, "O jogador " + winner + " ganhou.", {font: "60px Impact", color: "Red"});
-        this.tweens.add ({
-            targets: this.text,
-            x: 50,
-            y: 250,
-            durations: 2000,
-            ease: "Elastic",
-            easeParams: [1.5, 0.5],
-            delay: 0
-        }, this);
+            this.text = this.add.text(0, 0, "O jogador " + winner + " ganhou.", {font: "60px Impact", color: "Red"});
+            this.tweens.add ({
+                targets: this.text,
+                x: 50,
+                y: 250,
+                durations: 2000,
+                ease: "Elastic",
+                easeParams: [1.5, 0.5],
+                delay: 0
+            }, this);
+        } else if ( cause === "invalid_move" ) {
+            this.text = this.add.text(0, 0, "An invalid move has been detected.\n Game aborted.\n Result: " + message, {font: "40px Impact", color: "Red"});
+            this.tweens.add ({
+                targets: this.text,
+                x: 50,
+                y: 250,
+                durations: 1000,
+                ease: "Cubic.easeIn",
+                easeParams: [1.5, 0.5],
+                delay: 0
+            }, this);
+        }
+
         this.squares_group.getChildren().forEach(x => x.disableInteractive());
 
     }
+}
+
+
+async function atualizarUserInfo() {
+    var response = await UserService.getUserById(auth_user.id)
+    localStorage.setItem("user", JSON.stringify(response));
 }
 
 function set_diff(a, b) {

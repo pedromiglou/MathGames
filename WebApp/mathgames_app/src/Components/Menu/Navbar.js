@@ -186,10 +186,10 @@ function Navbar() {
 								{ friends.length > 0 &&
 								<Dropdown.ItemText>{
 										<ul style={{fontSize:20}}>
-										{friends.map(function(name, index) {
+										{friends.map(function(user, index) {
 											return (
-												<li class="list-group-item d-flex justify-content-between align-items-center" style={{border: 0, padding: 5}}>
-													{name.username}
+												<li key={user.id} class="list-group-item d-flex justify-content-between align-items-center" style={{border: 0, padding: 5}}>
+													{user.username}
 													<FaIcons.FaEnvelopeSquare className="icon_notifications" style={{fontSize: 25}} />
 												</li>
 											);
