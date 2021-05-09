@@ -1,46 +1,52 @@
 
 class AuthService {
-    login(username, password) {
+    async login(username, password) {
 
         let userInfo= {
             username: username,
             password: password,
         }
-        
-        fetch('http://localhost:4000/api/users/login', {
+
+        var res = await fetch('http://localhost:4000/api/users/login', {
             method:'POST',
             headers:{'Content-type':'application/json'},
             body: JSON.stringify(userInfo)
-        }).then(r=>r.json()).then(res=> {
-            console.log(res)
-            if(res) {
-                localStorage.setItem("user", JSON.stringify(res));
-                window.location.assign("http://localhost:3000/");
-            } else {
-                //window.location.reload();
-            }
         })
+
+        var json = await res.json()
+        
+        if(json.id) {
+            localStorage.setItem("user", JSON.stringify(json));
+            console.log("vou return")
+            return true
+        } else {
+            return false
+        }
+
     }
 
 
-    register(username, email, password) {
+    async register(username, email, password) {
         let userInfo= {
             username: username,
             email: email,
             password: password,
         }
         
-        fetch('http://localhost:4000/api/users/register', {
+
+        var res = await fetch('http://localhost:4000/api/users/register', {
             method:'POST',
             headers:{'Content-type':'application/json'},
             body: JSON.stringify(userInfo)
-        }).then(r=>r.json()).then(res=> {
-            if(res) {
-                console.log('New User was created')
-            }
-            window.location.reload();        
-
         })
+        console.log(res)
+        var json = await res.json()
+        
+        console.log(json)
+        if(json.id) {
+            return true
+        }
+        return false
     }
 
     getCurrentUser() {

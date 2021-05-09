@@ -26,6 +26,13 @@ body,
     animation: gradient 15s ease infinite !important;
 }
 
+.wrapper{
+    height: 100%;
+}
+
+.content{
+    height: calc(100% - 100px);
+}
 @keyframes gradient {
     0% {
         background-position: 0% 50%;
@@ -38,6 +45,33 @@ body,
     }
 }
 
+.menu-bars{
+    width: 40px;
+    height: 40px;
+    margin-left: 16px;
+    margin-top: 30px;
+    align-self: center;
+    font-size: 24px;
+    background: none;
+    position:fixed;
+    z-index: 2000;
+}
+
+.menu-bars:hover{
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 600px) {
+    .menu-bars{
+        margin-left: 16px;
+        margin-top: 30px;
+        align-self: center;
+        font-size: 24px;
+        background: none;
+        position:absolute;
+        z-index: 2000;
+    }
+}  
 /* Solucao para o backgroud size
 @media(max-width:767px) {
     html, body, #root, .App {

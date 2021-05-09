@@ -17,10 +17,8 @@ exports.create = (req, res) => {
     player1: req.body.player1,
     player2: req.body.player2,
     winner: req.body.winner,
-    number_moves: req.body.number_moves,
     game_type: req.body.game_type,
     game_id: req.body.game_id,
-    actual_state: req.body.actual_state
   };
 
   // Save GameMatch in the database
@@ -38,7 +36,11 @@ exports.create = (req, res) => {
 
 // Retrieve all GameMatchs from the database.
 exports.findAll = (req, res) => {
-  GameMatch.findAll()
+  const user_id = req.query.userid;
+  var whereCondition = user_id ? { [Op.or]: [{ player1: user_id}, {player2: user_id} ] } : null;
+  var limitCondition = user_id ? 5 : null;
+  var orderCondition = user_id ?  [["createdAt", 'DESC']]  : null;
+  GameMatch.findAll({ where: whereCondition, limit: limitCondition, order: orderCondition })
     .then(data => {
       res.send(data);
     })

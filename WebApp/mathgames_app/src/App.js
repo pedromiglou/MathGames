@@ -18,6 +18,7 @@ import Game from './Pages/Game/Game';
 import Login from './Pages/Login/Login';
 import GamePage from './Pages/GamePage/GamePage';
 import Profile from './Pages/Profile/Profile';
+import Podium from './Pages/Podium/Podium';
 
 /* Uuid */
 import { v4 as uuidv4 } from 'uuid';
@@ -30,12 +31,12 @@ import store from './store';
 function App() {
 
     if (sessionStorage.getItem('user_id') === null)
-            sessionStorage.setItem('user_id', uuidv4());		
+        sessionStorage.setItem('user_id', uuidv4());		
 
     return(
         <Provider store={store}>
             <BrowserRouter>
-                <div class="wrapper">
+                <div className="wrapper">
                     <div id="sidebarCollapse" className="menu-bars" onClick={toggleNav}>
                         <IconContext.Provider value={{color: 'grey'}}>
                             <FaIcons.FaBars/>
@@ -48,7 +49,7 @@ function App() {
                         <Sidemenu/>
                     </nav>
 
-                    <div id="content">
+                    <div id="content" className="content">
                         <Switch>
                             <Route exact path='/' component={withRouter(Welcome)} />
                             <Route exact path='/gamesDashboard' component={withRouter(ChooseGame)} />
@@ -56,6 +57,7 @@ function App() {
                             <Route exact path='/login' component={withRouter(Login)} />
                             <Route exact path='/gamePage' component={withRouter(GamePage)}/>
                             <Route exact path='/profile' component={withRouter(Profile)}/>
+                            <Route exact path='/podium' component={withRouter(Podium)}/>
                         </Switch>
                     </div>
 

@@ -22,11 +22,11 @@ function Welcome() {
                     <div className="row margin-welcome">
                         <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                             <div className="hero-text">
-                                <h1 class="welcome-title">
+                                <h1 className="welcome-title">
                                     Bem vindo ao{" "}
                                     {/* <strong className="title">MathGames</strong> */}
                                 </h1>
-                                <p class="popout">
+                                <p className="popout">
                                     <span>M</span>
                                     <span>A</span>
                                     <span>T</span>
@@ -67,8 +67,8 @@ function Welcome() {
                                 <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 text-left">
                                     {/* <a className="play-now">JOGAR AGORA!</a>
 									<Link to="/gamesDashboard">JOGAR AGORA!</Link> */}
-                                    {/* <div class="wrapper">
-										<a class="cta" href="#">
+                                    {/* <div className="wrapper">
+										<a className="cta" href="#">
 											<span>JOGAR AGORA!</span>
 											
 										</a>

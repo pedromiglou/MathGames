@@ -65,7 +65,7 @@ exports.findByUserId = (req, res) => {
           return element.friend2;
         }
       });
-      User.findAll({attributes: ['id', 'username', 'avatar', 'account_level'], where: {id: data} })
+      User.findAll({attributes: ['id', 'username', 'avatar', 'account_level', 'account_type'], where: {id: data} })
       .then( users => {
         res.send(users)
       })
