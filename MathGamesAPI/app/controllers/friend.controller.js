@@ -1,6 +1,7 @@
 const db = require("../models");
 const Friend = db.friend;
 const User = db.user;
+const Notification = db.notifications;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Friend
@@ -9,6 +10,13 @@ exports.create = (req, res) => {
   if (!req.body) {
     res.status(400).send({
       message: "Content can not be empty!"
+    });
+    return;
+  }
+
+  if (parseInt(req.userId) !== parseInt(req.body.friend1) && parseInt(req.userId) !== parseInt(req.body.friend2)) {
+    res.status(403).send({
+      message: "Unauthorized!"
     });
     return;
   }
@@ -26,17 +34,36 @@ exports.create = (req, res) => {
       friend2: req.body.friend2
     };
   }
-  // Save Friend in the database
-  Friend.create(friend)
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Friend."
+
+  Notification.findOne({where: { [Op.or]: [ {sender: req.body.friend1, receiver: req.body.friend2, notification_type: "F"}, {sender: req.body.friend2, receiver: req.body.friend1, notification_type: "F"} ]} })
+  .then( notif => {
+    if (notif !== null) {
+      Notification.destroy({where: {id: notif.id}});
+      // Save Friend in the database
+      Friend.create(friend)
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while creating the Friend."
+        });
       });
+    } else {
+      res.status(403).send({
+        message:
+          "Friend Request doesn't exists."
+      });
+    }
+  })
+  .catch(err => {
+    res.status(500).send({
+      message:
+        err.message || "Friend Request not found."
     });
+  })
+
 };
 
 // Retrieve all Friends from the database.
@@ -56,6 +83,12 @@ exports.findAll = (req, res) => {
 // Find friends of a given userId
 exports.findByUserId = (req, res) => {
   const id = req.params.id;
+  if (req.userId !== parseInt(id)) {
+    res.status(403).send({
+      message: "Unauthorized!"
+    });
+    return;
+  }
   Friend.findAll({ where: { [Op.or]: [{ friend1: id}, {friend2: id} ] }})
   .then(data => {
       var data = data.map(element => {

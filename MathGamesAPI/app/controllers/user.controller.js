@@ -194,7 +194,7 @@ const authenticate = (username, password) => {
          response.dataValues.password)) {
           resolve(false);
        } else {
-        const token = jwt.sign({ id: response.id, account_type: response.account_type }, config.secret);
+        const token = jwt.sign({ id: response.id, account_type: response.account_type }, config.secret, {expiresIn: 86400});
         const { password, ...userWithoutPassword } = response.dataValues;
         resolve({
             ...userWithoutPassword,
