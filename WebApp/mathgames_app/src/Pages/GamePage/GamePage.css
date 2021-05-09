@@ -14,6 +14,15 @@
     animation: slideInL 0.8s ease forwards 0.5s;
 }
 
+.game-details-p{
+    margin: 10px 0;
+    font-size: 1.4rem;
+}
+
+.descr-div-caract{
+    margin-top: 10px 0;
+}
+
 .animation-slideIn {
     transform: translateY(1000px);
     animation: slideDown 0.8s ease forwards 0.5s;
@@ -25,22 +34,34 @@
 }
 
 
+
 /* game details */
 .game-Name {
     font-size: 4rem;
 }
 
-.game-details-p {
-    /* text-align: center; */
+.game-image{
+	width: 80%;
+	margin: 20px 10%;
+	height: 300px;
+	border-radius: 15px;
+	box-shadow: rgba(0, 0, 0, 0.35) 5px 15px 15px;
+	border: 2px solid white;
 }
 
 .game-caracteristics {
-    margin-top: 20px;
     padding: 0;
 }
 
 .game-caract{
     font-size: 2rem;
+}
+
+.caract-gamemode{
+    margin: 0;
+    font-size: 2.2rem;
+    text-align: left;
+    padding: 10px 0 20px 0;
 }
 
 .progress.caract{
@@ -57,6 +78,27 @@
     transform: translateY(1000px);
     animation: slideDown 0.8s ease forwards 0.5s;
     margin-bottom: 15px;
+}
+
+.ranks-section{
+    display: flex;
+}
+
+
+.rank-gamemode{
+    margin: 0;
+    font-size: 2.2rem;
+    text-align: left;
+    padding-top: 10px;
+}
+
+.updo-icon{
+    margin-top: 50px;
+    font-size: 2rem;
+}
+
+.ant-next{
+    opacity: 0.4;
 }
 
 .game-mode{
@@ -85,11 +127,20 @@
     padding-top: 15px;
 }
 
+.a-n-rank-img{
+    position: relative;
+    width: 100px;
+    height: auto;
+}
+
 .rank-img {
     position: relative;
-    margin: 15px;
     width: 150px;
     height: auto;
+}
+
+.a-n-div{
+    margin-top: 10%;
 }
 
 .set-padding {
@@ -302,4 +353,22 @@
     100% {
         transform: translateX(0px);
     }
+}
+
+.orange{
+    background: linear-gradient(to bottom right, rgb(248, 194, 95), rgb(104, 78, 12) ) ;
+    border: 1px solid white;
+}
+
+.orange.bottom-right{
+    border-bottom-right-radius: 25px;
+}
+
+.orange.top-right{
+    border-top-right-radius: 25px;
+}
+
+.orange.left{
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
 }

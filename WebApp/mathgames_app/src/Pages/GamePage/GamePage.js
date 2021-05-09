@@ -180,11 +180,13 @@ function GamePage() {
 		var button = document.getElementById("button-play");
 
 		if (canPlay){
+			button.disabled = false;
 			button.classList.add("active");
 			if (button.classList.contains("disabled")){
 				button.classList.remove("disabled");
 			}
 		} else {
+			button.disabled = true;
 			button.classList.add("disabled");
 			if (button.classList.contains("active")){
 				button.classList.remove("active")
@@ -210,22 +212,24 @@ function GamePage() {
 		<>
 			<div className="container choose-game-mode-container">
 				<div className="row">
-					<div className="col-lg-4 game-details">
+					<div className="col-lg-4 game-details orange left">
 						<h1 className="game-Name"> {game_info["title"]} </h1>
-						<img
-							src={
-								game_info["img"]
-							}
+						<div className="image">
+							<img
+							src={game_info["img"]}
 							alt="Info"
-							className="rank-img"
-						/>
+							className="game-image"
+							/>	
+						</div>
+
 						<p className="game-details-p">
 							{game_info["description"]}
 						</p>
-						<hr></hr>
+						<hr className="descr-div-caract"></hr>
 						<div className="col-lg-12 game-caracteristics">
-							<p className="game-caract"> Caracteristicas </p>
-
+							<h2 className="caract-gamemode"> Caracteristicas </h2>
+							
+							<h4>Dificuldade</h4>
 							<div className="progress caract">
 								<div
 									className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
@@ -235,10 +239,11 @@ function GamePage() {
 									aria-valuemax="100"
 									style={{ width: game_info["dificulty"]+"%" }}
 								>
-									<span>Dificuldade</span>
+									<span>fácil</span>
 								</div>
 							</div>
-							<div className="progress caract">
+							<h4>Idade: +{ game_info["age"] } </h4>
+							{/* <div className="progress caract">
 								<div
 									className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
 									role="progressbar"
@@ -249,50 +254,89 @@ function GamePage() {
 								>
 									<span>Idade</span>
 								</div>
-							</div>
+							</div> */}
 						</div>
 					</div>
 					<div className="col-lg-8 player-info-and-modes">
-						<div className="col-lg-12 player-rank container-hidden">
-							<div className="row">
-								<div className="col-lg-6 set-padding centered">
+						<div className="col-lg-12 player-rank container-hidden orange top-right">
+							<h2 className="rank-gamemode">Rank</h2>
+							<div className="col-lg-12 ranks-section">
+								<div className="col-lg-3 ant-next centered">
+									<div className="a-n-div">
+										<img
+											src={
+												process.env.PUBLIC_URL +
+												"/images/prata.png"
+											}
+											alt="Info"
+											className="a-n-rank-img"
+										/>
+										<h4>Prata</h4>
+									</div>
+								</div>
+								<div className="col-lg-1 updo-icon centered">
+									<FaIcons.FaAngleDoubleDown/>
+									{/* <h6>anterior</h6> */}
+								</div>
+								<div className="col-lg-3 centered">
 									<div>
+										<img
+											src={
+												process.env.PUBLIC_URL +
+												"/images/platina.png"
+											}
+											alt="Info"
+											className="rank-img"
+										/>
+										<h4>Platina</h4>
+									</div>
+								</div>
+								<div className="col-lg-1 updo-icon centered">
+									<FaIcons.FaAngleDoubleUp/>
+									{/* <h6>seguinte</h6> */}
+								</div>
+								<div className="col-lg-3 ant-next centered">
+									
+									<div className="a-n-div">
 										<img
 											src={
 												process.env.PUBLIC_URL +
 												"/images/diamond.png"
 											}
 											alt="Info"
-											className="rank-img"
+											className="a-n-rank-img"
 										/>
+										<h4>Diamante</h4>
 									</div>
 								</div>
-								<div className="col-lg-6 no-padding center-progress-bar">
-									<p>Nivel</p>
-									<div className="row no-margin">
-										<div className="col-lg-2 lvl-left">
-											<p>99</p>
-										</div>
-										<div className="col-lg-8 center-progress-bar">
-											<div className="progress">
-												<div
-													className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
-													role="progressbar"
-													aria-valuenow="75"
-													aria-valuemin="0"
-													aria-valuemax="100"
-													style={{ width: "70%" }}
-												></div>
-											</div>
-										</div>
-										<div className="col-lg-2 lvl-right">
-											<p>100</p>
+							</div>	
+							
+							{/* <div className="col-lg-6 no-padding center-progress-bar">
+								<p>Nivel</p>
+								<div className="row no-margin">
+									<div className="col-lg-2 lvl-left">
+										<p>99</p>
+									</div>
+									<div className="col-lg-8 center-progress-bar">
+										<div className="progress">
+											<div
+												className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
+												role="progressbar"
+												aria-valuenow="75"
+												aria-valuemin="0"
+												aria-valuemax="100"
+												style={{ width: "70%" }}
+											></div>
 										</div>
 									</div>
+									<div className="col-lg-2 lvl-right">
+										<p>100</p>
+									</div>
 								</div>
-							</div>
+							</div>	 */}
 						</div>
-						<div className="col-lg-12 game-mode">
+
+						<div className="col-lg-12 game-mode orange bottom-right">
 							<IconContext.Provider  value={{color: 'white'}}>
 								<h2 className="title-gamemode">Escolhe modo de jogo</h2>
 								<div className="row">
