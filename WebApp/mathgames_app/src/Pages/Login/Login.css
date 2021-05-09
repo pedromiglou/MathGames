@@ -1,11 +1,13 @@
 .container-login {
 	
-	width: 70%;
+	width: 50%;
 	height: 60%;
 
-	position: absolute;
-	top: 50%;
-	left: 50%;
+	position:fixed;
+	margin-top: 17%;
+	margin-bottom: 20%;
+	margin-left: 40%;
+	margin-right: 0%;
 	-ms-transform: translate(-50%, -50%);
 	transform: translate(-50%, -50%);
 }
@@ -13,7 +15,7 @@
 .forms-container-login {
 
 	width: 100%;
-	height: 100%;
+	height: 70%;
 
 	background-color: #37B6F6;
 	border-radius: 25px;

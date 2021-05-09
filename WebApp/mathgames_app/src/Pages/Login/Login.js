@@ -84,23 +84,24 @@ function Login() {
 
     return (
         <div>
+            
+
+            <div className="container container-login">
             {errorLogin === true 
-                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "60%", textAlign:"center", fontSize:"22px"}}> 
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}> 
                 Ocorreu um erro no seu processo login. As suas credênciais são inválidas.
                  </div> 
                 : null}
 
             {errorRegisto === true 
-                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "60%", textAlign:"center", fontSize:"22px"}}>
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
                 Ocorreu um erro no seu processo registo. Username/Email já se encontram em utilização.
                  </div> : null}
 
             {sucessoRegisto === true 
-                ? <div className="alert alert-success" role="alert" style={{margin:"10px auto", width: "60%", textAlign:"center", fontSize:"22px"}}>
+                ? <div className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
                 A sua conta foi criada com sucesso! 
                 </div> : null}
-
-            <div className="container container-login">
             <div className="forms-container-login">
                 <div id="signin_id" className={"signin"}>
                     <form action="#" className="sign-in-form">
