@@ -1,8 +1,7 @@
 .profile-container {
     height: 80%;
     width: 80%;
-    margin-top: 5%;
-    margin-bottom: 15%;
+
 }
 
 .side {
@@ -112,8 +111,7 @@ hr.solid-pos {
 .account-name {
     /* margin-top: 70px;*/
     margin-left: 30px;
-    margin-top: auto;
-    margin-bottom: auto;
+    margin-top: 55px;
 
     padding-top: 40px;
 }
@@ -154,7 +152,8 @@ hr.solid-pos {
 
 .profile-level {
     text-align: center;
-    margin-top: 40px;
+    margin-top: 105px;
+
 }
 
 .profile-level p {
@@ -196,6 +195,8 @@ hr.solid-pos {
     margin-left: -1px;
 	border: 1px solid #F5F0F0;
 	background-color: #F5F0F0;
+
+    min-height: 400px;
 }
 
 
@@ -267,6 +268,10 @@ hr.solid-pos {
 
 .avatar-display > h1  {
     text-align: center;
+}
+
+.avatar-geral > div{
+    height: 250px !important;
 }
 
 .skin-pallette {
@@ -401,6 +406,12 @@ hr.solid-pos {
 
 }
 
+.no-games-found {
+    text-align: center;
+    font-size: larger;
+    color: #7158e2;
+    padding-top: 40px
+}
 
 .box {
     position: relative;
@@ -409,138 +420,21 @@ hr.solid-pos {
     height: 102.75px;
     line-height: 60px;
     text-align: center;
-    transition: 0.5s;
+    transition: 0.3s;
     cursor: pointer;
-    -webkit-transition: 0.5s;
+    -webkit-transition: 0.3s;
     border: none;
 
-    background-image: radial-gradient(
-        ellipse at 50% 50%,
-        rgba(57, 77, 94, 0.5) 0%,
-        transparent 40%
-    );
-    background-size: 100% 100%;
 }
 
-.box-down {
-    position: absolute;
-    vertical-align: middle;
-    display: inline-block;
-    height: 102.75px;
-    line-height: 60px;
-    text-align: center;
-    transition: 0.5s;
-    cursor: pointer;
-    -webkit-transition: 0.5s;
-    border: none;
+* {
+    transition: all 0.3s ease-out;
 }
 
-.box::before,
-.box::after {
-    width: 100%;
-    height: 100%;
-    z-index: 3;
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    box-sizing: border-box;
-    -webkit-transform: scale(0);
-    transition: 0.5s;
-}
-
-.bar::before {
-    -webkit-transform-origin: 100% 0%;
-    animation: testeeeee2 4s infinite;
-}
-
-.bar::after {
-    -webkit-transform-origin: 0% 100%;
-    animation: testeeeee 4s infinite;
-}
-
-.box:hover::after,
-.box:hover::before {
-    -webkit-transform: scale(1);
-}
-
-.box-down::before,
-.box-down::after {
-    width: 100%;
-    height: 100%;
-    z-index: 3;
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    box-sizing: border-box;
-    -webkit-transform: scale(0);
-    transition: 0.5s;
-}
-
-.box-down:hover::after,
-.box-down:hover::before {
-    -webkit-transform: scale(1);
-}
-
-@keyframes testeeeee {
-    0% {
-        border-top: 3px solid #e74c3c;
-        border-right: 3px solid #e74c3c;
-        color: #e74c3c;
-    }
-    20% {
-        border-top: 3px solid #f1c40f;
-        border-right: 3px solid #f1c40f;
-        color: #f1c40f;
-    }
-    40% {
-        border-top: 3px solid #1abc9c;
-        border-right: 3px solid #1abc9c;
-        color: #1abc9c;
-    }
-    60% {
-        border-top: 3px solid #3498db;
-        border-right: 3px solid #3498db;
-        color: #3498db;
-    }
-    80% {
-        border-top: 3px solid #9b59b6;
-        border-right: 3px solid #9b59b6;
-        color: #9b59b6;
-    }
-    100% {
-        border-top: 3px solid #e74c3c;
-        border-right: 3px solid #e74c3c;
-        color: #e74c3c;
-    }
-}
-
-@keyframes testeeeee2 {
-    0% {
-        border-bottom: 3px solid #e74c3c;
-        border-left: 3px solid #e74c3c;
-    }
-    20% {
-        border-bottom: 3px solid #f1c40f;
-        border-left: 3px solid #f1c40f;
-    }
-    40% {
-        border-bottom: 3px solid #1abc9c;
-        border-left: 3px solid #1abc9c;
-    }
-    60% {
-        border-bottom: 3px solid #3498db;
-        border-left: 3px solid #3498db;
-    }
-    80% {
-        border-bottom: 3px solid #9b59b6;
-        border-left: 3px solid #9b59b6;
-    }
-    100% {
-        border-bottom: 3px solid #e74c3c;
-        border-left: 3px solid #e74c3c;
-    }
+.up-1:hover,
+.up-1:focus {
+  box-shadow: inset 0 -7.25em 0 0 rgb(113, 88, 226);
+  color: white;
 }
 
 /* ---- */
@@ -588,14 +482,17 @@ h2 small {
 }
 
 .won {
-    /* background-color: #66ff00; */
     color: #66ff00;
     font-weight: bolder;
 }
 
+.draw {
+    color: #f7e700;
+    font-weight: bolder;
+}
+
 .lost {
-    /* background-color: #ef0107; */
-    /* background-color: rgb(255, 0, 0);opacity:0.8; */
+
     color: #ef0107;
     font-weight: bolder;
 }
@@ -604,6 +501,14 @@ h2 small {
     background-color: white;
     color: black;
     border: 2px solid #66ff00;
+    border-radius: 8px;
+    width: 100%;
+}
+
+.draw-button {
+    background-color: white;
+    color: black;
+    border: 2px solid #f7e700;
     border-radius: 8px;
     width: 100%;
 }
@@ -666,6 +571,16 @@ h2 small {
     animation: top-right-win 3s infinite;
 }
 
+.foo-history-draw::before {
+    -webkit-transform-origin: 0 100%;
+    animation: bottom-left-draw 3s infinite;
+}
+
+.foo-history-draw::after {
+    -webkit-transform-origin: 100% 0%;
+    animation: top-right-draw 3s infinite;
+}
+
 @keyframes top-right-win {
     0% {
         border-top: 3px solid #7cfc00;
@@ -717,6 +632,61 @@ h2 small {
     100% {
         border-bottom: 3px solid #324f17;
         border-left: 3px solid #324f17;
+    }
+}
+
+
+@keyframes top-right-draw {
+    0% {
+        border-top: 3px solid #f8fc00;
+        border-right: 3px solid #f8fc00;
+    }
+    20% {
+        border-top: 3px solid #e0ff2f;
+        border-right: 3px solid #e0ff2f;
+    }
+    40% {
+        border-top: 3px solid #f9fc5a;
+        border-right: 3px solid #f9fc5a;
+    }
+    60% {
+        border-top: 3px solid #999a65;
+        border-right: 3px solid #999a65;
+    }
+    80% {
+        border-top: 3px solid #6f7023;
+        border-right: 3px solid #6f7023;
+    }
+    100% {
+        border-top: 3px solid #879602;
+        border-right: 3px solid #879602;
+    }
+}
+
+@keyframes bottom-left-draw {
+    0% {
+        border-bottom: 3px solid #f8fc00;
+        border-left: 3px solid #f8fc00;
+    }
+    20% {
+        border-bottom: 3px solid #e0ff2f;
+        border-left: 3px solid #e0ff2f;
+    }
+    40% {
+        border-bottom: 3px solid #f9fc5a;
+        border-left: 3px solid #f9fc5a;
+    }
+    60% {
+        border-bottom: 3px solid #999a65;
+        border-left: 3px solid #999a65;
+    }
+    80% {
+        border-bottom: 3px solid #6f7023;
+        border-left: 3px solid #6f7023;
+    }
+    100% {
+        border-bottom: 3px solid #879602;
+        border-left: 3px solid #879602;
     }
 }
 

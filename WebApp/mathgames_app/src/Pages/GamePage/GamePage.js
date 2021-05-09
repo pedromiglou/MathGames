@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Card } from "react-bootstrap";
 //import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
@@ -9,6 +9,12 @@ import { games_info } from "../../data/GamesInfo";
 import socket from "../../index"
 import AuthService from '../../Services/auth.service';
 
+import * as RiIcons from "react-icons/ri";
+import * as FaIcons from "react-icons/fa";
+import * as FiIcons from "react-icons/fi";
+import {IconContext} from 'react-icons';
+
+
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
 function GamePage() {
 	var history = useHistory();
@@ -16,9 +22,9 @@ function GamePage() {
 
 
 	const dif_options = [
-		{ label: "easy", value: "easy" },
-		{ label: "medium", value: "medium" },
-		{ label: "hard", value: "hard" },
+		{ label: "fácil", value: "easy" },
+		{ label: "médio", value: "medium" },
+		{ label: "dificil", value: "hard" },
 	];
 
 	//De alguma maneira verificar se estiver vazio
@@ -26,16 +32,64 @@ function GamePage() {
 	//Depois aqui podemos meter conforme as preferencias no perfil
 	const [AIdiff, setAIdiff] = useState("");
 
+	const [name1, setName1] = useState("");
+	const [name2, setName2] = useState("");
+
+	const [canPlay, setCanPlay] = useState(false);
+
 	const params = new URLSearchParams(window.location.search);
 	let game_id = params.get("id");
 	const game_info = games_info[game_id];
 
 	function changeMode(val) {
+		var card_comp = document.getElementById("online");
+		var card_off = document.getElementById("offline");
+		var card_friend = document.getElementById("amigo");
+		var card_ai = document.getElementById("ai");
+
+		const cards = [card_comp, card_off, card_friend, card_ai];
+
+		for (let i = 0; i < cards.length; i++){
+			if (cards[i].classList.contains("active")){
+				cards[i].classList.remove("active")
+			}
+			if (cards[i].classList.contains("not-active")){
+				cards[i].classList.remove("not-active")
+			}		
+		}
+
+		if (val === 'online'){
+			card_comp.classList.add("active");
+			setCanPlay(true);
+		} else if (val === 'offline'){
+			card_off.classList.add("active");
+			setCanPlay(false);
+		} else if (val === 'amigo'){
+			card_friend.classList.add("active");
+			setCanPlay(true);
+		} else if (val === 'ai'){
+			card_ai.classList.add("active");
+			setCanPlay(true);
+		}
+
+		for (let i = 0; i < cards.length; i++){
+			if (cards[i].id !== val){
+				cards[i].classList.add("not-active")
+			}
+		}
+		
+		
 		setGameMode(val);
 		if (val === "ai") {
 			showDif();
-		} else {
+			hideDivNames();
+		} 
+		else if(val === "offline"){
+			showDivNames();
 			hideDif();
+		}else {
+			hideDif();
+			hideDivNames();
 		}
 	}
 
@@ -54,6 +108,17 @@ function GamePage() {
 		var x = document.getElementById("sel_dif");
 		x.style.display = "none";
 	}
+
+	function showDivNames() {
+		var x = document.getElementById("choose_names");
+		x.style.display = "block";
+		setAIdiff("easy");
+	}
+
+	function hideDivNames() {
+		var x = document.getElementById("choose_names");
+		x.style.display = "none";
+	}
 	
 	function find_match() {
 		if (gameMode === "amigo") {
@@ -63,7 +128,6 @@ function GamePage() {
 				socket.emit("friendbylink", {"user_id": String(user.id), "game_id": game_id})
 
 			socket.on("link_sent", (msg) => {
-				console.log(msg)
 				history.push({
 					pathname: "/game/?g="+game_id+"&id="+msg['match_id'], 
 					state: {
@@ -105,12 +169,43 @@ function GamePage() {
 				})
 		}
 	}
+
+	useEffect(() => {
+		var button = document.getElementById("button-play");
+
+		if (canPlay){
+			button.classList.add("active");
+			if (button.classList.contains("disabled")){
+				button.classList.remove("disabled");
+			}
+		} else {
+			button.classList.add("disabled");
+			if (button.classList.contains("active")){
+				button.classList.remove("active")
+			}
+		}
+	}, [canPlay]);
+	
+	useEffect(() => {
+		function checkNames(){
+			return (name1 !== "" && name2 !== "")
+		}
+		
+		var res = checkNames();
+		if (res) {
+			setCanPlay(true);
+		} else {
+			setCanPlay(false);
+		}
+
+	}, [name1,name2]);
+
 	return (
 		<>
 			<div className="container choose-game-mode-container">
 				<div className="row">
 					<div className="col-lg-4 game-details">
-						<h1> {game_info["title"]} </h1>
+						<h1 className="game-Name"> {game_info["title"]} </h1>
 						<img
 							src={
 								process.env.PUBLIC_URL + "/images/mathGames.png"
@@ -121,9 +216,10 @@ function GamePage() {
 						<p className="game-details-p">
 							{game_info["description"]}
 						</p>
+						<hr></hr>
 						<div className="col-lg-12 game-caracteristics">
-							<p> Caracteristicas </p>
-							<div className="progress">
+							<p className="game-caract"> Caracteristicas </p>
+							<div className="progress caract">
 								<div
 									className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
 									role="progressbar"
@@ -131,6 +227,30 @@ function GamePage() {
 									aria-valuemin="0"
 									aria-valuemax="100"
 									style={{ width: "50%" }}
+								>
+									<span>Dificuldade</span>
+								</div>
+							</div>
+							<div className="progress caract">
+								<div
+									className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
+									role="progressbar"
+									aria-valuenow="75"
+									aria-valuemin="0"
+									aria-valuemax="100"
+									style={{ width: "50%" }}
+								>
+									<span>Dificuldade</span>
+								</div>
+							</div>
+							<div className="progress caract">
+								<div
+									className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
+									role="progressbar"
+									aria-valuenow="75"
+									aria-valuemin="0"
+									aria-valuemax="100"
+									style={{ width: "50%"}}
 								>
 									<span>Dificuldade</span>
 								</div>
@@ -145,7 +265,7 @@ function GamePage() {
 										<img
 											src={
 												process.env.PUBLIC_URL +
-												"/images/mathGames.png"
+												"/images/diamond.png"
 											}
 											alt="Info"
 											className="rank-img"
@@ -177,90 +297,80 @@ function GamePage() {
 								</div>
 							</div>
 						</div>
-						<div className="col-lg-12 border">
-							<div className="row">
-								<div className="col-lg-6 centered set-padding">
-									<Card className="mode-card" onClick={() => changeMode("online")}>
-										<div>
-											<img
-												src={
-													process.env
-														.PUBLIC_URL +
-													"/images/mathGames.png"
-												}
-												alt="Info"
-												className="game-mode-card"
-											/>
-											<span className="above-type-img">
-												Competitivo
-											</span>
+						<div className="col-lg-12 game-mode">
+							<IconContext.Provider  value={{color: 'white'}}>
+								<h2 className="title-gamemode">Escolhe modo de jogo</h2>
+								<div className="row">
+									<div className="col-lg-6 centered set-padding">
+								
+										<Card id="online" className="mode-card" onClick={() => changeMode("online")}>
+											<div>
+											
+												<i className="mode-icon"><RiIcons.RiSwordFill/></i>
+											
+												<h2>
+													Competitivo
+												</h2>
+											</div>
+										</Card>
+									</div>
+
+									<div className="col-lg-6 centered set-padding">
+										<Card id="offline" className="mode-card" onClick={() => changeMode("offline")}>
+											<div>
+												
+												<i className="mode-icon"><FaIcons.FaUserFriends/></i>
+												
+												<h2>
+													No mesmo computador
+												</h2>
+												
+											</div>
+										</Card>
+										<div id="choose_names" className="choose_names" onChange={(e) => changeDif(e)} style={{display: "none"}}>
+											<input placeholder="nome jogador 1" className="name" onChange={(e) => setName1(e.target.value)} ></input>
+											<input placeholder="nome jogador 2" className="name" onChange={(e) => setName2(e.target.value)}></input>
 										</div>
-									</Card>
+									</div>
 								</div>
-								<div className="col-lg-6 centered set-padding">
-									<Card className="mode-card" onClick={() => changeMode("offline")}>
-										<div>
-											<img
-												src={
-													process.env
-														.PUBLIC_URL +
-													"/images/mathGames.png"
-												}
-												alt="Info"
-												className="game-mode-card"
-											/>
-											<span className="above-type-img">
-												1vs1
-											</span>
-										</div>
-									</Card>
+								<div className="row">
+									<div className="col-lg-6 centered set-padding">
+										<Card id="amigo" className="mode-card" onClick={() => changeMode("amigo")}>
+											<div>
+												<i className="mode-icon"><FiIcons.FiLink/></i>
+												
+												<h2>
+													Gerar link de convite
+												</h2>
+												
+											</div>
+										</Card>
+									</div>
+									<div className="col-lg-6 centered set-padding">
+										<Card id="ai" className="mode-card" onClick={() => changeMode("ai")}>
+											<div>
+												<i className="mode-icon"><FaIcons.FaRobot/></i>
+												
+												<h2>
+													Contra o computador
+												</h2>
+											</div>
+										</Card>
+										{/* fazer isto com divs para ficar igual á parte de cima */}
+										<select id="sel_dif" className="select-dif" onChange={(e) => changeDif(e)} style={{display: "none"}}>
+											{dif_options.map((option) => (
+												<option key={option.label} value={option.value}>{option.label}</option>
+											))}
+										</select>
+									</div>
 								</div>
-							</div>
-							<div className="row">
-								<div className="col-lg-6 centered set-padding">
-									<Card className="mode-card" onClick={() => changeMode("amigo")}>
-										<div>
-											<img
-												src={
-													process.env
-														.PUBLIC_URL +
-													"/images/mathGames.png"
-												}
-												alt="Info"
-												className="game-mode-card"
-											/>
-											<span className="above-type-img">
-												Convidar Amigo
-											</span>
-										</div>
-									</Card>
+								<div className="div-button">
+									<button id="button-play" className="button-play disabled" onClick={() => find_match()}>Jogar</button>
 								</div>
-								<div className="col-lg-6 centered set-padding">
-									<Card className="mode-card" onClick={() => changeMode("ai")}>
-										<div>
-											<img
-												src={
-													process.env
-														.PUBLIC_URL +
-													"/images/mathGames.png"
-												}
-												alt="Info"
-												className="game-mode-card"
-											/>
-											<span className="above-type-img">
-												Contra Computador
-											</span>
-										</div>
-									</Card>
-								</div>
-							</div>
+							
+							</IconContext.Provider>
 						</div>
-						<select id="sel_dif" onChange={(e) => changeDif(e)} style={{display: "none"}}>
-                                {dif_options.map((option) => (
-                                    <option key={option.label} value={option.value}>{option.label}</option>
-                                ))}
-                            </select>
-						<button onClick={() => find_match()}>Jogar</button>
+						
 					</div>
 				</div>
 			</div>

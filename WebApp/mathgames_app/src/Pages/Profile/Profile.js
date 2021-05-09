@@ -5,10 +5,11 @@ import "./Profile.css";
 import Avatar from "../../Components/Avatar";
 import InventoryItems from "../../Components/InventoryItems";
 
+import { games_info } from "../../data/GamesInfo";
+
 import AuthService from "../../Services/auth.service"
 import UserService from "../../Services/user.service"
 
-import policeHat from "../../Components/Avatar/Hats/PoliceHat";
 
 
 const Profile = () => {
@@ -80,6 +81,29 @@ const Profile = () => {
         last_games_e.style.backgroundColor = "#7158e2";
     }
 
+    const getLevel = (account_level) => {
+		var contador = 1;
+		if (typeof account_level !== "undefined") {
+			while (true) {
+				var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
+				var maximo = 400 * Math.pow(contador, 1.1);
+				if ( (minimo <= account_level) && (account_level < maximo)) {
+					return contador;
+				}
+				contador++;
+			}
+		} else {
+			return 0;
+		}
+	}
+
+    const getBarProgression = (account_level) => {
+		var nivel_atual = getLevel(account_level)
+        var minimo = 400 * Math.pow(nivel_atual-1, 1.1);
+		var maximo = 400 * Math.pow(nivel_atual, 1.1);
+        return ((account_level-minimo)/(maximo - minimo)) * 100
+	}
+
 
     function changeHat(hatName) {
         setHat(hatName);
@@ -111,7 +135,7 @@ const Profile = () => {
             <div className="row profile-border profile-container">
                 <div className="col-lg-3 side">
                     <button
-                        className="side-button box foo"
+                        className="side-button box up-1"
                         type="button"
                         onClick={geral}
                         id="Geral"
@@ -120,7 +144,7 @@ const Profile = () => {
                         Geral
                     </button>
                     <button
-                        className="side-button-2 box foo"
+                        className="side-button-2 box up-1"
                         type="button"
                         onClick={inventario}
                         id="Inventario"
@@ -128,7 +152,7 @@ const Profile = () => {
                         Inventario
                     </button>
                     <button
-                        className="side-button-3 box foo"
+                        className="side-button-3 box up-1"
                         type="button"
                         onClick={last_games}
                         id="Last_Games"
@@ -140,12 +164,12 @@ const Profile = () => {
                     <div className="col-lg-9 no-margins profile ">
                         <div className="container row container-hidden top-profile">
                             <div className="col-lg-8 row">
-                                <div className="col-lg-4">
+                                <div className="col-lg-4 avatar-geral">
                                     <Avatar skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser}/>
                                 </div>
                                 <div className="col-lg-8">
                                     <div className="account-name">
-                                        <h1>Nome</h1>
+                                        <h1>{user.username}</h1>
                                     </div>
                                 </div>
                             </div>
@@ -153,7 +177,7 @@ const Profile = () => {
                                 <p className="lvl"> Nivel </p>
                                 <div className="lvl-style row">
                                     <div className="col-12 col-sm-12 col-lg-2">
-                                        <p>1</p>
+                                        <p>{getLevel(user.account_level)}</p>
                                     </div>
                                     <div className="col-12 col-sm-12 col-lg-7">
                                         <div className="progress">
@@ -163,57 +187,37 @@ const Profile = () => {
                                                 aria-valuenow="75"
                                                 aria-valuemin="0"
                                                 aria-valuemax="100"
-                                                style={{ width: "50%" }}
+                                                style={{ width: getBarProgression(user.account_level) +"%" }}
                                             >
                                                 {/* <span>Dificuldade</span> */}
                                             </div>
                                         </div>
                                     </div>
                                     <div className="col-12 col-sm-12 col-lg-2">
-                                        <p>2</p>
+                                        <p>{getLevel(user.account_level) + 1}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <hr className="solid" />
-                        <div className="row profile-games">
-                            <img
-                                src={
-                                    process.env.PUBLIC_URL +
-                                    "/images/mathGames.png"
-                                }
-                                alt="game_image"
-                            />
-                            <div className="game-name">
-                                <p>Jogo</p>
-                            </div>
-                        </div>
-                        <hr className="solid solid-pos" />
-                        <div className="row profile-games">
-                            <img
-                                src={
-                                    process.env.PUBLIC_URL +
-                                    "/images/mathGames.png"
-                                }
-                                alt="game_image"
-                            />
-                            <div className="game-name">
-                                <p>Jogo</p>
-                            </div>
-                        </div>
-                        <hr className="solid solid-pos" />
-                        <div className="row profile-games">
-                            <img
-                                src={
-                                    process.env.PUBLIC_URL +
-                                    "/images/mathGames.png"
-                                }
-                                alt="game_image"
-                            />
-                            <div className="game-name">
-                                <p>Jogo</p>
-                            </div>
-                        </div>
+                        {Object.entries(games_info).map(([key, value]) => (	
+			
+                            <>
+                                <div className="row profile-games">
+                                    <img
+                                        src={value["img"]}
+                                        alt="Info"
+                                        id={key}
+                                    />
+                                    <div className="game-name">
+                                        <p>{value["title"]}</p>
+                                    </div>
+                                </div>
+                                <hr className="solid solid-pos" />
+                            </>
+                            )
+                        )}
+                        
                     </div>
                 )}
 
@@ -221,7 +225,7 @@ const Profile = () => {
                     <div className="col-lg-9 no-margins inventory">
                         <div className="row no-margins">
                             <div className="col-lg-5 avatar-display container">
-                                <h1>Nome</h1>
+                                <h1>{user.username}</h1>
                                     <Avatar skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser}/>
                                 <div className="container skin-pallette" id="skin-pallette">
                                     <h3>Cor de pele</h3>
@@ -316,15 +320,17 @@ const Profile = () => {
                                     <div className="col col-2">Detalhes</div>
                                 </li>
                                 {Object.entries(games).length === 0 
-                                    ? <p>O seu histório de jogos é vazio!</p>
+                                    ? <p className="no-games-found">O seu histório de jogos é vazio!</p>
                                     :
                                     Object.entries(games).map(
                                     ([key, value]) => (
                                         <li
                                             className={
-                                                value["winner"] === user.id
+                                                ((value["winner"] === "1" && value["player1"] === user.id) || (value["winner"] === "2" && value["player2"] === user.id) )
                                                     ? "won table-row history-box foo-history-win"
-                                                    : "lost table-row history-box foo-history-lose"
+                                                    : ((value["winner"] === "2" && value["player1"] === user.id) || (value["winner"] === "1" && value["player2"] === user.id) ) 
+                                                    ? "lost table-row history-box foo-history-lose"
+                                                    : "draw table-row history-box foo-history-draw"
                                             }
                                             key={key}
                                         >
@@ -337,21 +343,29 @@ const Profile = () => {
                                                         "Gatos&Cães" : "Outro"}
                                             </div>
                                             <div className="col col-2">
-                                                { value["winner"] === user.id
+                                                { ((value["winner"] === "1" && value["player1"] === user.id) || (value["winner"] === "2" && value["player2"] === user.id) )
                                                             ? "Vitória"
-                                                            : "Derrota"}
+                                                            : ((value["winner"] === "2" && value["player1"] === user.id) || (value["winner"] === "1" && value["player2"] === user.id) ) 
+                                                            ? "Derrota"
+                                                            : "Empate"
+                                                            }
                                             </div>
                                             <div className="col col-2">
-                                                +{value["winner"] === user.id
+                                                +{((value["winner"] === "1" && value["player1"] === user.id) || (value["winner"] === "2" && value["player2"] === user.id) )
                                                             ? "100"
-                                                            : "30"}
+                                                            : ((value["winner"] === "2" && value["player1"] === user.id) || (value["winner"] === "1" && value["player2"] === user.id) ) 
+                                                            ? "30"
+                                                            : "45"
+                                                            }
                                             </div>
                                             <div className="col col-2">
                                                 <button
                                                     className={
-                                                        value["winner"] === user.id
+                                                        ((value["winner"] === "1" && value["player1"] === user.id) || (value["winner"] === "2" && value["player2"] === user.id) )
                                                             ? "won-button table-row"
-                                                            : "lost-button table-row"
+                                                            : ((value["winner"] === "2" && value["player1"] === user.id) || (value["winner"] === "1" && value["player2"] === user.id) ) 
+                                                            ? "lost-button table-row"
+                                                            : "draw-button table-row"
                                                     }
                                                 >
                                                     Detalhes

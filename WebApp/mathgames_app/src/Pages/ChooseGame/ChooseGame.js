@@ -52,13 +52,13 @@ function ChooseGame() {
 
 	return (
 		<div className="choose-game-container" id="choose_game_container">
-			<div className="row no-margin centering">
-				<div
-					className="col-lg-8 col-md-12 col-sm-12"
-					id="filter_options"
-				>
+			<div className="row options">
+				<div className="col-lg-12 col-md-12 col-sm-12" id="filter_options">
 					<div className="row top-bar no-margin">
-						<div className="col-lg-4 col-md-12 col-sm-12 top-button">
+						<div className="col-lg-3 col-md-3 col-sm-3">
+							<h1>Jogos</h1>
+						</div>
+						<div className="col-lg-3 col-md-3 col-sm-3 top-button">
 							<button
 								id="allGames"
 								onClick={allGames}
@@ -71,7 +71,7 @@ function ChooseGame() {
 								Todos os jogos
 							</button>
 						</div>
-						<div className="col-lg-4 col-md-12 col-sm-12 top-button">
+						<div className="col-lg-3 col-md-3 col-sm-3 top-button">
 							<button
 								id="recommendedGames"
 								onClick={recommendedGames}
@@ -84,7 +84,7 @@ function ChooseGame() {
 								Recomendados
 							</button>
 						</div>
-						<div className="col-lg-4 col-md-12 col-sm-12 top-button">
+						<div className="col-lg-3 col-md-3 col-sm-3 top-button">
 							<button
 								id="mostPlayedGames"
 								onClick={mostPlayedGames}
@@ -99,6 +99,7 @@ function ChooseGame() {
 						</div>
 					</div>
 				</div>
+
 				{/* <div className="col-lg-3 no-padding lvl-info">
 					<div className="row no-margin">
 						<div className="col-lg-2">
@@ -120,8 +121,9 @@ function ChooseGame() {
 							<p>100</p>
 						</div>
 					</div>
-				</div> */}
+				</div>  */}
 			</div>
+			<hr className="division-menu-games"></hr>
 			<div className="games-list">
 				{/* TODO: Passar props para filtrar pedido de jogos `a api */}
 				{filterOption === "AllGames" && <GamesList />}

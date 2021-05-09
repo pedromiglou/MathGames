@@ -124,7 +124,6 @@ function Avatar(props) {
 	else
 		accessorie = null
 
-	console.log(props.trouserName)
 	
 	return (
 		<Canvas>

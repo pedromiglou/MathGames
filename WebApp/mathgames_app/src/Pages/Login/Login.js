@@ -6,6 +6,47 @@ import AuthService from "../../Services/auth.service"
 
 function Login() {
     const [signIn, setSignIn] = useState(true);
+    const [errorLogin, setErroLogin] = useState(false);
+    const [errorRegisto, setErroRegisto] = useState(false);
+    const [sucessoRegisto, setSucessoRegisto] = useState(false);
+
+    async function login() {
+        setErroRegisto(false);
+        setErroLogin(false)
+        var response = await AuthService.login(
+            document.getElementById("nomeUtilizadorLogin").value,
+            document.getElementById("passwordLogin").value
+        )   
+        
+        if (response === true)
+            window.location.assign("http://localhost:3000/");
+        else {
+            setErroLogin(true);
+        }
+    }
+
+    
+
+    async function register() {
+        setErroRegisto(false);
+        setErroLogin(false)
+        var response = await AuthService.register(
+            document.getElementById("nomeUtilizadorRegisto").value,
+            document.getElementById("emailRegisto").value,
+            document.getElementById("passwordRegisto").value
+        )
+
+        if (response === true) {
+            document.getElementById('nomeUtilizadorRegisto').value = ''
+            document.getElementById('emailRegisto').value = ''
+            document.getElementById('passwordRegisto').value = ''
+            document.getElementById('change_button').click()
+            setSucessoRegisto(true);
+            }
+        else
+            setErroRegisto(true);
+    }
+
 
     function toggle_sign_up() {
         setSignIn(!signIn);
@@ -40,28 +81,30 @@ function Login() {
         }
     }
 
-    function run_register(event) {
-        event.preventDefault();
-        AuthService.register(
-            document.getElementById("nomeUtilizadorRegisto").value,
-            document.getElementById("emailRegisto").value,
-            document.getElementById("passwordRegisto").value
-        )
-    }
-
-    function run_login(event) {
-        event.preventDefault();
-        AuthService.login(
-            document.getElementById("nomeUtilizadorLogin").value,
-            document.getElementById("passwordLogin").value
-        )        
-    }
 
     return (
-        <div className="container container-login">
+        <div>
+            
+
+            <div className="container container-login">
+            {errorLogin === true 
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}> 
+                Ocorreu um erro no seu processo login. As suas credênciais são inválidas.
+                 </div> 
+                : null}
+
+            {errorRegisto === true 
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                Ocorreu um erro no seu processo registo. Username/Email já se encontram em utilização.
+                 </div> : null}
+
+            {sucessoRegisto === true 
+                ? <div className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                A sua conta foi criada com sucesso! 
+                </div> : null}
             <div className="forms-container-login">
                 <div id="signin_id" className={"signin"}>
-                    <form action="#" className="sign-in-form" onSubmit={run_login}>
+                    <form action="#" className="sign-in-form">
                         <h2 className="title">Iniciar Sessao</h2>
                         <div className="input-field">
                             <i className="fas fa-user"></i>
@@ -71,16 +114,17 @@ function Login() {
                             <i className="fas fa-lock"></i>
                             <input id="passwordLogin" type="password" placeholder="Palavra-chave" />
                         </div>
-                        <input
-                            type="submit"
+                        <button
+                            type="button"
                             value="Entrar"
                             className="btn-login solid"
-                        />
+                            onClick={login}
+                        >Entrar</button>
                     </form>
                 </div>
 
                 <div id="signup_id" className="signup">
-                    <form action="#" className="sign-in-form" onSubmit={run_register}>
+                    <form action="#" className="sign-in-form">
                         <h2 className="title">Registar</h2>
                         <div className="input-field">
                             <i className="fas fa-user"></i>
@@ -94,11 +138,12 @@ function Login() {
                             <i className="fas fa-lock"></i>
                             <input id="passwordRegisto" type="password" placeholder="Palavra-chave" />
                         </div>
-                        <input
-                            type="submit"
+                        <button
+                            type="button"
                             value="Registar"
                             className="btn-login solid"
-                        />
+                            onClick={register}
+                        >Registar</button>
                     </form>
                 </div>
 
@@ -107,6 +152,7 @@ function Login() {
                     id="toggle_side"
                 >
                     <button
+                        id="change_button"
                         className="btn-login transparent"
                         onClick={toggle_sign_up}
                     >
@@ -114,6 +160,7 @@ function Login() {
                     </button>
                 </div>
             </div>
+        </div>
         </div>
     );
 }
