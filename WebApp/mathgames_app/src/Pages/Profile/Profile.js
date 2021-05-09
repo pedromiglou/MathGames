@@ -67,6 +67,29 @@ const Profile = () => {
         last_games_e.style.backgroundColor = "#7158e2";
     }
 
+    const getLevel = (account_level) => {
+		var contador = 1;
+		if (typeof account_level !== "undefined") {
+			while (true) {
+				var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
+				var maximo = 400 * Math.pow(contador, 1.1);
+				if ( (minimo <= account_level) && (account_level < maximo)) {
+					return contador;
+				}
+				contador++;
+			}
+		} else {
+			return 0;
+		}
+	}
+
+    const getBarProgression = (account_level) => {
+		var nivel_atual = getLevel(account_level)
+        var minimo = 400 * Math.pow(nivel_atual-1, 1.1);
+		var maximo = 400 * Math.pow(nivel_atual, 1.1);
+        return ((account_level-minimo)/(maximo - minimo)) * 100
+	}
+
 
     return (
         <div className="hero-container">
@@ -119,14 +142,14 @@ const Profile = () => {
                                     alt="profile_image"
                                 />
                                 <div className="account-name">
-                                    <h1>Nome</h1>
+                                    <h1>{user.username}</h1>
                                 </div>
                             </div>
                             <div className="col-lg-4 profile-level">
                                 <p className="lvl"> Nivel </p>
                                 <div className="lvl-style row">
                                     <div className="col-12 col-sm-12 col-lg-2">
-                                        <p>1</p>
+                                        <p>{getLevel(user.account_level)}</p>
                                     </div>
                                     <div className="col-12 col-sm-12 col-lg-7">
                                         <div className="progress">
@@ -136,14 +159,14 @@ const Profile = () => {
                                                 aria-valuenow="75"
                                                 aria-valuemin="0"
                                                 aria-valuemax="100"
-                                                style={{ width: "50%" }}
+                                                style={{ width: getBarProgression(user.account_level) +"%" }}
                                             >
                                                 {/* <span>Dificuldade</span> */}
                                             </div>
                                         </div>
                                     </div>
                                     <div className="col-12 col-sm-12 col-lg-2">
-                                        <p>2</p>
+                                        <p>{getLevel(user.account_level) + 1}</p>
                                     </div>
                                 </div>
                             </div>

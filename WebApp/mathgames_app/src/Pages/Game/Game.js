@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./Game.css"
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -45,10 +45,7 @@ function Game()  {
         alert("O link foi copiado!");
     }
 
-    console.log(game_ready_to_start)
-    console.log(match_id)
-    console.log(match_id == null)
-    console.log(user === null)
+
     // Game is ready to start when both players are connected
     if ( game_ready_to_start === false ) {
         if ( match_id !== null ) {
@@ -88,8 +85,8 @@ function Game()  {
     } else {
         if ( game_id === 0 ) {
             return (
-                <div class="container container-main">
-                    <div id="my_div_game" class="container-canvas mt-3" style={{width: '1100px', height: '577px'}}>
+                <div className="container container-main">
+                    <div id="my_div_game" className="container-canvas mt-3" style={{width: '1100px', height: '577px'}}>
                         <canvas id="game_canvas" className="game"></canvas>
                         <RastrosEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></RastrosEngine>
                     </div>
@@ -98,8 +95,8 @@ function Game()  {
         }
         if ( game_id === 1 ) {
             return (
-                <div class="container container-main">
-                    <div id="my_div_game" class="container-canvas mt-2" style={{width: '1200px', height: '624px'}}>
+                <div className="container container-main">
+                    <div id="my_div_game" className="container-canvas mt-2" style={{width: '1200px', height: '624px'}}>
                         <canvas id="game_canvas" className="game"></canvas>
                         <GatosCaesEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></GatosCaesEngine>
                     </div>
