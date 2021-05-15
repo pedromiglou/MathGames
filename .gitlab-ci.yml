@@ -18,9 +18,8 @@ test-job-WebApp:
   image: node:14
   script:
     - cd WebApp/mathgames_app
-    - npm i npm@latest -g
-    - npm i
-    - npm run build
+    - yarn install
+    - yarn build
 
 deploy-prod:
   stage: deploy
