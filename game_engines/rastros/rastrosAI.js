@@ -124,7 +124,7 @@ class rastrosAI {
                     }
                 }
 
-                var newScore = this.minimax(validSquares, element, 9, false);
+                var newScore = this.minimax(validSquares, element, 13, -100, 100, false);
                 if (newScore >= score) {
                     chosen = element;
                     score = newScore;
@@ -140,14 +140,14 @@ class rastrosAI {
     }
 
     //minimax algorithmn
-    minimax(validSquares, piece, depth, maximizingPlayer) {
+    minimax(validSquares, piece, depth, alpha, beta, maximizingPlayer) {
         var x = this.ended(piece, validSquares);
         if (depth == 0 || x==99 || x==-99) {
             return x;
         }
         if (maximizingPlayer) {
             var value = -100;
-            validSquares.forEach((element) => {
+            for (const element of validSquares) {
                 this.blocked_squares[element[0]][element[1]] = true;
                 var validSquares2 = [];
                 for (var y = element[0]-1; y<=element[0]+1; y++) {
@@ -157,15 +157,17 @@ class rastrosAI {
                         }
                     }
                 }
-                var newValue = this.minimax(validSquares2, element, depth-1, false);
+                var newValue = this.minimax(validSquares2, element, depth-1, alpha, beta, false);
+                this.blocked_squares[element[0]][element[1]] = false;
                 if (newValue > value) {
                     value = newValue;
                 }
-                this.blocked_squares[element[0]][element[1]] = false;
-            })
+                if (value>alpha) alpha=value;
+                if (alpha>=beta) return value;
+            }
         } else {
             var value = 100;
-            validSquares.forEach((element) => {
+            for (const element of validSquares) {
                 this.blocked_squares[element[0]][element[1]] = true;
                 var validSquares2 = [];
                 for (var y = element[0]-1; y<=element[0]+1; y++) {
@@ -175,12 +177,14 @@ class rastrosAI {
                         }
                     }
                 }
-                var newValue = this.minimax(validSquares2, element, depth-1, true);
+                var newValue = this.minimax(validSquares2, element, depth-1, alpha, beta, true);
+                this.blocked_squares[element[0]][element[1]] = false;
                 if (newValue < value) {
                     value = newValue;
                 }
-                this.blocked_squares[element[0]][element[1]] = false;
-            })
+                if (value<beta) beta=value;
+                if (beta<=alpha) return value;
+            }
         }
         return value;
     }
