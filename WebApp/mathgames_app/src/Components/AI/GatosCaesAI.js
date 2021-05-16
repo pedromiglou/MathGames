@@ -53,7 +53,7 @@ export default class GatosCaesAI {
                         }
                     }
                 }
-                var newScore = this.minimax(validSquares2, Math.ceil(this.turnCount/7), false, this.aiPieces, this.playerPieces);
+                var newScore = this.minimax(validSquares2, 2+ Math.floor(this.turnCount/6), -100, 100, false);
                 if (newScore > score) {
                     chosen = piece;
                     score = newScore;
@@ -67,8 +67,12 @@ export default class GatosCaesAI {
     }
 
     //this.minimax algorithmn
-    minimax(validSquares, depth, maximizingPlayer) {
+    minimax(validSquares, depth, alpha, beta, maximizingPlayer) {
         var value;
+        var validSquares2;
+        var x;
+        var y;
+        var newValue;
 
         if (depth === 0 || validSquares.length===0) {
             return this.heuristic(this.aiPieces, this.playerPieces);
@@ -76,11 +80,11 @@ export default class GatosCaesAI {
 
         if (maximizingPlayer) {
             value = -100;
-            validSquares.forEach((piece) => {
-                var validSquares2 = [];
+            for (const piece of validSquares) {
+                validSquares2 = [];
                 this.aiPieces[piece[0]][piece[1]] = true;
-                for (var y=0; y<8; y++) {
-                    for (var x=0;x<8;x++) {
+                for (y=0; y<8; y++) {
+                    for (x=0;x<8;x++) {
                         if (!this.aiPieces[y][x] && !this.playerPieces[y][x] && (y===0 || !this.playerPieces[y-1][x]) &&
                         (y===7 || !this.playerPieces[y+1][x]) && (x===0 || !this.playerPieces[y][x-1]) && (x===7 || !this.playerPieces[y][x+1])) {
                             validSquares2.push([y,x]);
@@ -88,20 +92,22 @@ export default class GatosCaesAI {
                     }
                 }
 
-                var newValue = this.minimax(validSquares2, depth-1, false, this.aiPieces, this.playerPieces);
+                newValue = this.minimax(validSquares2, depth-1, alpha, beta, false);
+                this.aiPieces[piece[0]][piece[1]] = false;
+
                 if (newValue > value) {
                     value = newValue;
                 }
-                
-                this.aiPieces[piece[0]][piece[1]] = false;
-            })
+                if (value>alpha) alpha = value;
+                if (alpha>=beta) return value;
+            }
         } else {
             value = 100;
-            validSquares.forEach((piece) => {
-                var validSquares2 = [];
+            for (const piece of validSquares) {
+                validSquares2 = [];
                 this.playerPieces[piece[0]][piece[1]] = true;
-                for (var y=0; y<8; y++) {
-                    for (var x=0;x<8;x++) {
+                for (y=0; y<8; y++) {
+                    for (x=0;x<8;x++) {
                         if (!this.aiPieces[y][x] && !this.playerPieces[y][x] && (y===0 || !this.aiPieces[y-1][x]) &&
                         (y===7 || !this.aiPieces[y+1][x]) && (x===0 || !this.aiPieces[y][x-1]) && (x===7 || !this.aiPieces[y][x+1])) {
                             validSquares2.push([y,x]);
@@ -109,13 +115,14 @@ export default class GatosCaesAI {
                     }
                 }
 
-                var newValue = this.minimax(validSquares2, depth-1, true, this.aiPieces, this.playerPieces);
+                newValue = this.minimax(validSquares2, depth-1, alpha, beta, true);
+                this.playerPieces[piece[0]][piece[1]] = false;
                 if (newValue < value) {
                     value = newValue;
                 }
-                
-                this.playerPieces[piece[0]][piece[1]] = false;
-            })
+                if (value<beta) beta=value;
+                if (beta<=alpha) return value;
+            }
         }
         return value;
     }
