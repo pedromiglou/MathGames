@@ -91,22 +91,27 @@ exports.findByUserId = (req, res) => {
   }
   Friend.findAll({ where: { [Op.or]: [{ friend1: id}, {friend2: id} ] }})
   .then(data => {
-      var data = data.map(element => {
-        if (element.friend1 !== parseInt(id)) {
-          return element.friend1;
-        } else {
-          return element.friend2;
-        }
-      });
-      User.findAll({attributes: ['id', 'username', 'avatar', 'account_level', 'account_type'], where: {id: data} })
-      .then( users => {
-        res.send(users)
-      })
-      .catch(err => {
-          res.status(500).send({
-              message: "Error retreving users."
-          })
-      })
+      if (data.length !== 0) {
+        var data = data.map(element => {
+          if (element.friend1 !== parseInt(id)) {
+            return element.friend1;
+          } else {
+            return element.friend2;
+          }
+        });
+        User.findAll({attributes: ['id', 'username', 'avatar', 'account_level', 'account_type'], where: {id: data} })
+        .then( users => {
+          res.send(users)
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: "Error retreving users."
+            })
+        })
+      }
+      else {
+        res.send([]);
+      }
     })
     .catch(err => {
       res.status(500).send({

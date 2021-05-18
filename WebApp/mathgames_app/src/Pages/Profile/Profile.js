@@ -32,7 +32,16 @@ const Profile = () => {
     // Tem de colocar no redux o tipo de user
     useEffect(() => {
 		var current_user = AuthService.getCurrentUser();
-		setUser(current_user);
+        
+        async function fetchApiUserById() {
+            var user = await UserService.getUserById(current_user.id);
+            setUser(user);
+            setHat(user.avatar_hat);
+            setShirt(user.avatar_shirt);
+            setColor(user.avatar_color);
+            setAccessorie(user.avatar_accessorie);
+            setTrouser(user.avatar_trouser);
+        }
 
 		// Load user games history
         async function fetchApiLastGames() {
@@ -42,6 +51,7 @@ const Profile = () => {
         }
 
         if (current_user !== null) {
+            fetchApiUserById();
             fetchApiLastGames();
         }
 
@@ -119,6 +129,11 @@ const Profile = () => {
 
     function changeTrousers(trousersName) {
         setTrouser(trousersName);
+    }
+
+    function saveAvatar() {
+        var current_user = AuthService.getCurrentUser();
+        UserService.update_user(color, hat, shirt, accessorie, trouser, current_user.id);
     }
 
     return (
@@ -297,7 +312,7 @@ const Profile = () => {
 
                                 <div className="row save-cancel-btns">
                                     <div className="col-lg-6 col-sm-12">
-                                        <button className="btn save-btn"> Salvar </button>
+                                        <button className="btn save-btn" onClick={saveAvatar}> Salvar </button>
                                     </div>
                                     <div className="col-lg-6 col-sm-12">
                                         <button className="btn cancel-btn"> Cancelar </button>

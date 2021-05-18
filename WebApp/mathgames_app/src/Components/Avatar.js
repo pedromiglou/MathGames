@@ -109,7 +109,7 @@ function Avatar(props) {
 		hat = null
 
 
-	if( props.shirtName === "None")
+	if( props.shirtName === "none")
 		var tex = false;
 	else
 		tex = true;

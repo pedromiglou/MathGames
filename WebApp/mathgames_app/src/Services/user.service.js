@@ -12,6 +12,8 @@ class UserService {
         var url = 'http://localhost:4000/api/friends/' + userId;
         console.log(JSON.parse(localStorage.getItem("user"))["token"]);
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        if (res.status !== 200) 
+            return { error: true };
         return res.json();
     }
 
@@ -73,6 +75,27 @@ class UserService {
             headers:{'Content-type':'application/json',
                      'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
             body: JSON.stringify(friends)
+        });
+
+        return;        
+    }
+
+    update_user(color, hat, shirt, accessorie, trouser, user) {
+        let avatar = {
+            avatar_color: color,
+            avatar_hat: hat,
+            avatar_shirt: shirt,
+            avatar_accessorie: accessorie,
+            avatar_trouser: trouser,
+        }
+
+        var url = 'http://localhost:4000/api/users/' + user;
+        
+        fetch(url, {
+            method:'PUT',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+            body: JSON.stringify(avatar)
         });
 
         return;        

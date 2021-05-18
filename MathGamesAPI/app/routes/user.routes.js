@@ -1,5 +1,6 @@
 const authorize = require('../config/authorize')
 const Role = require('../config/roles');
+const { authJwt } = require("../middleware");
 
 module.exports = app => {
     const users = require("../controllers/user.controller.js");
@@ -16,7 +17,7 @@ module.exports = app => {
     router.get("/:id", users.findOne);
   
     // Update a User with id
-    router.put("/:id", users.update);
+    router.put("/:id", authJwt.verifyToken, users.update);
   
     // Delete a User with id
     router.delete("/:id", users.delete);
