@@ -26,10 +26,10 @@ test-job-API:
     - npm test
 
 publish:
-  image: docker:latest
+  image: docker:18.09
   stage: publish
   services:
-    - docker:dind
+    - docker:18.09-dind
   script:
     - cd WebApp/mathgames_app
     - docker build -t $TAG_COMMIT -t $TAG_LATEST .
@@ -53,4 +53,4 @@ deploy:
     name: production
     url: http://$SERVER_IP
   only:
-    - master
+    - new/deploy_in_digital_ocean
