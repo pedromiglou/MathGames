@@ -44,7 +44,7 @@ deploy:
     - deployment
   script:
     - apk update && apk add openssh-client
-    - chmod 400 $ID_RSA
+    - chmod u+r $ID_RSA
     - ssh -i $ID_RSA $SERVER_USER@$SERVER_IP "docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY"
     - ssh -i $ID_RSA $SERVER_USER@$SERVER_IP "docker pull $TAG_COMMIT"
     - ssh -i $ID_RSA $SERVER_USER@$SERVER_IP "docker container rm -f my-app || true"
