@@ -38,7 +38,7 @@ publish:
     - docker push $TAG_LATEST
 
 deploy:
-  image: ubuntu:20
+  image: ubuntu:20.04
   stage: deploy
   tags:
     - deployment
