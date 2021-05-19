@@ -38,7 +38,7 @@ publish:
     - docker push $TAG_LATEST
 
 deploy:
-  image: alpine:latest
+  image: ubuntu:20
   stage: deploy
   tags:
     - deployment
