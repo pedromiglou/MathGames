@@ -33,20 +33,24 @@ function Podium() {
 		UserService.remove_friend(current_user.id, friend2);
 	}
 
-	function report_player(friend2) {
-		UserService.report_player(current_user.id, friend2);
+	function report_player(player) {
+		UserService.report_player(current_user.id, player);
 	}
 
-	function ban_player(friend2) {
-		UserService.ban_player(current_user.id, friend2);
+	function ban_player(player) {
+		UserService.ban_player(player);
 	}
 
-	function upgrade_account(friend2) {
-		UserService.upgrade_account(current_user.id, friend2);
+	function remove_ban(player) {
+		UserService.remove_ban(player);
 	}
 
-	function downgrade_account(friend2) {
-		UserService.downgrade_account(current_user.id, friend2);
+	function upgrade_account(player) {
+		UserService.upgrade_account(player);
+	}
+
+	function downgrade_account(player) {
+		UserService.downgrade_account(player);
 	}
 
 	const retrieveUsers = () => {

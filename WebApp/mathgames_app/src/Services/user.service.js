@@ -122,16 +122,58 @@ class UserService {
         // TODO    
     }
 
-    ban_player(friend1, friend2) {
-        // TODO    
+    ban_player(player) {
+        let ban= {
+            reason: "New Ban",
+            user_id: player
+        }
+
+        var url = 'http://localhost:4000/api/bans/';
+        
+        fetch(url, {
+            method:'POST',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+            body: JSON.stringify(ban)
+        });
+
+        return;    
     }
 
-    upgrade_account(friend1, friend2) {
-        // TODO    
+    remove_ban(player) {
+        var url = 'http://localhost:4000/api/bans/' + player;
+        
+        fetch(url, {
+            method:'DELETE',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+        });
+
+        return;    
     }
 
-    downgrade_account(friend1, friend2) {
-        // TODO    
+    upgrade_account(player) {
+        var url = 'http://localhost:4000/api/users/upgrade/' + player;
+        
+        fetch(url, {
+            method:'PUT',
+            headers:{'Content-type':'application/json',
+                        'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+        });
+
+        return;    
+    }
+
+    downgrade_account(player) {
+        var url = 'http://localhost:4000/api/users/downgrade/' + player;
+        
+        fetch(url, {
+            method:'PUT',
+            headers:{'Content-type':'application/json',
+                        'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+        });
+
+        return;  
     }
  
 }
