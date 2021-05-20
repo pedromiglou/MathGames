@@ -1,6 +1,6 @@
 class UserService {
     constructor() {
-        this.apiURL = process.env.NODE_ENV === "development" ? 'http://localhost:4000/api/' : '';
+        this.apiURL = process.env.NODE_ENV === "development" ? 'http://localhost:4000/api/' : 'http://138.68.191.32:4000/api/';
     }
     
     async getUserById(userId) {
