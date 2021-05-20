@@ -60,7 +60,9 @@ function Podium() {
 
 		async function fetchApiFriends(userId) {
             var response = await UserService.getFriends(userId);
-            setFriends(response);
+			if (!response.error) {
+            	setFriends(response);
+			}
         };
 
 		if (current_user !== null) {
