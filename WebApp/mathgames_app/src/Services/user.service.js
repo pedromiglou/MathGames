@@ -12,6 +12,9 @@ class UserService {
         var url = 'http://localhost:4000/api/friends/' + userId;
         console.log(JSON.parse(localStorage.getItem("user"))["token"]);
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        if (res.status !== 200) {
+            return {'error': true}
+        }
         return res.json();
     }
 
@@ -24,6 +27,9 @@ class UserService {
     async getLastGames(userId) {
         var url = 'http://localhost:4000/api/matches?userid=' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        if (res.status !== 200) {
+            return {'error': true}
+        }
         return res.json();
     }
     
@@ -76,6 +82,35 @@ class UserService {
         });
 
         return;        
+    }
+
+
+    remove_friend(friend1, friend2) {
+        var url = 'http://localhost:4000/api/friends/' + friend1 + "/" + friend2;
+        
+        fetch(url, {
+            method:'DELETE',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+        });
+
+        return;    
+    }
+    
+    report_player(friend1, friend2) {
+        // TODO    
+    }
+
+    ban_player(friend1, friend2) {
+        // TODO    
+    }
+
+    upgrade_account(friend1, friend2) {
+        // TODO    
+    }
+
+    downgrade_account(friend1, friend2) {
+        // TODO    
     }
  
 }

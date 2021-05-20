@@ -68,19 +68,12 @@ export const sidebarData_group_admin = [
     {
         id: 2,
         title: 'Jogadores',
-        path: '/players',
+        path: '/podium',
         icon: <ImIcons.ImUsers/>,
         cName: 'nav-text',
     },
     {
         id: 3,
-        title: 'Jogadores Banidos',
-        path: '/bannedPlayers',
-        icon: <FaIcons.FaUserSlash/>,
-        cName: 'nav-text',
-    },
-    {
-        id: 4,
         title: 'Gerir Torneios',
         path: '/manageTournaments',
         icon: <RiIcons.RiTrophyFill/>,

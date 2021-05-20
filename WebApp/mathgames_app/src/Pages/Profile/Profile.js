@@ -38,7 +38,8 @@ const Profile = () => {
         async function fetchApiLastGames() {
             console.log(current_user.id)
             var response = await UserService.getLastGames(current_user.id);
-            setGames(response);
+            if (!response.error)
+                setGames(response);
         }
 
         if (current_user !== null) {
@@ -201,7 +202,7 @@ const Profile = () => {
                         </div>
                         <hr className="solid" />
                         {Object.entries(games_info).map(([key, value]) => (	
-			
+                            
                             <>
                                 <div className="row profile-games">
                                     <img

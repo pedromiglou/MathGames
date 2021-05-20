@@ -22,6 +22,8 @@ function Sidemenu() {
 		var current_user = AuthService.getCurrentUser();
 
 		if (current_user === null){
+			setNormalUser(true);
+		} else if (current_user['account_type'] === 'A') {
 			setAdmin(true);
 		} else {
 			setNormalUser(true);
