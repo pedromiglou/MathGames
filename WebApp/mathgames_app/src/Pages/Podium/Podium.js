@@ -25,6 +25,7 @@ function Podium() {
 	}
 
 	const retrieveUsers = () => {
+		var current_user = AuthService.getCurrentUser();
 		async function fetchApiUsers() {
 			let username = document.getElementById("filter_username").value;
             var response = await UserService.getUsers(username,parseInt(page)-1, 10);
@@ -51,7 +52,7 @@ function Podium() {
 
 	useEffect(
 		retrieveUsers
-	, [page, current_user])
+	, [page])
 
 	return (
 		<div>
