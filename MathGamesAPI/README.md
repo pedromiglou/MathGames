@@ -1,14 +1,15 @@
 # How to run
 
+## docker run --name mysql8 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=demo -e MYSQL_USER=demo -e MYSQL_PASSWORD=password -p 3306:3306 -d mysql/mysql-server:8.0.23
+Run the MySQL database container
+
 ## npm install
 Install the needed dependencies.
 
-## node server.js
+## npm start
 Run the node server.
 
 # Known Problems
-
-docker run --name mysql8 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=demo -e MYSQL_USER=demo -e MYSQL_PASSWORD=password -p 3306:3306 -d mysql/mysql-server:8.0.23
 
 Se der erro "Access denied for user 'root'@'172.17.0.1' (using password: YES)"
 docker exec -t -i mysql8 /bin/bash

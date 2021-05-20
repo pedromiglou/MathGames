@@ -1,13 +1,16 @@
-
 class AuthService {
-    async login(username, password) {
+    constructor() {
+        this.apiURL = process.env.NODE_ENV === "development" ? 'http://localhost:4000/api/' : '';
+    }
 
+    async login(username, password) {
+            
         let userInfo= {
             username: username,
             password: password,
         }
 
-        var res = await fetch('http://localhost:4000/api/users/login', {
+        var res = await fetch(this.apiURL + 'users/login', {
             method:'POST',
             headers:{'Content-type':'application/json'},
             body: JSON.stringify(userInfo)
@@ -34,7 +37,7 @@ class AuthService {
         }
         
 
-        var res = await fetch('http://localhost:4000/api/users/register', {
+        var res = await fetch(this.apiURL + 'users/register', {
             method:'POST',
             headers:{'Content-type':'application/json'},
             body: JSON.stringify(userInfo)

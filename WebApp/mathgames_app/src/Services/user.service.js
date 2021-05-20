@@ -1,40 +1,41 @@
-
 class UserService {
-
-
+    constructor() {
+        this.apiURL = process.env.NODE_ENV === "development" ? 'http://localhost:4000/api/' : '';
+    }
+    
     async getUserById(userId) {
-        var url = 'http://localhost:4000/api/users/' + userId;
+        var url = this.apiURL + 'users/' + userId;
         var res = await fetch(url);
         return res.json();
     }
 
     async getFriends(userId) {
-        var url = 'http://localhost:4000/api/friends/' + userId;
+        var url = this.apiURL + 'friends/' + userId;
         console.log(JSON.parse(localStorage.getItem("user"))["token"]);
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         return res.json();
     }
 
     async getNotifications(userId) {
-        var url = 'http://localhost:4000/api/notifications/' + userId;
+        var url = this.apiURL + 'notifications/' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         return res.json();
     }
 
     async getLastGames(userId) {
-        var url = 'http://localhost:4000/api/matches?userid=' + userId;
+        var url = this.apiURL + 'matches?userid=' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         return res.json();
     }
     
     async getUsers(username, page, pageSize) {
-        var url = 'http://localhost:4000/api/users?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username;
+        var url = this.apiURL + 'users?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username;
         var res = await fetch(url);
         return res.json();
     }
     
     delete(notificationId) {
-        var url = 'http://localhost:4000/api/notifications/' + notificationId;
+        var url = this.apiURL + 'notifications/' + notificationId;
         fetch(url, {
             method:'DELETE',
             headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}
@@ -48,7 +49,7 @@ class UserService {
             friend2: notification.receiver,
         }
 
-        var url = 'http://localhost:4000/api/friends/';
+        var url = this.apiURL + 'friends/';
         fetch(url, {
             method:'POST',
             headers:{'Content-type':'application/json',
@@ -66,7 +67,7 @@ class UserService {
             notification_type: "F"
         }
 
-        var url = 'http://localhost:4000/api/notifications/';
+        var url = this.apiUrl + 'notifications/';
         
         fetch(url, {
             method:'POST',
