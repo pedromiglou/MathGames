@@ -57,7 +57,11 @@ exports.findAll = (req, res) => {
     const { page, size } = req.query;
     const username = !req.query.username ? "": req.query.username+"%";
     const { limit, offset } = getPagination(page, size);
-    User.findAndCountAll({attributes: ['id', 'username', 'avatar', 'account_level', 'account_type'] , where: {username: { [Op.like]: `%${username}` } }, order: [[req.query.orderby, 'DESC']], limit, offset})
+    User.findAndCountAll({attributes: ['id', 'username', 'account_level', 'account_type', 
+                                       'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 
+                                       'avatar_trouser'] , 
+                          where: {username: { [Op.like]: `%${username}` } }, 
+                          order: [[req.query.orderby, 'DESC']], limit, offset})
     .then(data => {
       const response = getPagingData(data, page, limit);
       res.send(response);
@@ -69,7 +73,9 @@ exports.findAll = (req, res) => {
       });
     });
   } else {
-    User.findAll({attributes: ['username', 'avatar', 'account_level', 'account_type']})
+    User.findAll({attributes: ['username', 'account_level', 'account_type', 
+                               'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 
+                               'avatar_trouser']})
       .then(data => {
         res.send(data);
       })
@@ -101,6 +107,13 @@ exports.findOne = (req, res) => {
 // Update a User by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
+
+  if (parseInt(req.userId) !== parseInt(id)) {
+    res.status(403).send({
+      message: "Unauthorized!"
+    });
+    return;
+  }
 
   User.update(req.body, {
     where: { id: id }
