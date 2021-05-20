@@ -9,8 +9,7 @@ import { games_info } from "../../data/GamesInfo";
 
 import AuthService from "../../Services/auth.service"
 import UserService from "../../Services/user.service"
-
-
+import { Modal, Button } from "react-bootstrap";
 
 const Profile = () => {
     const [menuOption, setMenuOption] = useState("Geral");
@@ -23,7 +22,8 @@ const Profile = () => {
     const [color, setColor] = useState("#FFAF00");
     const [accessorie, setAccessorie] = useState("None");
     const [trouser, setTrouser] = useState("#808080");
-
+    const [modalSaveShow, setSaveModalShow] = useState(false);
+    const [modalCancelShow, setCancelModalShow] = useState(false);
     var geral_e;
     var inventario_e;
     var last_games_e;
@@ -131,10 +131,59 @@ const Profile = () => {
         setTrouser(trousersName);
     }
 
-    function saveAvatar() {
+    async function saveAvatar() {
         var current_user = AuthService.getCurrentUser();
-        UserService.update_user(color, hat, shirt, accessorie, trouser, current_user.id);
+        await UserService.update_user(color, hat, shirt, accessorie, trouser, current_user.id);
+        window.location.reload();
     }
+
+    function SaveChangesModal(props) {
+        return (
+          <Modal
+            {...props}
+            size="md"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header closeButton>
+              <Modal.Title id="contained-modal-title-vcenter" style={{color: "#0056b3", fontSize: 30}}>
+                Guardar alterações
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p style={{color: "#0056b3", fontSize: 20}}>Tem a certeza que pretende guardar as alterações efetuadas?</p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button style={{fontSize: 18}} onClick={() => {saveAvatar();}} className="btn save-btn">Guardar</Button>
+              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Cancelar</Button>
+            </Modal.Footer>
+          </Modal>
+        );
+      }
+
+      function CancelChangesModal(props) {
+        return (
+          <Modal
+            {...props}
+            size="md"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header closeButton>
+              <Modal.Title id="contained-modal-title-vcenter" style={{color: "#0056b3", fontSize: 30}}>
+                Cancelar alterações
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p style={{color: "#0056b3", fontSize: 20}}>Tem a certeza que pretende descartar as alterações efetuadas?</p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button style={{fontSize: 18}} onClick={() => window.location.reload()} className="btn save-btn">Sim</Button>
+              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Não</Button>
+            </Modal.Footer>
+          </Modal>
+        );
+      }
 
     return (
         <div className="hero-container">
@@ -312,11 +361,23 @@ const Profile = () => {
 
                                 <div className="row save-cancel-btns">
                                     <div className="col-lg-6 col-sm-12">
-                                        <button className="btn save-btn" onClick={saveAvatar}> Salvar </button>
+                                    <button className="btn save-btn" onClick={() => setSaveModalShow(true)}>
+                                        Salvar
+                                    </button>
+
+                                    <SaveChangesModal
+                                        show={modalSaveShow}
+                                        onHide={() => setSaveModalShow(false)}
+                                    />
                                     </div>
                                     <div className="col-lg-6 col-sm-12">
-                                        <button className="btn cancel-btn"> Cancelar </button>
+                                        <button className="btn cancel-btn" onClick={() => setCancelModalShow(true)}> Cancelar </button>
                                     </div>
+
+                                    <CancelChangesModal
+                                        show={modalCancelShow}
+                                        onHide={() => setCancelModalShow(false)}
+                                    />
                                 </div>
                             </div>
                         </div>

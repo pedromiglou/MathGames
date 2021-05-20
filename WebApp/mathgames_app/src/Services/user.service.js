@@ -80,7 +80,7 @@ class UserService {
         return;        
     }
 
-    update_user(color, hat, shirt, accessorie, trouser, user) {
+    async update_user(color, hat, shirt, accessorie, trouser, user) {
         let avatar = {
             avatar_color: color,
             avatar_hat: hat,
@@ -91,7 +91,7 @@ class UserService {
 
         var url = 'http://localhost:4000/api/users/' + user;
         
-        fetch(url, {
+        await fetch(url, {
             method:'PUT',
             headers:{'Content-type':'application/json',
                      'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
