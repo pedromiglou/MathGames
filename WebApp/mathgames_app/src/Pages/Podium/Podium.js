@@ -17,7 +17,6 @@ function Podium() {
 	const [users, setUsers] = useState([]);
 	const [banned_users, setBannedUsers] = useState([]);
 	const [friends, setFriends] = useState([]);
-	const [banned, setBanned] = useState(false);
 	var [numberClassificationUsers, setNumberClassificationUsers] = useState([]);
 	var [numberClassificationBannedUsers, setNumberClassificationBannedUsers] = useState([]);
 	const [filterOption, setfilterOption] = useState("Players");
@@ -96,7 +95,8 @@ function Podium() {
 			fetchApiFriends(current_user.id)
 		}
 		
-		fetchApiUsersBanned() 
+		if (current_user !== null && current_user["account_type"] === "A")
+			fetchApiUsersBanned() 
 		fetchApiUsers();
 	}
 
@@ -107,54 +107,57 @@ function Podium() {
 
 	function viewPlayers() {
 		setfilterOption("Players");
-		setBanned(false);
 	}
 
 	function viewBannedPlayers() {
 		setfilterOption("BannedPlayers");
-		setBanned(true);
 	}
 
 	useEffect(
 		retrieveUsers
-	, [page_users, page_banned_users])
+	, [page_users, page_banned_users, username_input, banned_username])
 
 	
 	return (
 		<div>
 			<br></br>
-			<div className="col-lg-12 col-md-12 col-sm-12" id="filter_options">
-				<div className="row top-bar no-margin">
-					<div className="col-lg-3 col-md-3 col-sm-3">
-					</div>
-					<div className="col-lg-3 col-md-3 col-sm-3 top-button">
-						<button
-							id="players"
-							onClick={viewPlayers}
-							className={
-								filterOption === "Players"
-									? "box actived-btn"
-									: "box up"
-							}
-						>
-							Jogadores
-						</button>
-					</div>
-					<div className="col-lg-3 col-md-3 col-sm-3 top-button">
-						<button
-							id="banned_players"
-							onClick={viewBannedPlayers}
-							className={
-								filterOption === "BannedPlayers"
-									? "box actived-btn"
-									: "box up"
-							}
-						>
-							Jogadores banidos
-						</button>
+
+			{ current_user !== null && current_user["account_type"] === "A" &&
+
+				<div className="col-lg-12 col-md-12 col-sm-12" id="filter_options">
+					<div className="row top-bar no-margin">
+						<div className="col-lg-3 col-md-3 col-sm-3">
+						</div>
+						<div className="col-lg-3 col-md-3 col-sm-3 top-button">
+							<button
+								id="players"
+								onClick={viewPlayers}
+								className={
+									filterOption === "Players"
+										? "box actived-btn"
+										: "box up"
+								}
+							>
+								Jogadores
+							</button>
+						</div>
+						<div className="col-lg-3 col-md-3 col-sm-3 top-button">
+							<button
+								id="banned_players"
+								onClick={viewBannedPlayers}
+								className={
+									filterOption === "BannedPlayers"
+										? "box actived-btn"
+										: "box up"
+								}
+							>
+								Jogadores banidos
+							</button>
+						</div>
 					</div>
 				</div>
-			</div>
+
+			}
 
 			{ filterOption === "Players" && 
 			<>
@@ -163,10 +166,10 @@ function Podium() {
 					<form onSubmit={submitFunction}>
 						<div className="card-body row no-gutters align-items-center">
 							<div className="col">
-								<input onChange={event => setUsername(event.target.value)} className="form-control form-control-lg" id="filter_username" type="search" placeholder="Procurar por username"/>
+								<input className="form-control form-control-lg" id="filter_username" type="search" placeholder="Procurar por username"/>
 							</div>
 							<div className="col-auto">
-								<button id="searchButton" onClick={retrieveUsers} className="btn btn-lg btn-success" type="button">Procurar</button>
+								<button id="searchButton" onClick={() => {setUsername(document.getElementById("filter_username").value); }} className="btn btn-lg btn-success" type="button">Procurar</button>
 							</div>
 						</div>
 					</form>
@@ -281,10 +284,10 @@ function Podium() {
 						<form onSubmit={submitFunction}>
 							<div className="card-body row no-gutters align-items-center">
 								<div className="col">
-									<input onChange={event => setBannedUsername(event.target.value)} className="form-control form-control-lg" id="filter_banned_username" type="search" placeholder="Procurar por username"/>
+									<input className="form-control form-control-lg" id="filter_banned_username" type="search" placeholder="Procurar por username"/>
 								</div>
 								{ current_user !== null && current_user["account_type"] === "A" &&
-									<button id="viewbanned" onClick={retrieveUsers} className="btn btn-lg btn-success" type="button">Ver Jogadores Banidos</button>
+									<button id="viewbanned" onClick={() => {setBannedUsername(document.getElementById("filter_banned_username").value); }} className="btn btn-lg btn-success" type="button">Ver Jogadores Banidos</button>
 								}
 							</div>
 						</form>
