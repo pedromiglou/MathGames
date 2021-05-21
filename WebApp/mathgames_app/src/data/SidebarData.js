@@ -5,7 +5,7 @@ import * as BsIcons from 'react-icons/bs';
 import * as RiIcons from 'react-icons/ri';
 import * as GiIcons from 'react-icons/gi';
 import * as ImIcons from 'react-icons/im';
-import * as FaIcons from 'react-icons/fa';
+//import * as FaIcons from 'react-icons/fa';
 
 
 

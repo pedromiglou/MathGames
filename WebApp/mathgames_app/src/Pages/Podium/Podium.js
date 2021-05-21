@@ -41,9 +41,9 @@ function Podium() {
 		UserService.ban_player(player);
 	}
 
-	function remove_ban(player) {
+	/*function remove_ban(player) {
 		UserService.remove_ban(player);
-	}
+	}*/
 
 	function upgrade_account(player) {
 		UserService.upgrade_account(player);
