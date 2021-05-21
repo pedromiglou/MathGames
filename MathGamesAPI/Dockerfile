@@ -17,4 +17,4 @@ RUN npm ci
 COPY . .
 
 EXPOSE 4000
-CMD [ "npm run-script start-prod" ]
+CMD [ "npm", "run-script", "start-prod" ]

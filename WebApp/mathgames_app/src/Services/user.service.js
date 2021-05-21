@@ -49,7 +49,7 @@ class UserService {
             avatar_trouser: trouser,
         }
 
-        var url = 'http://localhost:4000/api/users/' + user;
+        var url = this.apiURL + 'users/' + user;
         
         await fetch(url, {
             method:'PUT',
@@ -108,7 +108,7 @@ class UserService {
 
 
     remove_friend(friend1, friend2) {
-        var url = 'http://localhost:4000/api/friends/' + friend1 + "/" + friend2;
+        var url = this.apiURL + 'friends/' + friend1 + "/" + friend2;
         
         fetch(url, {
             method:'DELETE',
@@ -129,7 +129,7 @@ class UserService {
             user_id: player
         }
 
-        var url = 'http://localhost:4000/api/bans/';
+        var url = this.apiURL + 'bans/';
         
         fetch(url, {
             method:'POST',
@@ -142,7 +142,7 @@ class UserService {
     }
 
     remove_ban(player) {
-        var url = 'http://localhost:4000/api/bans/' + player;
+        var url = this.apiURL + 'bans/' + player;
         
         fetch(url, {
             method:'DELETE',
@@ -154,7 +154,7 @@ class UserService {
     }
 
     upgrade_account(player) {
-        var url = 'http://localhost:4000/api/users/upgrade/' + player;
+        var url = this.apiURL + 'users/upgrade/' + player;
         
         fetch(url, {
             method:'PUT',
@@ -166,7 +166,7 @@ class UserService {
     }
 
     downgrade_account(player) {
-        var url = 'http://localhost:4000/api/users/downgrade/' + player;
+        var url = this.apiURL + 'users/downgrade/' + player;
         
         fetch(url, {
             method:'PUT',

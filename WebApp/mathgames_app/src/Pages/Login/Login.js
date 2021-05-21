@@ -19,7 +19,7 @@ function Login() {
         )   
         
         if (response === true)
-            window.location.assign("http://localhost:3000/");
+            window.location.assign(process.env.NODE_ENV === "development" ? "http://localhost:3000/" : 'http://138.68.191.32');
         else {
             setErroLogin(true);
         }

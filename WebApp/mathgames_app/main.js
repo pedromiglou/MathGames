@@ -13,7 +13,7 @@ function createWindow () {
   })
 
   // and load the index.html of the app.
-  mainWindow.loadURL('http://localhost:3000')
+  mainWindow.loadURL(process.env.NODE_ENV === "development" ? 'http://localhost:3000' : 'http://138.68.191.32')
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()

@@ -9,7 +9,7 @@ Install the needed dependencies.
 ## npm start
 Run the node server in development mode.
 
-## npm start-prod
+## npm run-script start-prod
 Run the node server in production mode.
 
 # Known Problems

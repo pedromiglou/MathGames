@@ -74,7 +74,7 @@ function Game()  {
                         <h2>Copia o link para convidar alguém!</h2>
                         <hr className="link-hr"></hr>
                         <div className="bottom-link row">
-                            <input readOnly={true} className="link" id="link" value={"http://localhost:3000/game/?"+url.toString()}></input>
+                            <input readOnly={true} className="link" id="link" value={(process.env.NODE_ENV === "development" ? "http://localhost:3000/" : 'http://138.68.191.32/') + "game/?"+url.toString()}></input>
                             <div className="div-link-button">
                                 <button id="button-copy" className="button-copy" onClick={() => copy()}><i className="copy-icon"><FaIcons.FaCopy/></i></button>
                             </div>
