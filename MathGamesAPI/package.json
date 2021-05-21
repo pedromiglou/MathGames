@@ -4,7 +4,8 @@
   "description": "Node.js Rest Api with Express & Mysql",
   "main": "server.js",
   "scripts": {
-	  "start": "node server.js",
+	  "start": "export NODE_ENV='development' && node server.js",
+    "start-prod": "export NODE_ENV='production' && node server.js",
     "test": "echo \"Error: No tests implemented\" && exit 0"
   },
   "keywords": [
