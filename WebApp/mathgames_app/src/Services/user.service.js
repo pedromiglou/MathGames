@@ -10,7 +10,6 @@ class UserService {
 
     async getFriends(userId) {
         var url = 'http://localhost:4000/api/friends/' + userId;
-        console.log(JSON.parse(localStorage.getItem("user"))["token"]);
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         if (res.status !== 200) 
             return { error: true };
@@ -112,10 +111,10 @@ class UserService {
     }
 
 
-    remove_friend(friend1, friend2) {
+    async remove_friend(friend1, friend2) {
         var url = 'http://localhost:4000/api/friends/' + friend1 + "/" + friend2;
         
-        fetch(url, {
+        await fetch(url, {
             method:'DELETE',
             headers:{'Content-type':'application/json',
                      'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},

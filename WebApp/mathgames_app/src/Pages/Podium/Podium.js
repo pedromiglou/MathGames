@@ -6,6 +6,7 @@ import Pagination from "@material-ui/lab/Pagination";
 import * as IoIcons from 'react-icons/io5';
 import * as MdIcons from 'react-icons/md';
 import * as FaIcons from 'react-icons/fa';
+import { Modal, Button } from "react-bootstrap";
 
 import AuthService from '../../Services/auth.service';
 import UserService from '../../Services/user.service';
@@ -29,6 +30,13 @@ function Podium() {
 	const [banned_username_input, setBannedUsername] = useState("");
 	const [username_input, setUsername] = useState("");
 
+	const [modalConfirmShow, setConfirmModalShow] = useState(false);
+	const [modalOperation, setModalOperation] = useState("");
+	const [modalUsername, setModalUsername] = useState("");
+	const [modalId, setModalUserId] = useState(0);
+
+	const [friendRequestSucess, setFriendRequestSucess] = useState(false);
+	
 	const handlePageChangeUsers = (event, value) => {
 		setPageUsers(value);
 	};
@@ -41,8 +49,9 @@ function Podium() {
 		UserService.make_friend_request(current_user.id, friend2);
 	}
 
-	function remove_friend(friend2) {
-		UserService.remove_friend(current_user.id, friend2);
+	async function remove_friend(friend2) {
+		await UserService.remove_friend(current_user.id, friend2);
+		window.location.reload();
 	}
 
 	function report_player(player) {
@@ -70,10 +79,9 @@ function Podium() {
 	}
 
 	const retrieveUsers = () => {
-		current_user = AuthService.getCurrentUser();
+		var current_user = AuthService.getCurrentUser();
 		async function fetchApiUsers() {
 			let username = username_input;
-			console.log(username)
 			var response = await UserService.getUsers(username,parseInt(page_users)-1, 10);
 			setUsers(response.users);
 			setCountUsers(response.totalPages)
@@ -117,6 +125,59 @@ function Podium() {
 		setfilterOption("BannedPlayers");
 	}
 
+	function ConfirmOperationModal(props) {
+		let modal_username = props.username;
+		let title = "";
+		let text = "";
+		let modal_function = null;
+		if (props.operation === "upgrade") {
+			title = "Aumentar Privilégios";
+			text = "Tem a certeza que pretende aumentar os privilégios da conta " + modal_username + "?";
+			modal_function = upgrade_account;
+		} else if (props.operation === "downgrade") {
+			title = "Diminuir Privilégios";
+			text = "Tem a certeza que pretende diminuir os privilégios da conta " + modal_username + "?";
+			modal_function = downgrade_account;
+		} else if (props.operation === "ban") {
+			title = "Banir Jogador";
+			text = "Tem a certeza que pretende banir a conta " + modal_username + "?";
+			modal_function = ban_player;
+		} else if (props.operation === "remove_ban") {
+			title = "Remover Ban de Jogador";
+			text = "Tem a certeza que pretende remover o ban da conta " + modal_username + "?";
+			modal_function = remove_ban;
+		} else if (props.operation === "remove_friend") {
+			title = "Remover Amizade com " + modal_username;
+			text = "Tem a certeza que pretende remover a sua amizade com " + modal_username + "?";
+			modal_function = (userid) => {remove_friend(userid);};
+		} else if (props.operation === "friend_request") {
+			title = "Pedir Amizade a " + modal_username;
+			text = "Tem a certeza que pretende enviar um pedido de amizade a " + modal_username + "?";
+			modal_function = (userid) => {friend_request(userid); setFriendRequestSucess(true)};
+		}
+        return (
+          <Modal
+            {...props}
+            size="md"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header closeButton>
+              <Modal.Title id="contained-modal-title-vcenter" style={{color: "#0056b3", fontSize: 30}}>
+                {title}
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p style={{color: "#0056b3", fontSize: 20}}>{text}</p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button style={{fontSize: 18}} onClick={() => {modal_function(props.id); props.onHide();}} className="btn save-btn">Confimar</Button>
+              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Cancelar</Button>
+            </Modal.Footer>
+          </Modal>
+        );
+      }
+
 	useEffect(
 		retrieveUsers
 	, [page_users, page_banned_users, username_input, banned_username_input])
@@ -125,6 +186,11 @@ function Podium() {
 	return (
 		<div>
 			<br></br>
+
+			{friendRequestSucess === true 
+                ? <div className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                O Pedido de Amizade para {modalUsername} foi enviado com sucesso! 
+                </div> : null}
 
 			{ current_user !== null && current_user["account_type"] === "A" &&
 
@@ -173,7 +239,7 @@ function Podium() {
 								<input className="form-control form-control-lg" id="filter_username" type="search" placeholder="Procurar por username"/>
 							</div>
 							<div className="col-auto">
-								<button id="searchButton" onClick={() => {setUsername(document.getElementById("filter_username").value); }} className="btn btn-lg btn-success" type="button">Procurar</button>
+								<button id="searchButton" onClick={() => {setUsername(document.getElementById("filter_username").value); setFriendRequestSucess(false);}} className="btn btn-lg btn-success" type="button">Procurar</button>
 							</div>
 						</div>
 					</form>
@@ -226,13 +292,13 @@ function Podium() {
 										<>
 										{ friends.some(e => e.id === user.id) &&
 											<>
-											<i className="subicon pointer"  onClick={() => {remove_friend(user.id)}}><IoIcons.IoPersonRemove/></i>
+											<i className="subicon pointer"   onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_friend"); setConfirmModalShow(true) }}><IoIcons.IoPersonRemove/></i>
 											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {report_player(user.id)}}><MdIcons.MdReport/></i>
 											</>
 										} 
 										{ (!friends.some(e => e.id === user.id) && user.id !== current_user.id ) &&
 											<>
-											<i className="subicon pointer"  onClick={() => {friend_request(user.id)}}><IoIcons.IoPersonAdd/></i>
+											<i className="subicon pointer"  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("friend_request"); setConfirmModalShow(true) }}><IoIcons.IoPersonAdd/></i>
 											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {report_player(user.id)}}><MdIcons.MdReport/></i>
 											</>
 										} 
@@ -240,7 +306,7 @@ function Podium() {
 									}
 									{ friends.length === 0 &&  user.id !== current_user.id &&
 										<>
-										<i className="subicon pointer"  onClick={() => {friend_request(user.id)}}><IoIcons.IoPersonAdd/></i>
+										<i className="subicon pointer"  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("friend_request"); setConfirmModalShow(true) }}><IoIcons.IoPersonAdd/></i>
 										<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {report_player(user.id)}}><MdIcons.MdReport/></i>
 										</>
 										
@@ -252,9 +318,9 @@ function Podium() {
 								{ current_user !== null && current_user["account_type"] === "A" && user.id !== current_user.id  &&
 									<>
 								
-										<i className="subicon pointer"  onClick={() => {upgrade_account(user.id)}}><FaIcons.FaRegArrowAltCircleUp/></i>
-										<i className="subicon pointer" style={{marginLeft:"10px"}} onClick={() => {downgrade_account(user.id)}}><FaIcons.FaRegArrowAltCircleDown/></i>
-										<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {ban_player(user.id)}}><IoIcons.IoBan/></i>
+										<i className="subicon pointer" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("upgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleUp/></i>
+										<i className="subicon pointer" style={{marginLeft:"10px"}} onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("downgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleDown/></i>
+										<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("ban"); setConfirmModalShow(true) }}><IoIcons.IoBan/></i>
 										
 									</>
 								}
@@ -265,6 +331,13 @@ function Podium() {
 					})
 				}
 			</ul>
+			<ConfirmOperationModal
+				show={modalConfirmShow}
+				onHide={() => setConfirmModalShow(false)}
+				operation={modalOperation}
+				username={modalUsername}
+				id={modalId}
+			/>
 			<div className="row justify-content-center">
 				<Pagination
 				className="my-3"
@@ -332,7 +405,7 @@ function Podium() {
 								</div>
 								<div className="col-sm-2">
 									
-									<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {remove_ban(user.id)}}><IoIcons.IoRemoveCircle/></i>
+									<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_ban"); setConfirmModalShow(true) }}><IoIcons.IoRemoveCircle/></i>
 							
 								</div>
 							</li>
@@ -340,6 +413,13 @@ function Podium() {
 						})
 					}
 				</ul>
+				<ConfirmOperationModal
+					show={modalConfirmShow}
+					onHide={() => setConfirmModalShow(false)}
+					operation={modalOperation}
+					username={modalUsername}
+					id={modalId}
+				/>
 				<div className="row justify-content-center">
 					<Pagination
 					className="my-3"
