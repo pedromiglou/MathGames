@@ -13,7 +13,8 @@ import './Menu.css'
 
 /* Data and Service */
 import AuthService from '../../Services/auth.service';
-import UserService from '../../Services/user.service'
+import UserService from '../../Services/user.service';
+import {urlWeb} from './../../data/data';
 
 /* Redux */
 import { useDispatch } from 'react-redux';
@@ -68,7 +69,7 @@ function Navbar() {
 
 	function run_logout() {
 		localStorage.removeItem("user");
-		window.location.assign(process.env.NODE_ENV === "development" ? "http://localhost:3000/" : 'http://138.68.191.32')
+		window.location.assign(urlWeb)
 	}
 
     // Tem de colocar no redux o tipo de user

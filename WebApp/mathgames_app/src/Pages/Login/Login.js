@@ -2,7 +2,8 @@ import { React, useState } from "react";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Login.css";
-import AuthService from "../../Services/auth.service"
+import AuthService from "../../Services/auth.service";
+import {urlWeb} from "./../../data/data";
 
 function Login() {
     const [signIn, setSignIn] = useState(true);
@@ -19,7 +20,7 @@ function Login() {
         )   
         
         if (response === true)
-            window.location.assign(process.env.NODE_ENV === "development" ? "http://localhost:3000/" : 'http://138.68.191.32');
+            window.location.assign(urlWeb);
         else {
             setErroLogin(true);
         }

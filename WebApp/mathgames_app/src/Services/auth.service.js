@@ -1,8 +1,6 @@
-class AuthService {
-    constructor() {
-        this.apiURL = process.env.NODE_ENV === "development" ? 'http://localhost:4000/api/' : 'http://138.68.191.32:4000/api/';
-    }
+import {urlAPI} from "./../data/data";
 
+class AuthService {
     async login(username, password) {
             
         let userInfo= {
@@ -10,7 +8,7 @@ class AuthService {
             password: password,
         }
 
-        var res = await fetch(this.apiURL + 'users/login', {
+        var res = await fetch(urlAPI + 'api/users/login', {
             method:'POST',
             headers:{'Content-type':'application/json'},
             body: JSON.stringify(userInfo)
@@ -37,7 +35,7 @@ class AuthService {
         }
         
 
-        var res = await fetch(this.apiURL + 'users/register', {
+        var res = await fetch(urlAPI + 'api/users/register', {
             method:'POST',
             headers:{'Content-type':'application/json'},
             body: JSON.stringify(userInfo)

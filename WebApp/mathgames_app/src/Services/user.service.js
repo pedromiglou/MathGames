@@ -1,16 +1,15 @@
+import {urlAPI} from "./../data/data";
+
 class UserService {
-    constructor() {
-        this.apiURL = process.env.NODE_ENV === "development" ? 'http://localhost:4000/api/' : 'http://138.68.191.32:4000/api/';
-    }
-    
+
     async getUserById(userId) {
-        var url = this.apiURL + 'users/' + userId;
+        var url = urlAPI + 'api/users/' + userId;
         var res = await fetch(url);
         return res.json();
     }
 
     async getFriends(userId) {
-        var url = this.apiURL + 'friends/' + userId;
+        var url = urlAPI + 'api/friends/' + userId;
         console.log(JSON.parse(localStorage.getItem("user"))["token"]);
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         if (res.status !== 200) 
@@ -19,13 +18,13 @@ class UserService {
     }
 
     async getNotifications(userId) {
-        var url = this.apiURL + 'notifications/' + userId;
+        var url = urlAPI + 'api/notifications/' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         return res.json();
     }
 
     async getLastGames(userId) {
-        var url = this.apiURL + 'matches?userid=' + userId;
+        var url = urlAPI + 'api/matches?userid=' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         if (res.status !== 200) {
             return {'error': true}
@@ -34,7 +33,7 @@ class UserService {
     }
     
     async getUsers(username, page, pageSize) {
-        var url = this.apiURL + 'users?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username;
+        var url = urlAPI + 'api/users?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username;
         var res = await fetch(url);
         return res.json();
     }
@@ -49,7 +48,7 @@ class UserService {
             avatar_trouser: trouser,
         }
 
-        var url = this.apiURL + 'users/' + user;
+        var url = urlAPI + 'api/users/' + user;
         
         await fetch(url, {
             method:'PUT',
@@ -62,7 +61,7 @@ class UserService {
     }
 
     delete(notificationId) {
-        var url = this.apiURL + 'notifications/' + notificationId;
+        var url = urlAPI + 'api/notifications/' + notificationId;
         fetch(url, {
             method:'DELETE',
             headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}
@@ -76,7 +75,7 @@ class UserService {
             friend2: notification.receiver,
         }
 
-        var url = this.apiURL + 'friends/';
+        var url = urlAPI + 'api/friends/';
         fetch(url, {
             method:'POST',
             headers:{'Content-type':'application/json',
@@ -94,7 +93,7 @@ class UserService {
             notification_type: "F"
         }
 
-        var url = this.apiUrl + 'notifications/';
+        var url = urlAPI + 'api/notifications/';
         
         fetch(url, {
             method:'POST',
@@ -108,7 +107,7 @@ class UserService {
 
 
     remove_friend(friend1, friend2) {
-        var url = this.apiURL + 'friends/' + friend1 + "/" + friend2;
+        var url = urlAPI + 'api/friends/' + friend1 + "/" + friend2;
         
         fetch(url, {
             method:'DELETE',
@@ -129,7 +128,7 @@ class UserService {
             user_id: player
         }
 
-        var url = this.apiURL + 'bans/';
+        var url = urlAPI + 'api/bans/';
         
         fetch(url, {
             method:'POST',
@@ -142,7 +141,7 @@ class UserService {
     }
 
     remove_ban(player) {
-        var url = this.apiURL + 'bans/' + player;
+        var url = urlAPI + 'api/bans/' + player;
         
         fetch(url, {
             method:'DELETE',
@@ -154,7 +153,7 @@ class UserService {
     }
 
     upgrade_account(player) {
-        var url = this.apiURL + 'users/upgrade/' + player;
+        var url = urlAPI + 'api/users/upgrade/' + player;
         
         fetch(url, {
             method:'PUT',
@@ -166,7 +165,7 @@ class UserService {
     }
 
     downgrade_account(player) {
-        var url = this.apiURL + 'users/downgrade/' + player;
+        var url = urlAPI + 'api/users/downgrade/' + player;
         
         fetch(url, {
             method:'PUT',
