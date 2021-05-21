@@ -11,6 +11,8 @@ module.exports = app => {
     // Retrieve all bans
     router.get("/", bans.findAll);
   
+    router.get("/statistics", bans.statistics)
+
     // Retrieve a single Ban with id
     router.get("/:id", bans.findOne);
   
