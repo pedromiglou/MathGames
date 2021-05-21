@@ -26,6 +26,9 @@ class UserService {
     async getLastGames(userId) {
         var url = 'http://localhost:4000/api/matches?userid=' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        if (res.status !== 200) {
+            return {'error': true}
+        }
         return res.json();
     }
     
@@ -35,12 +38,34 @@ class UserService {
         return res.json();
     }
 
-    async getUsersAdmin(username, page, pageSize) {
-        var url = 'http://localhost:4000/api/users/admin?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username;
+    async getUsersBanned(username, page, pageSize) {
+        var url = 'http://localhost:4000/api/users/banned?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         return res.json();
     }
     
+    //Save avatar function
+    async update_user(color, hat, shirt, accessorie, trouser, user) {
+        let avatar = {
+            avatar_color: color,
+            avatar_hat: hat,
+            avatar_shirt: shirt,
+            avatar_accessorie: accessorie,
+            avatar_trouser: trouser,
+        }
+
+        var url = 'http://localhost:4000/api/users/' + user;
+        
+        await fetch(url, {
+            method:'PUT',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+            body: JSON.stringify(avatar)
+        });
+
+        return;        
+    }
+
     delete(notificationId) {
         var url = 'http://localhost:4000/api/notifications/' + notificationId;
         fetch(url, {
@@ -86,25 +111,75 @@ class UserService {
         return;        
     }
 
-    async update_user(color, hat, shirt, accessorie, trouser, user) {
-        let avatar = {
-            avatar_color: color,
-            avatar_hat: hat,
-            avatar_shirt: shirt,
-            avatar_accessorie: accessorie,
-            avatar_trouser: trouser,
-        }
 
-        var url = 'http://localhost:4000/api/users/' + user;
+    remove_friend(friend1, friend2) {
+        var url = 'http://localhost:4000/api/friends/' + friend1 + "/" + friend2;
         
-        await fetch(url, {
-            method:'PUT',
+        fetch(url, {
+            method:'DELETE',
             headers:{'Content-type':'application/json',
                      'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
-            body: JSON.stringify(avatar)
         });
 
-        return;        
+        return;    
+    }
+    
+    report_player(friend1, friend2) {
+        // TODO    
+    }
+
+    ban_player(player) {
+        let ban= {
+            reason: "New Ban",
+            user_id: player
+        }
+
+        var url = 'http://localhost:4000/api/bans/';
+        
+        fetch(url, {
+            method:'POST',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+            body: JSON.stringify(ban)
+        });
+
+        return;    
+    }
+
+    remove_ban(player) {
+        var url = 'http://localhost:4000/api/bans/' + player;
+        
+        fetch(url, {
+            method:'DELETE',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+        });
+
+        return;    
+    }
+
+    upgrade_account(player) {
+        var url = 'http://localhost:4000/api/users/upgrade/' + player;
+        
+        fetch(url, {
+            method:'PUT',
+            headers:{'Content-type':'application/json',
+                        'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+        });
+
+        return;    
+    }
+
+    downgrade_account(player) {
+        var url = 'http://localhost:4000/api/users/downgrade/' + player;
+        
+        fetch(url, {
+            method:'PUT',
+            headers:{'Content-type':'application/json',
+                        'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+        });
+
+        return;  
     }
  
 }

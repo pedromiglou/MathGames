@@ -1,9 +1,12 @@
+const { authJwt } = require("../middleware");
+
+
 module.exports = app => {
     const bans = require("../controllers/ban.controller.js");
     var router = require("express").Router();
   
     // Create a new Ban
-    router.post("/", bans.create);
+    router.post("/",  [authJwt.verifyToken, authJwt.isAdmin],  bans.create);
   
     // Retrieve all bans
     router.get("/", bans.findAll);
@@ -15,7 +18,7 @@ module.exports = app => {
     router.put("/:id", bans.update);
   
     // Delete a Ban with id
-    router.delete("/:id", bans.delete);
+    router.delete("/:id",  [authJwt.verifyToken, authJwt.isAdmin], bans.delete);
   
     // Delete all Bans
     router.delete("/", bans.deleteAll);
