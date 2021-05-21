@@ -311,7 +311,12 @@ exports.authenticate = (req, res, next) => {
     if (!response) {
       return res.status(403).send({msg: 'Username or password is incorrect'})
     } else {
-      return res.send(response)
+      if (response["banned"])
+        return res.status(403).send({msg: 'This account is banned'})
+      else  {
+        const { banned, ...userWithoutBanned } = response;
+        return res.send(userWithoutBanned)
+      }
     }
   })
 }
@@ -333,7 +338,7 @@ const authenticate = (username, password) => {
           resolve(false);
        } else {
         const token = jwt.sign({ id: response.id, account_type: response.account_type }, config.secret, {expiresIn: 86400});
-        const { password, banned, ...userWithoutPassword } = response.dataValues;
+        const { password, ...userWithoutPassword } = response.dataValues;
         resolve({
             ...userWithoutPassword,
             token

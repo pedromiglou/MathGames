@@ -70,7 +70,7 @@ function Podium() {
 	}
 
 	const retrieveUsers = () => {
-		current_user = AuthService.getCurrentUser();
+		var current_user = AuthService.getCurrentUser();
 		async function fetchApiUsers() {
 			let username = username_input;
 			console.log(username)
