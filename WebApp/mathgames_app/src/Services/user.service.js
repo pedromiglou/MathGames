@@ -42,6 +42,12 @@ class UserService {
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         return res.json();
     }
+
+    async getNumberOfBans() {
+        var url = 'http://localhost:4000/api/bans/statistics/';
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
     
     //Save avatar function
     async update_user(color, hat, shirt, accessorie, trouser, user) {

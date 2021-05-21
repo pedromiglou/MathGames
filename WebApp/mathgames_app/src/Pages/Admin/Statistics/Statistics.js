@@ -1,7 +1,62 @@
 import './Statistics.css';
 import * as FaIcons from 'react-icons/fa';
+import UserService from "../../../Services/user.service";
+import { React, useState, useEffect } from "react";
+//import {Line} from 'react-chartjs-2';
+import CanvasJSReact from "./canvasjs.react";
+var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 function Statistics() {
+
+    const [numberOfBans, setNumberOfBans] = useState([])
+
+    useEffect(() => {
+        async function fetchApiNumberOfBans() {
+            var bans = await UserService.getNumberOfBans();
+            console.log(bans);
+            setNumberOfBans(bans);
+        }
+
+        fetchApiNumberOfBans()
+    }, [])
+
+    /*
+    const state = {
+        labels: ['6 days ago', '5 days ago', '4 days ago',
+                 '3 days ago', '2 days ago', 'yesterday', 'today'],
+        datasets: [
+          {
+            fill: false,
+            lineTension: 0.5,
+            backgroundColor: 'rgba(75,192,192,1)',
+            borderColor: 'rgba(0,0,0,1)',
+            borderWidth: 2,
+            data: [numberOfBans[0], numberOfBans[1], numberOfBans[2], numberOfBans[3], numberOfBans[4], numberOfBans[5], numberOfBans[6]]
+          }
+        ]
+      }
+      */
+
+    const options = {
+        animationEnabled: true,
+        //exportEnabled: true,
+        theme: "light1", //"light1", "dark1", "dark2"
+        data: [
+          {
+            type: "line",
+            dataPoints: [
+              { label: "6 days ago", y: numberOfBans[0] },
+              { label: "5 days ago", y: numberOfBans[1] },
+              { label: "4 days ago", y: numberOfBans[2] },
+              { label: "3 days ago", y: numberOfBans[3] },
+              { label: "2 days ago", y: numberOfBans[4] },
+              { label: "yesterday", y: numberOfBans[5] },
+              { label: "today", y: numberOfBans[6] }
+            ]
+          }
+        ]
+      };
+
     return (
         <div className="Statistics">
             <h1>Estatisticas Gerais</h1>
@@ -52,7 +107,25 @@ function Statistics() {
                 </div>
                 <div className="statsBannedPlayers shadow3D">
                     <h2>Jogadores Banidos</h2>
-                    <h1>Jogadores banidos com graficos com os diferentes motivos e numero de banidos</h1>
+                    <div style={{ marginLeft: 20, marginRight: 20, marginBottom: 20 }}>
+                    <CanvasJSChart options={options} />
+                    {/*
+                    <Line
+                        data={state}
+                        options={{
+                            title:{
+                            display:true,
+                            text:'Average Rainfall per month',
+                            fontSize:20
+                            },
+                            legend:{
+                            display:true,
+                            position:'right'
+                            }
+                        }}
+                        />
+                    */}
+                    </div>
                 </div>
             </div>
             
