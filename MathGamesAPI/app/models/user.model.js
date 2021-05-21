@@ -63,6 +63,11 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING(30),
         allowNull: false,
         defaultValue: "none"
+      },
+      banned: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
       }
     }, {
       timestamps: false,

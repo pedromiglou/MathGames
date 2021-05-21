@@ -3,6 +3,7 @@ const User = db.user;
 const Op = db.Sequelize.Op;
 const config = require("../config/auth.config")
 var jwt = require("jsonwebtoken");
+const Ban = db.ban;
 
 const getPagination = (page, size) => {
   const limit = size ? +size : 3;
@@ -52,14 +53,14 @@ exports.create = (req, res) => {
 };
 
 // Retrieve all Users from the database.
-exports.findAll = (req, res) => {
+exports.findAllAdmin = (req, res) => {
   if (typeof req.query.orderby !== "undefined") {
     const { page, size } = req.query;
     const username = !req.query.username ? "": req.query.username+"%";
     const { limit, offset } = getPagination(page, size);
     User.findAndCountAll({attributes: ['id', 'username', 'account_level', 'account_type', 
                                        'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 
-                                       'avatar_trouser'] , 
+                                       'avatar_trouser', 'banned'] , 
                           where: {username: { [Op.like]: `%${username}` } }, 
                           order: [[req.query.orderby, 'DESC']], limit, offset})
     .then(data => {
@@ -75,7 +76,45 @@ exports.findAll = (req, res) => {
   } else {
     User.findAll({attributes: ['username', 'account_level', 'account_type', 
                                'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 
-                               'avatar_trouser']})
+                               'avatar_trouser', 'banned']})
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while retrieving Users."
+        });
+      });
+  }
+};
+
+// Retrieve all Users from the database.
+exports.findAll = (req, res) => {
+  if (typeof req.query.orderby !== "undefined") {
+    const { page, size } = req.query;
+    const username = !req.query.username ? "": req.query.username+"%";
+    const { limit, offset } = getPagination(page, size);
+    User.findAndCountAll({attributes: ['id', 'username', 'account_level', 'account_type', 
+                                        'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 
+                                        'avatar_trouser'] , 
+                          where: {username: { [Op.like]: `%${username}` }, banned: false }, 
+                          order: [[req.query.orderby, 'DESC']], limit, offset})
+    .then(data => {
+      const response = getPagingData(data, page, limit);
+      res.send(response);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving Users."
+      });
+    });
+  } else {
+    User.findAll({attributes: ['username', 'account_level', 'account_type', 
+                                'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 
+                                'avatar_trouser'],
+                  where: {banned: false}})
       .then(data => {
         res.send(data);
       })
@@ -208,7 +247,7 @@ const authenticate = (username, password) => {
           resolve(false);
        } else {
         const token = jwt.sign({ id: response.id, account_type: response.account_type }, config.secret, {expiresIn: 86400});
-        const { password, ...userWithoutPassword } = response.dataValues;
+        const { password, banned, ...userWithoutPassword } = response.dataValues;
         resolve({
             ...userWithoutPassword,
             token

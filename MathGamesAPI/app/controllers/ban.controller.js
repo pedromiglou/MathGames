@@ -1,5 +1,6 @@
 const db = require("../models");
 const Ban = db.ban;
+const User = db.user;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Ban
@@ -21,7 +22,14 @@ exports.create = (req, res) => {
   // Save Ban in the database
   Ban.create(ban)
     .then(data => {
-      res.send(data);
+      User.update( {banned: true} , {where : {id: ban.user_id}}).then(user => {
+        res.send(data);
+      }).catch(err => {
+        res.status(500).send({
+          message: "Error occurred while updating the User."
+        })
+      })
+
     })
     .catch(err => {
       res.status(500).send({
@@ -94,9 +102,13 @@ exports.delete = (req, res) => {
   })
     .then(num => {
       if (num == 1) {
-        res.send({
-          message: "Ban was deleted successfully!"
-        });
+        User.update( {banned: false} , {where : {id: id}}).then(user => {
+          res.send(data);
+        }).catch(err => {
+          res.status(500).send({
+            message: "Error occurred while updating the User."
+          })
+        })
       } else {
         res.send({
           message: `Cannot delete Ban with id=${id}. Maybe Ban was not found!`

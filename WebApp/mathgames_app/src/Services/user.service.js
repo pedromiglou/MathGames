@@ -34,6 +34,12 @@ class UserService {
         var res = await fetch(url);
         return res.json();
     }
+
+    async getUsersAdmin(username, page, pageSize) {
+        var url = 'http://localhost:4000/api/users/admin?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username;
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
     
     delete(notificationId) {
         var url = 'http://localhost:4000/api/notifications/' + notificationId;
