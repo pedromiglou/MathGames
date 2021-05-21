@@ -1,0 +1,37 @@
+.Statistics{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 3em;
+    padding: 3em;
+}
+
+.Section{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    gap: 2%;
+}
+
+.Section > .statsGames {
+    flex: 1 1 40%;
+}
+
+.Section > .statsTournaments {
+    flex: 1 1 58%;
+}
+
+.Section > .statsPlayers {
+    flex: 1 1 49%;
+}
+
+.Section > .statsBannedPlayers {
+    flex: 1 1 49%;
+}
+
+.shadow3D{
+    -webkit-box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;  /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    rgba(0, 0, 0, 0.35) 0px 5px 15px;  /* Firefox 3.5 - 3.6 */
+    box-shadow:         rgba(0, 0, 0, 0.35) 0px 5px 15px;  /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+    border-radius: 30px;
+}

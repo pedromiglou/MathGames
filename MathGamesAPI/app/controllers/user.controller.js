@@ -3,6 +3,7 @@ const User = db.user;
 const Op = db.Sequelize.Op;
 const config = require("../config/auth.config")
 var jwt = require("jsonwebtoken");
+const { user } = require("../models");
 
 const getPagination = (page, size) => {
   const limit = size ? +size : 3;
@@ -57,7 +58,11 @@ exports.findAll = (req, res) => {
     const { page, size } = req.query;
     const username = !req.query.username ? "": req.query.username+"%";
     const { limit, offset } = getPagination(page, size);
-    User.findAndCountAll({attributes: ['id', 'username', 'avatar', 'account_level', 'account_type'] , where: {username: { [Op.like]: `%${username}` } }, order: [[req.query.orderby, 'DESC']], limit, offset})
+    User.findAndCountAll({attributes: ['id', 'username', 'account_level', 'account_type', 
+                                       'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 
+                                       'avatar_trouser'] , 
+                          where: {username: { [Op.like]: `%${username}` } }, 
+                          order: [[req.query.orderby, 'DESC']], limit, offset})
     .then(data => {
       const response = getPagingData(data, page, limit);
       res.send(response);
@@ -69,7 +74,9 @@ exports.findAll = (req, res) => {
       });
     });
   } else {
-    User.findAll({attributes: ['username', 'avatar', 'account_level', 'account_type']})
+    User.findAll({attributes: ['username', 'account_level', 'account_type', 
+                               'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 
+                               'avatar_trouser']})
       .then(data => {
         res.send(data);
       })
@@ -102,7 +109,17 @@ exports.findOne = (req, res) => {
 exports.update = (req, res) => {
   const id = req.params.id;
 
-  User.update(req.body, {
+  if (parseInt(req.userId) !== parseInt(id)) {
+    res.status(403).send({
+      message: "Unauthorized!"
+    });
+    return;
+  }
+
+  const { account_type, ...userWithoutAccount_Type } = req.body;
+
+
+  User.update(userWithoutAccount_Type, {
     where: { id: id }
   })
     .then(num => {
@@ -122,6 +139,89 @@ exports.update = (req, res) => {
       });
     });
 };
+
+// Upgrade a User_account_type by the id in the request
+exports.upgrade_account = (req, res) => {
+  const id = req.params.id;
+  var new_type;
+  User.findByPk(id).then(account => {
+    if (account.account_type === "U")
+      new_type = "T"
+    if (account.account_type === "T")
+      new_type = "A"
+    if (account.account_type === "A")
+      new_type = "A"
+
+    User.update( {account_type: new_type}, {
+      where: { id: id }
+    })
+      .then(num => {
+        if (num == 1) {
+          res.send({
+            message: "User was updated successfully."
+          });
+        } else {
+          res.send({
+            message: `Cannot update User with id=${id}. Maybe User was not found or req.body is empty!`
+          });
+        }
+      })
+    .catch(err1 => {
+      res.status(500).send({
+        message: "Error upgrading User with id=" + id
+      });
+    });
+  }).catch(err2 => {
+    res.status(500).send({
+      message: "Error upgrading User with id=" + id
+    });
+  });
+
+
+};
+
+// Upgrade a User_account_type by the id in the request
+exports.downgrade_account = (req, res) => {
+  const id = req.params.id;
+  var new_type;
+  User.findByPk(id).then(account => {
+    if (account.account_type === "U")
+      new_type = "U"
+    if (account.account_type === "T")
+      new_type = "U"
+    if (account.account_type === "A")
+      new_type = "T"
+
+    User.update( {account_type: new_type}, {
+      where: { id: id }
+    })
+      .then(num => {
+        if (num == 1) {
+          res.send({
+            message: "User was updated successfully."
+          });
+        } else {
+          res.send({
+            message: `Cannot update User with id=${id}. Maybe User was not found or req.body is empty!`
+          });
+        }
+      })
+    .catch(err1 => {
+      res.status(500).send({
+        message: "Error upgrading User with id=" + id
+      });
+    });
+  }).catch(err2 => {
+    res.status(500).send({
+      message: "Error upgrading User with id=" + id
+    });
+  });
+
+
+};
+
+
+
 
 // Delete a User with the specified id in the request
 exports.delete = (req, res) => {

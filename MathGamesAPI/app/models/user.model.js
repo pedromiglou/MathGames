@@ -22,10 +22,6 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING(100),
         allowNull: false
       },
-      avatar: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0
-      },
       account_level: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -42,6 +38,31 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.CHAR(1),
         allowNull: false,
         defaultValue: "U"
+      },
+      avatar_color: {
+        type: Sequelize.STRING(30),
+        allowNull: false,
+        defaultValue: "none"
+      },
+      avatar_hat: {
+        type: Sequelize.STRING(30),
+        allowNull: false,
+        defaultValue: "none"
+      },
+      avatar_shirt: {
+        type: Sequelize.STRING(30),
+        allowNull: false,
+        defaultValue: "none"
+      },
+      avatar_accessorie: {
+        type: Sequelize.STRING(30),
+        allowNull: false,
+        defaultValue: "none"
+      },
+      avatar_trouser: {
+        type: Sequelize.STRING(30),
+        allowNull: false,
+        defaultValue: "none"
       }
     }, {
       timestamps: false,

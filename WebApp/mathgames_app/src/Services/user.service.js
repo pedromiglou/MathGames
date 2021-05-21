@@ -13,6 +13,8 @@ class UserService {
         var url = this.apiURL + 'friends/' + userId;
         console.log(JSON.parse(localStorage.getItem("user"))["token"]);
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        if (res.status !== 200) 
+            return { error: true };
         return res.json();
     }
 
@@ -25,6 +27,9 @@ class UserService {
     async getLastGames(userId) {
         var url = this.apiURL + 'matches?userid=' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        if (res.status !== 200) {
+            return {'error': true}
+        }
         return res.json();
     }
     
@@ -33,7 +38,29 @@ class UserService {
         var res = await fetch(url);
         return res.json();
     }
-    
+
+    //Save avatar function
+    async update_user(color, hat, shirt, accessorie, trouser, user) {
+        let avatar = {
+            avatar_color: color,
+            avatar_hat: hat,
+            avatar_shirt: shirt,
+            avatar_accessorie: accessorie,
+            avatar_trouser: trouser,
+        }
+
+        var url = 'http://localhost:4000/api/users/' + user;
+        
+        await fetch(url, {
+            method:'PUT',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+            body: JSON.stringify(avatar)
+        });
+
+        return;        
+    }
+
     delete(notificationId) {
         var url = this.apiURL + 'notifications/' + notificationId;
         fetch(url, {
@@ -77,6 +104,77 @@ class UserService {
         });
 
         return;        
+    }
+
+
+    remove_friend(friend1, friend2) {
+        var url = 'http://localhost:4000/api/friends/' + friend1 + "/" + friend2;
+        
+        fetch(url, {
+            method:'DELETE',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+        });
+
+        return;    
+    }
+    
+    report_player(friend1, friend2) {
+        // TODO    
+    }
+
+    ban_player(player) {
+        let ban= {
+            reason: "New Ban",
+            user_id: player
+        }
+
+        var url = 'http://localhost:4000/api/bans/';
+        
+        fetch(url, {
+            method:'POST',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+            body: JSON.stringify(ban)
+        });
+
+        return;    
+    }
+
+    remove_ban(player) {
+        var url = 'http://localhost:4000/api/bans/' + player;
+        
+        fetch(url, {
+            method:'DELETE',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+        });
+
+        return;    
+    }
+
+    upgrade_account(player) {
+        var url = 'http://localhost:4000/api/users/upgrade/' + player;
+        
+        fetch(url, {
+            method:'PUT',
+            headers:{'Content-type':'application/json',
+                        'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+        });
+
+        return;    
+    }
+
+    downgrade_account(player) {
+        var url = 'http://localhost:4000/api/users/downgrade/' + player;
+        
+        fetch(url, {
+            method:'PUT',
+            headers:{'Content-type':'application/json',
+                        'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+        });
+
+        return;  
     }
  
 }

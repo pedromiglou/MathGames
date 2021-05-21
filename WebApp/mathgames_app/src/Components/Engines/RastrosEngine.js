@@ -268,6 +268,7 @@ class RastrosScene extends Phaser.Scene {
 
 async function atualizarUserInfo() {
     var response = await UserService.getUserById(auth_user.id)
+    response["token"] = JSON.parse(localStorage.getItem("user"))["token"]
     localStorage.setItem("user", JSON.stringify(response));
 }
 
