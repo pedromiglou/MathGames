@@ -128,7 +128,7 @@ class UserService {
         // TODO    
     }
 
-    ban_player(player) {
+    async ban_player(player) {
         let ban= {
             reason: "New Ban",
             user_id: player
@@ -136,7 +136,7 @@ class UserService {
 
         var url = 'http://localhost:4000/api/bans/';
         
-        fetch(url, {
+        await fetch(url, {
             method:'POST',
             headers:{'Content-type':'application/json',
                      'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
@@ -146,10 +146,10 @@ class UserService {
         return;    
     }
 
-    remove_ban(player) {
+    async remove_ban(player) {
         var url = 'http://localhost:4000/api/bans/' + player;
         
-        fetch(url, {
+        await fetch(url, {
             method:'DELETE',
             headers:{'Content-type':'application/json',
                      'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
@@ -158,10 +158,10 @@ class UserService {
         return;    
     }
 
-    upgrade_account(player) {
+    async upgrade_account(player) {
         var url = 'http://localhost:4000/api/users/upgrade/' + player;
         
-        fetch(url, {
+        await fetch(url, {
             method:'PUT',
             headers:{'Content-type':'application/json',
                         'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
@@ -170,10 +170,10 @@ class UserService {
         return;    
     }
 
-    downgrade_account(player) {
+    async downgrade_account(player) {
         var url = 'http://localhost:4000/api/users/downgrade/' + player;
         
-        fetch(url, {
+        await fetch(url, {
             method:'PUT',
             headers:{'Content-type':'application/json',
                         'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},

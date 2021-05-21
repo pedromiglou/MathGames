@@ -103,7 +103,9 @@ exports.delete = (req, res) => {
     .then(num => {
       if (num == 1) {
         User.update( {banned: false} , {where : {id: id}}).then(user => {
-          res.send(data);
+          res.send({
+            message: "Ban was deleted successfully."
+          });
         }).catch(err => {
           res.status(500).send({
             message: "Error occurred while updating the User."

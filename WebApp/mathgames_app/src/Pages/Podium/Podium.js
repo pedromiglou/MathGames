@@ -7,16 +7,16 @@ import * as IoIcons from 'react-icons/io5';
 import * as MdIcons from 'react-icons/md';
 import * as FaIcons from 'react-icons/fa';
 
-
-
 import AuthService from '../../Services/auth.service';
 import UserService from '../../Services/user.service';
 
 function Podium() {
 	var current_user = AuthService.getCurrentUser();
+
 	const [users, setUsers] = useState([]);
 	const [banned_users, setBannedUsers] = useState([]);
 	const [friends, setFriends] = useState([]);
+
 	var [numberClassificationUsers, setNumberClassificationUsers] = useState([]);
 	var [numberClassificationBannedUsers, setNumberClassificationBannedUsers] = useState([]);
 	const [filterOption, setfilterOption] = useState("Players");
@@ -26,7 +26,7 @@ function Podium() {
 	const [page_banned_users, setPageBannedUsers] = useState(1);
 	const [count_banned_users, setCountBannedUsers] = useState(0);
 	
-	const [banned_username, setBannedUsername] = useState("");
+	const [banned_username_input, setBannedUsername] = useState("");
 	const [username_input, setUsername] = useState("");
 
 	const handlePageChangeUsers = (event, value) => {
@@ -49,24 +49,28 @@ function Podium() {
 		UserService.report_player(current_user.id, player);
 	}
 
-	function ban_player(player) {
-		UserService.ban_player(player);
+	async function ban_player(player) {
+		await UserService.ban_player(player);
+		retrieveUsers()
 	}
 
-	function remove_ban(player) {
-		UserService.remove_ban(player);
+	async function remove_ban(player) {
+		await UserService.remove_ban(player);
+		retrieveUsers()
 	}
 
-	function upgrade_account(player) {
-		UserService.upgrade_account(player);
+	async function upgrade_account(player) {
+		await UserService.upgrade_account(player);
+		retrieveUsers()
 	}
 
-	function downgrade_account(player) {
-		UserService.downgrade_account(player);
+	async function downgrade_account(player) {
+		await UserService.downgrade_account(player);
+		retrieveUsers()
 	}
 
 	const retrieveUsers = () => {
-		var current_user = AuthService.getCurrentUser();
+		current_user = AuthService.getCurrentUser();
 		async function fetchApiUsers() {
 			let username = username_input;
 			console.log(username)
@@ -77,7 +81,7 @@ function Podium() {
         };
 
 		async function fetchApiUsersBanned() {
-			let username = banned_username;
+			let username = banned_username_input;
 			var response = await UserService.getUsersBanned(username,parseInt(page_banned_users)-1, 10);
 			setBannedUsers(response.users);
 			setCountBannedUsers(response.totalPages)
@@ -115,7 +119,7 @@ function Podium() {
 
 	useEffect(
 		retrieveUsers
-	, [page_users, page_banned_users, username_input, banned_username])
+	, [page_users, page_banned_users, username_input, banned_username_input])
 
 	
 	return (
@@ -245,7 +249,7 @@ function Podium() {
 								}
 
 
-								{ current_user !== null && current_user["account_type"] === "A" && 
+								{ current_user !== null && current_user["account_type"] === "A" && user.id !== current_user.id  &&
 									<>
 								
 										<i className="subicon pointer"  onClick={() => {upgrade_account(user.id)}}><FaIcons.FaRegArrowAltCircleUp/></i>
@@ -312,21 +316,14 @@ function Podium() {
 								<div className="col-sm-1">
 									<span className="badge badge-primary badge-pill">{numberClassificationBannedUsers}</span>
 								</div>
-								{
-									current_user !== null && current_user["account_type"] === "A" 
-									?  <>
-										<div className="col-sm-4">
-											{user.username}
-										</div>
-										<div className="col-sm-2">
-											Tipo de Conta:   {user["account_type"]}
-										</div>
-										</>
-									:
-									<div className="col-sm-6">
-										{user.username}
-									</div>
-								}
+
+								<div className="col-sm-4">
+									{user.username}
+								</div>
+								<div className="col-sm-2">
+									Tipo de Conta:   {user["account_type"]}
+								</div>
+
 								<div className="col-sm-1">
 									Nível {contador}
 								</div>
@@ -334,45 +331,9 @@ function Podium() {
 									{user.account_level} pontos
 								</div>
 								<div className="col-sm-2">
-									{ current_user !== null && current_user["account_type"] !== "A" && 
-										<>
-										{ friends.length !== 0 &&
-											<>
-											{ friends.some(e => e.id === user.id) &&
-												<>
-												<i className="subicon pointer"  onClick={() => {remove_friend(user.id)}}><IoIcons.IoPersonRemove/></i>
-												<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {report_player(user.id)}}><MdIcons.MdReport/></i>
-												</>
-											} 
-											{ (!friends.some(e => e.id === user.id) && user.id !== current_user.id ) &&
-												<>
-												<i className="subicon pointer"  onClick={() => {friend_request(user.id)}}><IoIcons.IoPersonAdd/></i>
-												<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {report_player(user.id)}}><MdIcons.MdReport/></i>
-												</>
-											} 
-											</>	
-										}
-										{ friends.length === 0 &&  user.id !== current_user.id &&
-											<>
-											<i className="subicon pointer"  onClick={() => {friend_request(user.id)}}><IoIcons.IoPersonAdd/></i>
-											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {report_player(user.id)}}><MdIcons.MdReport/></i>
-											</>
-											
-										}
-										</>
-									}
-	
-	
-									{ current_user !== null && current_user["account_type"] === "A" && 
-										<>
 									
-											<i className="subicon pointer"  onClick={() => {upgrade_account(user.id)}}><FaIcons.FaRegArrowAltCircleUp/></i>
-											<i className="subicon pointer" style={{marginLeft:"10px"}} onClick={() => {downgrade_account(user.id)}}><FaIcons.FaRegArrowAltCircleDown/></i>
-											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {ban_player(user.id)}}><IoIcons.IoBan/></i>
-											
-										</>
-									}
-									
+									<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {remove_ban(user.id)}}><IoIcons.IoRemoveCircle/></i>
+							
 								</div>
 							</li>
 						)
