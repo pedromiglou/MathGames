@@ -1,5 +1,5 @@
 module.exports = {
-    HOST: process.env.NODE_ENV === "development" ? '127.0.0.1' : process.env.DB_ADDRESS,
+    HOST: '127.0.0.1',
     PORT: "3306",
     USER: "demo",
     PASSWORD: "password",
