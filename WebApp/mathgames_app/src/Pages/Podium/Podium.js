@@ -3,6 +3,11 @@ import React, { useState, useEffect } from 'react';
 import "./Podium.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Pagination from "@material-ui/lab/Pagination";
+import * as IoIcons from 'react-icons/io5';
+import * as MdIcons from 'react-icons/md';
+import * as FaIcons from 'react-icons/fa';
+
+
 
 import AuthService from '../../Services/auth.service';
 import UserService from '../../Services/user.service';
@@ -22,6 +27,30 @@ function Podium() {
 	
 	function friend_request(friend2) {
 		UserService.make_friend_request(current_user.id, friend2);
+	}
+
+	function remove_friend(friend2) {
+		UserService.remove_friend(current_user.id, friend2);
+	}
+
+	function report_player(player) {
+		UserService.report_player(current_user.id, player);
+	}
+
+	function ban_player(player) {
+		UserService.ban_player(player);
+	}
+
+	function remove_ban(player) {
+		UserService.remove_ban(player);
+	}
+
+	function upgrade_account(player) {
+		UserService.upgrade_account(player);
+	}
+
+	function downgrade_account(player) {
+		UserService.downgrade_account(player);
 	}
 
 	const retrieveUsers = () => {
@@ -56,6 +85,7 @@ function Podium() {
 		retrieveUsers
 	, [page])
 
+	
 	return (
 		<div>
 			<br></br>
@@ -91,33 +121,64 @@ function Podium() {
 							<div className="col-sm-1">
 								<span className="badge badge-primary badge-pill">{numberClassification}</span>
 							</div>
-							<div className="col-sm-7">
-								{user.username}
-							</div>
-							<div className="col-sm 1">
+							{
+								current_user !== null && current_user["account_type"] === "A" 
+								?  <>
+									<div className="col-sm-4">
+										{user.username}
+									</div>
+									<div className="col-sm-2">
+										Tipo de Conta:   {user["account_type"]}
+									</div>
+									</>
+								:
+								<div className="col-sm-6">
+									{user.username}
+								</div>
+							}
+							<div className="col-sm-1">
 								Nível {contador}
 							</div>
-							<div className="col-sm 2">
+							<div className="col-sm-2">
 								{user.account_level} pontos
 							</div>
-							<div className="col-sm 1">
-								{ current_user !== null && 
+							<div className="col-sm-2">
+								{ current_user !== null && current_user["account_type"] !== "A" && 
 									<>
 									{ friends.length !== 0 &&
 										<>
 										{ friends.some(e => e.id === user.id) &&
-											<span>Amigo</span>
+											<>
+											<i className="subicon pointer"  onClick={() => {remove_friend(user.id)}}><IoIcons.IoPersonRemove/></i>
+											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {report_player(user.id)}}><MdIcons.MdReport/></i>
+											</>
 										} 
 										{ (!friends.some(e => e.id === user.id) && user.id !== current_user.id ) &&
-											<span className="do_friend_request" onClick={() => {friend_request(user.id)}}>Pedir amizade</span>
+											<>
+											<i className="subicon pointer"  onClick={() => {friend_request(user.id)}}><IoIcons.IoPersonAdd/></i>
+											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {report_player(user.id)}}><MdIcons.MdReport/></i>
+											</>
 										} 
 										</>	
 									}
-									{ friends.length === 0 &&
+									{ friends.length === 0 &&  user.id !== current_user.id &&
 										<>
-										<span className="do_friend_request" onClick={() => {friend_request(user.id)}}>Pedir amizade</span>
-										</>	
+										<i className="subicon pointer"  onClick={() => {friend_request(user.id)}}><IoIcons.IoPersonAdd/></i>
+										<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {report_player(user.id)}}><MdIcons.MdReport/></i>
+										</>
+										
 									}
+									</>
+								}
+
+
+								{ current_user !== null && current_user["account_type"] === "A" && 
+									<>
+								
+										<i className="subicon pointer"  onClick={() => {upgrade_account(user.id)}}><FaIcons.FaRegArrowAltCircleUp/></i>
+										<i className="subicon pointer" style={{marginLeft:"10px"}} onClick={() => {downgrade_account(user.id)}}><FaIcons.FaRegArrowAltCircleDown/></i>
+										<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {ban_player(user.id)}}><IoIcons.IoBan/></i>
+										
 									</>
 								}
 								

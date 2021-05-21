@@ -2,6 +2,7 @@ import  React, { useEffect } from "react";
 import Phaser from "phaser";
 import socket from "../../index"
 import AuthService from '../../Services/auth.service';
+import UserService from '../../Services/user.service';
 import GatosCaesAI from "../AI/GatosCaesAI";
 
 var game_mode;
@@ -94,6 +95,12 @@ class GatosCaesScene extends Phaser.Scene {
                 console.log("Received move: ", new_pos);
                 this.move(this.squares_group.getChildren()[new_pos]);
             });
+
+            socket.on("match_end", (msg) => {
+                if (this.game_over === false)
+                    this.finish_game(msg["endMode"], msg["match_result"])
+                atualizarUserInfo();
+            })
         }
 
         // temos que adicionar só no fim as imagens dos X centrais, para quando recebemos o new_pos no online podermos mapear logo no positions[new_pos]
@@ -184,7 +191,7 @@ class GatosCaesScene extends Phaser.Scene {
 
         // If win condition has been met => Game Over
         if (this.valid_squares[1 - this.current_player].size === 0) {
-            this.finish_game(this);
+            this.finish_game("valid_move", null);
             return;
         }
 
@@ -200,20 +207,44 @@ class GatosCaesScene extends Phaser.Scene {
         this.current_player_text.setText("Jogador " + (this.current_player+1));
     }
 
-    finish_game() {   
+    finish_game(cause, message) {   
         this.game_over = true; 
-        this.text = this.add.text(0, 0, "O jogador " + (this.current_player+1) + " ganhou.", {font: "70px Impact", color: "Red"});
-        this.tweens.add ({
-            targets: this.text,
-            x: 45,
-            y: 265,
-            durations: 2000,
-            ease: "Elastic",
-            easeParams: [1.5, 0.5],
-            delay: 0
-        }, this);
+
+        if ( cause === "valid_move") {
+            var winner = this.current_player;
+
+            this.text = this.add.text(0, 0, "O jogador " + winner + " ganhou.", {font: "70px Impact", color: "Red"});
+            this.tweens.add ({
+                targets: this.text,
+                x: 45,
+                y: 265,
+                durations: 2000,
+                ease: "Elastic",
+                easeParams: [1.5, 0.5],
+                delay: 0
+            }, this);
+        } else if ( cause === "invalid_move" ) {
+            this.text = this.add.text(0, 0, "An invalid move has been detected.\n Game aborted.\n Result: " + message, {font: "40px Impact", color: "Red"});
+            this.tweens.add ({
+                targets: this.text,
+                x: 45,
+                y: 265,
+                durations: 2000,
+                ease: "Cubic.easeIn",
+                easeParams: [1.5, 0.5],
+                delay: 0
+            }, this);
+        }
     }
 }
+
+async function atualizarUserInfo() {
+    var response = await UserService.getUserById(auth_user.id)
+    response["token"] = JSON.parse(localStorage.getItem("user"))["token"]
+    localStorage.setItem("user", JSON.stringify(response));
+}
+
+
 
 function set_diff(a, b) {
     var c = new Set( [...a].filter(x => !b.has(x)) )

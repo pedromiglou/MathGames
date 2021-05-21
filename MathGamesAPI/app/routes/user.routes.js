@@ -18,19 +18,27 @@ module.exports = app => {
   
     // Update a User with id
     router.put("/:id", authJwt.verifyToken, users.update);
-  
+
+    // Upgrade user_account_type
+    router.put("/upgrade/:id", authJwt.verifyToken, users.upgrade_account);       //VERIFY IS ADMIN
+
+    // Downgrade user_account_type
+    router.put("/downgrade/:id",  authJwt.verifyToken, users.downgrade_account);  //VERIFY IS ADMIN
+
     // Delete a User with id
     router.delete("/:id", users.delete);
   
     // Delete all Users
     router.delete("/", users.deleteAll);
   
-
     // Login
     router.post("/login", users.authenticate);
 
     // Register
     router.post("/register", users.register);
+
+
+
 
     router.get('/gamePage', authorize(Role.Admin), users.findAll);            // admin only
     router.get('/gamesDashboard', authorize(Role.User), users.findAll);       // all authenticated users
