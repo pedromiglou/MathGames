@@ -9,6 +9,9 @@ module.exports = app => {
   
     // Retrieve all matches
     router.get("/", authJwt.verifyToken, matches.findAll);
+
+    // Retrieve all matches
+    router.get("/statistics", [authJwt.verifyToken, authJwt.isAdmin], matches.statistics);
   
     // Retrieve match by id
     router.get("/:id", matches.findOne);

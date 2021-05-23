@@ -9,6 +9,8 @@ var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 function Statistics() {
 
     const [numberOfBans, setNumberOfBans] = useState([])
+    const [numberOfMatchesLast7Days, setNumberMatchesLast7Days] = useState(0)
+    const [matchesLast7Days, setMatchesLast7Days] = useState([])
 
     useEffect(() => {
         async function fetchApiNumberOfBans() {
@@ -17,7 +19,17 @@ function Statistics() {
             setNumberOfBans(bans);
         }
 
+        async function fetchApiMatchesStatistics() {
+            var response = await UserService.getMatchesStatistics();
+            setNumberMatchesLast7Days(response.countAllMatches);
+            var matches_percentage = response.matches.map(element => {
+                return {label: element.name, y: element.matchesCount}
+            })
+            setMatchesLast7Days(matches_percentage);
+        }
+
         fetchApiNumberOfBans()
+        fetchApiMatchesStatistics()
     }, [])
 
     /*
@@ -57,6 +69,17 @@ function Statistics() {
         ]
       };
 
+    const matchesLast7DaysGraph = {
+        animationEnabled: true,
+        theme: "light1", // "light1", "dark1", "dark2"
+        data: [{
+            type: "pie",
+            indexLabel: "{label}: {y}%",		
+            startAngle: -90,
+            dataPoints: matchesLast7Days
+        }]
+    }
+
     return (
         <div className="Statistics">
             <h1>Estatisticas Gerais</h1>
@@ -93,6 +116,12 @@ function Statistics() {
                         </tr>
                     </tbody>
                     </table>
+                    <h2>Número de jogos nos últimos 7 dias: {numberOfMatchesLast7Days}</h2>
+                    <div style={{ marginLeft: 20, marginRight: 20, marginBottom: 20 }}>
+                    <CanvasJSChart options = {matchesLast7DaysGraph} 
+                        /* onRef={ref => this.chart = ref} */
+                    />
+                    </div>
                 </div>
                 <div className="statsTournaments shadow3D">
                     <h2>Torneios</h2>

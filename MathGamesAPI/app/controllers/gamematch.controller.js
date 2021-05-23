@@ -1,6 +1,8 @@
 const db = require("../models");
 const GameMatch = db.game_match;
+const Game = db.game;
 const Op = db.Sequelize.Op;
+const Sequelize = db.Sequelize;
 
 // Create and Save a new GameMatch
 exports.create = (req, res) => {
@@ -56,6 +58,65 @@ exports.findAll = (req, res) => {
           err.message || "Some error occurred while retrieving GameMatchs."
       });
     });
+};
+
+// Retrieve all GameMatchs from the database.
+exports.statistics = (req, res) => {
+  var date = new Date();
+  var last = new Date(date.getTime() - (6 * 24 * 60 * 60 * 1000));
+  var dd = last.getDate();
+  var mm = last.getMonth()+1;
+  var yyyy = last.getFullYear();
+  var setimoDia = new Date(yyyy + '-' + mm + '-' + dd);
+  setimoDia.setTime( setimoDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  setimoDia = setimoDia.toISOString().slice(0, 19).replace('T', ' ');
+  setimoDia = setimoDia.split(" ")[0]
+
+  /*
+  Game.findAll().then(data => {
+    if (data.length !== 0) {
+      var data = data.map(element => {
+        return element.id;
+      });
+*/
+      Game.findAll({
+        attributes: {include: [[Sequelize.fn("COUNT", Sequelize.col("GameMatches.id")), "matchesCount"]]},
+        where: {"$GameMatches.createdAt$": {[Op.gte]: setimoDia}},
+        include: [{
+          model: GameMatch, attributes: []
+        }],
+        group: ['Games.id']
+      })
+        .then( matches => {
+          var countAllMatches = 0;
+          var countMatches = [];
+          for (match in matches) {
+            countAllMatches += parseInt(matches[match].dataValues.matchesCount);
+            countMatches.push({id: matches[match].dataValues.id, name: matches[match].dataValues.name, matchesCount: matches[match].dataValues.matchesCount})
+          }
+          for (var i = 0; i < countMatches.length; i++) {
+            countMatches[i].matchesCount = (countMatches[i].matchesCount / countAllMatches) * 100;
+          }
+          res.send({matches: countMatches, countAllMatches: countAllMatches});
+        })
+        .catch(err => {
+          res.status(500).send({
+            message:
+              err.message || "Some error occurred while retrieving GameMatchs."
+          });
+        })
+
+      
+    /*
+    }
+    
+  }).catch(err => {
+    res.status(500).send({
+      message:
+        err.message || "Some error occurred while retrieving GameMatchs."
+    });
+  });
+*/
 };
 
 // Find a single GameMatch with an id
