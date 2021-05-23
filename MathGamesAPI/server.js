@@ -83,7 +83,6 @@ io.on("connection", (socket) => {
           initiate_game(match_id, other_user, user_id)
 
       } else {
-        console.log("vou create_game")
         create_game(match_id, game_id, user_id, null, "amigo")
       }
     }
@@ -197,25 +196,27 @@ function create_game(match_id, game_id, user1, user2, game_type) {
     initiate_game(match_id, user1, user2)
 }
 
-function initiate_game(match_id, user1, user2) {
-  User.findByPk(user1).then(value => {
-    if (value !== null) {
-      io.to(users_info[user2]).emit("match_found", {"match_id": match_id, "starter": false, "opponent": value.username});
-    }
-    else {
-      io.to(users_info[user2]).emit("match_found", {"match_id": match_id, "starter": false, "opponent": "Guest_" + user1});
-    }
-  }).catch(error => {});
+async function initiate_game(match_id, user1, user2) {
+  let username1;
+  let username2;
 
-  User.findByPk(user2).then(value => {
-    if (value !== null)
-      io.to(users_info[user1]).emit("match_found", {"match_id": match_id, "starter": true, "opponent": value.username});
+  let promises = [];
+  promises.push(User.findByPk(user1));
+  promises.push(User.findByPk(user2));
+
+  Promise.all(promises).then(([u1, u2]) => {
+    if (u1 === null )
+      username1 = user1;
     else
-      io.to(users_info[user1]).emit("match_found", {"match_id": match_id, "starter": true, "opponent": "Guest_" + user2});
-  }).catch(error => {});
+      username1 = u1.username
+    if (u2 === null)
+      username2 = user2
+    else
+      username2 = u2.username
 
-  // io.to(users_info[user1]).emit("match_found", {"match_id": match_id, "starter": true});
-  // io.to(users_info[user2]).emit("match_found", {"match_id": match_id, "starter": false});
+    io.to(users_info[user1]).emit("match_found", {"match_id": match_id, "player1": username1, "player2": username2});
+    io.to(users_info[user2]).emit("match_found", {"match_id": match_id, "player1": username1, "player2": username2});
+  });
 }
 
 

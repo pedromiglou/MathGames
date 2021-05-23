@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import "./Game.css"
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -10,10 +10,18 @@ import AuthService from '../../Services/auth.service';
 import * as FaIcons from "react-icons/fa";
 import {IconContext} from 'react-icons';
 
+import { useSelector, useDispatch } from 'react-redux';
+import { addMatch, removeMatch } from '../../store/modules/matches/actions';
 
 function Game()  {
+    const games_list = useSelector(state => state.matchApp);
+    const dispatch = useDispatch();
+    let current_match = useRef(null);
+
+    // dispatch( addMatch({ match_id: id }) );
+    // dispatch( removeMatch({ match_id: id }) );
+
     var user = AuthService.getCurrentUser();
-    console.log(user);
     const [game_ready_to_start, setReady] = useState(false);
     
     const url = new URLSearchParams(window.location.search);
@@ -21,20 +29,18 @@ function Game()  {
 
     let history = useHistory()
     var params = history.location.state
-    var game_id, game_mode, ai_diff, player, opponent;
+    var game_id, game_mode, ai_diff;
 
     if ( match_id !== null ) {
         game_id = parseInt( url.get("g") );
         game_mode = "amigo";
         ai_diff = undefined;
-        player = user !== null ? user.username : player = "Guest_" + sessionStorage.getItem("user_id");
     }
     else {
         game_id = parseInt( params.game_id );
         game_mode = params.game_mode;
         ai_diff = params.ai_diff;
-        player = params.player;
-        opponent = params.opponent;
+        current_match.current = params.match;
     }
 
     function copy() {
@@ -59,9 +65,14 @@ function Game()  {
 
             socket.on("match_found", (msg) => {
                 console.log("Match_Found")
-                sessionStorage.setItem('match_id', msg['match_id']);
-                sessionStorage.setItem('starter', msg['starter']);
-                sessionStorage.setItem('opponent', msg['opponent'])
+                console.log(msg)
+                let match = { match_id: msg['match_id'], player1: msg['player1'], player2: msg['player2'] };
+                current_match.current = match;
+                console.log("Match: ", match);
+                dispatch( addMatch(match) );
+                // sessionStorage.setItem('match_id', msg['match_id']);
+                // sessionStorage.setItem('starter', msg['starter']);
+                // sessionStorage.setItem('opponent', msg['opponent'])
                 setReady(true)
             })
         } else {
@@ -84,88 +95,50 @@ function Game()  {
             </div>
         );
     } else {
-        if ( game_id === 0 ) {
-            return (
-                <div className="container-fluid">
-                    <div className="row">
+        console.log(current_match.current);
+
+        <button><span role="img" aria-label="add">➕</span></button>
+        return (
+            <div className="container-fluid">
+                <div className="row">
                     <div className="col-3 mt-4">
-                            <div className="row h-75 d-flex justify-content-center">
-                                <div className="col">
-                                    <div className="row d-flex justify-content-center">
-                                        {game_mode !== "offline" && sessionStorage.getItem("starter")==="false" && <h5>Player 1</h5>}
-                                        {game_mode !== "offline" && sessionStorage.getItem("starter")==="true"  && <h5>Player 2</h5>}
-                                        {game_mode === "offline" && <h5>Player 2</h5>}
-                                    </div>
-                                    <div className="row d-flex justify-content-center">
-                                        <h5 className="name-text">{opponent !== undefined && opponent}</h5>
-                                        <h5 className="name-text">{opponent === undefined && sessionStorage.getItem('opponent')}</h5>
-                                    </div>
+                        <div className="row h-75 d-flex justify-content-center">
+                            <div className="col">
+                                <div className="row d-flex justify-content-center">
+                                    <h5>Player 2</h5>
                                 </div>
-                            </div>
-                            <div className="row h-25 d-flex justify-content-center">
-                                <div className="col">
-                                    <div className="row d-flex justify-content-center">
-                                        {game_mode !== "offline" && sessionStorage.getItem("starter")==="true" && <h5>Player 1 (Tu)</h5>}
-                                        {game_mode !== "offline" && sessionStorage.getItem("starter")==="false"&& <h5>Player 2 (Tu)</h5>}
-                                        {game_mode === "offline" && <h5>Player 1</h5>}
-                                    </div>
-                                    <div className="row d-flex justify-content-center">
-                                        <h5 className="name-text">{player}</h5>
-                                    </div>
+                                <div className="row d-flex justify-content-center">
+                                    <h5 className="name-text">{current_match.current['player2']}</h5>
                                 </div>
                             </div>
                         </div>
-                        <div className="col-9">
+                        <div className="row h-25 d-flex justify-content-center">
+                            <div className="col">
+                                <div className="row d-flex justify-content-center">
+                                <h5>Player 1</h5>
+                                </div>
+                                <div className="row d-flex justify-content-center">
+                                <h5 className="name-text">{current_match.current['player1']}</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-9">
+                        {game_id===0 &&
                             <div id="my_div_game" className="container-canvas" style={{width: '1100px', height: '577px'}}>
                                 <RastrosEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></RastrosEngine>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-        if ( game_id === 1 ) {
-            return (
-                <div className="container-fluid">
-                    <div className="row">
-                        <div className="col-3 mt-4">
-                            <div className="row h-75 d-flex justify-content-center">
-                                <div className="col">
-                                    <div className="row d-flex justify-content-center">
-                                        {game_mode !== "offline" && sessionStorage.getItem("starter")==="false" && <h5>Player 1</h5>}
-                                        {game_mode !== "offline" && sessionStorage.getItem("starter")==="true"  && <h5>Player 2</h5>}
-                                        {game_mode === "offline" && <h5>Player 2</h5>}
-                                    </div>
-                                    <div className="row d-flex justify-content-center">
-                                        <h5 className="name-text">{opponent !== undefined && opponent}</h5>
-                                        <h5 className="name-text">{opponent === undefined && sessionStorage.getItem('opponent')}</h5>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="row h-25 d-flex justify-content-center">
-                                <div className="col">
-                                    <div className="row d-flex justify-content-center">
-                                        {game_mode !== "offline" && sessionStorage.getItem("starter")==="true" && <h5>Player 1 (Tu)</h5>}
-                                        {game_mode !== "offline" && sessionStorage.getItem("starter")==="false"&& <h5>Player 2 (Tu)</h5>}
-                                        {game_mode === "offline" && <h5>Player 1</h5>}
-                                    </div>
-                                    <div className="row d-flex justify-content-center">
-                                        <h5 className="name-text">{player}</h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-9">
+                        }
+                        {game_id===1 &&
                             <div id="my_div_game" className="container-canvas" style={{width: '1200px', height: '624px'}}>
-                            <GatosCaesEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></GatosCaesEngine>
+                                <GatosCaesEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></GatosCaesEngine>
                             </div>
-                        </div>
+                        }
                     </div>
                 </div>
-            );
-        }
+            </div>
+        );
     }
-    
 }
 
 
