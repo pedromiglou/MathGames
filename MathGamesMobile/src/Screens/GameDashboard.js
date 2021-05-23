@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {Button, View, ScrollView, Text, Image, Dimensions, StyleSheet, TouchableHighlight} from 'react-native';
+import { saveData } from "./../Utilities/AsyncStorage";
 
 const gameNames=[{key:1, name:'Rastros'}, {key:2, name:'Gatos&Cães'}];
 
@@ -20,7 +21,11 @@ function GameDashboard({ navigation }) {
   return (
     <ScrollView style={{ flex: 1 }}>
       {gameNames.map(X => 
-        <TouchableHighlight style={{margin: 10, backgroundColor: "#CCFFFF"}} key={X.key} onPress = {() => navigation.navigate('ChooseGame')}>
+        <TouchableHighlight style={{margin: 10, backgroundColor: "#CCFFFF"}} key={X.key} onPress = {() => {
+              saveData("gameName", X.name);
+              navigation.navigate('ChooseGame');
+            }
+          }>
           <View>
             <Image
               style={styles.image}
