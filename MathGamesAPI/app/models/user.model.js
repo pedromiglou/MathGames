@@ -70,7 +70,7 @@ module.exports = (sequelize, Sequelize) => {
         defaultValue: false
       }
     }, {
-      timestamps: false,
+      timestamps: true,
       hooks: {
         beforeCreate: async (user) => {
          if (user.password) {

@@ -10,7 +10,8 @@ module.exports = app => {
   
     // Retrieve all bans
     router.get("/", bans.findAll);
-  
+
+    // Retrieve ban statistics
     router.get("/statistics", [authJwt.verifyToken, authJwt.isAdmin], bans.statistics)
 
     // Retrieve a single Ban with id

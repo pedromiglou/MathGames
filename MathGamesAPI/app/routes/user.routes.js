@@ -13,6 +13,9 @@ module.exports = app => {
     // Retrieve all Users
     router.get("/", users.findAll);
 
+    // Retrieve ban statistics
+    router.get("/statistics", users.statistics)
+
     // Retrieve all Users with Admin permissions
     router.get("/banned", [authJwt.verifyToken, authJwt.isAdmin], users.findAllBanned);
   
