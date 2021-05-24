@@ -150,8 +150,28 @@ class UserService {
         return;    
     }
     
-    report_player(friend1, friend2) {
-        // TODO    
+    async report_player(sender, receiver, reason) {
+        let report= {
+            sender: sender,
+            receiver: receiver,
+            reason: reason
+        }
+
+        var url = 'http://localhost:4000/api/reports/';
+        
+        let res = await fetch(url, {
+            method:'POST',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+            body: JSON.stringify(report)
+        });
+
+        if (res.status === 405) 
+            return { error: true, report_already_made: true};
+        if (res.status !== 200) 
+            return { error: true, report_already_made: false };
+        
+        return { error: false, report_already_made: false };
     }
 
     async ban_player(player) {
