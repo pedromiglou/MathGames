@@ -15,6 +15,7 @@ test-job-WEB:
   script:
     - cd WebApp/mathgames_app
     - yarn install
+    - yarn build
 
 test-job-API:
   stage: test
