@@ -4,9 +4,9 @@ import './index.css';
 import App from './App.js';
 import reportWebVitals from './reportWebVitals';
 
-
+import {urlAPI} from "./data/data";
 import io from "socket.io-client";
-let socket = io("http://localhost:4000");
+let socket = io(urlAPI);
 export default socket;
 
 ReactDOM.render(<App />, document.getElementById('root'));

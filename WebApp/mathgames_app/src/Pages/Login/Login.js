@@ -2,25 +2,30 @@ import { React, useState } from "react";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Login.css";
-import AuthService from "../../Services/auth.service"
+import AuthService from "../../Services/auth.service";
+import {urlWeb} from "./../../data/data";
 
 function Login() {
     const [signIn, setSignIn] = useState(true);
     const [errorLogin, setErroLogin] = useState(false);
+    const [errorBan, setErroBan] = useState(false);
     const [errorRegisto, setErroRegisto] = useState(false);
     const [sucessoRegisto, setSucessoRegisto] = useState(false);
 
     async function login() {
         setErroRegisto(false);
-        setErroLogin(false)
+        setErroLogin(false);
+        setErroBan(false);
         var response = await AuthService.login(
             document.getElementById("nomeUtilizadorLogin").value,
             document.getElementById("passwordLogin").value
         )   
-        
-        if (response === true)
-            window.location.assign("http://localhost:3000/");
-        else {
+
+        if (response.id !== undefined)
+            window.location.assign(urlWeb);
+        else if (response.msg === "This account is banned") {
+            setErroBan(true);
+        } else {
             setErroLogin(true);
         }
     }
@@ -29,7 +34,8 @@ function Login() {
 
     async function register() {
         setErroRegisto(false);
-        setErroLogin(false)
+        setErroLogin(false);
+        setErroBan(false);
         var response = await AuthService.register(
             document.getElementById("nomeUtilizadorRegisto").value,
             document.getElementById("emailRegisto").value,
@@ -87,6 +93,12 @@ function Login() {
             
 
             <div className="container container-login">
+            {errorBan === true 
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}> 
+                Esta conta encontra-se banida.
+                 </div> 
+                : null}
+
             {errorLogin === true 
                 ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}> 
                 Ocorreu um erro no seu processo login. As suas credênciais são inválidas.

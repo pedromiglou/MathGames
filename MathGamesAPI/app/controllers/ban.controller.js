@@ -1,5 +1,6 @@
 const db = require("../models");
 const Ban = db.ban;
+const User = db.user;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Ban
@@ -21,7 +22,14 @@ exports.create = (req, res) => {
   // Save Ban in the database
   Ban.create(ban)
     .then(data => {
-      res.send(data);
+      User.update( {banned: true} , {where : {id: ban.user_id}}).then(user => {
+        res.send(data);
+      }).catch(err => {
+        res.status(500).send({
+          message: "Error occurred while updating the User."
+        })
+      })
+
     })
     .catch(err => {
       res.status(500).send({
@@ -94,9 +102,15 @@ exports.delete = (req, res) => {
   })
     .then(num => {
       if (num == 1) {
-        res.send({
-          message: "Ban was deleted successfully!"
-        });
+        User.update( {banned: false} , {where : {id: id}}).then(user => {
+          res.send({
+            message: "Ban was deleted successfully."
+          });
+        }).catch(err => {
+          res.status(500).send({
+            message: "Error occurred while updating the User."
+          })
+        })
       } else {
         res.send({
           message: `Cannot delete Ban with id=${id}. Maybe Ban was not found!`
@@ -126,3 +140,76 @@ exports.deleteAll = (req, res) => {
       });
     });
 };
+
+
+
+// Retrieve statistics
+exports.statistics = (req, res) => {
+  var response = [0, 0, 0, 0, 0, 0, 0]
+  var date = new Date();
+  var last = new Date(date.getTime() - (6 * 24 * 60 * 60 * 1000));
+  var dd = last.getDate();
+  var mm = last.getMonth()+1;
+  var yyyy = last.getFullYear();
+  var setimoDia = new Date(yyyy + '-' + mm + '-' + dd);
+  setimoDia.setTime( setimoDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  setimoDia = setimoDia.toISOString().slice(0, 19).replace('T', ' ');
+  setimoDia = setimoDia.split(" ")[0]
+
+  var sextoDia = new Date(yyyy + '-' + mm + '-' + (dd+1));
+  sextoDia.setTime( sextoDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  sextoDia = sextoDia.toISOString().slice(0, 19).replace('T', ' ');
+  sextoDia = sextoDia.split(" ")[0]
+
+  var quintoDia = new Date(yyyy + '-' + mm + '-' + (dd+2));
+  quintoDia.setTime( quintoDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  quintoDia = quintoDia.toISOString().slice(0, 19).replace('T', ' ');
+  quintoDia = quintoDia.split(" ")[0]
+
+  var quartoDia = new Date(yyyy + '-' + mm + '-' + (dd+3));
+  quartoDia.setTime( quartoDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  quartoDia = quartoDia.toISOString().slice(0, 19).replace('T', ' ');
+  quartoDia = quartoDia.split(" ")[0]
+
+  var terceiroDia = new Date(yyyy + '-' + mm + '-' + (dd+4));
+  terceiroDia.setTime( terceiroDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  terceiroDia = terceiroDia.toISOString().slice(0, 19).replace('T', ' ');
+  terceiroDia = terceiroDia.split(" ")[0]
+
+  var segundoDia = new Date(yyyy + '-' + mm + '-' + (dd+5));
+  segundoDia.setTime( segundoDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  segundoDia = segundoDia.toISOString().slice(0, 19).replace('T', ' ');
+  segundoDia = segundoDia.split(" ")[0]
+
+  var primeiroDia = new Date(yyyy + '-' + mm + '-' + (dd+6));
+  primeiroDia.setTime( primeiroDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  primeiroDia = primeiroDia.toISOString().slice(0, 19).replace('T', ' ');
+  primeiroDia = primeiroDia.split(" ")[0]
+
+  Ban.findAll({where: { createdAt: {[Op.gte]: setimoDia} }})
+    .then(data => {
+      for (var element of data) {
+        if (element.createdAt.split(" ")[0] === setimoDia)
+          response[0] = response[0] + 1
+        else if (element.createdAt.split(" ")[0] === sextoDia)
+          response[1] = response[1] + 1
+        else if (element.createdAt.split(" ")[0] === quintoDia)
+          response[2] = response[2] + 1
+        else if (element.createdAt.split(" ")[0] === quartoDia)
+          response[3] = response[3] + 1
+        else if (element.createdAt.split(" ")[0] === terceiroDia)
+          response[4] = response[4] + 1
+        else if (element.createdAt.split(" ")[0] === segundoDia)
+          response[5] = response[5] + 1
+        else if (element.createdAt.split(" ")[0] === primeiroDia)
+          response[6] = response[6] + 1
+      }
+      res.send(response); 
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving Bans."
+      });
+    });
+}
