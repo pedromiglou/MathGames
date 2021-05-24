@@ -5,7 +5,6 @@ import * as BsIcons from 'react-icons/bs';
 import * as RiIcons from 'react-icons/ri';
 import * as GiIcons from 'react-icons/gi';
 import * as ImIcons from 'react-icons/im';
-import * as FaIcons from 'react-icons/fa';
 
 
 
@@ -60,20 +59,13 @@ export const sidebarData_group_admin = [
     },
     {
         id: 1,
-        title: 'Estatisticas Jogos',
-        path: '/gamesStatistics',
-        icon: <CgIcons.CgGames/>,
-        cName: 'nav-text',
-    },
-    {
-        id: 2,
         title: 'Jogadores',
         path: '/podium',
         icon: <ImIcons.ImUsers/>,
         cName: 'nav-text',
     },
     {
-        id: 3,
+        id: 2,
         title: 'Gerir Torneios',
         path: '/manageTournaments',
         icon: <RiIcons.RiTrophyFill/>,
