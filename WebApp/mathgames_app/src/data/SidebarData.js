@@ -59,20 +59,13 @@ export const sidebarData_group_admin = [
     },
     {
         id: 1,
-        title: 'Estatisticas Jogos',
-        path: '/gamesStatistics',
-        icon: <CgIcons.CgGames/>,
-        cName: 'nav-text',
-    },
-    {
-        id: 2,
         title: 'Jogadores',
         path: '/podium',
         icon: <ImIcons.ImUsers/>,
         cName: 'nav-text',
     },
     {
-        id: 3,
+        id: 2,
         title: 'Gerir Torneios',
         path: '/manageTournaments',
         icon: <RiIcons.RiTrophyFill/>,

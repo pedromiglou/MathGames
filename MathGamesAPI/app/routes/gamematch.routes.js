@@ -10,8 +10,11 @@ module.exports = app => {
     // Retrieve all matches
     router.get("/", authJwt.verifyToken, matches.findAll);
 
-    // Retrieve all matches
+    // Retrieve statistics. Games per day
     router.get("/statistics", [authJwt.verifyToken, authJwt.isAdmin], matches.statistics);
+
+    // Retrieve statistics. Percentage of each game played
+    router.get("/statisticsbygame", [authJwt.verifyToken, authJwt.isAdmin], matches.statisticsbygame);
   
     // Retrieve match by id
     router.get("/:id", matches.findOne);

@@ -43,14 +43,29 @@ class UserService {
         return res.json();
     }
 
+
+    //Statistics Requests
     async getNumberOfBans() {
         var url = 'http://localhost:4000/api/bans/statistics/';
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         return res.json();
     }
 
+    async getNumberOfNewPlayers() {
+        var url = 'http://localhost:4000/api/users/statistics/';
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+
+
     async getMatchesStatistics() {
         var url = 'http://localhost:4000/api/matches/statistics/';
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+
+    async getMatchesStatisticsByGame() {
+        var url = 'http://localhost:4000/api/matches/statisticsbygame/';
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         return res.json();
     }
