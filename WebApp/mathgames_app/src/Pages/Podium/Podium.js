@@ -36,6 +36,8 @@ function Podium() {
 	const [modalId, setModalUserId] = useState(0);
 
 	const [friendRequestSucess, setFriendRequestSucess] = useState(false);
+	const [reportSucess, setReportSucess] = useState(false);
+	const [reportAlreadyMadeError, setReportAlreadyMade] = useState(false);
 	
 	const handlePageChangeUsers = (event, value) => {
 		setPageUsers(value);
@@ -54,8 +56,15 @@ function Podium() {
 		window.location.reload();
 	}
 
-	function report_player(player) {
-		UserService.report_player(current_user.id, player);
+	async function report_player(player) {
+		let reason = document.getElementById("reason").value;
+		let response = await UserService.report_player(current_user.id, player, reason);
+		if (response.report_already_made) {
+			setReportAlreadyMade(true);
+		}
+		if (!response.error) {
+			setReportSucess(true)
+		} 
 	}
 
 	async function ban_player(player) {
@@ -130,6 +139,7 @@ function Podium() {
 		let title = "";
 		let text = "";
 		let modal_function = null;
+		let report = false;
 		if (props.operation === "upgrade") {
 			title = "Aumentar Privilégios";
 			text = "Tem a certeza que pretende aumentar os privilégios da conta " + modal_username + "?";
@@ -154,6 +164,11 @@ function Podium() {
 			title = "Pedir Amizade a " + modal_username;
 			text = "Tem a certeza que pretende enviar um pedido de amizade a " + modal_username + "?";
 			modal_function = (userid) => {friend_request(userid); setFriendRequestSucess(true)};
+		} else if (props.operation === "report_player") {
+			title = "Reportar Jogador " + modal_username;
+			text = "Tem a certeza que pretende reportar o seguinte jogador: " + modal_username + "?";
+			modal_function = (userid) => {report_player(userid);};
+			report = true;
 		}
         return (
           <Modal
@@ -169,6 +184,15 @@ function Podium() {
             </Modal.Header>
             <Modal.Body>
               <p style={{color: "#0056b3", fontSize: 20}}>{text}</p>
+			  { report && 
+			  	<>
+			  	<label style={{color: "#0056b3", fontSize: 20}} for="reason">Motivo: </label>
+			  	<select id="reason" className="form-select" aria-label="Default select example">
+				  <option selected value="Cheats">Cheats</option>
+				  <option value="Bug Abuse">Bug Abuse</option>
+				</select>
+				</>
+			  }
             </Modal.Body>
             <Modal.Footer>
               <Button style={{fontSize: 18}} onClick={() => {modal_function(props.id); props.onHide();}} className="btn save-btn">Confimar</Button>
@@ -191,6 +215,17 @@ function Podium() {
                 ? <div className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
                 O Pedido de Amizade para {modalUsername} foi enviado com sucesso! 
                 </div> : null}
+
+			{reportSucess === true 
+                ? <div className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                O Report para {modalUsername} foi realizado com sucesso! 
+                </div> : null}
+
+			{reportAlreadyMadeError === true 
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}> 
+                Erro. O Report para {modalUsername} já foi realizado. Apenas pode reportar uma vez cada jogador.
+                 </div> 
+                : null}
 
 			{ current_user !== null && current_user["account_type"] === "A" &&
 
@@ -239,7 +274,7 @@ function Podium() {
 								<input className="form-control form-control-lg" id="filter_username" type="search" placeholder="Procurar por username"/>
 							</div>
 							<div className="col-auto">
-								<button id="searchButton" onClick={() => {setUsername(document.getElementById("filter_username").value); setFriendRequestSucess(false);}} className="btn btn-lg btn-success" type="button">Procurar</button>
+								<button id="searchButton" onClick={() => {setUsername(document.getElementById("filter_username").value); setFriendRequestSucess(false); setReportSucess(false)}} className="btn btn-lg btn-success" type="button">Procurar</button>
 							</div>
 						</div>
 					</form>
@@ -292,22 +327,22 @@ function Podium() {
 										<>
 										{ friends.some(e => e.id === user.id) &&
 											<>
-											<i className="subicon pointer"   onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_friend"); setConfirmModalShow(true) }}><IoIcons.IoPersonRemove/></i>
-											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {report_player(user.id)}}><MdIcons.MdReport/></i>
+											<i className="subicon pointer"   onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_friend"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><IoIcons.IoPersonRemove/></i>
+											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><MdIcons.MdReport/></i>
 											</>
 										} 
 										{ (!friends.some(e => e.id === user.id) && user.id !== current_user.id ) &&
 											<>
-											<i className="subicon pointer"  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("friend_request"); setConfirmModalShow(true) }}><IoIcons.IoPersonAdd/></i>
-											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {report_player(user.id)}}><MdIcons.MdReport/></i>
+											<i className="subicon pointer"  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("friend_request"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><IoIcons.IoPersonAdd/></i>
+											<i className="subicon pointer" style={{marginLeft:"10px"}}   onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><MdIcons.MdReport/></i>
 											</>
 										} 
 										</>	
 									}
 									{ friends.length === 0 &&  user.id !== current_user.id &&
 										<>
-										<i className="subicon pointer"  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("friend_request"); setConfirmModalShow(true) }}><IoIcons.IoPersonAdd/></i>
-										<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {report_player(user.id)}}><MdIcons.MdReport/></i>
+										<i className="subicon pointer"  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("friend_request"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><IoIcons.IoPersonAdd/></i>
+										<i className="subicon pointer" style={{marginLeft:"10px"}}   onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><MdIcons.MdReport/></i>
 										</>
 										
 									}
