@@ -53,12 +53,14 @@ Presentation of the lifecycle architecture. The Milestone is achieved when the a
 ## Week 6-8
 **(03/05 - 17/05)**
 - Backend:
-  - Game bots AI [P. Amaral, P. Santos]
-  - API development [R. Baptista, D. Carvalho]
+  - Validation of player moves [D. Carvalho]
+  - Finish all game modes for one game [P. Santos]
+  - Friend requests and notifications [R. Baptista]
 
 - Frontend:
+  - Gamification (User Avatars) [D. Cunha]
   - Web App [R. Cruz]
-  - Mobile App [D. Cunha]
+  - Mobile App [P. Amaral]
 
 ## Milestone 3
 Prototype. Mid-Term Presentation with supervisors. Peer Evaluation.
@@ -70,25 +72,26 @@ Prototype. Mid-Term Presentation with supervisors. Peer Evaluation.
 ## Week 8-10
 **(17/05 - 31/05)**
 - Backend:
-  - Game bots AI [P. Amaral]
-  - API development [R. Baptista, D. Carvalho, P. Santos]
-  - (TBD...)
+  - Storing User Avatar [D. Cunha, R. Baptista]
+  - Admin account methods and statistics [D. Carvalho, R. Baptista]
+  - Development of tournament endpoints [P. Santos, D. Carvalho]
 
 - Frontend:
-  - Web App [R. Cruz]
-  - Mobile App [D. Cunha]
-  - (TBD...)
+  - Web App (Admin Pages, Improve Game Page, Tournament Pages) [R. Cruz, P. Santos]
+  - Mobile app [P. Amaral]
 
 
 ## Week 10-12
 **(31/05 - 14/06)**
 - Backend:
-  - Testing and bug fixes [P. Santos, R. Baptista, P. Amaral]
-  - (TBD...)
+  - Finish development of more games [P. Santos, P. Amaral]
 
 - Frontend:
-  - Usability tests [D. Cunha, R. Cruz, D. Carvalho]
-  - (TBD...)
+  - Final touches on web and mobile app [R. Cruz, D. Cunha, P. Amaral]
+
+- Testing:
+  - Usability Tests [ All ]
+  - Improve available features/ Fix bugs based on test results [ All ]
 
 ## Milestone 4
 Project Presentation. All Funcionality Has Been Developed.

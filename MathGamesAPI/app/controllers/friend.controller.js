@@ -40,6 +40,7 @@ exports.create = (req, res) => {
     if (notif !== null) {
       Notification.destroy({where: {id: notif.id}});
       // Save Friend in the database
+      console.log(friend)
       Friend.create(friend)
       .then(data => {
         res.send(data);
@@ -99,7 +100,8 @@ exports.findByUserId = (req, res) => {
             return element.friend2;
           }
         });
-        User.findAll({attributes: ['id', 'username', 'avatar', 'account_level', 'account_type'], where: {id: data} })
+
+        User.findAll({attributes: ['id', 'username', 'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 'avatar_trouser', 'account_level', 'account_type'], where: {id: data} })
         .then( users => {
           res.send(users)
         })

@@ -6,11 +6,14 @@ module.exports = app => {
     var router = require("express").Router();
   
     // Create a new Ban
-    router.post("/",  authJwt.verifyToken,  bans.create);   //VERIFY IS ADMIN
+    router.post("/",  [authJwt.verifyToken, authJwt.isAdmin],  bans.create);
   
     // Retrieve all bans
     router.get("/", bans.findAll);
-  
+
+    // Retrieve ban statistics
+    router.get("/statistics", [authJwt.verifyToken, authJwt.isAdmin], bans.statistics)
+
     // Retrieve a single Ban with id
     router.get("/:id", bans.findOne);
   
@@ -18,10 +21,10 @@ module.exports = app => {
     router.put("/:id", bans.update);
   
     // Delete a Ban with id
-    router.delete("/:id",  authJwt.verifyToken, bans.delete);   //VERIFY IS ADMIN
+    router.delete("/:id",  [authJwt.verifyToken, authJwt.isAdmin], bans.delete);
   
     // Delete all Bans
-    router.delete("/", bans.deleteAll);
+    router.delete("/", [authJwt.verifyToken, authJwt.isAdmin], bans.deleteAll);
   
     app.use('/api/bans', router);
   };

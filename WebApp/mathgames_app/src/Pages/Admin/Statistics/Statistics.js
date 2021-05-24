@@ -1,7 +1,141 @@
 import './Statistics.css';
 import * as FaIcons from 'react-icons/fa';
+import UserService from "../../../Services/user.service";
+import { React, useState, useEffect } from "react";
+//import {Line} from 'react-chartjs-2';
+import CanvasJSReact from "./canvasjs.react";
+var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 function Statistics() {
+
+    const [numberOfBans, setNumberOfBans] = useState([])
+    const [numberOfNewPlayers, setNumberOfNewPlayers] = useState([])
+    const [numberOfTotalMatches, setNumberOfTotalMatchesLast7Days] = useState(0)
+    const [matchesLast7Days, setMatchesLast7Days] = useState([])
+    const [matchesByGameLast7Days, setMatchesByGameLast7Days] = useState([])
+
+    useEffect(() => {
+        async function fetchApiNumberOfBans() {
+            var bans = await UserService.getNumberOfBans();
+            setNumberOfBans(bans);
+        }
+
+        async function fetchApiNumberOfNewPlayers() {
+            var newplayers = await UserService.getNumberOfNewPlayers();
+            setNumberOfNewPlayers(newplayers);
+        }
+
+        async function fetchApiMatchesStatistics() {
+            var matches = await UserService.getMatchesStatistics();
+            setMatchesLast7Days(matches);
+        }
+
+
+        async function fetchApiMatchesStatisticsByGame() {
+            var response = await UserService.getMatchesStatisticsByGame();
+            setNumberOfTotalMatchesLast7Days(response.countAllMatches);
+            var matches_percentage = response.matches.map(element => {
+                return {label: element.name, y: element.matchesCount}
+            })
+            setMatchesByGameLast7Days(matches_percentage);
+        }
+
+        fetchApiNumberOfBans()
+        fetchApiMatchesStatistics()
+        fetchApiMatchesStatisticsByGame()
+        fetchApiNumberOfNewPlayers()
+    }, [])
+
+    /*
+    const state = {
+        labels: ['6 days ago', '5 days ago', '4 days ago',
+                 '3 days ago', '2 days ago', 'yesterday', 'today'],
+        datasets: [
+          {
+            fill: false,
+            lineTension: 0.5,
+            backgroundColor: 'rgba(75,192,192,1)',
+            borderColor: 'rgba(0,0,0,1)',
+            borderWidth: 2,
+            data: [numberOfBans[0], numberOfBans[1], numberOfBans[2], numberOfBans[3], numberOfBans[4], numberOfBans[5], numberOfBans[6]]
+          }
+        ]
+      }
+      */
+
+    const bannedPlayers7DaysGraph = {
+        animationEnabled: true,
+        //exportEnabled: true,
+        theme: "light1", //"light1", "dark1", "dark2"
+        data: [
+          {
+            type: "line",
+            dataPoints: [
+              { label: "6 days ago", y: numberOfBans[0] },
+              { label: "5 days ago", y: numberOfBans[1] },
+              { label: "4 days ago", y: numberOfBans[2] },
+              { label: "3 days ago", y: numberOfBans[3] },
+              { label: "2 days ago", y: numberOfBans[4] },
+              { label: "yesterday", y: numberOfBans[5] },
+              { label: "today", y: numberOfBans[6] }
+            ]
+          }
+        ]
+      };
+
+    const newPlayers7DaysGraph = {
+        animationEnabled: true,
+        //exportEnabled: true,
+        theme: "light1", //"light1", "dark1", "dark2"
+        data: [
+          {
+            type: "line",
+            dataPoints: [
+              { label: "6 days ago", y: numberOfNewPlayers[0] },
+              { label: "5 days ago", y: numberOfNewPlayers[1] },
+              { label: "4 days ago", y: numberOfNewPlayers[2] },
+              { label: "3 days ago", y: numberOfNewPlayers[3] },
+              { label: "2 days ago", y: numberOfNewPlayers[4] },
+              { label: "yesterday", y: numberOfNewPlayers[5] },
+              { label: "today", y: numberOfNewPlayers[6] }
+            ]
+          }
+        ]
+      };
+
+
+
+    const matchesLast7DaysGraph = {
+        animationEnabled: true,
+        //exportEnabled: true,
+        theme: "light1", //"light1", "dark1", "dark2"
+        data: [
+            {
+            type: "line",
+            dataPoints: [
+                { label: "6 days ago", y: matchesLast7Days[0] },
+                { label: "5 days ago", y: matchesLast7Days[1] },
+                { label: "4 days ago", y: matchesLast7Days[2] },
+                { label: "3 days ago", y: matchesLast7Days[3] },
+                { label: "2 days ago", y: matchesLast7Days[4] },
+                { label: "yesterday", y: matchesLast7Days[5] },
+                { label: "today", y: matchesLast7Days[6] }
+            ]
+            }
+        ]
+    };
+
+    const matchesByGameLast7DaysGraph = {
+        animationEnabled: true,
+        theme: "light1", // "light1", "dark1", "dark2"
+        data: [{
+            type: "pie",
+            indexLabel: "{label}: {y}%",		
+            startAngle: -90,
+            dataPoints: matchesByGameLast7Days
+        }]
+    }
+
     return (
         <div className="Statistics">
             <h1>Estatisticas Gerais</h1>
@@ -38,21 +172,49 @@ function Statistics() {
                         </tr>
                     </tbody>
                     </table>
+                    <h2>Número de jogos nos últimos 7 dias: {numberOfTotalMatches}</h2>
+                    <div style={{ marginLeft: 20, marginRight: 20, marginBottom: 20 }}>
+                    <CanvasJSChart options = {matchesByGameLast7DaysGraph} 
+                        /* onRef={ref => this.chart = ref} */
+                    />
+                    </div>
                 </div>
                 <div className="statsTournaments shadow3D">
                     <h2>Torneios</h2>
-                    <h1>Aqui n sei mt bem o que se vai por ainda, mas vai ser estatisticas de torneios</h1>
+                    <div style={{ marginLeft: 20, marginRight: 20, marginBottom: 20 }}>
+                        <CanvasJSChart options={matchesLast7DaysGraph} />
+                    </div>
                 </div>
             </div>
             
             <div className="Section">
                 <div className="statsPlayers shadow3D">
-                    <h2>Jogadores</h2>
-                    <h1>Estatisticas relacionadas com os jogadore</h1>
+                    <h2>Novos Jogadores</h2>
+                    <div style={{ marginLeft: 20, marginRight: 20, marginBottom: 20 }}>
+                    <CanvasJSChart options={newPlayers7DaysGraph} />
+                    </div>
                 </div>
                 <div className="statsBannedPlayers shadow3D">
                     <h2>Jogadores Banidos</h2>
-                    <h1>Jogadores banidos com graficos com os diferentes motivos e numero de banidos</h1>
+                    <div style={{ marginLeft: 20, marginRight: 20, marginBottom: 20 }}>
+                    <CanvasJSChart options={bannedPlayers7DaysGraph} />
+                    {/*
+                    <Line
+                        data={state}
+                        options={{
+                            title:{
+                            display:true,
+                            text:'Average Rainfall per month',
+                            fontSize:20
+                            },
+                            legend:{
+                            display:true,
+                            position:'right'
+                            }
+                        }}
+                        />
+                    */}
+                    </div>
                 </div>
             </div>
             

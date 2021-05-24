@@ -10,7 +10,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING(200)
       }
     }, {
-      timestamps: false
+      timestamps: true
     });
     return Ban;
   };

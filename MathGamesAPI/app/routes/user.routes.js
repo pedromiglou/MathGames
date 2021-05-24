@@ -12,6 +12,12 @@ module.exports = app => {
   
     // Retrieve all Users
     router.get("/", users.findAll);
+
+    // Retrieve ban statistics
+    router.get("/statistics", users.statistics)
+
+    // Retrieve all Users with Admin permissions
+    router.get("/banned", [authJwt.verifyToken, authJwt.isAdmin], users.findAllBanned);
   
     // Retrieve a single User with id
     router.get("/:id", users.findOne);
@@ -20,10 +26,10 @@ module.exports = app => {
     router.put("/:id", authJwt.verifyToken, users.update);
 
     // Upgrade user_account_type
-    router.put("/upgrade/:id", authJwt.verifyToken, users.upgrade_account);       //VERIFY IS ADMIN
+    router.put("/upgrade/:id", [authJwt.verifyToken, authJwt.isAdmin], users.upgrade_account);
 
     // Downgrade user_account_type
-    router.put("/downgrade/:id",  authJwt.verifyToken, users.downgrade_account);  //VERIFY IS ADMIN
+    router.put("/downgrade/:id",  [authJwt.verifyToken, authJwt.isAdmin], users.downgrade_account);
 
     // Delete a User with id
     router.delete("/:id", users.delete);
