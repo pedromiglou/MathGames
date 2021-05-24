@@ -1,3 +1,4 @@
+import {urlWeb} from "./src/data/data";
 // Modules to control application life and create native browser window
 const {app, BrowserWindow} = require('electron')
 const path = require('path')
@@ -13,7 +14,7 @@ function createWindow () {
   })
 
   // and load the index.html of the app.
-  mainWindow.loadURL('http://localhost:3000')
+  mainWindow.loadURL(urlWeb);
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()

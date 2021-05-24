@@ -1,15 +1,15 @@
+import {urlAPI} from "./../data/data";
 
 class UserService {
 
-
     async getUserById(userId) {
-        var url = 'http://localhost:4000/api/users/' + userId;
+        var url = urlAPI + 'api/users/' + userId;
         var res = await fetch(url);
         return res.json();
     }
 
     async getFriends(userId) {
-        var url = 'http://localhost:4000/api/friends/' + userId;
+        var url = urlAPI + 'api/friends/' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         if (res.status !== 200) 
             return { error: true };
@@ -17,13 +17,13 @@ class UserService {
     }
 
     async getNotifications(userId) {
-        var url = 'http://localhost:4000/api/notifications/' + userId;
+        var url = urlAPI + 'api/notifications/' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         return res.json();
     }
 
     async getLastGames(userId) {
-        var url = 'http://localhost:4000/api/matches?userid=' + userId;
+        var url = urlAPI + 'api/matches?userid=' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         if (res.status !== 200) {
             return {'error': true}
@@ -32,13 +32,13 @@ class UserService {
     }
     
     async getUsers(username, page, pageSize) {
-        var url = 'http://localhost:4000/api/users?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username;
+        var url = urlAPI + 'api/users?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username;
         var res = await fetch(url);
         return res.json();
     }
 
     async getUsersBanned(username, page, pageSize) {
-        var url = 'http://localhost:4000/api/users/banned?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username;
+        var url = urlAPI + '/api/users/banned?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         return res.json();
     }
@@ -46,26 +46,26 @@ class UserService {
 
     //Statistics Requests
     async getNumberOfBans() {
-        var url = 'http://localhost:4000/api/bans/statistics/';
+        var url = urlAPI + 'api/bans/statistics/';
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         return res.json();
     }
 
     async getNumberOfNewPlayers() {
-        var url = 'http://localhost:4000/api/users/statistics/';
+        var url = urlAPI + 'api/users/statistics/';
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         return res.json();
     }
 
 
     async getMatchesStatistics() {
-        var url = 'http://localhost:4000/api/matches/statistics/';
+        var url = urlAPI + 'api/matches/statistics/';
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         return res.json();
     }
 
     async getMatchesStatisticsByGame() {
-        var url = 'http://localhost:4000/api/matches/statisticsbygame/';
+        var url = urlAPI + 'api/matches/statisticsbygame/';
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         return res.json();
     }
@@ -80,7 +80,7 @@ class UserService {
             avatar_trouser: trouser,
         }
 
-        var url = 'http://localhost:4000/api/users/' + user;
+        var url = urlAPI + 'api/users/' + user;
         
         await fetch(url, {
             method:'PUT',
@@ -93,7 +93,7 @@ class UserService {
     }
 
     delete(notificationId) {
-        var url = 'http://localhost:4000/api/notifications/' + notificationId;
+        var url = urlAPI + 'api/notifications/' + notificationId;
         fetch(url, {
             method:'DELETE',
             headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}
@@ -107,7 +107,7 @@ class UserService {
             friend2: notification.receiver,
         }
 
-        var url = 'http://localhost:4000/api/friends/';
+        var url = urlAPI + 'api/friends/';
         fetch(url, {
             method:'POST',
             headers:{'Content-type':'application/json',
@@ -125,7 +125,7 @@ class UserService {
             notification_type: "F"
         }
 
-        var url = 'http://localhost:4000/api/notifications/';
+        var url = urlAPI + 'api/notifications/';
         
         fetch(url, {
             method:'POST',
@@ -139,7 +139,7 @@ class UserService {
 
 
     async remove_friend(friend1, friend2) {
-        var url = 'http://localhost:4000/api/friends/' + friend1 + "/" + friend2;
+        var url = urlAPI + 'api/friends/' + friend1 + "/" + friend2;
         
         await fetch(url, {
             method:'DELETE',
@@ -157,7 +157,7 @@ class UserService {
             reason: reason
         }
 
-        var url = 'http://localhost:4000/api/reports/';
+        var url = urlAPI + 'api/reports/';
         
         let res = await fetch(url, {
             method:'POST',
@@ -180,7 +180,7 @@ class UserService {
             user_id: player
         }
 
-        var url = 'http://localhost:4000/api/bans/';
+        var url = urlAPI + 'api/bans/';
         
         await fetch(url, {
             method:'POST',
@@ -193,7 +193,7 @@ class UserService {
     }
 
     async remove_ban(player) {
-        var url = 'http://localhost:4000/api/bans/' + player;
+        var url = urlAPI + 'api/bans/' + player;
         
         await fetch(url, {
             method:'DELETE',
@@ -205,7 +205,7 @@ class UserService {
     }
 
     async upgrade_account(player) {
-        var url = 'http://localhost:4000/api/users/upgrade/' + player;
+        var url = urlAPI + 'api/users/upgrade/' + player;
         
         await fetch(url, {
             method:'PUT',
@@ -217,7 +217,7 @@ class UserService {
     }
 
     async downgrade_account(player) {
-        var url = 'http://localhost:4000/api/users/downgrade/' + player;
+        var url = urlAPI + 'api/users/downgrade/' + player;
         
         await fetch(url, {
             method:'PUT',

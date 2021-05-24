@@ -2,7 +2,8 @@ import { React, useState } from "react";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Login.css";
-import AuthService from "../../Services/auth.service"
+import AuthService from "../../Services/auth.service";
+import {urlWeb} from "./../../data/data";
 
 function Login() {
     const [signIn, setSignIn] = useState(true);
@@ -21,7 +22,7 @@ function Login() {
         )   
 
         if (response.id !== undefined)
-            window.location.assign("http://localhost:3000/");
+            window.location.assign(urlWeb);
         else if (response.msg === "This account is banned") {
             setErroBan(true);
         } else {

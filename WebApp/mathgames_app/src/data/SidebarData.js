@@ -6,8 +6,6 @@ import * as RiIcons from 'react-icons/ri';
 import * as GiIcons from 'react-icons/gi';
 import * as ImIcons from 'react-icons/im';
 
-
-
 export const sidebarData_group1 = [
     {
         id: 0,

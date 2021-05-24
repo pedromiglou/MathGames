@@ -1,16 +1,106 @@
-build-job-WebApp:
-  stage: build
+stages:
+  - test
+  - publish
+  - deploy
+
+variables:
+  TAG_LATEST_API: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME:latest.api
+  TAG_COMMIT_API: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME:$CI_COMMIT_SHORT_SHA.api
+  TAG_LATEST_WEB: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME:latest.web
+  TAG_COMMIT_WEB: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME:$CI_COMMIT_SHORT_SHA.web
+
+test-job-WEB:
+  stage: test
   image: node:14
   script:
     - cd WebApp/mathgames_app
     - yarn install
-    - yarn build
 
 test-job-API:
   stage: test
   image: node:14
   script:
     - cd MathGamesAPI
-    - npm i npm@latest -g
-    - npm i
+    - npm ci
     - npm test
+
+publish-WEB:
+  image: docker:18.09
+  stage: publish
+  services:
+    - docker:18.09-dind
+  script:
+    - cd WebApp/mathgames_app
+    - docker build -t $TAG_COMMIT_WEB -t $TAG_LATEST_WEB .
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker push $TAG_COMMIT_WEB
+    - docker push $TAG_LATEST_WEB
+  only:
+    - develop
+
+publish-API:
+  image: docker:18.09
+  stage: publish
+  services:
+    - docker:18.09-dind
+  script:
+    - cd MathGamesAPI
+    - docker build -t $TAG_COMMIT_API -t $TAG_LATEST_API .
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker push $TAG_COMMIT_API
+    - docker push $TAG_LATEST_API
+  only:
+    - develop
+
+deploy-DB:
+  image: alpine:latest
+  stage: deploy
+  tags:
+    - deployment
+  script:
+    - chmod og= $ID_RSA
+    - apk update && apk add openssh-client
+    - ssh -i $ID_RSA -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker container rm -f mysql8 || true"
+    - ssh -i $ID_RSA -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker run --name mysql8 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=demo -e MYSQL_USER=demo -e MYSQL_PASSWORD=password -p 3306:3306 -d mysql/mysql-server:8.0.23"
+    - sleep 30
+  environment:
+    name: production
+    url: http://$SERVER_IP
+  only:
+    - develop
+
+deploy-WEB:
+  image: alpine:latest
+  stage: deploy
+  tags:
+    - deployment
+  script:
+    - chmod og= $ID_RSA
+    - apk update && apk add openssh-client
+    - ssh -i $ID_RSA -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY"
+    - ssh -i $ID_RSA -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker pull $TAG_COMMIT_WEB"
+    - ssh -i $ID_RSA -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker container rm -f my-app || true"
+    - ssh -i $ID_RSA -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker run -d -p 80:80 --name my-app $TAG_COMMIT_WEB"
+  environment:
+    name: production
+    url: http://$SERVER_IP
+  only:
+    - develop
+
+deploy-API:
+  image: alpine:latest
+  stage: deploy
+  tags:
+    - deployment
+  script:
+    - chmod og= $ID_RSA
+    - apk update && apk add openssh-client
+    - ssh -i $ID_RSA -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY"
+    - ssh -i $ID_RSA -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker pull $TAG_COMMIT_API"
+    - ssh -i $ID_RSA -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker container rm -f my-api || true"
+    - ssh -i $ID_RSA -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker run --network host -d -p 4000:4000 --name my-api $TAG_COMMIT_API"
+  environment:
+    name: production
+    url: http://$SERVER_IP
+  only:
+    - develop
