@@ -5,20 +5,28 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
         primaryKey: true
       },
-      game_id: {
+      rastros: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        primaryKey: true
-      },
-      ranking: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
+        defaultValue: 0,
         validate: {
-            isNotNegative() {
-                if (this.ranking < 0) {
-                    throw new Error("Ranking must be >= 0")
-                }
-            }
+          isNotNegative() {
+              if (this.rastros < 0) {
+                  throw new Error("Rastros ranking must be >= 0")
+              }
+          }
+        }
+      },
+      gatos_e_caes: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+        validate: {
+          isNotNegative() {
+              if (this.gatos_e_caes < 0) {
+                  throw new Error("Gatos e Caes ranking must be >= 0")
+              }
+          }
         }
       }
     }, {

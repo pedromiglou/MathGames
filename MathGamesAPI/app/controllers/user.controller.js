@@ -1,5 +1,6 @@
 const db = require("../models");
 const User = db.user;
+const UserRanks = db.user_ranks;
 const Op = db.Sequelize.Op;
 const config = require("../config/auth.config")
 var jwt = require("jsonwebtoken");
@@ -41,7 +42,17 @@ exports.create = (req, res) => {
   // Save User in the database
   User.create(user)
     .then(data => {
-      res.send(data);
+      UserRanks.create({user_id: data.id})
+      .then( response => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while creating the UserRanks."
+        });
+      });
+      
     })
     .catch(err => {
       res.status(500).send({
