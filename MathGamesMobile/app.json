@@ -12,7 +12,8 @@
       "**/*"
     ],
     "android": {
-      "package": "ua.pi.mathgames"
+      "package": "ua.pi.mathgames",
+      "softwareKeyboardLayoutMode": "pan"
     }
   },
   "ios": {

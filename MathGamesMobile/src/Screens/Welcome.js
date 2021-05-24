@@ -4,17 +4,6 @@ import {Button, View, ScrollView, Text, Image, Dimensions, StyleSheet} from 'rea
 const win = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-    image: {
-        flex: 1,
-        alignSelf: 'stretch',
-        width: win.width,
-        height: win.width*360/1463-20,
-        padding: 10,
-        margin: 0
-    }
-});
-
-const styles2 = StyleSheet.create({
   image: {
       flex: 1,
       alignSelf: 'stretch',
@@ -27,17 +16,11 @@ const styles2 = StyleSheet.create({
 
 function Welcome({ navigation }) {
     return (
-      <ScrollView style={{ flex: 1, marginTop: 20 }}>
-        <Image
-          style={styles.image}
-          resizeMode = {'contain'}
-          source={require('./../../public/images/logo-light.png')}
-        />
-
+      <ScrollView style={{ flex: 1 }}>
         <Text style={{fontSize: 30, padding: 10, textAlign:'center'}}>Bem-vindos ao MathGames!</Text>
 
         <Image
-              style={styles2.image}
+              style={styles.image}
               resizeMode = {'contain'}
               source={require('./../../public/images/header_img.png')}/>
 
