@@ -18,11 +18,8 @@ class AuthService {
         
         if(json.id) {
             localStorage.setItem("user", JSON.stringify(json));
-            console.log("vou return")
-            return true
-        } else {
-            return false
-        }
+        } 
+        return json
 
     }
 

@@ -10,7 +10,6 @@ class UserService {
 
     async getFriends(userId) {
         var url = urlAPI + 'api/friends/' + userId;
-        console.log(JSON.parse(localStorage.getItem("user"))["token"]);
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
         if (res.status !== 200) 
             return { error: true };
@@ -38,6 +37,39 @@ class UserService {
         return res.json();
     }
 
+    async getUsersBanned(username, page, pageSize) {
+        var url = urlAPI + '/api/users/banned?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username;
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+
+
+    //Statistics Requests
+    async getNumberOfBans() {
+        var url = urlAPI + 'api/bans/statistics/';
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+
+    async getNumberOfNewPlayers() {
+        var url = urlAPI + 'api/users/statistics/';
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+
+
+    async getMatchesStatistics() {
+        var url = urlAPI + 'api/matches/statistics/';
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+
+    async getMatchesStatisticsByGame() {
+        var url = urlAPI + 'api/matches/statisticsbygame/';
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+    
     //Save avatar function
     async update_user(color, hat, shirt, accessorie, trouser, user) {
         let avatar = {
@@ -106,10 +138,10 @@ class UserService {
     }
 
 
-    remove_friend(friend1, friend2) {
+    async remove_friend(friend1, friend2) {
         var url = urlAPI + 'api/friends/' + friend1 + "/" + friend2;
         
-        fetch(url, {
+        await fetch(url, {
             method:'DELETE',
             headers:{'Content-type':'application/json',
                      'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
@@ -118,11 +150,31 @@ class UserService {
         return;    
     }
     
-    report_player(friend1, friend2) {
-        // TODO    
+    async report_player(sender, receiver, reason) {
+        let report= {
+            sender: sender,
+            receiver: receiver,
+            reason: reason
+        }
+
+        var url = urlAPI + 'api/reports/';
+        
+        let res = await fetch(url, {
+            method:'POST',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+            body: JSON.stringify(report)
+        });
+
+        if (res.status === 405) 
+            return { error: true, report_already_made: true};
+        if (res.status !== 200) 
+            return { error: true, report_already_made: false };
+        
+        return { error: false, report_already_made: false };
     }
 
-    ban_player(player) {
+    async ban_player(player) {
         let ban= {
             reason: "New Ban",
             user_id: player
@@ -130,7 +182,7 @@ class UserService {
 
         var url = urlAPI + 'api/bans/';
         
-        fetch(url, {
+        await fetch(url, {
             method:'POST',
             headers:{'Content-type':'application/json',
                      'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
@@ -140,10 +192,10 @@ class UserService {
         return;    
     }
 
-    remove_ban(player) {
+    async remove_ban(player) {
         var url = urlAPI + 'api/bans/' + player;
         
-        fetch(url, {
+        await fetch(url, {
             method:'DELETE',
             headers:{'Content-type':'application/json',
                      'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
@@ -152,10 +204,10 @@ class UserService {
         return;    
     }
 
-    upgrade_account(player) {
+    async upgrade_account(player) {
         var url = urlAPI + 'api/users/upgrade/' + player;
         
-        fetch(url, {
+        await fetch(url, {
             method:'PUT',
             headers:{'Content-type':'application/json',
                         'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
@@ -164,10 +216,10 @@ class UserService {
         return;    
     }
 
-    downgrade_account(player) {
+    async downgrade_account(player) {
         var url = urlAPI + 'api/users/downgrade/' + player;
         
-        fetch(url, {
+        await fetch(url, {
             method:'PUT',
             headers:{'Content-type':'application/json',
                         'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},

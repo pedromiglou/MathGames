@@ -15,7 +15,6 @@ test-job-WEB:
   script:
     - cd WebApp/mathgames_app
     - yarn install
-    - yarn build
 
 test-job-API:
   stage: test
@@ -37,7 +36,7 @@ publish-WEB:
     - docker push $TAG_COMMIT_WEB
     - docker push $TAG_LATEST_WEB
   only:
-    - new/deploy_in_digital_ocean
+    - develop
 
 publish-API:
   image: docker:18.09
@@ -51,7 +50,7 @@ publish-API:
     - docker push $TAG_COMMIT_API
     - docker push $TAG_LATEST_API
   only:
-    - new/deploy_in_digital_ocean
+    - develop
 
 deploy-DB:
   image: alpine:latest
@@ -68,7 +67,7 @@ deploy-DB:
     name: production
     url: http://$SERVER_IP
   only:
-    - new/deploy_in_digital_ocean
+    - develop
 
 deploy-WEB:
   image: alpine:latest
@@ -86,7 +85,7 @@ deploy-WEB:
     name: production
     url: http://$SERVER_IP
   only:
-    - new/deploy_in_digital_ocean
+    - develop
 
 deploy-API:
   image: alpine:latest
@@ -104,4 +103,4 @@ deploy-API:
     name: production
     url: http://$SERVER_IP
   only:
-    - new/deploy_in_digital_ocean
+    - develop
