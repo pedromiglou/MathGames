@@ -436,17 +436,32 @@ async function finnish_game(match_id, endMode) {
       else if (game_id === 1)
         jogo = "gatos_e_caes"
       
-
       if (winner === "1") {
-        if (player_1_account_player)
-          await UserRank.increment(jogo, { by: 25, where: {user_id: player1}})
-        if (player_2_account_player)
-          await UserRank.decrement(jogo, { by: 25, where: {user_id: player2}})
+        if (player_1_account_player) {
+          await UserRank.findByPk(player1).then(ranks_player1 => {
+            var updated_elo = ranks_player1.dataValues[jogo] + 25;
+            UserRank.update({ [jogo]: updated_elo}, {where: {user_id: player1}}).then(result => {console.log(result)}).catch(err => console.log(err));
+          })
+        }
+        if (player_2_account_player) {
+          await UserRank.findByPk(player2).then(ranks_player2 => {
+            var updated_elo = ranks_player2.dataValues[jogo] - 25;
+            UserRank.update({ [jogo]: updated_elo}, {where: {user_id: player2}}).then(result => {console.log(result)}).catch(err => console.log(err));
+          })
+        }
       } else if (winner === "2") {
-        if (player_2_account_player)
-          await UserRank.increment(jogo, { by: 25, where: {user_id: player2}})
-        if (player_1_account_player)
-          await UserRank.decrement(jogo, { by: 25, where: {user_id: player1}})
+        if (player_2_account_player) {
+          await UserRank.findByPk(player2).then(ranks_player2 => {
+            var updated_elo = ranks_player2.dataValues[jogo] + 25;
+            UserRank.update({ [jogo]: updated_elo}, {where: {user_id: player2}}).then(result => {console.log(result)}).catch(err => console.log(err));
+          }).catch(err => {console.log(err)})
+        }
+        if (player_1_account_player) {
+          await UserRank.findByPk(player1).then(ranks_player1 => {
+            var updated_elo = ranks_player1.dataValues[jogo] - 25;
+            UserRank.update({ [jogo]: updated_elo}, {where: {user_id: player1}}).then(result => {console.log(result)}).catch(err => console.log(err));
+          })
+        }
       }
     }
     
