@@ -17,11 +17,11 @@ const Profile = () => {
     const [user, setUser] = useState("");
     const [games, setGames] = useState([]);
 
-    const [hat, setHat] = useState("MagicianHat");
-    const [shirt, setShirt] = useState("");
+    const [hat, setHat] = useState("none");
+    const [shirt, setShirt] = useState("none");
     const [color, setColor] = useState("#FFAF00");
-    const [accessorie, setAccessorie] = useState("None");
-    const [trouser, setTrouser] = useState("#808080");
+    const [accessorie, setAccessorie] = useState("none");
+    const [trouser, setTrouser] = useState("none");
     const [modalSaveShow, setSaveModalShow] = useState(false);
     const [modalCancelShow, setCancelModalShow] = useState(false);
     var geral_e;

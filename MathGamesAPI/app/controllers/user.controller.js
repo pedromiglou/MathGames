@@ -1,6 +1,7 @@
 const db = require("../models");
 const User = db.user;
 const UserRanks = db.user_ranks;
+const AvatarItems = db.avatar_items;
 const Op = db.Sequelize.Op;
 const config = require("../config/auth.config")
 var jwt = require("jsonwebtoken");
@@ -155,7 +156,7 @@ exports.findOne = (req, res) => {
 };
 
 // Update a User by the id in the request
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   const id = req.params.id;
 
   if (parseInt(req.userId) !== parseInt(id)) {
@@ -167,6 +168,77 @@ exports.update = (req, res) => {
 
   const { account_type, banned, ...userWithoutAccount_Type } = req.body;
 
+  var level = await User.findByPk(id);
+  level = level.dataValues.account_level;
+
+  if (userWithoutAccount_Type.avatar_hat !== "none") {
+    var avatar_hat = await AvatarItems.findOne({where: {name: userWithoutAccount_Type.avatar_hat, category: "Hat"}});
+    if (avatar_hat) {
+      if (level < avatar_hat.dataValues.level) {
+        res.status(500).send({
+          message: "The specific Avatar Hat is not allowed"
+        });
+        return;
+      }
+    } else {
+      res.status(500).send({
+        message: "The specific Avatar Hat does not exist"
+      });
+      return;
+    }
+  }
+  /*
+  console.log(userWithoutAccount_Type.avatar_trouser)
+  if (userWithoutAccount_Type.avatar_trouser !== "none") {
+    var avatar_trouser = await AvatarItems.findOne({where: {name: userWithoutAccount_Type.avatar_trouser, category: "Trouser"}});
+    if (avatar_trouser) {
+      if (level < avatar_trouser.dataValues.level) {
+        res.status(500).send({
+          message: "The specific Avatar Trouser is not allowed"
+        });
+        return;
+      }
+    } else {
+      res.status(500).send({
+        message: "The specific Avatar Trouser does not exist"
+      });
+      return;
+    }
+  }
+  */
+  if (userWithoutAccount_Type.avatar_accessorie !== "none") {
+    var avatar_accessorie = await AvatarItems.findOne({where: {name: userWithoutAccount_Type.avatar_accessorie, category: "Accessorie"}});
+    if (avatar_accessorie) {
+      if (level < avatar_accessorie.dataValues.level) {
+        res.status(500).send({
+          message: "The specific Avatar Accessorie is not allowed"
+        });
+        return;
+      }
+    } else {
+      res.status(500).send({
+        message: "The specific Avatar Accessorie does not exist"
+      });
+      return;
+    }
+  }
+
+  if (userWithoutAccount_Type.avatar_shirt !== "none") {
+    var avatar_shirt = await AvatarItems.findOne({where: {name: userWithoutAccount_Type.avatar_shirt, category: "Shirt"}});
+    if (avatar_shirt) {
+      if (level < avatar_shirt.dataValues.level) {
+        res.status(500).send({
+          message: "The specific Avatar Shirt is not allowed"
+        });
+        return;
+      }
+    } else {
+      res.status(500).send({
+        message: "The specific Avatar Shirt does not exist"
+      });
+      return;
+    }
+  }
 
   User.update(userWithoutAccount_Type, {
     where: { id: id }

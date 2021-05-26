@@ -33,6 +33,7 @@ const GameMatch = db.game_match;
 const Game = db.game;
 const User = db.user;
 const UserRank = db.user_ranks;
+const AvatarItems = db.avatar_items;
 
 async function synchronize() {
   await db.sequelize.sync();
@@ -72,6 +73,174 @@ async function synchronize() {
       email: "admin@gmail.com",
       account_type: "A"
     }
+  });
+
+
+
+  await AvatarItems.findOrCreate({where: {
+      name: "Trouser1"
+    }, defaults: {
+      level: 0,
+      category: "Trouser"
+    }
+  });
+  await AvatarItems.findOrCreate({where: {
+      name: "Trouser2"
+    }, defaults: {
+      level: 0,
+      category: "Trouser"
+    }
+  });
+  await AvatarItems.findOrCreate({where: {
+      name: "Trouser3"
+    }, defaults: {
+      level: 20,
+      category: "Trouser"
+    }
+  });
+  await AvatarItems.findOrCreate({where: {
+      name: "TrouserJeans"
+    }, defaults: {
+      level: 30,
+      category: "Trouser"
+    }
+  });
+  await AvatarItems.findOrCreate({where: {
+      name: "TrouserBlackJeans"
+    }, defaults: {
+      level: 40,
+      category: "Trouser"
+    }
+  });
+  await AvatarItems.findOrCreate({where: {
+      name: "TrouserGrey"
+    }, defaults: {
+      level: 50,
+      category: "Trouser"
+    }
+  });
+
+  await AvatarItems.findOrCreate({where: {
+    name: "Camouflage1"
+  }, defaults: {
+    level: 0,
+    category: "Shirt"
+  }
+  });
+  await AvatarItems.findOrCreate({where: {
+    name: "Camouflage2"
+  }, defaults: {
+    level: 50,
+    category: "Shirt"
+  }
+  });
+  await AvatarItems.findOrCreate({where: {
+    name: "Carpet1"
+  }, defaults: {
+    level: 50,
+    category: "Shirt"
+  }
+  });
+  await AvatarItems.findOrCreate({where: {
+    name: "GreyFabric"
+  }, defaults: {
+    level: 5,
+    category: "Shirt"
+  }
+  });
+  await AvatarItems.findOrCreate({where: {
+    name: "BlueFabric"
+  }, defaults: {
+    level: 15,
+    category: "Shirt"
+  }
+  });
+  await AvatarItems.findOrCreate({where: {
+    name: "ShirtWool1"
+  }, defaults: {
+    level: 45,
+    category: "Shirt"
+  }
+  });
+  await AvatarItems.findOrCreate({where: {
+    name: "ShirtWool2"
+  }, defaults: {
+    level: 65,
+    category: "Shirt"
+  }
+  });
+  await AvatarItems.findOrCreate({where: {
+    name: "ShirtWool3"
+  }, defaults: {
+    level: 70,
+    category: "Shirt"
+  }
+  });
+
+  await AvatarItems.findOrCreate({where: {
+    name: "MagicianHat"
+  }, defaults: {
+    level: 0,
+    category: "Hat"
+  }
+  });
+  await AvatarItems.findOrCreate({where: {
+    name: "CowboyHat"
+  }, defaults: {
+    level: 0,
+    category: "Hat"
+  }
+  });
+  await AvatarItems.findOrCreate({where: {
+    name: "WitchHat"
+  }, defaults: {
+    level: 5,
+    category: "Hat"
+  }
+  });
+  await AvatarItems.findOrCreate({where: {
+    name: "ChristmasHat"
+  }, defaults: {
+    level: 25,
+    category: "Hat"
+  }
+  });
+  await AvatarItems.findOrCreate({where: {
+    name: "Ushanka"
+  }, defaults: {
+    level: 60,
+    category: "Hat"
+  }
+  });
+
+
+  await AvatarItems.findOrCreate({where: {
+    name: "AviatorGlasses"
+  }, defaults: {
+    level: 0,
+    category: "Accessorie"
+  }
+  });
+  await AvatarItems.findOrCreate({where: {
+    name: "SunGlasses"
+  }, defaults: {
+    level: 10,
+    category: "Accessorie"
+  }
+  });
+  await AvatarItems.findOrCreate({where: {
+    name: "SteamPunkGlasses"
+  }, defaults: {
+    level: 35,
+    category: "Accessorie"
+  }
+  });
+  await AvatarItems.findOrCreate({where: {
+    name: "PixelGlasses"
+  }, defaults: {
+    level: 55,
+    category: "Accessorie"
+  }
   });
 
 }

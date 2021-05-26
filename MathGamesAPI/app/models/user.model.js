@@ -48,7 +48,7 @@ module.exports = (sequelize, Sequelize) => {
       avatar_color: {
         type: Sequelize.STRING(30),
         allowNull: false,
-        defaultValue: "none"
+        defaultValue: "#FFAF00"
       },
       avatar_hat: {
         type: Sequelize.STRING(30),
