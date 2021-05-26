@@ -266,7 +266,7 @@ const Profile = () => {
                                         </div>
                                     </div>
                                     <div className="col-12 col-sm-12 col-lg-2">
-                                        <p>{userLevel}</p>
+                                        <p>{userLevel + 1}</p>
                                     </div>
                                 </div>
                             </div>
