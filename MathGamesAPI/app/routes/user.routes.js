@@ -1,6 +1,6 @@
 const authorize = require('../config/authorize')
 const Role = require('../config/roles');
-const { authJwt } = require("../middleware");
+const { authJwt, verifySignUp } = require("../middleware");
 
 module.exports = app => {
     const users = require("../controllers/user.controller.js");
@@ -41,7 +41,7 @@ module.exports = app => {
     router.post("/login", users.authenticate);
 
     // Register
-    router.post("/register", users.register);
+    router.post("/register", verifySignUp.checkDuplicateUsernameOrEmail, users.register);
 
 
 

@@ -42,9 +42,13 @@ class AuthService {
         
         console.log(json)
         if(json.id) {
-            return true
+            return { ok: true}
         }
-        return false
+        if(json.message === "Failed! Username is already in use!")
+            return { ok: false, error: "username"}
+        if(json.message === "Failed! Email is already in use!")
+            return { ok: false, error: "email"}
+        return { ok: false, error: "error"}
     }
 
     getCurrentUser() {

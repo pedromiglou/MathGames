@@ -240,7 +240,9 @@ class GatosCaesScene extends Phaser.Scene {
 
 async function atualizarUserInfo() {
     var response = await UserService.getUserById(auth_user.id)
+    var newResponse = await UserService.getUserRanksById(auth_user.id)
     response["token"] = JSON.parse(localStorage.getItem("user"))["token"]
+    response["userRanksData"] = newResponse
     localStorage.setItem("user", JSON.stringify(response));
 }
 

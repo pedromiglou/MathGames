@@ -291,6 +291,7 @@ exports.delete = (req, res) => {
       }
     })
     .catch(err => {
+      console.log(err)
       res.status(500).send({
         message: "Could not delete User with id=" + id
       });
@@ -350,10 +351,16 @@ const authenticate = (username, password) => {
        } else {
         const token = jwt.sign({ id: response.id, account_type: response.account_type }, config.secret, {expiresIn: 86400});
         const { password, ...userWithoutPassword } = response.dataValues;
-        resolve({
+        UserRanks.findOne({
+          where: { user_id: userWithoutPassword.id}
+        }).then(userRanksReponse => {
+          const userRanksData = userRanksReponse.dataValues;
+          resolve({
             ...userWithoutPassword,
-            token
+            token,
+            userRanksData
         });
+        })
        }
       }
      })

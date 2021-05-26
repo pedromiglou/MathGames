@@ -20,7 +20,7 @@ exports.findAll = (req, res) => {
 exports.findByUserId = (req, res) => {
   const id = req.params.userId;
 
-  UserRank.findAll({ where: {user_id: id}})
+  UserRank.findByPk(id)
     .then(data => {
       res.send(data);
     })
@@ -34,10 +34,9 @@ exports.findByUserId = (req, res) => {
 // Delete a UserRank with the specified id in the request
 exports.delete = (req, res) => {
   const userId = req.params.userId;
-  const gameId = req.params.gameId;
 
   UserRank.destroy({
-    where: [{ user_id: userId }, {game_id: gameId}]
+    where: { user_id: userId }
   })
     .then(num => {
       if (num == 1) {
