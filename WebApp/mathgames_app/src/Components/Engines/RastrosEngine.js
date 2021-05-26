@@ -8,11 +8,19 @@ import RastrosAI from "../AI/RastrosAI";
 var game_mode;
 var ai_diff;
 var auth_user;
+var current_match;
+var current_username;
 
-export const RastrosEngine = ({arg_game_mode, arg_ai_diff}) => {
+export const RastrosEngine = ({arg_game_mode, arg_ai_diff, curr_match}) => {
     useEffect(() => {
+        // Clear listeners to make sure there are no repeated events
+        socket.off("move");
+        socket.off("match_end")
+
+        current_match = curr_match;
         game_mode = arg_game_mode;
         auth_user = AuthService.getCurrentUser();
+        current_username = AuthService.getCurrentUsername();
 
         if (arg_ai_diff === "easy")
             ai_diff = 0.2
@@ -31,7 +39,7 @@ export const RastrosEngine = ({arg_game_mode, arg_ai_diff}) => {
                 scene: [RastrosScene]
             }
         new Phaser.Game(config);
-    }, [arg_game_mode, arg_ai_diff]);
+    }, [arg_game_mode, arg_ai_diff, curr_match]);
     return (<></>);
 }
 
@@ -86,15 +94,13 @@ class RastrosScene extends Phaser.Scene {
             this.player.add(1);
 
         if ( game_mode === "online" || game_mode === "amigo" ) {
-            if ( sessionStorage.getItem("starter") === "false" )
-                this.player.add(2);
-            else
+            if ( current_username === current_match['player1'] )
                 this.player.add(1);
-
-            if (auth_user === null)
-                socket.emit("start_game", { "user_id": sessionStorage.getItem("user_id"),"match_id": sessionStorage.getItem("match_id"),  "account_player": false});
             else
-                socket.emit("start_game", { "user_id": String(auth_user.id), "match_id": sessionStorage.getItem("match_id"), "account_player": true});
+                this.player.add(2);
+            
+
+            socket.emit("start_game", { "user_id": AuthService.getCurrentUserId(),"match_id": current_match['match_id'],  "account_player": false});
 
             socket.on("move_piece", (new_pos) => {
                 console.log("Received move: ", new_pos);
@@ -129,8 +135,6 @@ class RastrosScene extends Phaser.Scene {
         this.player_piece.on('pointerup', this.click_piece, this);
 
         // Fill in accessory text
-        //if (this.player.size===1)
-            //this.add.text(601+20, 30, "És o jogador " + this.player.values().next().value, {font: "40px Impact", color: "Orange"});
         this.add.text(601+10, 120, "É a vez do jogador:", {font: "40px Impact", color: "Orange"});
         this.current_player_text = this.add.text(601+75, 180, "Jogador " + this.current_player, {font: "40px Impact", color: "Orange"});
 
@@ -151,11 +155,9 @@ class RastrosScene extends Phaser.Scene {
 
         if ( this.valid_squares.has( parseInt(clicked_square.name) ) ) {
             this.move(clicked_square);
-            if ( game_mode === "online" || game_mode === "amigo" )
-                if (auth_user === null)
-                    socket.emit("move", clicked_square.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
-                else
-                    socket.emit("move", clicked_square.name, String(auth_user.id), sessionStorage.getItem("match_id"));
+            if ( game_mode === "online" || game_mode === "amigo" ) {
+                socket.emit("move", clicked_square.name, AuthService.getCurrentUserId(), current_match['match_id']);
+            }
         }
         
     }

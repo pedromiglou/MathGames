@@ -19,6 +19,7 @@ import Login from './Pages/Login/Login';
 import GamePage from './Pages/GamePage/GamePage';
 import Profile from './Pages/Profile/Profile';
 import Podium from './Pages/Podium/Podium';
+import Settings from './Pages/Settings/Settings';
 
 
 /* Uuid */
@@ -59,6 +60,7 @@ function App() {
                             <Route exact path='/gamePage' component={withRouter(GamePage)}/>
                             <Route exact path='/profile' component={withRouter(Profile)}/>
                             <Route exact path='/podium' component={withRouter(Podium)}/>
+                            <Route exact path='/settings' component={withRouter(Settings)}/>
                         </Switch>
                     </div>
 

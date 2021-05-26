@@ -127,14 +127,17 @@ io.on("connection", (socket) => {
     var match_id = msg["match_id"];
     var account_player = msg["account_player"]
     if (Object.keys(current_games).includes(match_id))
-      if (Object.keys(current_games[match_id]['users']).includes(user_id))
+      if (Object.keys(current_games[match_id]['users']).includes(user_id)) {
         current_games[match_id]['users'][user_id] = [ current_games[match_id]['users'][user_id][0], account_player]
         users_info[user_id] = socket.id
+      }
     
   });
 
   //User sends match id, userid and new_pos when he wants to make a move in the game
   socket.on("move", (new_pos, user_id, match_id) => {
+    user_id = String(user_id);
+    match_id = String(match_id);
     if (Object.keys(current_games).includes(match_id))
       if (Object.keys(current_games[match_id]['users']).includes(user_id))
         if (valid_move(user_id, match_id, new_pos)) {
@@ -196,7 +199,7 @@ function create_game(match_id, game_id, user1, user2, game_type) {
     initiate_game(match_id, user1, user2)
 }
 
-async function initiate_game(match_id, user1, user2) {
+function initiate_game(match_id, user1, user2) {
   let username1;
   let username2;
 

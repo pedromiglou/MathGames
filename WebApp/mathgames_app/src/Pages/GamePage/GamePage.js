@@ -17,13 +17,10 @@ import {IconContext} from 'react-icons';
 import { useDispatch } from 'react-redux';
 import { addMatch } from '../../store/modules/matches/actions';
 
-
-
-
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
 function GamePage() {
 	var history = useHistory();
-	var user = AuthService.getCurrentUser();
+	//var user = AuthService.getCurrentUser();
 	const dispatch = useDispatch();
 
 	const dif_options = [
@@ -124,12 +121,9 @@ function GamePage() {
 	
 	function find_match() {
 		if (gameMode === "amigo") {
-			if (user === null)
-				socket.emit("friendbylink", {"user_id": sessionStorage.getItem("user_id"), "game_id": game_id})
-			else
-				socket.emit("friendbylink", {"user_id": String(user.id), "game_id": game_id})
+			socket.emit("friendbylink", {"user_id": AuthService.getCurrentUserId(), "game_id": game_id})
 
-			socket.on("link_sent", (msg) => {
+			socket.once("link_sent", (msg) => {
 				var match = { match_id: msg['match_id'], player1: msg['player1'], player2: msg['player2'] };
 				dispatch( addMatch(match) );
 				history.push({
@@ -139,52 +133,41 @@ function GamePage() {
 						game_mode: gameMode,
 						ai_diff: AIdiff,
 						match: match
-						// player: user !== null ? user.username : "Guest_" + sessionStorage.getItem("user_id"),
-						// opponent: msg['opponent']
-					  } 
+					} 
 				})
 			})
 		} else if (gameMode === "online") {
-			if (user === null)
-				socket.emit("user_id", {"user_id": sessionStorage.getItem("user_id"), "game_id": game_id})
-			else
-				socket.emit("user_id", {"user_id": String(user.id), "game_id": game_id})
+			socket.emit("user_id", {"user_id": AuthService.getCurrentUserId(), "game_id": game_id})
 
-			socket.on("match_found", (msg) => {
+			socket.once("match_found", (msg) => {
 				console.log("Match found!");
 				var match = { match_id: msg['match_id'], player1: msg['player1'], player2: msg['player2'] };
 				dispatch( addMatch(match) );
-				// sessionStorage.setItem('match_id', msg['match_id']);
-				// sessionStorage.setItem('starter', msg['starter']);
-				history.push(
-					{
+				history.push({
 					pathname: "/game/?g="+game_id, 
 					state: {
 						game_id: game_id,
 						game_mode: gameMode,
 						ai_diff: AIdiff,
 						match: match
-						// player: user !== null ? user.username : "Guest_" + sessionStorage.getItem("user_id"),
-						// opponent: msg['opponent']
-						}  
-					})
+					}  
+				})
 			})
+			console.log(socket.listeners());
 		} else {
-			var username1 = gameMode==="ai" ? user !== null ? user.username : "Guest_" + sessionStorage.getItem("user_id") : name1;
+			let curr_username = AuthService.getCurrentUsername();
+			var username1 = gameMode==="ai" ? curr_username : name1;
 			var username2 = gameMode==="ai" ? "AI " + AIdiff + " difficulty" : name2;
 
-			history.push(
-				{
+			history.push({
 				pathname: "/game/?g="+game_id, 
 				state: {
 					game_id: game_id,
 					game_mode: gameMode,
 					ai_diff: AIdiff,
 					match: { match_id: 0, player1: username1, player2: username2 }
-					// player: gameMode==="ai" ? user !== null ? user.username : "Guest_" + sessionStorage.getItem("user_id") : name1,
-					// opponent: gameMode==="ai" ? "AI " + AIdiff + " difficulty" : name2,
-					}  
-				})
+				}  
+			})
 		}
 	}
 

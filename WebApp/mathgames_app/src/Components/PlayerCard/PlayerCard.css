@@ -1,0 +1,18 @@
+
+.exterior-card {
+    width: 30vw;
+    border: 6px solid black;
+}
+
+.main-card {
+    height: 150px;
+}
+
+.avatar {
+    border-right: 2px solid black;
+}
+.level-text {
+    font-size: larger;
+}
+
+

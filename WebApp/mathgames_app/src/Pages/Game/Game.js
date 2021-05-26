@@ -10,18 +10,15 @@ import AuthService from '../../Services/auth.service';
 import * as FaIcons from "react-icons/fa";
 import {IconContext} from 'react-icons';
 
-import { useSelector, useDispatch } from 'react-redux';
-import { addMatch, removeMatch } from '../../store/modules/matches/actions';
+import { useDispatch } from 'react-redux';
+import { addMatch } from '../../store/modules/matches/actions';
 
 function Game()  {
-    const games_list = useSelector(state => state.matchApp);
+    //const games_list = useSelector(state => state.matchApp);
     const dispatch = useDispatch();
     let current_match = useRef(null);
 
-    // dispatch( addMatch({ match_id: id }) );
-    // dispatch( removeMatch({ match_id: id }) );
-
-    var user = AuthService.getCurrentUser();
+    //var user = AuthService.getCurrentUser();
     const [game_ready_to_start, setReady] = useState(false);
     
     const url = new URLSearchParams(window.location.search);
@@ -58,21 +55,15 @@ function Game()  {
     // Game is ready to start when both players are connected
     if ( game_ready_to_start === false ) {
         if ( match_id !== null ) {
-            if (user === null)
-                socket.emit("entered_link", {"user_id": sessionStorage.getItem("user_id"), "match_id": match_id, "game_id": game_id})
-            else
-                socket.emit("entered_link", {"user_id": String(user.id), "match_id": match_id, "game_id": game_id})
+            socket.emit("entered_link", {"user_id": AuthService.getCurrentUserId(), "match_id": match_id, "game_id": game_id})
 
-            socket.on("match_found", (msg) => {
-                console.log("Match_Found")
-                console.log(msg)
+            socket.once("match_found", (msg) => {
+                console.log("Match Found")
+                
                 let match = { match_id: msg['match_id'], player1: msg['player1'], player2: msg['player2'] };
                 current_match.current = match;
-                console.log("Match: ", match);
                 dispatch( addMatch(match) );
-                // sessionStorage.setItem('match_id', msg['match_id']);
-                // sessionStorage.setItem('starter', msg['starter']);
-                // sessionStorage.setItem('opponent', msg['opponent'])
+                
                 setReady(true)
             })
         } else {
@@ -95,9 +86,6 @@ function Game()  {
             </div>
         );
     } else {
-        console.log(current_match.current);
-
-        <button><span role="img" aria-label="add">➕</span></button>
         return (
             <div className="container-fluid">
                 <div className="row">
@@ -126,7 +114,7 @@ function Game()  {
                     <div className="col-9">
                         {game_id===0 &&
                             <div id="my_div_game" className="container-canvas" style={{width: '1100px', height: '577px'}}>
-                                <RastrosEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff}></RastrosEngine>
+                                <RastrosEngine arg_game_mode={game_mode} arg_ai_diff={ai_diff} curr_match={current_match.current}></RastrosEngine>
                             </div>
                         }
                         {game_id===1 &&
