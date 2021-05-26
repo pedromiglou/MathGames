@@ -8,6 +8,13 @@ class UserService {
         return res.json();
     }
 
+    async getUserRanksById(userId) {
+        var url = urlAPI + 'api/userranks/' + userId;
+        var res = await fetch(url);
+        return res.json();
+    }
+
+
     async getFriends(userId) {
         var url = urlAPI + 'api/friends/' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});

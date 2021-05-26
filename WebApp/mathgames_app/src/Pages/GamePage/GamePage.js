@@ -13,6 +13,7 @@ import * as RiIcons from "react-icons/ri";
 import * as FaIcons from "react-icons/fa";
 import * as FiIcons from "react-icons/fi";
 import {IconContext} from 'react-icons';
+import { ranks_info } from '../../data/ranksInfo';
 
 
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
@@ -40,6 +41,44 @@ function GamePage() {
 	const params = new URLSearchParams(window.location.search);
 	let game_id = params.get("id");
 	const game_info = games_info[game_id];
+
+	var userRank = 0
+	var userRankValue = 0;
+	if (user !== null) {
+		if (game_id === "0") {
+			userRankValue = user.userRanksData.rastros
+		} else if (game_id === "1") {
+			userRankValue = user.userRanksData.gatos_e_caes
+		}
+
+		if (userRankValue <= 25)
+			userRank = 0
+		else if (userRankValue <= 75)
+			userRank = 1
+		else if (userRankValue <= 175)
+			userRank = 2
+		else if (userRankValue <= 275)
+			userRank = 3
+		else if (userRankValue <= 400)
+			userRank = 4
+		else if (userRankValue <= 550)
+			userRank = 5
+		else if (userRankValue <= 700)
+			userRank = 6
+		else if (userRankValue <= 850)
+			userRank = 7
+		else if (userRankValue <= 1050)
+			userRank = 8
+		else if (userRankValue <= 1250)
+			userRank = 9
+		else if (userRankValue <= 1450)
+			userRank = 10
+		else if (userRankValue <= 1700)
+			userRank = 11
+		else
+			userRank = 12
+	}
+
 
 	function changeMode(val) {
 		var card_comp = document.getElementById("online");
@@ -208,6 +247,7 @@ function GamePage() {
 
 	}, [name1,name2]);
 
+
 	return (
 		<>
 			<div className="container choose-game-mode-container">
@@ -263,15 +303,21 @@ function GamePage() {
 							<div className="col-lg-12 ranks-section">
 								<div className="col-lg-3 ant-next centered">
 									<div className="a-n-div">
+										
+									{ (userRank-1) >= 0 &&	
+										<>
 										<img
 											src={
 												process.env.PUBLIC_URL +
-												"/images/prata.png"
+												ranks_info[userRank-1].image
 											}
 											alt="Info"
 											className="a-n-rank-img"
 										/>
-										<h4>Prata</h4>
+
+										<h4>{ranks_info[userRank-1].name}</h4>
+										</>
+									}
 									</div>
 								</div>
 								<div className="col-lg-1 updo-icon centered">
@@ -283,12 +329,12 @@ function GamePage() {
 										<img
 											src={
 												process.env.PUBLIC_URL +
-												"/images/platina.png"
+												ranks_info[userRank].image
 											}
 											alt="Info"
 											className="rank-img"
 										/>
-										<h4>Platina</h4>
+										<h4>{ranks_info[userRank].name}</h4>
 									</div>
 								</div>
 								<div className="col-lg-1 updo-icon centered">
@@ -296,17 +342,22 @@ function GamePage() {
 									{/* <h6>seguinte</h6> */}
 								</div>
 								<div className="col-lg-3 ant-next centered">
-									
+								
+							
 									<div className="a-n-div">
+									{ (userRank+1) <= 12 &&	
+										<>
 										<img
 											src={
 												process.env.PUBLIC_URL +
-												"/images/diamond.png"
+												ranks_info[userRank+1].image
 											}
 											alt="Info"
 											className="a-n-rank-img"
 										/>
-										<h4>Diamante</h4>
+										<h4>{ranks_info[userRank+1].name}</h4>
+										</>
+									}
 									</div>
 								</div>
 							</div>	

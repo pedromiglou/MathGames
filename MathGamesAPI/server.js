@@ -31,6 +31,7 @@ const db = require("./app/models");
 const { Console } = require("console");
 const GameMatch = db.game_match;
 const User = db.user;
+const UserRank = db.user_ranks;
 
 
 db.sequelize.sync();
@@ -43,6 +44,7 @@ db.sequelize.sync();
 var current_games = {};
 var match_queue = {0: [], 1: []};
 var users_info = {}
+
 
 //Connecting new Users
 io.on("connection", (socket) => { 
@@ -69,21 +71,16 @@ io.on("connection", (socket) => {
       var match_id = msg["match_id"]
       var game_id = msg["game_id"]
       users_info[user_id] = socket.id
-      console.log(user_id)
 
       if (Object.keys(current_games).includes(match_id)) {
         var other_user = Object.keys(current_games[match_id]['users'])[0];
         current_games[match_id]['users'][user_id] = [other_user];
         current_games[match_id]['users'][other_user] = [user_id];
 
-        console.log("tou aqui")
-        console.log(other_user)
-        console.log(user_id)
         if (other_user !== user_id)
           initiate_game(match_id, other_user, user_id)
 
       } else {
-        console.log("vou create_game")
         create_game(match_id, game_id, user_id, null, "amigo")
       }
     }
@@ -391,6 +388,27 @@ async function finnish_game(match_id, endMode) {
 
     // Save GameMatch in the database
     var res = await GameMatch.create(gameMatch)
+
+    if (game_type === "online") {
+      var jogo = null;
+      if (game_id === 0)
+        jogo = "rastros"
+      else if (game_id === 1)
+        jogo = "gatos_e_caes"
+      
+
+      if (winner === "1") {
+        if (player_1_account_player)
+          await UserRank.increment(jogo, { by: 25, where: {user_id: player1}})
+        if (player_2_account_player)
+          await UserRank.decrement(jogo, { by: 25, where: {user_id: player2}})
+      } else if (winner === "2") {
+        if (player_2_account_player)
+          await UserRank.increment(jogo, { by: 25, where: {user_id: player2}})
+        if (player_1_account_player)
+          await UserRank.decrement(jogo, { by: 25, where: {user_id: player1}})
+      }
+    }
     
     var player1_final_result;
     var player2_final_result;

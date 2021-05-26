@@ -20,7 +20,7 @@ exports.findAll = (req, res) => {
 exports.findByUserId = (req, res) => {
   const id = req.params.userId;
 
-  UserRank.findAll({ where: {user_id: id}})
+  UserRank.findByPk(id)
     .then(data => {
       res.send(data);
     })

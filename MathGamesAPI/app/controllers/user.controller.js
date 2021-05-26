@@ -350,10 +350,16 @@ const authenticate = (username, password) => {
        } else {
         const token = jwt.sign({ id: response.id, account_type: response.account_type }, config.secret, {expiresIn: 86400});
         const { password, ...userWithoutPassword } = response.dataValues;
-        resolve({
+        UserRanks.findOne({
+          where: { user_id: userWithoutPassword.id}
+        }).then(userRanksReponse => {
+          const userRanksData = userRanksReponse.dataValues;
+          resolve({
             ...userWithoutPassword,
-            token
+            token,
+            userRanksData
         });
+        })
        }
       }
      })
