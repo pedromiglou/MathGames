@@ -1,21 +1,5 @@
 import * as React from 'react';
-import { Text, View, Image, StyleSheet, Dimensions, TouchableHighlight, ScrollView, TextInput, Button } from 'react-native';
-
-const styles = StyleSheet.create({
-    input: {
-      height: 60,
-      margin: 12,
-      borderWidth: 1,
-      borderRadius: 40,
-      fontSize: 20,
-      textAlign: "center"
-    },
-    title: {
-        fontSize: 30,
-        textAlign: "center",
-        margin: 20
-    }
-  });
+import { Text, StyleSheet, ScrollView, TextInput, Button } from 'react-native';
 
 function Login() {
     const [login, setLogin] = React.useState(true);
@@ -74,3 +58,19 @@ function Login() {
 }
 
 export default Login;
+
+const styles = StyleSheet.create({
+    input: {
+      height: 60,
+      margin: 12,
+      borderWidth: 1,
+      borderRadius: 40,
+      fontSize: 20,
+      textAlign: "center"
+    },
+    title: {
+        fontSize: 30,
+        textAlign: "center",
+        margin: 20
+    }
+});
