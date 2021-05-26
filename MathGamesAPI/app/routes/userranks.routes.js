@@ -1,7 +1,7 @@
 module.exports = app => {
     const usersranks = require("../controllers/userranks.controller.js");
     var router = require("express").Router();
-  
+
     // Retrieve all usersranks
     router.get("/", usersranks.findAll);
   

@@ -11,12 +11,18 @@ module.exports = (sequelize, Sequelize) => {
       username: {
         type: Sequelize.STRING(20),
         allowNull: false,
-        unique: true
+        unique: true,
+        validate: {
+          len: [3, 20]
+        }
       },
       email: {
         type: Sequelize.STRING(30),
         allowNull: false,
-        unique: true
+        unique: true,
+        validate: {
+          isEmail: true
+        }
       },
       password: {
         type: Sequelize.STRING(100),
@@ -73,6 +79,9 @@ module.exports = (sequelize, Sequelize) => {
       timestamps: true,
       hooks: {
         beforeCreate: async (user) => {
+         if (!user.password.match(/^(?=.*\d)(?=.*[a-zA-Z]).{5,25}$/)) {
+          throw new Error("Password invalid")
+         }
          if (user.password) {
           const salt = await bcrypt.genSaltSync(10, 'a');
           user.password = bcrypt.hashSync(user.password, salt);

@@ -291,6 +291,7 @@ exports.delete = (req, res) => {
       }
     })
     .catch(err => {
+      console.log(err)
       res.status(500).send({
         message: "Could not delete User with id=" + id
       });
