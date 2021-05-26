@@ -18,10 +18,10 @@ const Profile = () => {
     const [games, setGames] = useState([]);
 
     const [hat, setHat] = useState("none");
-    const [shirt, setShirt] = useState("Camouflage1");
+    const [shirt, setShirt] = useState("none");
     const [color, setColor] = useState("#FFAF00");
     const [accessorie, setAccessorie] = useState("none");
-    const [trouser, setTrouser] = useState("#808080");
+    const [trouser, setTrouser] = useState("#FFAF00");
     const [modalSaveShow, setSaveModalShow] = useState(false);
     const [modalCancelShow, setCancelModalShow] = useState(false);
     var geral_e;
