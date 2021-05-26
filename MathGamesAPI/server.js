@@ -30,15 +30,55 @@ const io = require("socket.io")(server, {
 const db = require("./app/models");
 const { Console } = require("console");
 const GameMatch = db.game_match;
+const Game = db.game;
 const User = db.user;
 
+async function synchronize() {
+  await db.sequelize.sync();
+  await Game.findOrCreate({where: {
+      id: 0
+    }, defaults: {
+      name: "Rastros",
+      description: "Descricao do Rastros",
+      age: 6
+    }
+  });
 
-db.sequelize.sync();
+  var game0 = await Game.findByPk(0);
+  if (game0 === null) {
+    await Game.update({id: 0},{ where: {id: 1}}).then(console.log("Game id atualizado")).catch(err => {console.log("Error updating Game 1"); console.log(err)});
+  }
+
+  await Game.findOrCreate({where: {
+      id: 1
+    }, defaults: {
+      name: "Gatos e Caes",
+      description: "Descricao do Gatos e Caes",
+      age: 6
+    }
+  });
+  
+  var game1 = await Game.findByPk(1);
+  if (game1 === null) {
+    await Game.update({id: 1},{ where: {id: 2}}).then(game => {console.log("Game id atualizado"); console.log(game)}).catch(err => {console.log("Error updating Game 2"); console.log(err)});;
+  }
+  
+  await User.findOrCreate({where: {
+      id: 1
+    }, defaults: {
+      username: "admin",
+      password: "admin123",
+      email: "admin@gmail.com",
+      account_type: "A"
+    }
+  });
+
+}
+synchronize()
 // // drop the table if it already exists
 // db.sequelize.sync({ force: true }).then(() => {
 //   console.log("Drop and re-sync db.");
 // });
-
 
 var current_games = {};
 var match_queue = {0: [], 1: []};
@@ -433,10 +473,4 @@ require("./app/routes/friend.routes.js")(app);
 require("./app/routes/notification.routes.js")(app);
 require("./app/routes/report.routes.js")(app);
 
-
 server.listen(port, () => console.log(`Listening on port ${port}`));
-
-setInterval(function () {
-  sql.query("Select 1");  
-  console.log("controlo query");
-}, 500000);
