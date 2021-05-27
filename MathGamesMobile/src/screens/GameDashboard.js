@@ -16,7 +16,7 @@ function GameDashboard({ navigation }) {
       <LinearGradient colors={['#78c9ff', '#6699f8', '#5379f7', '#5867f7', '#8a54ee']} start={[0,0]} end={[1,1]}>
         {gameNames.map(X => 
           <TouchableHighlight style={styles.gameTile} key={X.key} onPress = {() => {
-                saveData("gameName", X.name);
+                saveData("game", X);
                 navigation.navigate('ChooseGame');
               }
             }>

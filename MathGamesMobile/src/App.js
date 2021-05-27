@@ -2,24 +2,35 @@ import * as React from 'react';
 import { Text, View, Image, StyleSheet, Dimensions, TouchableHighlight } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack';
 import Welcome from './screens/Welcome';
 import GameDashboard from './screens/GameDashboard';
 import ChooseGame from './screens/ChooseGame';
 import Login from './screens/Login';
 import Constants from 'expo-constants';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useFonts } from 'expo-font';
+import {readData} from "./utilities/AsyncStorage";
 
 const win = Dimensions.get('window');
 
 const Stack = createStackNavigator();
 
 function Games() {
+  const [currentGame, setCurrentGame] = useState({name: ""});
+  useEffect(() => {
+    let mounted = true;
+    readData("game").then(value => {if (value !== null && mounted) {setCurrentGame(JSON.parse(value));}});
+    return () => {mounted=false}
+  }, [currentGame]);
   return (
     <Stack.Navigator screenOptions={{headerStyle: {backgroundColor: '#78c9ff'}}}>
       <Stack.Screen name="GameDashboard" options={{headerTitle: () => (<Text style={styles.header}>Jogos</Text>)}} component={GameDashboard} />
-      <Stack.Screen name="ChooseGame" options={{title: "Modo de Jogo"}} component={ChooseGame} />
+      <Stack.Screen name="ChooseGame" options={{
+        headerTitle: () => (<Text style={styles.headerWithArrow}>{currentGame.name}</Text>),
+        headerTintColor: "white",
+        headerTitleAlign: "center"
+      }} component={ChooseGame} />
     </Stack.Navigator>
   )
 }
@@ -91,6 +102,12 @@ const styles = StyleSheet.create({
     marginTop: Constants.statusBarHeight
   },
   header: {
+    color: "white",
+    fontFamily: 'BubblegumSans',
+    fontSize: 30,
+    textAlign: "center"
+  },
+  headerWithArrow: {
     color: "white",
     fontFamily: 'BubblegumSans',
     fontSize: 30,
