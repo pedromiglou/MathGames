@@ -1,6 +1,7 @@
 const db = require("../models");
 const User = db.user;
 const UserRanks = db.user_ranks;
+const AvatarItems = db.avatar_items;
 const Op = db.Sequelize.Op;
 const config = require("../config/auth.config")
 var jwt = require("jsonwebtoken");
@@ -48,16 +49,14 @@ exports.create = (req, res) => {
       })
       .catch(err => {
         res.status(500).send({
-          message:
-            err.message || "Some error occurred while creating the UserRanks."
+          message:  err.message || "Some error occurred while creating the UserRanks."
         });
       });
       
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the User."
+        message:  err.message || "Some error occurred while creating the User."
       });
     });
 };
@@ -79,8 +78,7 @@ exports.findAllBanned = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving Users."
+        message: err.message || "Some error occurred while retrieving Users."
       });
     });
   } else {
@@ -93,8 +91,7 @@ exports.findAllBanned = (req, res) => {
       })
       .catch(err => {
         res.status(500).send({
-          message:
-            err.message || "Some error occurred while retrieving Users."
+          message: err.message || "Some error occurred while retrieving Users."
         });
       });
   }
@@ -117,8 +114,7 @@ exports.findAll = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving Users."
+        message:  err.message || "Some error occurred while retrieving Users."
       });
     });
   } else {
@@ -131,8 +127,7 @@ exports.findAll = (req, res) => {
       })
       .catch(err => {
         res.status(500).send({
-          message:
-            err.message || "Some error occurred while retrieving Users."
+          message: err.message || "Some error occurred while retrieving Users."
         });
       });
   }
@@ -155,21 +150,111 @@ exports.findOne = (req, res) => {
 };
 
 // Update a User by the id in the request
-exports.update = (req, res) => {
-  const id = req.params.id;
+exports.update = async (req, res) => {
+  const urlId = req.params.id;
 
-  if (parseInt(req.userId) !== parseInt(id)) {
+  if (parseInt(req.userId) !== parseInt(urlId)) {
     res.status(403).send({
       message: "Unauthorized!"
     });
     return;
   }
 
-  const { account_type, banned, ...userWithoutAccount_Type } = req.body;
+  const { id, account_level, account_type, banned,  ...userWithoutAccount_Type } = req.body;
 
+  var level = await User.findByPk(urlId);
+  level = level.dataValues.account_level;
+
+  if (userWithoutAccount_Type.avatar_hat !== "none" && userWithoutAccount_Type.avatar_hat !== undefined) {
+    var avatar_hat = await AvatarItems.findOne({where: {name: userWithoutAccount_Type.avatar_hat, category: "Hat"}})
+                                        .catch(err => {
+                                          res.status(500).send({
+                                            message: err.message || "Some error occurred while accessing hat information."
+                                          });
+                                        });
+    if (avatar_hat) {
+      if (level < avatar_hat.dataValues.level) {
+        res.status(500).send({
+          message: "The specific Avatar Hat is not allowed"
+        });
+        return;
+      }
+    } else {
+      res.status(500).send({
+        message: "The specific Avatar Hat does not exist"
+      });
+      return;
+    }
+  }
+
+  if (userWithoutAccount_Type.avatar_trouser !== "none" && userWithoutAccount_Type.avatar_trouser !== undefined) {
+    var avatar_trouser = await AvatarItems.findOne({where: {name: userWithoutAccount_Type.avatar_trouser, category: "Trouser"}})
+                                            .catch(err => {
+                                              res.status(500).send({
+                                                message: err.message || "Some error occurred while accessing hat information."
+                                              });
+                                            });
+    if (avatar_trouser) {
+      if (level < avatar_trouser.dataValues.level) {
+        res.status(500).send({
+          message: "The specific Avatar Trouser is not allowed"
+        });
+        return;
+      }
+    } else {
+      res.status(500).send({
+        message: "The specific Avatar Trouser does not exist"
+      });
+      return;
+    }
+  }
+
+  if (userWithoutAccount_Type.avatar_accessorie !== "none"  && userWithoutAccount_Type.avatar_accessorie !== undefined) {
+    var avatar_accessorie = await AvatarItems.findOne({where: {name: userWithoutAccount_Type.avatar_accessorie, category: "Accessorie"}})
+                                                .catch(err => {
+                                                  res.status(500).send({
+                                                    message: err.message || "Some error occurred while accessing hat information."
+                                                  });
+                                                });
+    if (avatar_accessorie) {
+      if (level < avatar_accessorie.dataValues.level) {
+        res.status(500).send({
+          message: "The specific Avatar Accessorie is not allowed"
+        });
+        return;
+      }
+    } else {
+      res.status(500).send({
+        message: "The specific Avatar Accessorie does not exist"
+      });
+      return;
+    }
+  }
+
+  if (userWithoutAccount_Type.avatar_shirt !== "none"  && userWithoutAccount_Type.avatar_shirt !== undefined) {
+    var avatar_shirt = await AvatarItems.findOne({where: {name: userWithoutAccount_Type.avatar_shirt, category: "Shirt"}})
+                                          .catch(err => {
+                                            res.status(500).send({
+                                              message: err.message || "Some error occurred while accessing hat information."
+                                            });
+                                          });
+    if (avatar_shirt) {
+      if (level < avatar_shirt.dataValues.level) {
+        res.status(500).send({
+          message: "The specific Avatar Shirt is not allowed"
+        });
+        return;
+      }
+    } else {
+      res.status(500).send({
+        message: "The specific Avatar Shirt does not exist"
+      });
+      return;
+    }
+  }
 
   User.update(userWithoutAccount_Type, {
-    where: { id: id }
+    where: { id: urlId }
   })
     .then(num => {
       if (num == 1) {
@@ -177,14 +262,14 @@ exports.update = (req, res) => {
           message: "User was updated successfully."
         });
       } else {
-        res.send({
-          message: `Cannot update User with id=${id}. Maybe User was not found or req.body is empty!`
+        res.status(500).send({
+          message: `Cannot update User with id=${urlId}. Maybe User was not found or req.body is empty!`
         });
       }
     })
     .catch(err => {
       res.status(500).send({
-        message: "Error updating User with id=" + id
+        message: "Error updating User with id=" + urlId
       });
     });
 };
@@ -210,7 +295,7 @@ exports.upgrade_account = (req, res) => {
             message: "User was updated successfully."
           });
         } else {
-          res.send({
+          res.status(500).send({
             message: `Cannot update User with id=${id}. Maybe User was not found or req.body is empty!`
           });
         }
@@ -250,7 +335,7 @@ exports.downgrade_account = (req, res) => {
             message: "User was updated successfully."
           });
         } else {
-          res.send({
+          res.status(500).send({
             message: `Cannot update User with id=${id}. Maybe User was not found or req.body is empty!`
           });
         }
@@ -285,12 +370,13 @@ exports.delete = (req, res) => {
           message: "User was deleted successfully!"
         });
       } else {
-        res.send({
+        res.status(500).send({
           message: `Cannot delete User with id=${id}. Maybe User was not found!`
         });
       }
     })
     .catch(err => {
+      console.log(err)
       res.status(500).send({
         message: "Could not delete User with id=" + id
       });
@@ -350,12 +436,28 @@ const authenticate = (username, password) => {
        } else {
         const token = jwt.sign({ id: response.id, account_type: response.account_type }, config.secret, {expiresIn: 86400});
         const { password, ...userWithoutPassword } = response.dataValues;
-        resolve({
+
+
+        UserRanks.findOne({
+          where: { user_id: userWithoutPassword.id}
+        }).then(userRanksReponse => {
+          const userRanksData = userRanksReponse.dataValues;
+          resolve({
             ...userWithoutPassword,
-            token
+            token,
+            userRanksData
         });
+        }).catch(err => {
+          res.status(500).send({
+            message: err.message || "Some error occurred while finding the user ranks."
+          });
+       })
        }
       }
+     }).catch(err => {
+        res.status(500).send({
+          message: err.message || "Some error occurred while finding the user."
+        });
      })
     } catch (error) {
     const response = {
@@ -369,18 +471,6 @@ const authenticate = (username, password) => {
    }
   })
  }
-
-
-//
-// Register
-//
-exports.register = (req, res) => {
-  this.create(req, res)
-}
-
-
-
-
 
 
 // Retrieve statistics
@@ -449,7 +539,7 @@ exports.statistics = (req, res) => {
     .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving Bans."
+          err.message || "Some error occurred while retrieving users statistics."
       });
     });
 }

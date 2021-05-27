@@ -1,0 +1,27 @@
+{
+  "name": "MathGamesMobile",
+  "displayName": "MathGamesMobile",
+  "icon": "./../public/images/mathGames.png",
+  "version": "1.0.0",
+  "slug": "MathGames",
+  "expo": {
+    "name": "MathGamesMobile",
+    "slug": "MathGamesMobile",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "package": "ua.pi.mathgames",
+      "softwareKeyboardLayoutMode": "pan"
+    }
+  },
+  "ios": {
+    "bundleIdentifier": "ua.pi.mathgames",
+    "buildNumber": "1.0.0"
+  },
+  "android": {
+    "package": "ua.pi.mathgames",
+    "versionCode": 1
+  }
+}

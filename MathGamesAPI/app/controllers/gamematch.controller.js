@@ -30,8 +30,7 @@ exports.create = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the GameMatch."
+        message: err.message || "Some error occurred while creating the GameMatch."
       });
     });
 };
@@ -39,12 +38,23 @@ exports.create = (req, res) => {
 // Retrieve all GameMatchs from the database.
 exports.findAll = (req, res) => {
   const user_id = req.query.userid;
-  if (user_id !== null && parseInt(user_id) !== parseInt(req.userId)) {
+
+  
+
+  if (user_id !== undefined && parseInt(user_id) !== parseInt(req.userId)) {
     res.status(401).send({
       message: "Unauthorized!"
     });
     return;
   }
+
+  if (user_id === undefined && req.account_type !== "A") {
+    res.status(401).send({
+      message: "Unauthorized!"
+    });
+    return;
+  }
+
   var whereCondition = user_id ? { [Op.or]: [{ player1: user_id}, {player2: user_id} ] } : null;
   var limitCondition = user_id ? 5 : null;
   var orderCondition = user_id ?  [["createdAt", 'DESC']]  : null;
@@ -54,8 +64,7 @@ exports.findAll = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving GameMatchs."
+        message: err.message || "Some error occurred while retrieving GameMatchs."
       });
     });
 };
@@ -89,7 +98,7 @@ exports.update = (req, res) => {
           message: "GameMatch was updated successfully."
         });
       } else {
-        res.send({
+        res.status(500).send({
           message: `Cannot update GameMatch with id=${id}. Maybe GameMatch was not found or req.body is empty!`
         });
       }
@@ -114,7 +123,7 @@ exports.delete = (req, res) => {
           message: "GameMatch was deleted successfully!"
         });
       } else {
-        res.send({
+        res.status(500).send({
           message: `Cannot delete GameMatch with id=${id}. Maybe GameMatch was not found!`
         });
       }
@@ -137,8 +146,7 @@ exports.deleteAll = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all GameMatchs."
+        message: err.message || "Some error occurred while removing all GameMatchs."
       });
     });
 };
@@ -182,8 +190,7 @@ exports.statisticsbygame = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving GameMatchs."
+        message: err.message || "Some error occurred while retrieving GameMatchs statisticsbygame."
       });
     })
 };
@@ -255,8 +262,7 @@ exports.statistics = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving Bans."
+        message: err.message || "Some error occurred while retrieving GameMatchs statistics."
       });
     });
 }

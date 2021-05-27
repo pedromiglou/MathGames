@@ -37,6 +37,7 @@ db.tournament_users = require("./tournamentusers.model.js")(sequelize, Sequelize
 db.user_ranks = require("./userranks.model.js")(sequelize, Sequelize);
 db.notifications = require("./notification.model.js")(sequelize, Sequelize);
 db.report = require("./report.model.js")(sequelize, Sequelize);
+db.avatar_items = require("./avataritems.model.js")(sequelize, Sequelize);
 
 db.ban.belongsTo(db.user, {through: "users",foreignKey: 'user_id', as: 'user'});
 db.friend.belongsTo(db.user, {through: "users", foreignKey: 'friend1', as: 'friend_1'})

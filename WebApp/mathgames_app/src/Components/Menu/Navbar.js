@@ -16,6 +16,9 @@ import AuthService from '../../Services/auth.service';
 import UserService from '../../Services/user.service';
 import {urlWeb} from './../../data/data';
 
+import Avatar from "../../Components/Avatar";
+
+
 /* Redux */
 import { useDispatch } from 'react-redux';
 
@@ -32,6 +35,13 @@ function Navbar() {
 
     const [friends, setFriends] = useState([]);
     const [notifications, setNotifications] = useState([]);
+
+	const [hat, setHat] = useState("none");
+    const [shirt, setShirt] = useState("Camouflage1");
+    const [color, setColor] = useState("#FFAF00");
+    const [accessorie, setAccessorie] = useState("none");
+    const [trouser, setTrouser] = useState("#808080");
+
 
     const notifyFriendshipSucess = () => toast.success('Pedido de amizade aceite!', {
         icon: <FaIcons.FaCheckCircle />,
@@ -68,7 +78,7 @@ function Navbar() {
 	}
 
 	function run_logout() {
-		localStorage.removeItem("user");
+		sessionStorage.removeItem("user");
 		window.location.assign(urlWeb)
 	}
 
@@ -89,10 +99,22 @@ function Navbar() {
             setNotifications(response);
         }
 
+		// Load Avatar
+		async function fetchApiUserById() {
+            var user = await UserService.getUserById(current_user.id);
+            setUser(user);
+            setHat(user.avatar_hat);
+            setShirt(user.avatar_shirt);
+            setColor(user.avatar_color);
+            setAccessorie(user.avatar_accessorie);
+            setTrouser(user.avatar_trouser);
+        }
+
 		if (current_user !== null) {
             setUser_authenticated(true);
             fetchApiFriends();
             fetchApiNotifications();
+			fetchApiUserById();
             dispatch({
                 type: 'NFREEUSER'
             });
@@ -213,7 +235,7 @@ function Navbar() {
 								<div className="col">
 									<div title="Perfil" className="round_profile_logo float-right">
 										<Link to="/profile">
-											<img className="profile_logo" src={process.env.PUBLIC_URL + "/images/user-profile.png"}  alt="logo"/>
+											<Avatar navbar={true} skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser}/>
 										</Link>
 									</div>
 								</div>

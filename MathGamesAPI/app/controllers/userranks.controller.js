@@ -10,8 +10,7 @@ exports.findAll = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving UserRanks."
+        message: err.message || "Some error occurred while retrieving UserRanks."
       });
     });
 };
@@ -20,7 +19,14 @@ exports.findAll = (req, res) => {
 exports.findByUserId = (req, res) => {
   const id = req.params.userId;
 
-  UserRank.findAll({ where: {user_id: id}})
+  if (req.userId !== parseInt(id)) {
+    res.status(401).send({
+      message: "Unauthorized!"
+    });
+    return;
+  }
+
+  UserRank.findByPk(id)
     .then(data => {
       res.send(data);
     })
@@ -34,10 +40,9 @@ exports.findByUserId = (req, res) => {
 // Delete a UserRank with the specified id in the request
 exports.delete = (req, res) => {
   const userId = req.params.userId;
-  const gameId = req.params.gameId;
 
   UserRank.destroy({
-    where: [{ user_id: userId }, {game_id: gameId}]
+    where: { user_id: userId }
   })
     .then(num => {
       if (num == 1) {
@@ -45,14 +50,14 @@ exports.delete = (req, res) => {
           message: "UserRank was deleted successfully!"
         });
       } else {
-        res.send({
-          message: `Cannot delete UserRank with user id=${userId} and game id=${gameId}. Maybe UserRank was not found!`
+        res.status(500).send({
+          message: `Cannot delete UserRank with user id=${userId}. Maybe UserRank was not found!`
         });
       }
     })
     .catch(err => {
       res.status(500).send({
-        message: "Could not delete UserRank with user id=" + userId + " and game id=" + gameId
+        message: "Could not delete UserRank with user id=" + userId 
       });
     });
 };
@@ -68,8 +73,7 @@ exports.deleteAll = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all UserRanks."
+        message: err.message || "Some error occurred while removing all UserRanks."
       });
     });
 };

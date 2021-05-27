@@ -19,6 +19,7 @@ verifyToken = (req, res, next) => {
         });
         }
         req.userId = decoded.id;
+        req.account_type = decoded.account_type;
         next();
     });
 };

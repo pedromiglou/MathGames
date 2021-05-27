@@ -5,6 +5,8 @@ import { React, useState, useEffect } from "react";
 import StatisticsGames from './StatisticsGames';
 import StatisticsTournaments from './StatisticsTournaments';
 import StatisticsPlayers from './StatisticsPlayers';
+import { FaThumbsDown } from 'react-icons/fa';
+import { RGBAFormat, RGBA_ASTC_4x4_Format } from 'three';
 
 
 function Statistics() {
@@ -72,11 +74,17 @@ function Statistics() {
 
         async function fetchApiMatchesStatisticsByGame() {
             var response = await UserService.getMatchesStatisticsByGame();
-            setNumberOfTotalMatchesLast7Days(response.countAllMatches);
-            var matches_percentage = response.matches.map(element => {
-                return {label: element.name, y: element.matchesCount}
-            })
-            setMatchesByGameLast7Days(matches_percentage);
+            console.log(response)
+            if (response.message !== undefined) {
+                setNumberOfTotalMatchesLast7Days(response)
+                setMatchesByGameLast7Days(response)
+            } else {
+                setNumberOfTotalMatchesLast7Days(response.countAllMatches);
+                var matches_percentage = response.matches.map(element => {
+                    return {label: element.name, y: element.matchesCount}
+                })
+                setMatchesByGameLast7Days(matches_percentage);
+            }
         }
 
         fetchApiNumberOfBans()

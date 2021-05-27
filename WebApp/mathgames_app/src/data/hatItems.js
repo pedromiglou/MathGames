@@ -2,30 +2,57 @@ export const hatItems =
     [
         {
             id: 0,
-            name: "None",
+            name: "none",
             img: process.env.PUBLIC_URL + "/avatar_assets/none.png",
-            path: ""
+            path: "",
+            lvl: 0
         },
 
         {
             id: 1,
             name: "MagicianHat",
             img: process.env.PUBLIC_URL + "/avatar_assets/hats/magicianHat.png",
-            path: "./MagicianHat.js"
+            path: "./MagicianHat.js",
+            lvl: 0
         },
     
         {
             id: 2,
-            name: "PoliceHat",
-            img: process.env.PUBLIC_URL + "/avatar_assets/hats/policeHat.png",
-            path: "./PoliceHat.js"
+            name: "CowboyHat",
+            img: process.env.PUBLIC_URL + "/avatar_assets/hats/cowboyHat.png",
+            path: "./CowboyHat.js",
+            lvl: 0
         },
 
         {
             id: 3,
             name: "WitchHat",
             img: process.env.PUBLIC_URL + "/avatar_assets/hats/witchHat.png",
-            path: "./WitchHat.js"
-        }
-    
+            path: "./WitchHat.js",
+            lvl: 5
+        },
+
+        {
+            id: 4,
+            name: "ChristmasHat",
+            img: process.env.PUBLIC_URL + "/avatar_assets/hats/christmasHat.png",
+            path: "./ChristmasHat.js",
+            lvl: 25
+        },
+
+        {
+            id: 5,
+            name: "Ushanka",
+            img: process.env.PUBLIC_URL + "/avatar_assets/hats/ushanka.png",
+            path: "./Ushanka.js",
+            lvl: 60
+        },
+
+        /* {
+            id: 6,
+            name: "PoliceHat",
+            img: process.env.PUBLIC_URL + "/avatar_assets/hats/policeHat.png",
+            path: "./PoliceHat.js"
+        },
+     */
     ];
