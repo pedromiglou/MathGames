@@ -89,10 +89,8 @@ hr.solid-pos {
 }
 
 .top-profile {
-    margin-top: 50px;
     margin-left: 30px;
     width: auto;
-    height: 10%;
 
     transform: translateY(-1000px);
     animation: slideDown 0.8s ease forwards 0.5s;
@@ -280,59 +278,123 @@ hr.solid-pos {
 
 }
 
+.skin-pallette-2 {
+    margin-top: 15px;
+    text-align: center !important;
+    padding: 0px;
+
+}
+
 #skin-pallette {
-    height: 200px !important;
+    height: 100px !important;
 }
 
-.dot-1 {
+#skin-pallette-1 {
+    height: 50px !important;
+}
+
+.no-margin {
+    padding: 0px;
+}
+
+.dot {
     height: 25px;
     width: 25px;
-    background-color: #FFAF00;
     border-radius: 50%;
     display: inline-block;
 
     margin: 10px;
 }
-.dot-2 {
-    height: 25px;
-    width: 25px;
-    background-color: #694028;
-    border-radius: 50%;
-    display: inline-block;
-
-    margin: 10px;
+.d1 { 
+    background-color: #7B241C;
 }
-.dot-3 {
-    height: 25px;
-    width: 25px;
-    background-color: #B1A7FF;
-    border-radius: 50%;
-    display: inline-block;
-
-    margin: 10px;
+.d2 {
+    background-color: #C0392B;
 }
-.dot-4 {
-    height: 25px;
-    width: 25px;
-    background-color: #12EED4;
-    border-radius: 50%;
-    display: inline-block;
-
-    margin: 10px;
-}
-.dot-1:hover {
-    transform: scale(1.25);
-}
-.dot-2:hover {
-    transform: scale(1.25);
-}
-.dot-3:hover {
-    transform: scale(1.25);
-}
-.dot-4:hover {
-    transform: scale(1.25);
+.d3 {
+    background-color: #D98880;
 }
 
+.d4 {
+    background-color: #512E5F;
+}
+.d5 { 
+    background-color: #7D3C98;
+}
+.d6 {
+    background-color: #A569BD;
+}
+
+.d7 {
+    background-color: #1B4F72;
+}
+.d8 {
+    background-color: #2E86C1;
+}
+.d9 {
+    background-color: #5DADE2;
+}
+
+.d10 {
+    background-color: #186A3B;
+}
+.d11 {
+    background-color: #28B463;
+}
+.d12 {
+    background-color: #58D68D;
+}
+
+.d13 {
+    background-color: #7E5109;
+}
+.d14 {
+    background-color: #D68910;
+}
+.d15 {
+    background-color: #F5B041;
+}
+
+.d16 {
+    background-color: #6E2C00;
+}
+.d17 {
+    background-color: #BA4A00;
+}
+.d18 {
+    background-color: #DC7633;
+}
+
+.d19 {
+    background-color: #626567;
+}
+.d20 {
+    background-color: #A6ACAF;
+}
+.d21 {
+    background-color: #CACFD2;
+}
+
+.d22 {
+    background-color: #17202A;
+}
+.d23 {
+    background-color: #273746;
+}
+.d24 {
+    background-color: #566573;
+}
+
+.dot:hover {
+    transform: scale(1.25);
+}
+
+.dot_4 {
+    background-color: #566573;
+}
+.dot_7 {
+    background-color: #566573;
+}
 
 .inventory {
     width: 100%;

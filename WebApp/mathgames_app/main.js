@@ -1,4 +1,5 @@
-import {urlWeb} from "./src/data/data";
+const urlWeb = process.env.NODE_ENV === "development" ? 'http://localhost:3000/' : 'http://138.68.191.32/'
+
 // Modules to control application life and create native browser window
 const {app, BrowserWindow} = require('electron')
 const path = require('path')

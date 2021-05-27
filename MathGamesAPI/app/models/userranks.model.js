@@ -1,3 +1,5 @@
+const { user } = require(".");
+
 module.exports = (sequelize, Sequelize) => {
     const UserRank = sequelize.define("UserRanks", {
       user_id: {
@@ -5,24 +7,28 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
         primaryKey: true
       },
-      game_id: {
+      rastros: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        primaryKey: true
+        defaultValue: 0
       },
-      ranking: {
+      gatos_e_caes: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        validate: {
-            isNotNegative() {
-                if (this.ranking < 0) {
-                    throw new Error("Ranking must be >= 0")
-                }
-            }
-        }
+        defaultValue: 0
       }
     }, {
-      timestamps: false
+      timestamps: false,
+      hooks: {
+        beforeBulkUpdate: async (userrank) => {
+          if (userrank.attributes.rastros < 0) {
+            userrank.attributes.rastros = 0;
+          } 
+          if (userrank.attributes.gatos_e_caes < 0) {
+            userrank.attributes.gatos_e_caes = 0;
+          }
+        }
+      }
     });
     return UserRank;
   };
