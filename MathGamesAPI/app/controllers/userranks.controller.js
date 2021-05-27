@@ -10,8 +10,7 @@ exports.findAll = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving UserRanks."
+        message: err.message || "Some error occurred while retrieving UserRanks."
       });
     });
 };
@@ -19,6 +18,13 @@ exports.findAll = (req, res) => {
 // Find all ranks of a given userId
 exports.findByUserId = (req, res) => {
   const id = req.params.userId;
+
+  if (req.userId !== parseInt(id)) {
+    res.status(401).send({
+      message: "Unauthorized!"
+    });
+    return;
+  }
 
   UserRank.findByPk(id)
     .then(data => {
@@ -44,14 +50,14 @@ exports.delete = (req, res) => {
           message: "UserRank was deleted successfully!"
         });
       } else {
-        res.send({
-          message: `Cannot delete UserRank with user id=${userId} and game id=${gameId}. Maybe UserRank was not found!`
+        res.status(500).send({
+          message: `Cannot delete UserRank with user id=${userId}. Maybe UserRank was not found!`
         });
       }
     })
     .catch(err => {
       res.status(500).send({
-        message: "Could not delete UserRank with user id=" + userId + " and game id=" + gameId
+        message: "Could not delete UserRank with user id=" + userId 
       });
     });
 };
@@ -67,8 +73,7 @@ exports.deleteAll = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all UserRanks."
+        message: err.message || "Some error occurred while removing all UserRanks."
       });
     });
 };

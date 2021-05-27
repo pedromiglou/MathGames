@@ -78,7 +78,7 @@ function Navbar() {
 	}
 
 	function run_logout() {
-		localStorage.removeItem("user");
+		sessionStorage.removeItem("user");
 		window.location.assign(urlWeb)
 	}
 

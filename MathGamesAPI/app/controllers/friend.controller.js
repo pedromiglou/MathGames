@@ -14,8 +14,8 @@ exports.create = (req, res) => {
     return;
   }
 
-  if (parseInt(req.userId) !== parseInt(req.body.friend1) && parseInt(req.userId) !== parseInt(req.body.friend2)) {
-    res.status(403).send({
+  if (parseInt(req.userId) !== parseInt(req.body.friend2)) {
+    res.status(401).send({
       message: "Unauthorized!"
     });
     return;
@@ -35,33 +35,38 @@ exports.create = (req, res) => {
     };
   }
 
-  Notification.findOne({where: { [Op.or]: [ {sender: req.body.friend1, receiver: req.body.friend2, notification_type: "F"}, {sender: req.body.friend2, receiver: req.body.friend1, notification_type: "F"} ]} })
-  .then( notif => {
+  console.log(req.body.friend1)
+  console.log(req.body.friend2)
+
+  Notification.findOne({where: {sender: req.body.friend1, receiver: req.body.friend2, notification_type: "F"} })
+  .then( async notif => {
     if (notif !== null) {
-      Notification.destroy({where: {id: notif.id}});
+      await Notification.destroy({where: {id: notif.id}})
+      .catch(err => {
+        res.status(500).send({
+          message: err.message ||"Some error occurred while removing Friend Request Notification."
+        });
+      });
+      
       // Save Friend in the database
-      console.log(friend)
       Friend.create(friend)
       .then(data => {
         res.send(data);
       })
       .catch(err => {
         res.status(500).send({
-          message:
-            err.message || "Some error occurred while creating the Friend."
+          message: err.message || "Some error occurred while creating the Friend."
         });
       });
     } else {
       res.status(403).send({
-        message:
-          "Friend Request doesn't exists."
+        message: "Friend Request Notification doesn't exists."
       });
     }
   })
   .catch(err => {
     res.status(500).send({
-      message:
-        err.message || "Friend Request not found."
+      message: err.message ||"Some error occurred while searching for Friend Request Notification."
     });
   })
 
@@ -75,8 +80,7 @@ exports.findAll = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving Friends."
+        message:  err.message || "Some error occurred while retrieving Friends."
       });
     });
 };
@@ -85,11 +89,12 @@ exports.findAll = (req, res) => {
 exports.findByUserId = (req, res) => {
   const id = req.params.id;
   if (req.userId !== parseInt(id)) {
-    res.status(403).send({
+    res.status(401).send({
       message: "Unauthorized!"
     });
     return;
   }
+
   Friend.findAll({ where: { [Op.or]: [{ friend1: id}, {friend2: id} ] }})
   .then(data => {
       if (data.length !== 0) {
@@ -107,7 +112,7 @@ exports.findByUserId = (req, res) => {
         })
         .catch(err => {
             res.status(500).send({
-                message: "Error retreving users."
+                message: "Error retrieving friends of user with id=" + id
             })
         })
       }
@@ -115,17 +120,24 @@ exports.findByUserId = (req, res) => {
         res.send([]);
       }
     })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error retrieving Friend with id=" + id
-      });
+  .catch(err => {
+    res.status(500).send({
+      message: "Error retrieving friends of user with id=" + id
     });
+  });
 };
 
 // Delete a Friend with the specified id in the request
 exports.delete = (req, res) => {
   const friendId1 = req.params.friendId1;
   const friendId2 = req.params.friendId2;
+
+  if (parseInt(req.userId) !== parseInt(friendId1) && parseInt(req.userId) !== parseInt(friendId2)) {
+    res.status(401).send({
+      message: "Unauthorized!"
+    });
+    return;
+  }
 
   Friend.destroy({
     where: { [Op.or]: [{ [Op.and]: [{friend1: friendId1, friend2: friendId2}]}, {[Op.and]: [{friend2: friendId1, friend1: friendId2}] }] }
@@ -136,8 +148,8 @@ exports.delete = (req, res) => {
           message: "Friendship was deleted successfully!"
         });
       } else {
-        res.send({
-          message: `Cannot delete Friendship between with id=${friendId1} and id=${friendId2}. Maybe Friendship was not found!`
+        res.status(500).send({
+          message: `Cannot delete Friendship between with id=${friendId1} and id=${friendId2}.`
         });
       }
     })
@@ -159,8 +171,7 @@ exports.deleteAll = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all Friends."
+        message: err.message || "Some error occurred while removing all Friends."
       });
     });
 };

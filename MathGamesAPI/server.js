@@ -6,8 +6,8 @@ const index = require("./app/routes/index")
 const sql = require("./app/models/db.js");
 const errorHandler = require("./app/config/errorhandler");
 var uuid = require('uuid');
-const { PassThrough } = require("stream");
-const { match } = require("assert");
+//const { PassThrough } = require("stream");
+//const { match } = require("assert");
 
 const app = express();
 app.use(index);
@@ -28,7 +28,6 @@ const io = require("socket.io")(server, {
 });
 
 const db = require("./app/models");
-const { Console } = require("console");
 const GameMatch = db.game_match;
 const Game = db.game;
 const User = db.user;
@@ -74,7 +73,7 @@ async function synchronize() {
       account_type: "A"
     }
   });
-
+  await UserRank.findOrCreate({where: {user_id: 1}})
 
 
   await AvatarItems.findOrCreate({where: {
@@ -245,10 +244,6 @@ async function synchronize() {
 
 }
 synchronize()
-// // drop the table if it already exists
-// db.sequelize.sync({ force: true }).then(() => {
-//   console.log("Drop and re-sync db.");
-// });
 
 var current_games = {};
 var match_queue = {0: [], 1: []};

@@ -33,8 +33,7 @@ exports.create = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Ban."
+        message: err.message || "Some error occurred while creating the Ban."
       });
     });
 };
@@ -47,8 +46,7 @@ exports.findAll = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving Bans."
+        message: err.message || "Some error occurred while retrieving Bans."
       });
     });
 };
@@ -64,31 +62,6 @@ exports.findOne = (req, res) => {
     .catch(err => {
       res.status(500).send({
         message: "Error retrieving Ban with id=" + id
-      });
-    });
-};
-
-// Update a Ban by the id in the request
-exports.update = (req, res) => {
-  const id = req.params.id;
-
-  Ban.update(req.body, {
-    where: { user_id: id }
-  })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Ban was updated successfully."
-        });
-      } else {
-        res.send({
-          message: `Cannot update Ban with id=${id}. Maybe Ban was not found or req.body is empty!`
-        });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error updating Ban with id=" + id
       });
     });
 };
@@ -135,8 +108,7 @@ exports.deleteAll = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all Bans."
+        message: err.message || "Some error occurred while removing all Bans."
       });
     });
 };
@@ -208,8 +180,7 @@ exports.statistics = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving Bans."
+        message: err.message || "Some error occurred while retrieving Bans statistics."
       });
     });
 }

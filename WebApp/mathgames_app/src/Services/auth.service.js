@@ -17,7 +17,7 @@ class AuthService {
         var json = await res.json()
         
         if(json.id) {
-            localStorage.setItem("user", JSON.stringify(json));
+            sessionStorage.setItem("user", JSON.stringify(json));
         } 
         return json
 
@@ -37,10 +37,9 @@ class AuthService {
             headers:{'Content-type':'application/json'},
             body: JSON.stringify(userInfo)
         })
-        console.log(res)
+
         var json = await res.json()
         
-        console.log(json)
         if(json.id) {
             return { ok: true}
         }
@@ -48,11 +47,11 @@ class AuthService {
             return { ok: false, error: "username"}
         if(json.message === "Failed! Email is already in use!")
             return { ok: false, error: "email"}
-        return { ok: false, error: "error"}
+        return { ok: false, error: json.message}
     }
 
     getCurrentUser() {
-        return JSON.parse(localStorage.getItem("user"))
+        return JSON.parse(sessionStorage.getItem("user"))
     }
 }
 

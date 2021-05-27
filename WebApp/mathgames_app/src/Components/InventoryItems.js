@@ -211,7 +211,7 @@ const InventoryItems = (props) => {
 							key={x.id}
 							id={x.id + "_trouser"}
 							className="item-card"
-							onClick={() => props.trouserName(x.color)}
+							onClick={() => props.trouserName(x.name)}
 						>
 							<div className="card-descr" style={{backgroundColor: x.color}}>
 								<i className="checkIcon"><FaIcons.FaCheck/></i>
@@ -225,7 +225,7 @@ const InventoryItems = (props) => {
 							key={x.id}
 							id={x.id + "_trouser"}
 							className="item-card"
-							onClick={() => props.trouserName(x.color)}
+							onClick={() => props.trouserName(x.name)}
 						>
 							<div className="card-descr item-img-current" style={{backgroundColor: x.color}}>
 								<i className="checkIcon"><FaIcons.FaCheck/></i>
@@ -242,7 +242,7 @@ const InventoryItems = (props) => {
 							key={x.id}
 							id={x.id + "_trouser"}
 							className="item-card"
-							onClick={() => props.trouserName(x.color)}
+							onClick={() => props.trouserName(x.name)}
 							style={{backgroundColor: x.color}}
 						>
 							<div className="card-descr">
@@ -257,7 +257,7 @@ const InventoryItems = (props) => {
 							key={x.id}
 							id={x.id + "_trouser"}
 							className="item-card"
-							onClick={() => props.trouserName(x.color)}
+							onClick={() => props.trouserName(x.name)}
 							style={{backgroundColor: x.color}}
 						>
 							<div className="card-descr" style={{backgroundColor: x.color}}>

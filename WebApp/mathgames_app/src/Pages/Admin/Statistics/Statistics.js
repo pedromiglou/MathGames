@@ -33,11 +33,17 @@ function Statistics() {
 
         async function fetchApiMatchesStatisticsByGame() {
             var response = await UserService.getMatchesStatisticsByGame();
-            setNumberOfTotalMatchesLast7Days(response.countAllMatches);
-            var matches_percentage = response.matches.map(element => {
-                return {label: element.name, y: element.matchesCount}
-            })
-            setMatchesByGameLast7Days(matches_percentage);
+            console.log(response)
+            if (response.message !== undefined) {
+                setNumberOfTotalMatchesLast7Days(response)
+                setMatchesByGameLast7Days(response)
+            } else {
+                setNumberOfTotalMatchesLast7Days(response.countAllMatches);
+                var matches_percentage = response.matches.map(element => {
+                    return {label: element.name, y: element.matchesCount}
+                })
+                setMatchesByGameLast7Days(matches_percentage);
+            }
         }
 
         fetchApiNumberOfBans()
@@ -172,17 +178,29 @@ function Statistics() {
                         </tr>
                     </tbody>
                     </table>
-                    <h2>Número de jogos nos últimos 7 dias: {numberOfTotalMatches}</h2>
+                    <h2>Número de jogos nos últimos 7 dias: 
+                        {
+                            numberOfTotalMatches.message !== undefined
+                            ? <p>Indisponível</p>
+                            : numberOfTotalMatches
+                        }
+                    </h2>
                     <div style={{ marginLeft: 20, marginRight: 20, marginBottom: 20 }}>
-                    <CanvasJSChart options = {matchesByGameLast7DaysGraph} 
-                        /* onRef={ref => this.chart = ref} */
-                    />
+                        {
+                            matchesByGameLast7Days.message !== undefined
+                            ? <p>Erro ao carregar o gráfico de partidas jogadas por jogo nos últimos 7 dias</p>
+                            : <CanvasJSChart options = {matchesByGameLast7DaysGraph}/>
+                        }
                     </div>
                 </div>
                 <div className="statsTournaments shadow3D">
                     <h2>Torneios</h2>
                     <div style={{ marginLeft: 20, marginRight: 20, marginBottom: 20 }}>
-                        <CanvasJSChart options={matchesLast7DaysGraph} />
+                        {
+                            matchesLast7Days.message !== undefined
+                            ? <p>Erro ao carregar o gráfico de partidas jogadas nos últimos 7 dias</p>
+                            : <CanvasJSChart options={matchesLast7DaysGraph} />
+                        }
                     </div>
                 </div>
             </div>
@@ -191,29 +209,21 @@ function Statistics() {
                 <div className="statsPlayers shadow3D">
                     <h2>Novos Jogadores</h2>
                     <div style={{ marginLeft: 20, marginRight: 20, marginBottom: 20 }}>
-                    <CanvasJSChart options={newPlayers7DaysGraph} />
+                        {
+                            numberOfNewPlayers.message !== undefined
+                            ? <p>Erro ao carregar o gráfico de novos jogadores nos últimos 7 dias</p>
+                            :  <CanvasJSChart options={newPlayers7DaysGraph} />
+                        }
                     </div>
                 </div>
                 <div className="statsBannedPlayers shadow3D">
                     <h2>Jogadores Banidos</h2>
                     <div style={{ marginLeft: 20, marginRight: 20, marginBottom: 20 }}>
-                    <CanvasJSChart options={bannedPlayers7DaysGraph} />
-                    {/*
-                    <Line
-                        data={state}
-                        options={{
-                            title:{
-                            display:true,
-                            text:'Average Rainfall per month',
-                            fontSize:20
-                            },
-                            legend:{
-                            display:true,
-                            position:'right'
-                            }
-                        }}
-                        />
-                    */}
+                        {
+                            numberOfBans.message !== undefined
+                            ? <p>Erro ao carregar o gráfico de jogadores banidos nos últimos 7 dias</p>
+                            :  <CanvasJSChart options={bannedPlayers7DaysGraph} />
+                        }
                     </div>
                 </div>
             </div>

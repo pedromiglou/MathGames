@@ -155,7 +155,7 @@ const Legs = ({ position, args, color, tex, props, trouserBool }) => {
 
 	if (color !== "none") {
 		if(tex) {
-			console.log("TEX TRUE")
+
 			switch(props.trouserName) {
 				case "TrouserJeans":
 					var textureLoaded = TrouserJeans;
@@ -174,10 +174,26 @@ const Legs = ({ position, args, color, tex, props, trouserBool }) => {
 				</mesh> 
 			);
 		} else {
+			
+			var corFinal;
+			switch(props.trouserName) {
+				case "Trouser1":
+					corFinal = "#34495E";
+					break;
+				case "Trouser2":
+					corFinal = "#7B7D7D";
+					break;
+				case "Trouser3":
+					corFinal = "#EAEDED";
+					break;
+				default:
+					corFinal = props.skinColor;
+			}
+
 			return (
 				<mesh position={position}>
 					<boxBufferGeometry attach="geometry" args={args}/>
-					<meshLambertMaterial attach="material" color={color} />
+					<meshLambertMaterial attach="material" color={corFinal} />
 				</mesh>
 			);
 		}
@@ -233,13 +249,13 @@ function Avatar(props) {
 			var texTrousers = false;
 			noTrouser = true;
 			break;
-		case "#34495E":
+		case "Trouser1":
 			texTrousers = false;
 			break;
-		case "#7B7D7D":
+		case "Trouser2":
 			texTrousers = false;
 			break;
-		case "#EAEDED":
+		case "Trouser3":
 			texTrousers = false;
 			break;
 		default:

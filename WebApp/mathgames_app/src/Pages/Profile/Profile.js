@@ -6,6 +6,8 @@ import Avatar from "../../Components/Avatar";
 import InventoryItems from "../../Components/InventoryItems";
 
 import { games_info } from "../../data/GamesInfo";
+import { ranks_info } from '../../data/ranksInfo';
+
 
 import AuthService from "../../Services/auth.service"
 import UserService from "../../Services/user.service"
@@ -28,6 +30,54 @@ const Profile = () => {
     var inventario_e;
     var last_games_e;
 
+    var current_user = AuthService.getCurrentUser();
+    var ranks_dict = {}
+    for (const [, value] of Object.entries(games_info)) {
+        if (value["toBeDone"] === false) {
+            var userRankValue;
+            var userRank = 0
+            switch (value["id"]) {
+                case 0:
+                    userRankValue = current_user.userRanksData.rastros
+                    break;
+                case 1:
+                    userRankValue = current_user.userRanksData.gatos_e_caes
+                    break;
+                default:
+                    userRankValue = 0;
+                    break;
+            }
+
+            if (userRankValue <= 25)
+                userRank = 0
+            else if (userRankValue <= 75)
+                userRank = 1
+            else if (userRankValue <= 175)
+                userRank = 2
+            else if (userRankValue <= 275)
+                userRank = 3
+            else if (userRankValue <= 400)
+                userRank = 4
+            else if (userRankValue <= 550)
+                userRank = 5
+            else if (userRankValue <= 700)
+                userRank = 6
+            else if (userRankValue <= 850)
+                userRank = 7
+            else if (userRankValue <= 1050)
+                userRank = 8
+            else if (userRankValue <= 1250)
+                userRank = 9
+            else if (userRankValue <= 1450)
+                userRank = 10
+            else if (userRankValue <= 1700)
+                userRank = 11
+            else
+                userRank = 12
+
+            ranks_dict[value["id"]]  = userRank
+        }
+    }
 
     // Tem de colocar no redux o tipo de user
     useEffect(() => {
@@ -35,6 +85,7 @@ const Profile = () => {
         
         async function fetchApiUserById() {
             var user = await UserService.getUserById(current_user.id);
+
             setUser(user);
             setHat(user.avatar_hat);
             setShirt(user.avatar_shirt);
@@ -46,8 +97,11 @@ const Profile = () => {
 		// Load user games history
         async function fetchApiLastGames() {
             var response = await UserService.getLastGames(current_user.id);
+
             if (!response.error)
                 setGames(response);
+            else
+                setGames("erro")
         }
 
         if (current_user !== null) {
@@ -229,6 +283,12 @@ const Profile = () => {
                 </div>
                 {menuOption === "Geral" && (
                     <div className="col-lg-9 no-margins profile ">
+                        {
+                            
+                        user.message !== undefined ?
+                        <p>Perfil Indisponível</p>
+                        :
+                        <>
                         <div className="container row container-hidden top-profile">
                             <div className="col-lg-8 row">
                                 <div className="col-lg-4 avatar-geral">
@@ -270,7 +330,8 @@ const Profile = () => {
                         </div>
                         <hr className="solid" />
                         {Object.entries(games_info).map(([key, value]) => (	
-                            
+                            value["toBeDone"] === false &&
+
                             <div key={key}>
                                 <div className="row profile-games">
                                     <img
@@ -281,12 +342,21 @@ const Profile = () => {
                                     <div className="game-name">
                                         <p>{value["title"]}</p>
                                     </div>
+
+                                    <img
+                                        src={process.env.PUBLIC_URL +
+                                            ranks_info[ranks_dict[key]].image}
+                                        alt="Rank"
+                                    />
+                                    <p>{ranks_info[ranks_dict[key]].name}</p>
                                 </div>
                                 <hr className="solid solid-pos" />
                             </div>
                             )
                         )}
-                        
+                        <br></br>
+                        </>
+                    }
                     </div>
                 )}
 
@@ -442,7 +512,10 @@ const Profile = () => {
                                     <div className="col col-2">Exp. Ganha</div>
                                     <div className="col col-2">Detalhes</div>
                                 </li>
-                                {Object.entries(games).length === 0 
+                                {
+                                games === "erro" 
+                                ?  <p className="no-games-found">Histórico de jogos indisponível!</p>
+                                : Object.entries(games).length === 0 
                                     ? <p className="no-games-found">O seu histório de jogos é vazio!</p>
                                     :
                                     Object.entries(games).map(

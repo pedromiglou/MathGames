@@ -8,7 +8,7 @@ module.exports = app => {
     router.post("/", authJwt.verifyToken, notifications.create);
   
     // Retrieve all notifications
-    router.get("/", notifications.findAll);
+    router.get("/", [authJwt.verifyToken, authJwt.isAdmin],  notifications.findAll);
   
     // Retrieve all notifications a userId has received
     router.get("/:id", authJwt.verifyToken, notifications.findByUserId);
@@ -17,7 +17,7 @@ module.exports = app => {
     router.delete("/:id", authJwt.verifyToken, notifications.delete);
   
     // Delete all notifications
-    //router.delete("/", notifications.deleteAll);
+    router.delete("/", [authJwt.verifyToken, authJwt.isAdmin], notifications.deleteAll);
   
     app.use('/api/notifications', router);
   };
