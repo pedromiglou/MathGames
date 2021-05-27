@@ -56,29 +56,23 @@ io.on("connection", (socket) => {
   //User sends user_id and want to play with a friend through a link
   socket.on("friendbylink", (msg) => {
     var user_id = msg["user_id"]
-    var game_id = msg["game_id"]
     users_info[user_id] =  socket.id;
     io.to(socket.id).emit("link_sent", {"match_id": uuid.v4()});
   })
 
   socket.on("entered_link", (msg) => {
     console.log("User conected through link.")
-    console.log(msg)
     if (msg["user_id"] !== null) {
       var user_id = msg["user_id"]
       var match_id = msg["match_id"]
       var game_id = msg["game_id"]
       users_info[user_id] = socket.id
-      console.log(user_id)
 
       if (Object.keys(current_games).includes(match_id)) {
         var other_user = Object.keys(current_games[match_id]['users'])[0];
         current_games[match_id]['users'][user_id] = [other_user];
         current_games[match_id]['users'][other_user] = [user_id];
 
-        console.log("tou aqui")
-        console.log(other_user)
-        console.log(user_id)
         if (other_user !== user_id)
           initiate_game(match_id, other_user, user_id)
 
@@ -105,8 +99,8 @@ io.on("connection", (socket) => {
 
     if ( match_queue[game_id].length >= 2 ) {
       console.log("Match found.");
-      var player1 = match_queue[game_id].shift()
-      var player2 = match_queue[game_id].shift()
+      var player1 = String( match_queue[game_id].shift() );
+      var player2 = String( match_queue[game_id].shift() );
       if (player1 !== undefined && player2 !== undefined ) {
         if (player1 !== player2) 
           create_game(null, game_id, player1, player2, "online");
@@ -122,7 +116,6 @@ io.on("connection", (socket) => {
   //User send username, user_id and match_id when he joins game to start game
   socket.on("start_game", (msg) => {
     console.log("start_game")
-    console.log(msg)
     var user_id = msg["user_id"];
     var match_id = msg["match_id"];
     var account_player = msg["account_player"]
@@ -141,12 +134,17 @@ io.on("connection", (socket) => {
     if (Object.keys(current_games).includes(match_id))
       if (Object.keys(current_games[match_id]['users']).includes(user_id))
         if (valid_move(user_id, match_id, new_pos)) {
-          io.to( users_info[ current_games[match_id]['users'][user_id][0] ] ).emit("move_piece", new_pos);
-          if (current_games[match_id]['state']['isFinnished'])
-            finnish_game(match_id, "valid_move")
+          var opponent = users_info[ current_games[match_id]['users'][user_id][0] ]
+          io.to( opponent ).emit("move_piece", new_pos);
+
+          current_games[match_id]['timers'][user_id].pause();
+          current_games[match_id]['timers'][opponent].start();
+
+          if (current_games[match_id]['state']['isFinished'])
+            finish_game(match_id, "valid_move")
         } else {
           //Move is not valid. Match will end and oponnent will win.
-          current_games[match_id]['state']['isFinnished'] = true
+          current_games[match_id]['state']['isFinished'] = true
           current_games[match_id]['state']['winner'] = (user_id === current_games[match_id]['state']['player1']) ? "2" : "1"
 
           //Tell this user that his movement was invalid and he lost the match
@@ -155,7 +153,7 @@ io.on("connection", (socket) => {
           //Tell oponnent that he have won the match by "default"
           //io.to( users_info[ current_games[match_id]['users'][user_id][0] ] ).emit("match_endby_invalid_move", {"match_result": "win"});
 
-          finnish_game(match_id, "invalid_move")
+          finish_game(match_id, "invalid_move")
         }
   })
 
@@ -170,10 +168,10 @@ function create_game(match_id, game_id, user1, user2, game_type) {
 
   if (match_id === null)
     match_id = Object.keys(current_games).length;
-  
+
   current_games[match_id] = {};
-  current_games[match_id]["game_id"] = game_id;
-  current_games[match_id]["game_type"] = game_type;
+  current_games[match_id]['game_id'] = game_id;
+  current_games[match_id]['game_type'] = game_type;
   current_games[match_id]['users'] = {}
   current_games[match_id]['users'][user1] = [user2];
   current_games[match_id]['users'][user2] = [user1];
@@ -181,8 +179,24 @@ function create_game(match_id, game_id, user1, user2, game_type) {
     'player1': user1,
     'player2': user2,
     'winner': "",
-    'isFinnished': false
+    'isFinished': false
   }
+  current_games[match_id]['timers'] = {}
+  current_games[match_id]['timers'][user1] = new Timer(function() {
+                                              console.log("It's done")
+                                              current_games[match_id]['state']['isFinished'] = true;
+                                              current_games[match_id]['state']['winner'] = "2";
+                                              finish_game(match_id, "timeout");
+                                            }, 10000);
+  current_games[match_id]['timers'][user2] = new Timer(function() {
+                                              console.log("It's done")
+                                              current_games[match_id]['state']['isFinished'] = true;
+                                              current_games[match_id]['state']['winner'] = "1";
+                                              finish_game(match_id, "timeout");
+                                            }, 10000);
+
+  current_games[match_id]['timers'][user1].start();
+
   if (game_id === 0) {
     current_games[match_id]['state']['blocked_pos'] = new Set()
     current_games[match_id]['state']['current_pos'] = 18
@@ -197,6 +211,7 @@ function create_game(match_id, game_id, user1, user2, game_type) {
   
   if (user1 !== null && user2 !== null)
     initiate_game(match_id, user1, user2)
+  
 }
 
 function initiate_game(match_id, user1, user2) {
@@ -222,152 +237,141 @@ function initiate_game(match_id, user1, user2) {
   });
 }
 
-
+function end_by_timeout(match_id, winner) {
+  console.log(match_id)
+  console.log(current_games)
+  console.log(current_games[match_id])
+  console.log(current_games[match_id]['state'])
+  console.log(current_games[match_id]['state']['isFinished'])
+  current_games[match_id]['state']['isFinished'] = true;
+  current_games[match_id]['state']['winner'] = winner;
+  finish_game(match_id, "time_out");
+}
 
 function valid_move(user_id, match_id, new_pos) {
 
   //Verificar o jogo
-  if (current_games[match_id]["game_id"] === 0) {
-    new_pos = parseInt(new_pos)
+  if (current_games[match_id]["game_id"] === 0)
+    return validate_rastros_move(user_id, match_id, new_pos)
 
-    //RASTROS
-    var valid_squares = current_games[match_id]['state']['valid_squares']
-    var blocked_pos = current_games[match_id]['state']['blocked_pos']
-    blocked_pos.add(new_pos)
-
-    if (valid_squares.has(new_pos)) {
-      valid_squares.clear()
+  if (current_games[match_id]["game_id"] === 1)
+    return validate_gatoscaes_move(user_id, match_id, new_pos)
     
-      // Add all possible positions
-      valid_squares.add(new_pos-6);
-      valid_squares.add(new_pos-7);
-      valid_squares.add(new_pos-8);
+}
 
-      valid_squares.add(new_pos+6);
-      valid_squares.add(new_pos+7);
-      valid_squares.add(new_pos+8);
+function validate_rastros_move(user_id, match_id, new_pos) {
+  var current_pos = parseInt(new_pos)
 
-      valid_squares.add(new_pos-1);
-      valid_squares.add(new_pos+1);
-      
-      // Remove invalid squares (edge cases)
-      if ( [0,1,2,3,4,5,6].includes(new_pos) ) {
-          valid_squares.delete(new_pos-6);
-          valid_squares.delete(new_pos-7);
-          valid_squares.delete(new_pos-8);
-      }
+  var valid_squares = current_games[match_id]['state']['valid_squares']
+  var blocked_pos = current_games[match_id]['state']['blocked_pos']
 
-      if ( [42,43,44,45,46,47,48].includes(new_pos) ) {
-          valid_squares.delete(new_pos+6);
-          valid_squares.delete(new_pos+7);
-          valid_squares.delete(new_pos+8);
-      }
+  blocked_pos.add(current_pos)
 
-      if ( [0,7,14,21,28,35,42].includes(new_pos) ) {
-          valid_squares.delete(new_pos-8);
-          valid_squares.delete(new_pos-1);
-          valid_squares.delete(new_pos+6);
-      }
+  if ( valid_squares.has(current_pos) ) {
+    valid_squares.clear()
+  
+    // Add all possible positions
+    [new_pos-6, new_pos-7, new_pos-8, new_pos+6, new_pos+7, new_pos+8, new_pos-1, new_pos+1].forEach(this.valid_squares.add, this.valid_squares);
+    
+    // Remove invalid squares (edge cases)
+    if ( [0,1,2,3,4,5,6].includes(new_pos) )
+      [new_pos-6, new_pos-7, new_pos-8].forEach(this.valid_squares.delete, this.valid_squares);
 
-      if ( [6,13,20,27,34,41,48].includes(new_pos) ) {
-          valid_squares.delete(new_pos-6);
-          valid_squares.delete(new_pos+1);
-          valid_squares.delete(new_pos+8);
-      }
+    if ( [42,43,44,45,46,47,48].includes(new_pos) )
+      [new_pos+6, new_pos+7, new_pos+8].forEach(this.valid_squares.delete, this.valid_squares);
 
-      // Remove blocked squares
-      blocked_pos.forEach(square => valid_squares.delete(square));
+    if ( [0,7,14,21,28,35,42].includes(new_pos) )
+      [new_pos-8, new_pos-1, new_pos+6].forEach(this.valid_squares.delete, this.valid_squares);
 
-      // Update game state
-      current_games[match_id]['state']['blocked_pos'] = blocked_pos
-      current_games[match_id]['state']['current_pos'] = new_pos
-      current_games[match_id]['state']['valid_squares'] = valid_squares
+    if ( [6,13,20,27,34,41,48].includes(new_pos) )
+      [new_pos-6, new_pos+1, new_pos+8].forEach(this.valid_squares.delete, this.valid_squares);
 
-      // Check for win conditions
-      if (new_pos === 6 || new_pos === 42 || set_diff(valid_squares, blocked_pos).size === 0) {
-        current_games[match_id]['state']['isFinnished'] = true
-        if (new_pos === 6)
-          current_games[match_id]['state']['winner'] = "2"
-        else if (new_pos === 42)
-          current_games[match_id]['state']['winner'] = "1"
-        else
-          current_games[match_id]['state']['winner'] = (user_id === current_games[match_id]['state']['player1']) ? "1" : "2"
-      } 
+    // Remove blocked squares
+    blocked_pos.forEach(square => valid_squares.delete(square));
 
-      return true
-    }
-    return false
-  } else if (current_games[match_id]["game_id"] === 1) {
+    // Update game state
+    current_games[match_id]['state']['blocked_pos'] = blocked_pos
+    current_games[match_id]['state']['current_pos'] = new_pos
+    current_games[match_id]['state']['valid_squares'] = valid_squares
 
-    if ( (current_games[match_id]['state']['player_0_valid_squares'].has(new_pos) && current_games[match_id]['state']['current_player'] === user_id) 
-        || (current_games[match_id]['state']['player_1_valid_squares'].has(new_pos) && current_games[match_id]['state']['current_player'] === user_id) ) {
+    // Check for win conditions
+    if (new_pos === 6 || new_pos === 42 || set_diff(valid_squares, blocked_pos).size === 0) {
+      current_games[match_id]['state']['isFinished'] = true
+      if (new_pos === 6)
+        current_games[match_id]['state']['winner'] = "2"
+      else if (new_pos === 42)
+        current_games[match_id]['state']['winner'] = "1"
+      else
+        current_games[match_id]['state']['winner'] = (user_id === current_games[match_id]['state']['player1']) ? "1" : "2"
+    } 
 
-        console.log("valido")
-        if (current_games[match_id]['state']['player_0_first_move'] && current_games[match_id]['state']['player1'] === user_id)
-          current_games[match_id]['state']['player_0_first_move'] = false
-        if (current_games[match_id]['state']['player_1_first_move'] && current_games[match_id]['state']['player2'] === user_id)
-          current_games[match_id]['state']['player_1_first_move'] = false
-        
-        // Get new square's position [0..49]
-        var adjacents = new Set()
-        var current_pos = parseInt(new_pos)
-
-        current_games[match_id]['state']['player_0_valid_squares'].delete(String(current_pos))
-        current_games[match_id]['state']['player_1_valid_squares'].delete(String(current_pos))
-        adjacents.add(String(current_pos-1))
-        adjacents.add(String(current_pos+1))
-        adjacents.add(String(current_pos-8))
-        adjacents.add(String(current_pos+8))
-
-        // Remove invalid squares (edge cases)
-        if ( [0,1,2,3,4,5,6,7].includes(current_pos) ) {
-            adjacents.delete(String(current_pos-8));
-        }
-
-        if ( [56,57,58,59,60,61,62,63].includes(current_pos) ) {
-            adjacents.delete(String(current_pos+8));
-        }
-
-        if ( [0,8,16,24,32,40,48,56].includes(current_pos) ) {
-            adjacents.delete(String(current_pos-1));
-        }
-
-        if ( [7,15,23,31,39,47,55].includes(current_pos) ) {
-            adjacents.delete(String(current_pos+1));
-        }
-        
-        // Add player piece to new square
-        if (current_games[match_id]['state']['player1'] === user_id) {
-            current_games[match_id]['state']['player_1_valid_squares'] = set_diff(current_games[match_id]['state']['player_1_valid_squares'], adjacents)
-            if (current_games[match_id]['state']['player_1_valid_squares'].size === 0) {
-              current_games[match_id]['state']['isFinnished'] = true
-              current_games[match_id]['state']['winner'] = "1"
-            }
-        } else {
-            current_games[match_id]['state']['player_0_valid_squares'] = set_diff(current_games[match_id]['state']['player_0_valid_squares'], adjacents)
-            if (current_games[match_id]['state']['player_0_valid_squares'].size === 0) {
-              current_games[match_id]['state']['isFinnished'] = true
-              current_games[match_id]['state']['winner'] = "2"
-
-            }
-        }
-
-         
-        if (current_games[match_id]['state']['current_player'] === current_games[match_id]['state']['player1'])
-          current_games[match_id]['state']['current_player'] = current_games[match_id]['state']['player2']
-        else
-          current_games[match_id]['state']['current_player'] = current_games[match_id]['state']['player1']
-        
-        return true
-      }
-      return false
+    return true
   }
+  return false
+}
+
+function validate_gatoscaes_move(user_id, match_id, new_pos) {
+  if ( !( (current_games[match_id]['state']['player_0_valid_squares'].has(new_pos) && current_games[match_id]['state']['current_player'] === user_id) 
+      || (current_games[match_id]['state']['player_1_valid_squares'].has(new_pos) && current_games[match_id]['state']['current_player'] === user_id) ) )
+      return false
+
+  if (current_games[match_id]['state']['player_0_first_move'] && current_games[match_id]['state']['player1'] === user_id)
+    current_games[match_id]['state']['player_0_first_move'] = false
+  if (current_games[match_id]['state']['player_1_first_move'] && current_games[match_id]['state']['player2'] === user_id)
+    current_games[match_id]['state']['player_1_first_move'] = false
+  
+  // Get new square's position [0..49]
+  var adjacents = new Set()
+  var current_pos = parseInt(new_pos)
+
+  current_games[match_id]['state']['player_0_valid_squares'].delete(String(current_pos))
+  current_games[match_id]['state']['player_1_valid_squares'].delete(String(current_pos))
+  adjacents.add(String(current_pos-1))
+  adjacents.add(String(current_pos+1))
+  adjacents.add(String(current_pos-8))
+  adjacents.add(String(current_pos+8))
+
+  // Remove invalid squares (edge cases)
+  if ( [0,1,2,3,4,5,6,7].includes(current_pos) )
+    adjacents.delete(String(current_pos-8));
+
+  if ( [56,57,58,59,60,61,62,63].includes(current_pos) )
+    adjacents.delete(String(current_pos+8));
+
+  if ( [0,8,16,24,32,40,48,56].includes(current_pos) )
+    adjacents.delete(String(current_pos-1));
+
+  if ( [7,15,23,31,39,47,55].includes(current_pos) )
+    adjacents.delete(String(current_pos+1));
+    
+  // Add player piece to new square
+  if (current_games[match_id]['state']['player1'] === user_id) {
+    current_games[match_id]['state']['player_1_valid_squares'] = set_diff(current_games[match_id]['state']['player_1_valid_squares'], adjacents)
+    if (current_games[match_id]['state']['player_1_valid_squares'].size === 0) {
+      current_games[match_id]['state']['isFinished'] = true
+      current_games[match_id]['state']['winner'] = "1"
+    }
+  } else {
+    current_games[match_id]['state']['player_0_valid_squares'] = set_diff(current_games[match_id]['state']['player_0_valid_squares'], adjacents)
+    if (current_games[match_id]['state']['player_0_valid_squares'].size === 0) {
+      current_games[match_id]['state']['isFinished'] = true
+      current_games[match_id]['state']['winner'] = "2"
+
+    }
+  }
+
+  if (current_games[match_id]['state']['current_player'] === current_games[match_id]['state']['player1'])
+    current_games[match_id]['state']['current_player'] = current_games[match_id]['state']['player2']
+  else
+    current_games[match_id]['state']['current_player'] = current_games[match_id]['state']['player1']
+    
   return true
+
 }
 
 
 //endMode: ["invalid_move", "valid_move"]
-async function finnish_game(match_id, endMode) {
+async function finish_game(match_id, endMode) {
   var winner = current_games[match_id]['state']['winner'] 
   var player1 = current_games[match_id]['state']['player1']
   var player_1_account_player = current_games[match_id]['users'][player1][1]
@@ -385,6 +389,19 @@ async function finnish_game(match_id, endMode) {
     game_id: game_id
   };
 
+  var player1_final_result;
+  var player2_final_result;
+  if (winner === "1") {
+    player1_final_result = "win"
+    player2_final_result = "loss"
+  } else if (winner === "2") {
+    player1_final_result = "loss"
+    player2_final_result = "win"
+  } else {
+    player1_final_result = "draw"
+    player2_final_result = "draw"
+  }
+
   if (player_1_account_player === true || player_2_account_player === true) {
     if (!player_1_account_player) {
       gameMatch["player1"] = null
@@ -394,31 +411,35 @@ async function finnish_game(match_id, endMode) {
     }
 
     // Save GameMatch in the database
-    var res = await GameMatch.create(gameMatch)
-    
-    var player1_final_result;
-    var player2_final_result;
-    if (winner === "1") {
-      player1_final_result = "win"
-      player2_final_result = "lost"
-    } else if (winner === "2") {
-      player1_final_result = "lost"
-      player2_final_result = "win"
-    } else {
-      player1_final_result = "draw"
-      player2_final_result = "draw"
-    }
-  
-    if (player_1_account_player)
-      io.to(users_info[player1]).emit("match_end", {"match_id": match_id, "match_result": player1_final_result, "endMode": endMode});
-    if (player_2_account_player)
-      io.to(users_info[player2]).emit("match_end", {"match_id": match_id, "match_result": player2_final_result, "endMode": endMode});
+    var res = await GameMatch.create(gameMatch)  
   }
+
+  io.to(users_info[player1]).emit("match_end", {"match_id": match_id, "match_result": player1_final_result, "endMode": endMode});
+  io.to(users_info[player2]).emit("match_end", {"match_id": match_id, "match_result": player2_final_result, "endMode": endMode});
 
   delete current_games[match_id]
 
 }
 
+var Timer = function(callback, delay) {
+  var timerId, start, remaining = delay;
+
+  this.start = function() {
+    start = Date.now();
+    clearTimeout(timerId);
+    timerId = setTimeout(callback, remaining);
+  };
+
+  this.pause = function() {
+      clearTimeout(timerId);
+      remaining -= Date.now() - start;
+  };
+
+  this.getRem = function() {
+    return remaining;
+  }
+
+};
 
 function set_diff(a, b) {
   return new Set( [...a].filter(x => !b.has(x)) )

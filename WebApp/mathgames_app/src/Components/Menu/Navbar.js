@@ -79,13 +79,15 @@ function Navbar() {
 		// Load user friends list
         async function fetchApiFriends() {
             var response = await UserService.getFriends(current_user.id);
-            setFriends(response);
+			if ( response != null )
+            	setFriends(response);
         }
 
 		// Load user notifications
         async function fetchApiNotifications() {
             var response = await UserService.getNotifications(current_user.id);
-            setNotifications(response);
+			if ( response != null )
+				setNotifications(response);
         }
 
 		if (current_user !== null) {
@@ -102,7 +104,6 @@ function Navbar() {
             });
         }
     }, [dispatch])
-
 	return (
 		<IconContext.Provider value={{color: 'grey'}}>
 			<div id="horizontal_nav_row" className="row sticky-top">
@@ -124,7 +125,7 @@ function Navbar() {
 								<Dropdown.ItemText><h4>Notificações</h4></Dropdown.ItemText>
 								<Dropdown.Divider />
 								{ notifications.length > 0 &&
-								<Dropdown.ItemText>{
+								<Dropdown.ItemText>
 									<div className="navbar-dropdown-row">
 										{notifications.map(function(notification, index) {
 											var current_date = new Date();
@@ -168,7 +169,7 @@ function Navbar() {
 											);
 										})}
 									</div>
-								}</Dropdown.ItemText>
+								</Dropdown.ItemText>
 								}
 								{ notifications.length === 0 &&
 									<Dropdown.ItemText>

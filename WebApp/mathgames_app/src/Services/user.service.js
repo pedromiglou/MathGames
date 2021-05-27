@@ -12,12 +12,16 @@ class UserService {
         var url = 'http://localhost:4000/api/friends/' + userId;
         console.log(JSON.parse(localStorage.getItem("user"))["token"]);
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        if (!res.ok)
+            return null;
         return res.json();
     }
 
     async getNotifications(userId) {
         var url = 'http://localhost:4000/api/notifications/' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        if (!res.ok)
+            return null;
         return res.json();
     }
 

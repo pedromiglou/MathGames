@@ -1,5 +1,7 @@
 import React, { useState, useRef } from "react";
+import { Modal } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
+import { Link } from 'react-router-dom';
 import "./Game.css"
 import "bootstrap/dist/css/bootstrap.min.css";
 import { RastrosEngine } from "../../Components/Engines/RastrosEngine";
@@ -13,6 +15,8 @@ import {IconContext} from 'react-icons';
 import { useDispatch } from 'react-redux';
 import { addMatch } from '../../store/modules/matches/actions';
 
+import { EndGameStatements } from '../../data/EndGameStatements';
+
 function Game()  {
     //const games_list = useSelector(state => state.matchApp);
     const dispatch = useDispatch();
@@ -20,6 +24,8 @@ function Game()  {
 
     //var user = AuthService.getCurrentUser();
     const [game_ready_to_start, setReady] = useState(false);
+    const [finishMatchModalShow, setFinishMatchModalShow] = useState(false);
+    const [endGameMessage, setEndGameMessage] = useState("");
     
     const url = new URLSearchParams(window.location.search);
 	let match_id = url.get("id");
@@ -50,6 +56,55 @@ function Game()  {
 
         /* Alert the copied text */
         alert("O link foi copiado!");
+    }
+
+    socket.off("match_end");
+    socket.on("match_end", (msg) => {
+        console.log("Finished game1")
+        setEndGameMessage(msg);
+        console.log(msg)
+        setFinishMatchModalShow(true);
+        
+    });
+
+    function FinishMatchModal(props) {
+        console.log("Finished game2")
+        console.log(endGameMessage)
+        return (
+            <Modal {...props} size="md" centered>
+                <Modal.Header style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                    <Modal.Title style={{color: "#0056b3", fontSize: 30}}>
+                        Jogo Terminado!
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p style={{color: "#0056b3", fontSize: 20}}>
+                        Resultado: 
+                        { endGameMessage["match_result"]==="win" &&
+                            <span>
+                                Vitória! <span className="smiley-happy"></span>
+                                <br/>
+                                { endGameMessage["endMode"]==="timeout" && EndGameStatements["win"]["timeout"] }
+                                { endGameMessage["endMode"]==="valid_move" && EndGameStatements["win"][game_id] }
+                                { endGameMessage["endMode"]==="invalid_move" && EndGameStatements["win"]["invalidMove"] }
+                            </span>
+                        }
+                        { endGameMessage["match_result"]==="loss" &&
+                            <span>
+                                Derrota. <span className="smiley-sad"></span>
+                                <br/>
+                                { endGameMessage["endMode"]==="timeout" && EndGameStatements["loss"]["timeout"] }
+                                { endGameMessage["endMode"]==="valid_move" && EndGameStatements["loss"][game_id] }
+                                { endGameMessage["endMode"]==="invalid_move" && EndGameStatements["loss"]["invalidMove"] }
+                            </span>
+                        }
+                    </p>
+                </Modal.Body>
+                <Modal.Footer style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                    <button onClick={() => history.push("/gamePage?id=" + game_id)} className="btn btn-warning" style={{color: "#0056b3", fontSize: 20}}>Voltar à página de jogo</button>
+                </Modal.Footer>
+            </Modal>
+        );
     }
 
     // Game is ready to start when both players are connected
@@ -124,6 +179,7 @@ function Game()  {
                         }
                     </div>
                 </div>
+                <FinishMatchModal show={finishMatchModalShow} onHide={() => setFinishMatchModalShow(false)}/>
             </div>
         );
     }

@@ -20,7 +20,7 @@ function PlayerCard() {
                     <div className="col h-100">
                         <div className="row mb-2 mt-2">
                             <div className="col text-center">
-                            Nome de Jogador
+                                Nome de Jogador
                             </div>
                         </div>
                         <div className="row">
@@ -31,7 +31,7 @@ function PlayerCard() {
                                 Rank
                             </div>
                         </div>
-                        <div className="row">
+                        <div className="row mt-2">
                             <div class="col text-center level-text">
                                 30
                             </div>
