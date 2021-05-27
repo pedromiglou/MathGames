@@ -45,7 +45,6 @@ const Profile = () => {
 
 		// Load user games history
         async function fetchApiLastGames() {
-            console.log(current_user.id)
             var response = await UserService.getLastGames(current_user.id);
             if (!response.error)
                 setGames(response);
@@ -186,9 +185,7 @@ const Profile = () => {
         );
       }
 
-
-
-      var userLevel = getLevel(user.account_level);
+    var userLevel = getLevel(user.account_level);
 
 
     return (
@@ -299,9 +296,7 @@ const Profile = () => {
                             <div className="col-lg-5 container">
                                 <div className="avatar-display">
                                     <h1>{user.username}</h1>
-                                    <Suspense fallback={<h1>Loading ...</h1>}>	
-                                        <Avatar skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser} />
-                                    </Suspense> 
+                                    <Avatar skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser} />
                                 </div>
                                 <h3 className="centered">Cor de pele</h3>
                                 <div className="row">

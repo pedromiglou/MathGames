@@ -13,7 +13,7 @@ export default function Model(props) {
   const group = useRef()
   const { nodes, materials } = useGLTF(process.env.PUBLIC_URL + 'avatar_assets/hats/cowboyHat.glb')
   return (
-    <group ref={group} {...props} dispose={null} scale={[6, 5, 5  ]} position={[-0.03, 2.18 , -0.09]}>
+    <group ref={group} {...props} dispose={null} scale={[6, 5, 5  ]} position={[-0.03, 2.12 , -0.09]}>
       <group rotation={[-Math.PI / 2, 0, 0]}>
         <mesh geometry={nodes['Material_001-material'].geometry} material={materials.Material_001} />
       </group>
