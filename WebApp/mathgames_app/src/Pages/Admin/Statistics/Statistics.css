@@ -14,11 +14,11 @@
 }
 
 .Section > .statsGames {
-    flex: 1 1 40%;
+    flex: 1 1 100%;
 }
 
 .Section > .statsTournaments {
-    flex: 1 1 58%;
+    flex: 1 1 100%;
 }
 
 .Section > .statsPlayers {
@@ -34,4 +34,87 @@
     -moz-box-shadow:    rgba(0, 0, 0, 0.35) 0px 5px 15px;  /* Firefox 3.5 - 3.6 */
     box-shadow:         rgba(0, 0, 0, 0.35) 0px 5px 15px;  /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
     border-radius: 30px;
+}
+
+
+.top-bar div {
+	text-align: center;
+	margin-top: auto;
+	margin-bottom: auto;
+}
+
+.top-bar button {
+	height: 70px;
+	/* width: 80%; */
+	width: 100%;
+	background: none;
+	border: none;
+	padding: 0;
+	color: white;
+	margin: 0;
+	
+}
+
+.top-bar button:hover {
+	height: 70px;
+	width: 100%;
+	background: none;
+	/* text-decoration: underline; */
+	font-weight: 700;
+}
+
+
+.top-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	width: 100%;
+	height: 70px;
+	margin: 4px 0;
+	
+	background: linear-gradient(100deg,#faad06, #b1310a);
+    border: 1px solid white;
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+	font-weight: lighter;
+	letter-spacing: 2px;
+	transition: 1s box-shadow;
+
+	font-size: 1.2rem;
+	padding: 0;	
+}
+
+.animation-up{
+    transform: translateY(-500px);
+    animation: slideDown 0.8s ease forwards 0.3s;
+}
+
+.animation-down{
+    transform: translateY(1000px);
+    animation: slideUp 1s ease forwards 0.6s;
+}
+
+.actived-btn {
+    background-color: white !important;
+	color: tomato !important;
+	border: 3px solid tomato !important;
+}
+
+.actived-btn:hover {
+	color: white;
+
+}
+
+.raise:hover,
+.raise:focus {
+  box-shadow: 0 0.5em 0.5em -0.4em #faad06;
+  transform: translateY(-0.25em);
+}
+
+
+.up:hover,
+.up:focus {
+  box-shadow: inset 0 -4.25em 0 0 #faad06;
+  color: white;
 }

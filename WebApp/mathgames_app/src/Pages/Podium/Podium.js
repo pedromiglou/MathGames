@@ -11,6 +11,13 @@ import { Modal, Button } from "react-bootstrap";
 import AuthService from '../../Services/auth.service';
 import UserService from '../../Services/user.service';
 
+
+/*O que falta fazer aqui:
+	-Quando se muda entre abas, o resultado dos filtros deve ser resetado
+	-Fazer a lógica para os outros tipos de conta (jogadores normais, com privilégios e administradores)
+	-Meter os filtros de nivel e nome a funcionarem em conjunto
+*/
+
 function Podium() {
 	var current_user = AuthService.getCurrentUser();
 
@@ -20,7 +27,7 @@ function Podium() {
 
 	var [numberClassificationUsers, setNumberClassificationUsers] = useState([]);
 	var [numberClassificationBannedUsers, setNumberClassificationBannedUsers] = useState([]);
-	const [filterOption, setfilterOption] = useState("Players");
+	const [filterOption, setfilterOption] = useState("AllPlayers");
 	
 	const [page_users, setPageUsers] = useState(1);
 	const [count_users, setCountUsers] = useState(0);
@@ -126,12 +133,8 @@ function Podium() {
 		document.getElementById("searchButton").click();
 	}
 
-	function viewPlayers() {
-		setfilterOption("Players");
-	}
-
-	function viewBannedPlayers() {
-		setfilterOption("BannedPlayers");
+	function view(mode) {
+		setfilterOption(mode);
 	}
 
 	function ConfirmOperationModal(props) {
@@ -229,27 +232,67 @@ function Podium() {
 
 			{ current_user !== null && current_user["account_type"] === "A" &&
 
-				<div className="col-lg-12 col-md-12 col-sm-12" id="filter_options">
+				<div className="col-lg-12 col-md-12 col-sm-12 animation-up" id="filter_options">
 					<div className="row top-bar no-margin">
-						<div className="col-lg-3 col-md-3 col-sm-3">
+						<div className="col-lg-1 col-md-1 col-sm-1">
+							
 						</div>
-						<div className="col-lg-3 col-md-3 col-sm-3 top-button">
+						<div className="col-lg-2 col-md-2 col-sm-2 top-button">
+							<button
+								id="all_players"
+								onClick={() => view("AllPlayers")}
+								className={
+									filterOption === "AllPlayers"
+										? "box actived-btn"
+										: "box up"
+								}
+							>
+								Ver Todos
+							</button>
+						</div>
+						<div className="col-lg-2 col-md-2 col-sm-2 top-button">
 							<button
 								id="players"
-								onClick={viewPlayers}
+								onClick={() => view("Players")}
 								className={
 									filterOption === "Players"
 										? "box actived-btn"
 										: "box up"
 								}
 							>
-								Jogadores
+								Jogadores normais
 							</button>
 						</div>
-						<div className="col-lg-3 col-md-3 col-sm-3 top-button">
+						<div className="col-lg-2 col-md-2 col-sm-2 top-button">
+							<button
+								id="privilege_players"
+								onClick={() => view("PrivilegePlayers")}
+								className={
+									filterOption === "PrivilegePlayers"
+										? "box actived-btn"
+										: "box up"
+								}
+							>
+								Jogadores com privilégios
+							</button>
+						</div>
+						<div className="col-lg-2 col-md-2 col-sm-2 top-button">
+							<button
+								id="admins"
+								onClick={() => view("Admins")}
+								className={
+									filterOption === "Admins"
+										? "box actived-btn"
+										: "box up"
+								}
+							>
+								Administradores
+							</button>
+						</div>
+						<div className="col-lg-2 col-md-2 col-sm-2 top-button">
 							<button
 								id="banned_players"
-								onClick={viewBannedPlayers}
+								onClick={() => view("BannedPlayers")}
 								className={
 									filterOption === "BannedPlayers"
 										? "box actived-btn"
@@ -264,211 +307,721 @@ function Podium() {
 
 			}
 
-			{ filterOption === "Players" && 
-			<>
-			<div className="row justify-content-center">
-				<div className="col-12 col-md-10 col-lg-8">
-					<form onSubmit={submitFunction}>
-						<div className="card-body row no-gutters align-items-center">
-							<div className="col">
-								<input className="form-control form-control-lg" id="filter_username" type="search" placeholder="Procurar por username"/>
-							</div>
-							<div className="col-auto">
-								<button id="searchButton" onClick={() => {setUsername(document.getElementById("filter_username").value); setFriendRequestSucess(false); setReportSucess(false)}} className="btn btn-lg btn-success" type="button">Procurar</button>
-							</div>
+			<div className="list-users shadow3D animation-down">
+				{ filterOption === "AllPlayers" && 
+				<>
+				<div className="filters">
+					{ current_user !== null && current_user["account_type"] === "A" && 
+						<div className="title-ind">
+							<i><FaIcons.FaUserFriends/></i>
+							<h1>Todos os Jogadores</h1>
 						</div>
-					</form>
-					
-				</div>
-			</div>
-
-			<ul className="list-group" style={{color: "#2C96C7", fontSize: 23}}>
-				{users.map(function(user, index) {
-					numberClassificationUsers++;
-					var contador = 1;
-					while (true) {
-						var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
-						var maximo = 400 * Math.pow(contador, 1.1);
-						if ( (minimo <= user.account_level) && (user.account_level < maximo)) {
-							break;
-						}
-						contador++;
 					}
-					return (
+					<div className="row">
+						<div className="col-12 col-md-12 col-lg-12">
+							<form className="shadow-white" onSubmit={submitFunction}>
+								<div className="form-players">
+									<div className="name-section">
+										<h2>Nome</h2>
+										<div className="search-name">
+											<input className="form-control form-control-lg" id="filter_username" type="search" placeholder="Procurar pelo nome de utilizador"/>
+										</div>
+									</div>
+								
+									<div className="level-section">
+										<h2>Nivel</h2>
+										<div className="search-level">
+											<input className="form-control form-control-lg" id="filter_min_level" type="number" placeholder="minimo"/>
+											<input className="form-control form-control-lg" id="filter_max_level" type="number" placeholder="máximo"/>
+										</div>
+									</div>
+								</div>
+								
+								
+								<button id="searchButton" onClick={() => {setUsername(document.getElementById("filter_username").value); setFriendRequestSucess(false); setReportSucess(false)}} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
+							</form>
+							
+						</div>
+					</div>
+				</div>
+				
+				<hr></hr>
+
+				{count_users === 0 
+				?
+					<h1 className="no-results">Não foram encontrados jogadores com os filtros escolhidos</h1>
+				:
+					<>
+						<ul className="list-group">
 						<li className="list-group-item d-flex justify-content-between align-items-center row">
-							<div className="col-sm-1">
-								<span className="badge badge-primary badge-pill">{numberClassificationUsers}</span>
+							<div className="col-lg-1 col-md-1 col-sm-1">
+								
 							</div>
 							{
 								current_user !== null && current_user["account_type"] === "A" 
 								?  <>
-									<div className="col-sm-4">
-										{user.username}
+									<div className="col-lg-2 col-md-2 col-sm-2">
+										Nome
 									</div>
-									<div className="col-sm-2">
-										Tipo de Conta:   {user["account_type"]}
+									<div className="col-lg-2 col-md-2 col-sm-2">
+										Conta
 									</div>
 									</>
 								:
-								<div className="col-sm-6">
-									{user.username}
+								<div className="col-lg-4 col-md-4 col-sm-4">
+									Nome
 								</div>
-							}
-							<div className="col-sm-1">
-								Nível {contador}
+							}			
+							<div className="col-lg-2 col-md-2 col-sm-2">
+								Nivel
 							</div>
-							<div className="col-sm-2">
-								{user.account_level} pontos
+							<div className="col-lg-3 col-md-3 col-sm-3">
+								Experiência
 							</div>
-							<div className="col-sm-2">
-								{ current_user !== null && current_user["account_type"] !== "A" && 
-									<>
-									{ friends.length !== 0 &&
-										<>
-										{ friends.some(e => e.id === user.id) &&
-											<>
-											<i className="subicon pointer"   onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_friend"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><IoIcons.IoPersonRemove/></i>
-											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><MdIcons.MdReport/></i>
-											</>
-										} 
-										{ (!friends.some(e => e.id === user.id) && user.id !== current_user.id ) &&
-											<>
-											<i className="subicon pointer"  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("friend_request"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><IoIcons.IoPersonAdd/></i>
-											<i className="subicon pointer" style={{marginLeft:"10px"}}   onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><MdIcons.MdReport/></i>
-											</>
-										} 
-										</>	
-									}
-									{ friends.length === 0 &&  user.id !== current_user.id &&
-										<>
-										<i className="subicon pointer"  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("friend_request"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><IoIcons.IoPersonAdd/></i>
-										<i className="subicon pointer" style={{marginLeft:"10px"}}   onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><MdIcons.MdReport/></i>
-										</>
-										
-									}
-									</>
-								}
-
-
-								{ current_user !== null && current_user["account_type"] === "A" && user.id !== current_user.id  &&
-									<>
-								
-										<i className="subicon pointer" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("upgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleUp/></i>
-										<i className="subicon pointer" style={{marginLeft:"10px"}} onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("downgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleDown/></i>
-										<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("ban"); setConfirmModalShow(true) }}><IoIcons.IoBan/></i>
-										
-									</>
-								}
-								
+							<div className="col-lg-2 col-md-2 col-sm-2">
+								Ações
 							</div>
 						</li>
-					)
-					})
-				}
-			</ul>
-			<ConfirmOperationModal
-				show={modalConfirmShow}
-				onHide={() => setConfirmModalShow(false)}
-				operation={modalOperation}
-				username={modalUsername}
-				id={modalId}
-			/>
-			<div className="row justify-content-center">
-				<Pagination
-				className="my-3"
-				count={count_users}
-				page={page_users}
-				siblingCount={1}
-				boundaryCount={1}
-				variant="outlined"
-				shape="rounded"
-				onChange={handlePageChangeUsers}
-				/>
-		  	</div>
-			</>
-			}
 
-
-			{ filterOption === "BannedPlayers" && 
-				<>
-				<div className="row justify-content-center">
-					<div className="col-12 col-md-10 col-lg-8">
-						<form onSubmit={submitFunction}>
-							<div className="card-body row no-gutters align-items-center">
-								<div className="col">
-									<input className="form-control form-control-lg" id="filter_banned_username" type="search" placeholder="Procurar por username"/>
-								</div>
-								{ current_user !== null && current_user["account_type"] === "A" &&
-									<button id="viewbanned" onClick={() => {setBannedUsername(document.getElementById("filter_banned_username").value); }} className="btn btn-lg btn-success" type="button">Ver Jogadores Banidos</button>
+						{users.map(function(user, index) {
+							numberClassificationUsers++;
+							var contador = 1;
+							while (true) {
+								var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
+								var maximo = 400 * Math.pow(contador, 1.1);
+								if ( (minimo <= user.account_level) && (user.account_level < maximo)) {
+									break;
 								}
-							</div>
-						</form>
-						
-					</div>
-				</div>
-	
-				<ul className="list-group" style={{color: "#2C96C7", fontSize: 23}}>
-					{banned_users.map(function(user, index) {
-						numberClassificationBannedUsers++;
-						var contador = 1;
-						while (true) {
-							var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
-							var maximo = 400 * Math.pow(contador, 1.1);
-							if ( (minimo <= user.account_level) && (user.account_level < maximo)) {
-								break;
+								contador++;
 							}
-							contador++;
+							return (
+								<li className="list-group-item d-flex justify-content-between align-items-center row">
+									<div className="col-lg-1 col-md-1 col-sm-1 align-items-center">
+										<span className="badge badge-primary badge-pill">{numberClassificationUsers}</span>
+									</div>
+									{
+										current_user !== null && current_user["account_type"] === "A" 
+										?  <>
+											<div className="col-lg-2 col-md-2 col-sm-2">
+												{user.username}
+											</div>
+											<div className="col-lg-2 col-md-2 col-sm-2">
+												{user["account_type"]}
+											</div>
+											</>
+										:
+										<div className="col-lg-4 col-md-4 col-sm-4">
+											{user.username}
+										</div>
+									}
+									<div className="col-lg-2 col-md-2 col-sm-2">
+										{contador}
+									</div>
+									<div className="col-lg-3 col-md-3 col-sm-3">
+										{user.account_level} pontos
+									</div>
+									<div className="col-lg-2 col-md-2 col-sm-2">
+										{ current_user !== null && current_user["account_type"] !== "A" && 
+											<>
+											{ friends.length !== 0 &&
+												<>
+												{ friends.some(e => e.id === user.id) &&
+													<>
+													<i className="subicon pointer"   onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_friend"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><IoIcons.IoPersonRemove/></i>
+													<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><MdIcons.MdReport/></i>
+													</>
+												} 
+												{ (!friends.some(e => e.id === user.id) && user.id !== current_user.id ) &&
+													<>
+													<i className="subicon pointer"  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("friend_request"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><IoIcons.IoPersonAdd/></i>
+													<i className="subicon pointer" style={{marginLeft:"10px"}}   onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><MdIcons.MdReport/></i>
+													</>
+												} 
+												</>	
+											}
+											{ friends.length === 0 &&  user.id !== current_user.id &&
+												<>
+												<i className="subicon pointer"  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("friend_request"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><IoIcons.IoPersonAdd/></i>
+												<i className="subicon pointer" style={{marginLeft:"10px"}}   onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><MdIcons.MdReport/></i>
+												</>
+												
+											}
+											</>
+										}
+
+
+										{ current_user !== null && current_user["account_type"] === "A" && user.id !== current_user.id  &&
+											<>
+										
+												<i className="subicon pointer" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("upgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleUp/></i>
+												<i className="subicon pointer" style={{marginLeft:"10px"}} onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("downgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleDown/></i>
+												<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("ban"); setConfirmModalShow(true) }}><IoIcons.IoBan/></i>
+												
+											</>
+										}
+										
+									</div>
+								</li>
+							)
+							})
 						}
-						return (
+					</ul>
+					<ConfirmOperationModal
+						show={modalConfirmShow}
+						onHide={() => setConfirmModalShow(false)}
+						operation={modalOperation}
+						username={modalUsername}
+						id={modalId}
+					/>
+					<div className="row justify-content-center">
+						<Pagination
+						className="my-3"
+						count={count_users}
+						page={page_users}
+						siblingCount={1}
+						boundaryCount={1}
+						variant="outlined"
+						shape="rounded"
+						onChange={handlePageChangeUsers}
+						/>
+					</div>
+				</>
+				
+				}
+				
+				</>
+				}
+
+
+
+
+				{ filterOption === "Players" && 
+					<>
+					<div className="filters">
+						<div className="title-ind">
+							<i><FaIcons.FaUserNinja/></i>
+							<h1>Jogadores</h1>
+						</div>
+
+
+						<div className="row">
+							<div className="col-12 col-md-12 col-lg-12">
+								<form className="shadow-white" onSubmit={submitFunction}>
+									<div className="form-players">
+										<div className="name-section">
+											<h2>Nome</h2>
+											<div className="search-name">
+												<input className="form-control form-control-lg" id="filter_banned_username" type="search" placeholder="Procurar pelo nome de utilizador"/>
+											</div>
+										</div>
+										
+
+										<div className="level-section">
+											<h2>Nivel</h2>
+											<div className="search-level">
+												<input className="form-control form-control-lg" id="filter_min_level" type="number" placeholder="minimo"/>
+												<input className="form-control form-control-lg" id="filter_max_level" type="number" placeholder="máximo"/>
+											</div>
+										</div>
+									</div>
+									{ current_user !== null && current_user["account_type"] === "A" &&
+										<button id="viewbanned" onClick={() => {setBannedUsername(document.getElementById("filter_banned_username").value); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
+									}
+								</form>
+								
+							</div>
+						</div>
+					</div>
+					
+					<hr></hr>
+
+					{count_banned_users === 0 
+					? 
+					<h1 className="no-results">Não foram encontrados jogadores com os filtros escolhidos</h1>
+					:
+					<>
+						<ul className="list-group">
 							<li className="list-group-item d-flex justify-content-between align-items-center row">
-								<div className="col-sm-1">
-									<span className="badge badge-primary badge-pill">{numberClassificationBannedUsers}</span>
-								</div>
-
-								<div className="col-sm-4">
-									{user.username}
-								</div>
-								<div className="col-sm-2">
-									Tipo de Conta:   {user["account_type"]}
-								</div>
-
-								<div className="col-sm-1">
-									Nível {contador}
-								</div>
-								<div className="col-sm-2">
-									{user.account_level} pontos
-								</div>
-								<div className="col-sm-2">
+								<div className="col-lg-1 col-md-1 col-sm-1">
 									
-									<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_ban"); setConfirmModalShow(true) }}><IoIcons.IoRemoveCircle/></i>
-							
+								</div>
+								
+								<div className="col-lg-2 col-md-2 col-sm-2">
+									Nome
+								</div>
+								<div className="col-lg-2 col-md-2 col-sm-2">
+									Conta
+								</div>
+								<div className="col-lg-2 col-md-2 col-sm-2">
+									Nivel
+								</div>
+								<div className="col-lg-3 col-md-3 col-sm-3">
+									Experiência
+								</div>
+								<div className="col-lg-2 col-md-2 col-sm-2">
+									Ações
 								</div>
 							</li>
-						)
-						})
+							
+							{banned_users.map(function(user, index) {
+								numberClassificationBannedUsers++;
+								var contador = 1;
+								while (true) {
+									var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
+									var maximo = 400 * Math.pow(contador, 1.1);
+									if ( (minimo <= user.account_level) && (user.account_level < maximo)) {
+										break;
+									}
+									contador++;
+								}
+								return (
+									<li className="list-group-item d-flex justify-content-between align-items-center row">
+										<div className="col-lg-1 col-md-1 col-sm-1">
+											<span className="badge badge-primary badge-pill">{numberClassificationBannedUsers}</span>
+										</div>
+
+										<div className="col-lg-2 col-md-2 col-sm-2">
+											{user.username}
+										</div>
+										<div className="col-lg-2 col-md-2 col-sm-2">
+											{user["account_type"]}
+										</div>
+
+										<div className="col-lg-2 col-md-2 col-sm-2">
+											{contador}
+										</div>
+										<div className="col-lg-3 col-md-3 col-sm-3">
+											{user.account_level} pontos
+										</div>
+										<div className="col-lg-2 col-md-2 col-sm-2">
+											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_ban"); setConfirmModalShow(true) }}><IoIcons.IoRemoveCircle/></i>
+										</div>
+									</li>
+								)
+								})
+							}
+						</ul>
+						
+						<ConfirmOperationModal
+							show={modalConfirmShow}
+							onHide={() => setConfirmModalShow(false)}
+							operation={modalOperation}
+							username={modalUsername}
+							id={modalId}
+						/>
+						<div className="row justify-content-center">
+							<Pagination
+							className="my-3"
+							count={count_banned_users}
+							page={page_banned_users}
+							siblingCount={1}
+							boundaryCount={1}
+							variant="outlined"
+							shape="rounded"
+							onChange={handlePageChangeUsersBanned}
+							/>
+						</div>
+					</>
 					}
-				</ul>
-				<ConfirmOperationModal
-					show={modalConfirmShow}
-					onHide={() => setConfirmModalShow(false)}
-					operation={modalOperation}
-					username={modalUsername}
-					id={modalId}
-				/>
-				<div className="row justify-content-center">
-					<Pagination
-					className="my-3"
-					count={count_banned_users}
-					page={page_banned_users}
-					siblingCount={1}
-					boundaryCount={1}
-					variant="outlined"
-					shape="rounded"
-					onChange={handlePageChangeUsersBanned}
-					/>
-				  </div>
-				</>			
-			}
+					
+					
+					</>			
+				}
+
+				{ filterOption === "PrivilegePlayers" && 
+					<>
+					<div className="filters">
+						<div className="title-ind">
+							<i><FaIcons.FaUserTie/></i>
+							<h1>Jogadores com Privilégios</h1>
+						</div>
+						<div className="row">
+							<div className="col-12 col-md-12 col-lg-12">
+								<form className="shadow-white" onSubmit={submitFunction}>
+									<div className="form-players">
+										<div className="name-section">
+											<h2>Nome</h2>
+											<div className="search-name">
+												<input className="form-control form-control-lg" id="filter_banned_username" type="search" placeholder="Procurar pelo nome de utilizador"/>
+											</div>
+										</div>
+										
+
+										<div className="level-section">
+											<h2>Nivel</h2>
+											<div className="search-level">
+												<input className="form-control form-control-lg" id="filter_min_level" type="number" placeholder="minimo"/>
+												<input className="form-control form-control-lg" id="filter_max_level" type="number" placeholder="máximo"/>
+											</div>
+										</div>
+									</div>
+									{ current_user !== null && current_user["account_type"] === "A" &&
+										<button id="viewbanned" onClick={() => {setBannedUsername(document.getElementById("filter_banned_username").value); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
+									}
+								</form>
+								
+							</div>
+						</div>
+					</div>
+					
+					<hr></hr>
+
+					{count_banned_users === 0 
+					? 
+					<h1 className="no-results">Não foram encontrados jogadores com os filtros escolhidos</h1>
+					:
+					<>
+						<ul className="list-group">
+							<li className="list-group-item d-flex justify-content-between align-items-center row">
+								<div className="col-lg-1 col-md-1 col-sm-1">
+									
+								</div>
+								
+								<div className="col-lg-2 col-md-2 col-sm-2">
+									Nome
+								</div>
+								<div className="col-lg-2 col-md-2 col-sm-2">
+									Conta
+								</div>
+								<div className="col-lg-2 col-md-2 col-sm-2">
+									Nivel
+								</div>
+								<div className="col-lg-3 col-md-3 col-sm-3">
+									Experiência
+								</div>
+								<div className="col-lg-2 col-md-2 col-sm-2">
+									Ações
+								</div>
+							</li>
+							
+							{banned_users.map(function(user, index) {
+								numberClassificationBannedUsers++;
+								var contador = 1;
+								while (true) {
+									var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
+									var maximo = 400 * Math.pow(contador, 1.1);
+									if ( (minimo <= user.account_level) && (user.account_level < maximo)) {
+										break;
+									}
+									contador++;
+								}
+								return (
+									<li className="list-group-item d-flex justify-content-between align-items-center row">
+										<div className="col-lg-1 col-md-1 col-sm-1">
+											<span className="badge badge-primary badge-pill">{numberClassificationBannedUsers}</span>
+										</div>
+
+										<div className="col-lg-2 col-md-2 col-sm-2">
+											{user.username}
+										</div>
+										<div className="col-lg-2 col-md-2 col-sm-2">
+											{user["account_type"]}
+										</div>
+
+										<div className="col-lg-2 col-md-2 col-sm-2">
+											{contador}
+										</div>
+										<div className="col-lg-3 col-md-3 col-sm-3">
+											{user.account_level} pontos
+										</div>
+										<div className="col-lg-2 col-md-2 col-sm-2">
+											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_ban"); setConfirmModalShow(true) }}><IoIcons.IoRemoveCircle/></i>
+										</div>
+									</li>
+								)
+								})
+							}
+						</ul>
+						
+						<ConfirmOperationModal
+							show={modalConfirmShow}
+							onHide={() => setConfirmModalShow(false)}
+							operation={modalOperation}
+							username={modalUsername}
+							id={modalId}
+						/>
+						<div className="row justify-content-center">
+							<Pagination
+							className="my-3"
+							count={count_banned_users}
+							page={page_banned_users}
+							siblingCount={1}
+							boundaryCount={1}
+							variant="outlined"
+							shape="rounded"
+							onChange={handlePageChangeUsersBanned}
+							/>
+						</div>
+					</>
+					}
+					
+					
+					</>			
+				}
+
+				{ filterOption === "Admins" && 
+					<>
+					<div className="filters">
+						<div className="title-ind">
+							<i><FaIcons.FaUserCog/></i>
+							<h1>Administradores</h1>
+						</div>
+						<div className="row">
+							<div className="col-12 col-md-12 col-lg-12">
+								<form className="shadow-white" onSubmit={submitFunction}>
+									<div className="form-players">
+										<div className="name-section">
+											<h2>Nome</h2>
+											<div className="search-name">
+												<input className="form-control form-control-lg" id="filter_banned_username" type="search" placeholder="Procurar pelo nome de utilizador"/>
+											</div>
+										</div>
+										
+
+										<div className="level-section">
+											<h2>Nivel</h2>
+											<div className="search-level">
+												<input className="form-control form-control-lg" id="filter_min_level" type="number" placeholder="minimo"/>
+												<input className="form-control form-control-lg" id="filter_max_level" type="number" placeholder="máximo"/>
+											</div>
+										</div>
+									</div>
+									{ current_user !== null && current_user["account_type"] === "A" &&
+										<button id="viewbanned" onClick={() => {setBannedUsername(document.getElementById("filter_banned_username").value); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
+									}
+								</form>
+								
+							</div>
+						</div>
+					</div>
+					
+					<hr></hr>
+
+					{count_banned_users === 0 
+					? 
+					<h1 className="no-results">Não foram encontrados jogadores com os filtros escolhidos</h1>
+					:
+					<>
+						<ul className="list-group">
+							<li className="list-group-item d-flex justify-content-between align-items-center row">
+								<div className="col-lg-1 col-md-1 col-sm-1">
+									
+								</div>
+								
+								<div className="col-lg-2 col-md-2 col-sm-2">
+									Nome
+								</div>
+								<div className="col-lg-2 col-md-2 col-sm-2">
+									Conta
+								</div>
+								<div className="col-lg-2 col-md-2 col-sm-2">
+									Nivel
+								</div>
+								<div className="col-lg-3 col-md-3 col-sm-3">
+									Experiência
+								</div>
+								<div className="col-lg-2 col-md-2 col-sm-2">
+									Ações
+								</div>
+							</li>
+							
+							{banned_users.map(function(user, index) {
+								numberClassificationBannedUsers++;
+								var contador = 1;
+								while (true) {
+									var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
+									var maximo = 400 * Math.pow(contador, 1.1);
+									if ( (minimo <= user.account_level) && (user.account_level < maximo)) {
+										break;
+									}
+									contador++;
+								}
+								return (
+									<li className="list-group-item d-flex justify-content-between align-items-center row">
+										<div className="col-lg-1 col-md-1 col-sm-1">
+											<span className="badge badge-primary badge-pill">{numberClassificationBannedUsers}</span>
+										</div>
+
+										<div className="col-lg-2 col-md-2 col-sm-2">
+											{user.username}
+										</div>
+										<div className="col-lg-2 col-md-2 col-sm-2">
+											{user["account_type"]}
+										</div>
+
+										<div className="col-lg-2 col-md-2 col-sm-2">
+											{contador}
+										</div>
+										<div className="col-lg-3 col-md-3 col-sm-3">
+											{user.account_level} pontos
+										</div>
+										<div className="col-lg-2 col-md-2 col-sm-2">
+											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_ban"); setConfirmModalShow(true) }}><IoIcons.IoRemoveCircle/></i>
+										</div>
+									</li>
+								)
+								})
+							}
+						</ul>
+						
+						<ConfirmOperationModal
+							show={modalConfirmShow}
+							onHide={() => setConfirmModalShow(false)}
+							operation={modalOperation}
+							username={modalUsername}
+							id={modalId}
+						/>
+						<div className="row justify-content-center">
+							<Pagination
+							className="my-3"
+							count={count_banned_users}
+							page={page_banned_users}
+							siblingCount={1}
+							boundaryCount={1}
+							variant="outlined"
+							shape="rounded"
+							onChange={handlePageChangeUsersBanned}
+							/>
+						</div>
+					</>
+					}
+					
+					
+					</>			
+				}
+
+				{ filterOption === "BannedPlayers" && 
+					<>
+					<div className="filters">
+						<div className="title-ind">
+							<i><FaIcons.FaUserSlash/></i>
+							<h1>Jogadores banidos</h1>
+						</div>
+						<div className="row">
+							<div className="col-12 col-md-12 col-lg-12">
+								<form className="shadow-white" onSubmit={submitFunction}>
+									<div className="form-players">
+										<div className="name-section">
+											<h2>Nome</h2>
+											<div className="search-name">
+												<input className="form-control form-control-lg" id="filter_banned_username" type="search" placeholder="Procurar pelo nome de utilizador"/>
+											</div>
+										</div>
+										
+
+										<div className="level-section">
+											<h2>Nivel</h2>
+											<div className="search-level">
+												<input className="form-control form-control-lg" id="filter_min_level" type="number" placeholder="minimo"/>
+												<input className="form-control form-control-lg" id="filter_max_level" type="number" placeholder="máximo"/>
+											</div>
+										</div>
+									</div>
+									{ current_user !== null && current_user["account_type"] === "A" &&
+										<button id="viewbanned" onClick={() => {setBannedUsername(document.getElementById("filter_banned_username").value); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
+									}
+								</form>
+								
+							</div>
+						</div>
+					</div>
+					
+					<hr></hr>
+
+					{count_banned_users === 0 
+					? 
+					<h1 className="no-results">Não foram encontrados jogadores com os filtros escolhidos</h1>
+					:
+					<>
+						<ul className="list-group">
+							<li className="list-group-item d-flex justify-content-between align-items-center row">
+								<div className="col-lg-1 col-md-1 col-sm-1">
+									
+								</div>
+								
+								<div className="col-lg-2 col-md-2 col-sm-2">
+									Nome
+								</div>
+								<div className="col-lg-2 col-md-2 col-sm-2">
+									Conta
+								</div>
+								<div className="col-lg-2 col-md-2 col-sm-2">
+									Nivel
+								</div>
+								<div className="col-lg-3 col-md-3 col-sm-3">
+									Experiência
+								</div>
+								<div className="col-lg-2 col-md-2 col-sm-2">
+									Ações
+								</div>
+							</li>
+							
+							{banned_users.map(function(user, index) {
+								numberClassificationBannedUsers++;
+								var contador = 1;
+								while (true) {
+									var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
+									var maximo = 400 * Math.pow(contador, 1.1);
+									if ( (minimo <= user.account_level) && (user.account_level < maximo)) {
+										break;
+									}
+									contador++;
+								}
+								return (
+									<li className="list-group-item d-flex justify-content-between align-items-center row">
+										<div className="col-lg-1 col-md-1 col-sm-1">
+											<span className="badge badge-primary badge-pill">{numberClassificationBannedUsers}</span>
+										</div>
+
+										<div className="col-lg-2 col-md-2 col-sm-2">
+											{user.username}
+										</div>
+										<div className="col-lg-2 col-md-2 col-sm-2">
+											{user["account_type"]}
+										</div>
+
+										<div className="col-lg-2 col-md-2 col-sm-2">
+											{contador}
+										</div>
+										<div className="col-lg-3 col-md-3 col-sm-3">
+											{user.account_level} pontos
+										</div>
+										<div className="col-lg-2 col-md-2 col-sm-2">
+											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_ban"); setConfirmModalShow(true) }}><IoIcons.IoRemoveCircle/></i>
+										</div>
+									</li>
+								)
+								})
+							}
+						</ul>
+						
+						<ConfirmOperationModal
+							show={modalConfirmShow}
+							onHide={() => setConfirmModalShow(false)}
+							operation={modalOperation}
+							username={modalUsername}
+							id={modalId}
+						/>
+						<div className="row justify-content-center">
+							<Pagination
+							className="my-3"
+							count={count_banned_users}
+							page={page_banned_users}
+							siblingCount={1}
+							boundaryCount={1}
+							variant="outlined"
+							shape="rounded"
+							onChange={handlePageChangeUsersBanned}
+							/>
+						</div>
+					</>
+					}
+					
+					
+					</>			
+				}
+			</div>
+			
 
 		</div>
 	

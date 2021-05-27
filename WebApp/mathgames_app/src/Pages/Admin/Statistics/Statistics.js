@@ -1,18 +1,59 @@
 import './Statistics.css';
-import * as FaIcons from 'react-icons/fa';
 import UserService from "../../../Services/user.service";
 import { React, useState, useEffect } from "react";
-//import {Line} from 'react-chartjs-2';
-import CanvasJSReact from "./canvasjs.react";
-var CanvasJSChart = CanvasJSReact.CanvasJSChart;
+
+import StatisticsGames from './StatisticsGames';
+import StatisticsTournaments from './StatisticsTournaments';
+import StatisticsPlayers from './StatisticsPlayers';
+import { FaThumbsDown } from 'react-icons/fa';
+import { RGBAFormat, RGBA_ASTC_4x4_Format } from 'three';
+
 
 function Statistics() {
-
     const [numberOfBans, setNumberOfBans] = useState([])
     const [numberOfNewPlayers, setNumberOfNewPlayers] = useState([])
-    const [numberOfTotalMatches, setNumberOfTotalMatchesLast7Days] = useState(0)
     const [matchesLast7Days, setMatchesLast7Days] = useState([])
-    const [matchesByGameLast7Days, setMatchesByGameLast7Days] = useState([])
+    const [numberOfTotalMatches, setNumberOfTotalMatchesLast7Days] = useState(0);
+    const [matchesByGameLast7Days, setMatchesByGameLast7Days] = useState([]);
+    
+    const [filterOption, setFilterOption] = useState("Jogos");
+    
+    function changeToJogos() {
+		setFilterOption("Jogos");
+
+		/*allGames_e = document.getElementById("allGames");
+		recommended_e = document.getElementById("recommendedGames");
+		mostPlayed_e = document.getElementById("mostPlayedGames");
+
+		allGames_e.style.textDecoration = "underline";
+        recommended_e.style.textDecoration = "";
+        mostPlayed_e.style.textDecoration = ""; */
+	}
+
+	function changeToTorneios() {
+		setFilterOption("Torneios");
+
+		
+		/*allGames_e = document.getElementById("allGames");
+		recommended_e = document.getElementById("recommendedGames");
+		mostPlayed_e = document.getElementById("mostPlayedGames");
+
+		allGames_e.style.textDecoration = "";
+        recommended_e.style.textDecoration = "underline";
+        mostPlayed_e.style.textDecoration = ""; */
+	}
+
+	function changeToJogadores() {
+		setFilterOption("Jogadores");
+
+		/*allGames_e = document.getElementById("allGames");
+		recommended_e = document.getElementById("recommendedGames");
+		mostPlayed_e = document.getElementById("mostPlayedGames");
+
+		allGames_e.style.textDecoration = "";
+        recommended_e.style.textDecoration = "";
+        mostPlayed_e.style.textDecoration = "underline"; */
+	}
 
     useEffect(() => {
         async function fetchApiNumberOfBans() {
@@ -108,9 +149,7 @@ function Statistics() {
           }
         ]
       };
-
-
-
+    
     const matchesLast7DaysGraph = {
         animationEnabled: true,
         //exportEnabled: true,
@@ -144,89 +183,67 @@ function Statistics() {
 
     return (
         <div className="Statistics">
-            <h1>Estatisticas Gerais</h1>
-            <div className="Section">
-                <div className="statsGames shadow3D">
-                    {/* Aqui tem de se meter isto a ir buscar os dados a API, com o rank dos jogos e dps com a resposta fazer um ciclo for */}
-                    <h2>Jogos</h2>
-                    <table className="table table-borderless">
-                    <thead>
-                        <tr>
-                        <th scope="col">Rank</th>
-                        <th scope="col">Jogo</th>
-                        <th scope="col">Atualização</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                        <th scope="row">1</th>
-                        <td>Rastros</td>
-                        <td>+1</td>
-                        <td><FaIcons.FaSearch/></td>
-                        </tr>
-                        <tr>
-                        <th scope="row">2</th>
-                        <td>Yoté</td>
-                        <td>-1</td>
-                        <td><FaIcons.FaSearch/></td>
-                        </tr>
-                        <tr>
-                        <th scope="row">3</th>
-                        <td>Cães&Gatos</td>
-                        <td>=</td>
-                        <td><FaIcons.FaSearch/></td>
-                        </tr>
-                    </tbody>
-                    </table>
-                    <h2>Número de jogos nos últimos 7 dias: 
-                        {
-                            numberOfTotalMatches.message !== undefined
-                            ? <p>Indisponível</p>
-                            : numberOfTotalMatches
-                        }
-                    </h2>
-                    <div style={{ marginLeft: 20, marginRight: 20, marginBottom: 20 }}>
-                        {
-                            matchesByGameLast7Days.message !== undefined
-                            ? <p>Erro ao carregar o gráfico de partidas jogadas por jogo nos últimos 7 dias</p>
-                            : <CanvasJSChart options = {matchesByGameLast7DaysGraph}/>
-                        }
-                    </div>
-                </div>
-                <div className="statsTournaments shadow3D">
-                    <h2>Torneios</h2>
-                    <div style={{ marginLeft: 20, marginRight: 20, marginBottom: 20 }}>
-                        {
-                            matchesLast7Days.message !== undefined
-                            ? <p>Erro ao carregar o gráfico de partidas jogadas nos últimos 7 dias</p>
-                            : <CanvasJSChart options={matchesLast7DaysGraph} />
-                        }
-                    </div>
-                </div>
-            </div>
+            <div className="row options animation-up">
+				      <div className="col-lg-12 col-md-12 col-sm-12" id="filter_options">
+					      <div className="row top-bar no-margin ">
+						      <div className="col-lg-3 col-md-3 col-sm-3">
+                  
+                  {filterOption === "Jogos" &&
+                    <h1>Estatisticas Jogos</h1>
+                  }
+                  {filterOption === "Torneios" &&
+                    <h1>Estatisticas Torneios</h1>
+                  }
+                  {filterOption === "Jogadores" &&
+                    <h1>Estatisticas Jogadores</h1>
+                  }
+						      </div>
+                  <div className="col-lg-3 col-md-3 col-sm-3 top-button">
+                    <button
+                      onClick={changeToJogos}
+                      className={
+                        filterOption === "Jogos"
+                          ? "box actived-btn"
+                          : "box up"
+                      }
+                    >
+                      Estatisticas Jogos
+                    </button>
+                  </div>
+                  <div className="col-lg-3 col-md-3 col-sm-3 top-button">
+                    <button
+                      onClick={changeToTorneios}
+                      className={
+                        filterOption === "Torneios"
+                          ? "box actived-btn"
+                          : "box up"
+                      }
+                    >
+                      Estatisticas Torneios
+                    </button>
+                  </div>
+                  <div className="col-lg-3 col-md-3 col-sm-3 top-button">
+                    <button
+                      onClick={changeToJogadores}
+                      className={
+                        filterOption === "Jogadores"
+                          ? "box actived-btn"
+                          : "box up"
+                      }
+                    >
+                      Estatisticas Jogadores
+                    </button>
+                  </div>
+					      </div>
+				      </div>
+			      </div>
+
             
-            <div className="Section">
-                <div className="statsPlayers shadow3D">
-                    <h2>Novos Jogadores</h2>
-                    <div style={{ marginLeft: 20, marginRight: 20, marginBottom: 20 }}>
-                        {
-                            numberOfNewPlayers.message !== undefined
-                            ? <p>Erro ao carregar o gráfico de novos jogadores nos últimos 7 dias</p>
-                            :  <CanvasJSChart options={newPlayers7DaysGraph} />
-                        }
-                    </div>
-                </div>
-                <div className="statsBannedPlayers shadow3D">
-                    <h2>Jogadores Banidos</h2>
-                    <div style={{ marginLeft: 20, marginRight: 20, marginBottom: 20 }}>
-                        {
-                            numberOfBans.message !== undefined
-                            ? <p>Erro ao carregar o gráfico de jogadores banidos nos últimos 7 dias</p>
-                            :  <CanvasJSChart options={bannedPlayers7DaysGraph} />
-                        }
-                    </div>
-                </div>
-            </div>
+            <div className="Section animation-down">
+				{filterOption === "Jogos" && <StatisticsGames numberOfTotalMatches={numberOfTotalMatches} matchesByGameLast7Days={matchesByGameLast7DaysGraph} matchesLast7DaysGraph={matchesLast7DaysGraph}/>}
+				{filterOption === "Torneios" && <StatisticsTournaments/>}
+				{filterOption === "Jogadores" && <StatisticsPlayers newPlayers7DaysGraph={newPlayers7DaysGraph} bannedPlayers7DaysGraph={bannedPlayers7DaysGraph}/>}
+            </div> 
             
         </div>
     )
