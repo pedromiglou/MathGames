@@ -4,6 +4,7 @@ export const trouserItems =
             id: 0,
             name: "none",
             color: "none",
+            img: process.env.PUBLIC_URL + "/avatar_assets/none.png",
             lvl: 0            
         },
 

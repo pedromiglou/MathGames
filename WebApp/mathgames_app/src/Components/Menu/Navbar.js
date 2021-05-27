@@ -235,9 +235,7 @@ function Navbar() {
 								<div className="col">
 									<div title="Perfil" className="round_profile_logo float-right">
 										<Link to="/profile">
-											{/* <img className="profile_logo" src={process.env.PUBLIC_URL + "/images/user-profile.png"}  alt="logo"/> */}
-											<Avatar skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser}/>
-
+											<Avatar navbar={true} skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser}/>
 										</Link>
 									</div>
 								</div>

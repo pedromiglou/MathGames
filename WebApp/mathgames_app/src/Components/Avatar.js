@@ -1,6 +1,6 @@
-import { React, Suspense } from "react";
-import { OrbitControls, RoundedBox } from "@react-three/drei";
-import { Canvas, useLoader } from "@react-three/fiber";
+import { React, Suspense, useRef, useMemo } from "react";
+import { OrbitControls, RoundedBox, PerspectiveCamera } from "@react-three/drei";
+import { Canvas, useLoader, useFrame } from "@react-three/fiber";
 
 import * as THREE from 'three';
 
@@ -19,7 +19,37 @@ import SteamPunkGlasses from './Avatar/Accessories/SteamPunkGlasses'
 import PixelGlasses from './Avatar/Accessories/PixelGlasses'
 
 
+function Camera() {
+	const cam = useRef()
+	const [scene, target] = useMemo(() => {
+	  const scene = new THREE.Scene()
+	  scene.background = new THREE.Color('orange')
+	  const target = new THREE.WebGLRenderTarget(1024, 1024)
+	  return [scene, target]
+	}, [])
+  
+	const vec = new THREE.Vector3()
 
+	useFrame(state => {
+		const step = 0.1
+
+	  cam.current.position.z = 5 + Math.sin(state.clock.getElapsedTime() * 1.5) * 2
+	  state.camera.fov = THREE.MathUtils.lerp(state.camera.fov,  42, step)
+	  state.camera.position.lerp(vec.set( 0, 2, 4), step)
+	  state.camera.lookAt(0, 2, -4)
+	  state.camera.updateProjectionMatrix()
+
+	  state.gl.setRenderTarget(target)
+	  state.gl.render(scene, cam.current)
+	  state.gl.setRenderTarget(null)
+	})
+  
+	return (
+	  <>
+		<PerspectiveCamera ref={cam} position={[0, 2, 3]} />
+	  </>
+	)
+  }
 
 
 const Head = ({ position, args, color }) => {
@@ -117,35 +147,46 @@ const Body = ({ position, args, color, tex, props }) => {
 }
 
 
-const Legs = ({ position, args, color, tex, props }) => {
+const Legs = ({ position, args, color, tex, props, trouserBool }) => {
 
 	const TrouserJeans = useLoader(THREE.TextureLoader, process.env.PUBLIC_URL + 'avatar_assets/texture/TrouserJeans.jpg');
 	const TrouserBlackJeans = useLoader(THREE.TextureLoader, process.env.PUBLIC_URL + 'avatar_assets/texture/TrouserBlackJeans.jpg');
 	const TrouserGrey = useLoader(THREE.TextureLoader, process.env.PUBLIC_URL + 'avatar_assets/texture/TrouserGrey.jpg');
 
-	if(tex) {
-		switch(props.trouserName) {
-			case "TrouserJeans":
-				var textureLoaded = TrouserJeans;
-				break;
-			case "TrouserGrey":
-				textureLoaded = TrouserGrey;
-				break;
-			default:
-				textureLoaded = TrouserBlackJeans;
-		}
+	if (color !== "none") {
+		if(tex) {
+			console.log("TEX TRUE")
+			switch(props.trouserName) {
+				case "TrouserJeans":
+					var textureLoaded = TrouserJeans;
+					break;
+				case "TrouserGrey":
+					textureLoaded = TrouserGrey;
+					break;
+				default:
+					textureLoaded = TrouserBlackJeans;
+			}
 
+			return (
+				<mesh position={position}>
+					<boxBufferGeometry attach="geometry" args={args}/>
+					<meshBasicMaterial attach="material" map={textureLoaded} toneMapped={false} />
+				</mesh> 
+			);
+		} else {
+			return (
+				<mesh position={position}>
+					<boxBufferGeometry attach="geometry" args={args}/>
+					<meshLambertMaterial attach="material" color={color} />
+				</mesh>
+			);
+		}
+	}
+	else {
 		return (
 			<mesh position={position}>
 				<boxBufferGeometry attach="geometry" args={args}/>
-				<meshBasicMaterial attach="material" map={textureLoaded} toneMapped={false} />
-			</mesh> 
-		);
-	} else {
-		return (
-			<mesh position={position}>
-				<boxBufferGeometry attach="geometry" args={args}/>
-				<meshLambertMaterial attach="material" color={color} />
+				<meshLambertMaterial attach="material" color={props.skinColor} />
 			</mesh>
 		);
 	}
@@ -155,7 +196,6 @@ const Legs = ({ position, args, color, tex, props }) => {
 
 function Avatar(props) {
 	//const { nodes, materials } = useGLTF(process.env.PUBLIC_URL + 'avatar_assets/hats/christmasHat.glb')
-
 
 	switch(props.hatName) {
 		case "MagicianHat":
@@ -187,10 +227,14 @@ function Avatar(props) {
 	else
 		tex = true;
 
-
+	var noTrouser = false;
 	switch(props.trouserName) {
-		case "#34495E":
+		case "none":
 			var texTrousers = false;
+			noTrouser = true;
+			break;
+		case "#34495E":
+			texTrousers = false;
 			break;
 		case "#7B7D7D":
 			texTrousers = false;
@@ -220,47 +264,55 @@ function Avatar(props) {
 	}	
 
 
+	if(props.navbar === true) {
+		return (
+			<Canvas>
+				<Suspense fallback={null}>	
+					<Camera />
 
+					<ambientLight intensity={0.7} />
 
-	/* const [didMount, setDidMount] = useState(false); 
+					<Head position={[0, 1.5, 0]} args={[1, 1, 1]} color={props.skinColor} /> 
 
-	useEffect(() => {
-		setDidMount(true);
-		return () => setDidMount(false);
-	}, [])
+					<Body args={[2, 2, 1]} tex={tex} props={props} color={props.skinColor}/>
 
-	if(!didMount) {
-		return null;
-	} */
+					<Legs args={[0.9, 2, 1]} tex={texTrousers} props={props} position={[-0.5, -2, 0]} color={props.trouserName} />
+					<Legs args={[0.9, 2, 1]} tex={texTrousers} props={props} position={[0.5, -2, 0]} color={props.trouserName} />
 
+					<Box args={[0.75, 2, 1]} trouserBool={noTrouser} props={props} position={[-1.375, 0, 0]} color={props.skinColor} />
+					<Box args={[0.75, 2, 1]} trouserBool={noTrouser} props={props} position={[1.375, 0, 0]} color={props.skinColor} />
+
+					
+					{hat}
+					{accessorie}
+
+				</Suspense>
+			</Canvas>
+		);
+	} else {
+		return (
+			<Canvas>
+				<Suspense fallback={null}>	
+					<OrbitControls />
+					<ambientLight intensity={0.7} />
 	
-	return (
-		<Canvas>
-            <Suspense fallback={null}>	
-				<OrbitControls />
-				<ambientLight intensity={0.7} />
-
-				<Head position={[0, 1.5, 0]} args={[1, 1, 1]} color={props.skinColor} /> 
-
-				<Body args={[2, 2, 1]} tex={tex} props={props} color={props.skinColor}/>
-
-				<Legs args={[0.9, 2, 1]} tex={texTrousers} props={props} position={[-0.5, -2, 0]} color={props.trouserName} />
-				<Legs args={[0.9, 2, 1]} tex={texTrousers} props={props} position={[0.5, -2, 0]} color={props.trouserName} />
-
-				<Box args={[0.75, 2, 1]} props={props} position={[-1.375, 0, 0]} color={props.skinColor} />
-				<Box args={[0.75, 2, 1]} props={props} position={[1.375, 0, 0]} color={props.skinColor} />
-
-				{hat}
-				{accessorie}
-
-
-				{/* <RoundedBox args={[3, 3, 0.25]} radius={0.1}>
-					<meshLambertMaterial attach="material" color={"grey"} />
-				</RoundedBox> */}
-
-			</Suspense>
-		</Canvas>
-	);
+					<Head position={[0, 1.5, 0]} args={[1, 1, 1]} color={props.skinColor} /> 
+	
+					<Body args={[2, 2, 1]} tex={tex} props={props} color={props.skinColor}/>
+	
+					<Legs args={[0.9, 2, 1]} tex={texTrousers} props={props} position={[-0.5, -2, 0]} color={props.trouserName} />
+					<Legs args={[0.9, 2, 1]} tex={texTrousers} props={props} position={[0.5, -2, 0]} color={props.trouserName} />
+	
+					<Box args={[0.75, 2, 1]} props={props} position={[-1.375, 0, 0]} color={props.skinColor} />
+					<Box args={[0.75, 2, 1]} props={props} position={[1.375, 0, 0]} color={props.skinColor} />
+	
+					{hat}
+					{accessorie}
+	
+				</Suspense>
+			</Canvas>
+		);
+	}
 }
 
 	
