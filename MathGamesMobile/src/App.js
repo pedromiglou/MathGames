@@ -28,7 +28,7 @@ const Drawer = createDrawerNavigator();
 
 function App() {
   const [loaded] = useFonts({
-    BubblegumSans: require('./assets/fonts/BubblegumSans-Regular.ttf'),
+    BubblegumSans: require('./../public/fonts/BubblegumSans-Regular.ttf'),
   });
   const [login, setLogin] = useState(false);
   
@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
   header: {
     color: "white",
     fontFamily: 'BubblegumSans',
-    fontSize: 30
+    fontSize: 30,
+    textAlign: "center"
   },
 });

@@ -6,8 +6,8 @@ const win = Dimensions.get('window');
 
 function Welcome({ navigation }) {
     return (
-      <ScrollView style={{ flex: 1 }}>
-        <LinearGradient colors={['#78c9ff', '#6699f8', '#5379f7', '#5867f7', '#8a54ee']} start={[0,0]} end={[1,1]} >
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        <LinearGradient colors={['#78c9ff', '#6699f8', '#5379f7', '#5867f7', '#8a54ee']} start={[0,0]} end={[1,1]} style={styles.linearGradient}>
           <Text style={styles.title}>Bem-vindo ao MathGames!</Text>
 
           <Image
@@ -30,6 +30,13 @@ function Welcome({ navigation }) {
 export default Welcome;
 
 const styles = StyleSheet.create({
+  scrollView: {
+      flexGrow: 1,
+      flex:1
+  },
+  linearGradient: {
+      minHeight: win.height
+  },
   title: {
     fontSize: 40,
     padding: 10,
@@ -38,7 +45,7 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   image: {
-      flex: 1,
+      flex: 0.75,
       alignSelf: 'stretch',
       width: win.width,
       height: win.width*558/668-20,
@@ -56,8 +63,8 @@ const styles = StyleSheet.create({
     marginRight:40,
     marginLeft:40,
     marginTop:10,
-    paddingTop:20,
-    paddingBottom:20,
+    paddingTop:10,
+    paddingBottom:10,
     backgroundColor:'#3a4e60',
     borderRadius:30
   },
@@ -65,6 +72,6 @@ const styles = StyleSheet.create({
     color:'#fff',
     textAlign:'center',
     fontFamily: 'BubblegumSans',
-    fontSize: 20
+    fontSize: 24
   }
 });
