@@ -17,7 +17,7 @@ class UserService {
 
     async getFriends(userId) {
         var url = urlAPI + 'api/friends/' + userId;
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         if (res.status !== 200) 
             return { error: true };
         return res.json();
@@ -25,13 +25,13 @@ class UserService {
 
     async getNotifications(userId) {
         var url = urlAPI + 'api/notifications/' + userId;
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         return res.json();
     }
 
     async getLastGames(userId) {
         var url = urlAPI + 'api/matches?userid=' + userId;
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         if (res.status !== 200) {
             return {'error': true}
         }
@@ -46,7 +46,7 @@ class UserService {
 
     async getUsersBanned(username, page, pageSize) {
         var url = urlAPI + '/api/users/banned?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username;
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         return res.json();
     }
 
@@ -54,26 +54,26 @@ class UserService {
     //Statistics Requests
     async getNumberOfBans() {
         var url = urlAPI + 'api/bans/statistics/';
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         return res.json();
     }
 
     async getNumberOfNewPlayers() {
         var url = urlAPI + 'api/users/statistics/';
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         return res.json();
     }
 
 
     async getMatchesStatistics() {
         var url = urlAPI + 'api/matches/statistics/';
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         return res.json();
     }
 
     async getMatchesStatisticsByGame() {
         var url = urlAPI + 'api/matches/statisticsbygame/';
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}});
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         return res.json();
     }
     
@@ -92,7 +92,7 @@ class UserService {
         await fetch(url, {
             method:'PUT',
             headers:{'Content-type':'application/json',
-                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
             body: JSON.stringify(avatar)
         });
 
@@ -103,7 +103,7 @@ class UserService {
         var url = urlAPI + 'api/notifications/' + notificationId;
         fetch(url, {
             method:'DELETE',
-            headers: {'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]}
+            headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}
         });
         return;
     }
@@ -118,7 +118,7 @@ class UserService {
         fetch(url, {
             method:'POST',
             headers:{'Content-type':'application/json',
-                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
             body: JSON.stringify(friends)
         });
 
@@ -137,7 +137,7 @@ class UserService {
         fetch(url, {
             method:'POST',
             headers:{'Content-type':'application/json',
-                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
             body: JSON.stringify(friends)
         });
 
@@ -151,7 +151,7 @@ class UserService {
         await fetch(url, {
             method:'DELETE',
             headers:{'Content-type':'application/json',
-                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
         });
 
         return;    
@@ -169,7 +169,7 @@ class UserService {
         let res = await fetch(url, {
             method:'POST',
             headers:{'Content-type':'application/json',
-                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
             body: JSON.stringify(report)
         });
 
@@ -192,7 +192,7 @@ class UserService {
         await fetch(url, {
             method:'POST',
             headers:{'Content-type':'application/json',
-                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
             body: JSON.stringify(ban)
         });
 
@@ -205,7 +205,7 @@ class UserService {
         await fetch(url, {
             method:'DELETE',
             headers:{'Content-type':'application/json',
-                     'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
         });
 
         return;    
@@ -217,7 +217,7 @@ class UserService {
         await fetch(url, {
             method:'PUT',
             headers:{'Content-type':'application/json',
-                        'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+                        'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
         });
 
         return;    
@@ -229,7 +229,7 @@ class UserService {
         await fetch(url, {
             method:'PUT',
             headers:{'Content-type':'application/json',
-                        'x-access-token': JSON.parse(localStorage.getItem("user"))["token"]},
+                        'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
         });
 
         return;  

@@ -8,13 +8,13 @@ module.exports = app => {
     router.post("/", authJwt.verifyToken, reports.create);
   
     // Retrieve all reports
-    router.get("/", reports.findAll);
+    router.get("/", [authJwt.verifyToken, authJwt.isAdmin], reports.findAll);
 
     // Retrieve all reports received by a userid
-    router.get("/:id", reports.findByUserId);
+    router.get("/:id", [authJwt.verifyToken, authJwt.isAdmin], reports.findByReceiverId);
   
     // Delete a Report with id
-    router.delete("/:id", reports.delete);
+    router.delete("/:id", [authJwt.verifyToken, authJwt.isAdmin], reports.delete);
   
     app.use('/api/reports', router);
   };

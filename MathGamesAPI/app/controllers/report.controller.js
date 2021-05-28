@@ -14,7 +14,7 @@ exports.create = (req, res) => {
   }
 
   if (parseInt(req.userId) !== parseInt(req.body.sender)) {
-    res.status(403).send({
+    res.status(401).send({
       message: "Unauthorized!"
     });
     return;
@@ -51,15 +51,13 @@ exports.create = (req, res) => {
         })
         .catch(err => {
             res.status(500).send({
-            message:
-                err.message || "Some error occurred while creating the Report."
+            message:  err.message || "Some error occurred while creating the Report."
             });
         });
     }
   }).catch(err => {
     res.status(500).send({
-    message:
-        err.message || "Some error occurred while creating the Report."
+    message: err.message || "Some error occurred while creating the Report."
     });
   })
   
@@ -73,14 +71,13 @@ exports.findAll = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving the Reports."
+        message:  err.message || "Some error occurred while retrieving the Reports."
       });
     });
 };
 
 // Find all reports received by a user id
-exports.findByUserId = (req, res) => {
+exports.findByReceiverId = (req, res) => {
   const id = req.params.id;
 
   Report.findAll({where: {receiver: id}})

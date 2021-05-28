@@ -30,6 +30,7 @@ function GamePage() {
 
 	//De alguma maneira verificar se estiver vazio
 	const [gameMode, setGameMode] = useState("");
+	
 	//Depois aqui podemos meter conforme as preferencias no perfil
 	const [AIdiff, setAIdiff] = useState("");
 
