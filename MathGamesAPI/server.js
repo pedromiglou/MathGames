@@ -328,20 +328,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  //User send username, user_id and match_id when he joins game to start game
-  socket.on("start_game", (msg) => {
-    console.log("start_game")
-    var user_id = msg["user_id"];
-    var match_id = msg["match_id"];
-    var account_player = msg["account_player"]
-    if (Object.keys(current_games).includes(match_id))
-      if (Object.keys(current_games[match_id]['users']).includes(user_id)) {
-        current_games[match_id]['users'][user_id] = [ current_games[match_id]['users'][user_id][0], account_player]
-        users_info[user_id] = socket.id
-      }
-    
-  });
-
   //User sends match id, userid and new_pos when he wants to make a move in the game
   socket.on("move", (new_pos, user_id, match_id) => {
     user_id = String(user_id);
@@ -462,12 +448,17 @@ function initiate_game(match_id) {
   Promise.all(promises).then(([u1, u2]) => {
     if (u1 === null )
       username1 = user1;
-    else
+    else {
       username1 = u1.username
+      current_games[match_id]['users'][user1] = [ current_games[match_id]['users'][user1][0], true ]
+    }
+
     if (u2 === null)
       username2 = user2
-    else
+    else {
       username2 = u2.username
+      current_games[match_id]['users'][user2] = [ current_games[match_id]['users'][user2][0], true ]
+    }
 
     io.to(users_info[user1]).emit("match_found", {"match_id": match_id, "player1": username1, "player2": username2});
     io.to(users_info[user2]).emit("match_found", {"match_id": match_id, "player1": username1, "player2": username2});
@@ -661,6 +652,8 @@ async function finish_game(match_id, endMode) {
 
     // Save GameMatch in the database
     var res = await GameMatch.create(gameMatch)
+
+    console.log(current_games)
 
     if (game_type === "online") {
       var jogo = null;

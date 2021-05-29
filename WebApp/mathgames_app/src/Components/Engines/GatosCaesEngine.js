@@ -88,8 +88,6 @@ class GatosCaesScene extends Phaser.Scene {
                 this.player.add(1);
             else
                 this.player.add(0);
-
-            socket.emit("start_game", { "user_id": AuthService.getCurrentUserId(),"match_id": current_match['match_id'],  "account_player": false});
             
             socket.on("move_piece", (new_pos) => {
                 console.log("Received move: ", new_pos);

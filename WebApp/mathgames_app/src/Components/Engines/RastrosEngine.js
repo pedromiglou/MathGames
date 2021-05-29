@@ -95,8 +95,6 @@ class RastrosScene extends Phaser.Scene {
             else
                 this.player.add(2);
 
-            socket.emit("start_game", { "user_id": AuthService.getCurrentUserId(),"match_id": current_match['match_id'],  "account_player": false});
-
             socket.on("move_piece", (new_pos) => {
                 console.log("Received move: ", new_pos);
                 this.move(this.squares_group.getChildren()[new_pos]);

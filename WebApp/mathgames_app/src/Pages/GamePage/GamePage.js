@@ -58,7 +58,7 @@ function GamePage() {
 				pathname: "/game/?g="+game_id, 
 				state: {
 					game_id: game_id,
-					game_mode: "online",
+					game_mode: "amigo",
 					ai_diff: AIdiff,
 					match: match
 				} 
@@ -223,7 +223,7 @@ function GamePage() {
 					pathname: "/game/?g="+game_id, 
 					state: {
 						game_id: game_id,
-						game_mode: "online",
+						game_mode: gameMode,
 						ai_diff: AIdiff,
 						match: match
 					} 
