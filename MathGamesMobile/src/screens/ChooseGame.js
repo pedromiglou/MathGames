@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import {View, ScrollView, Text, Image, Dimensions, StyleSheet, TouchableHighlight} from 'react-native';
-import {readData} from "./../utilities/AsyncStorage";
+import {readData, saveData} from "./../utilities/AsyncStorage";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
@@ -69,7 +69,10 @@ function ChooseGame({navigation}) {
           
           
           {gameModes.map(X => {
-            return (<TouchableHighlight style={styles.button} key={X.key} onPress = {() => navigation.navigate("Welcome")}>
+            return (<TouchableHighlight style={styles.button} key={X.key} onPress = {() => {
+                          saveData("gameMode", X.name)
+                          navigation.navigate("Game");
+                        }}>
               <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
                 <View style={styles.buttonView}>
                   {X.icon}

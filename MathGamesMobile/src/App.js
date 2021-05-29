@@ -10,7 +10,8 @@ import Login from './screens/Login';
 import Constants from 'expo-constants';
 import { useState, useEffect } from 'react';
 import { useFonts } from 'expo-font';
-import {readData} from "./utilities/AsyncStorage";
+import {readData} from './utilities/AsyncStorage';
+import Game from './screens/Game';
 
 const win = Dimensions.get('window');
 
@@ -31,6 +32,11 @@ function Games() {
         headerTintColor: "white",
         headerTitleAlign: "center"
       }} component={ChooseGame} />
+      <Stack.Screen name="Game" options={{
+        headerTitle: () => (<Text style={styles.headerWithArrow}>{currentGame.name}</Text>),
+        headerTintColor: "white",
+        headerTitleAlign: "center"
+      }} component={Game} />
     </Stack.Navigator>
   )
 }
