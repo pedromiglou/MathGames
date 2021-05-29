@@ -23,19 +23,34 @@ function Podium() {
 
 	const [users, setUsers] = useState([]);
 	const [banned_users, setBannedUsers] = useState([]);
+	const [normal_users, setNormalUsers] = useState([]);
+	const [privilege_users, setPrivilegeUsers] = useState([]);
+	const [admin_users, setAdminUsers] = useState([]);
 	const [friends, setFriends] = useState([]);
 
 	var [numberClassificationUsers, setNumberClassificationUsers] = useState([]);
+	var [numberClassificationNormalUsers, setNumberClassificationNormalUsers] = useState([]);
+	var [numberClassificationPrivilegeUsers, setNumberClassificationPrivilegeUsers] = useState([]);
+	var [numberClassificationAdminUsers, setNumberClassificationAdminUsers] = useState([]);
 	var [numberClassificationBannedUsers, setNumberClassificationBannedUsers] = useState([]);
 	const [filterOption, setfilterOption] = useState("AllPlayers");
 	
 	const [page_users, setPageUsers] = useState(1);
 	const [count_users, setCountUsers] = useState(0);
+	const [page_normal_users, setPageNormalUsers] = useState(1);
+	const [count_normal_users, setCountNormalUsers] = useState(0);
+	const [page_privilege_users, setPagePrivilegeUsers] = useState(1);
+	const [count_privilege_users, setCountPrivilegeUsers] = useState(0);
+	const [page_admin_users, setPageAdminUsers] = useState(1);
+	const [count_admin_users, setCountAdminUsers] = useState(0);
 	const [page_banned_users, setPageBannedUsers] = useState(1);
 	const [count_banned_users, setCountBannedUsers] = useState(0);
 	
-	const [banned_username_input, setBannedUsername] = useState("");
-	const [username_input, setUsername] = useState("");
+	const [normal_inputs, setNormalInputs] = useState({username: "", min_level: "", max_level: ""});
+	const [privilege_inputs, setPrivilegeInputs] = useState({username: "", min_level: "", max_level: ""});
+	const [banned_inputs, setBannedInputs] = useState({username: "", min_level: "", max_level: ""});
+	const [admin_inputs, setAdminInputs] = useState({username: "", min_level: "", max_level: ""});
+	const [allusers_inputs, setAllUsersInputs] = useState({username: "", min_level: "", max_level: ""});
 
 	const [modalConfirmShow, setConfirmModalShow] = useState(false);
 	const [modalOperation, setModalOperation] = useState("");
@@ -52,6 +67,18 @@ function Podium() {
 
 	const handlePageChangeUsersBanned = (event, value) => {
 		setPageBannedUsers(value);
+	};
+
+	const handlePageChangeUsersNormal = (event, value) => {
+		setPageNormalUsers(value);
+	};
+
+	const handlePageChangeUsersPrivilege = (event, value) => {
+		setPagePrivilegeUsers(value);
+	};
+
+	const handlePageChangeUsersAdmin = (event, value) => {
+		setPageAdminUsers(value);
 	};
 	
 	function friend_request(friend2) {
@@ -97,19 +124,53 @@ function Podium() {
 	const retrieveUsers = () => {
 		var current_user = AuthService.getCurrentUser();
 		async function fetchApiUsers() {
-			let username = username_input;
-			var response = await UserService.getUsers(username,parseInt(page_users)-1, 10);
+			let username = allusers_inputs.username;
+			let min_level = allusers_inputs.min_level;
+			let max_level = allusers_inputs.max_level;
+			var response = await UserService.getUsers(username, min_level, max_level, parseInt(page_users)-1, 10);
 			setUsers(response.users);
 			setCountUsers(response.totalPages)
 			setNumberClassificationUsers((parseInt(page_users)-1)*10);
         };
 
 		async function fetchApiUsersBanned() {
-			let username = banned_username_input;
-			var response = await UserService.getUsersBanned(username,parseInt(page_banned_users)-1, 10);
+			let username = banned_inputs.username;
+			let min_level = banned_inputs.min_level;
+			let max_level = banned_inputs.max_level;
+			var response = await UserService.getUsersBanned(username, min_level, max_level, parseInt(page_banned_users)-1, 10);
 			setBannedUsers(response.users);
 			setCountBannedUsers(response.totalPages)
 			setNumberClassificationBannedUsers((parseInt(page_banned_users)-1)*10);
+        };
+
+		async function fetchApiUsersNormal() {
+			let username = normal_inputs.username;
+			let min_level = normal_inputs.min_level;
+			let max_level = normal_inputs.max_level;
+			var response = await UserService.getUsersNormal(username, min_level, max_level, parseInt(page_normal_users)-1, 10);
+			setNormalUsers(response.users);
+			setCountNormalUsers(response.totalPages)
+			setNumberClassificationNormalUsers((parseInt(page_normal_users)-1)*10);
+        };
+
+		async function fetchApiUsersPrivilege() {
+			let username = privilege_inputs.username;
+			let min_level = privilege_inputs.min_level;
+			let max_level = privilege_inputs.max_level;
+			var response = await UserService.getUsersPrivilege(username, min_level, max_level, parseInt(page_privilege_users)-1, 10);
+			setPrivilegeUsers(response.users);
+			setCountPrivilegeUsers(response.totalPages)
+			setNumberClassificationPrivilegeUsers((parseInt(page_privilege_users)-1)*10);
+        };
+
+		async function fetchApiUsersAdmin() {
+			let username = admin_inputs.username;
+			let min_level = admin_inputs.min_level;
+			let max_level = admin_inputs.max_level;
+			var response = await UserService.getUsersAdmin(username, min_level, max_level, parseInt(page_admin_users)-1, 10);
+			setAdminUsers(response.users);
+			setCountAdminUsers(response.totalPages);
+			setNumberClassificationAdminUsers((parseInt(page_admin_users)-1)*10);
         };
 
 		async function fetchApiFriends(userId) {
@@ -123,8 +184,12 @@ function Podium() {
 			fetchApiFriends(current_user.id)
 		}
 		
-		if (current_user !== null && current_user["account_type"] === "A")
+		if (current_user !== null && current_user["account_type"] === "A") {
+			fetchApiUsersNormal()
 			fetchApiUsersBanned() 
+			fetchApiUsersPrivilege()
+			fetchApiUsersAdmin()
+		}
 		fetchApiUsers();
 	}
 
@@ -207,7 +272,7 @@ function Podium() {
 
 	useEffect(
 		retrieveUsers
-	, [page_users, page_banned_users, username_input, banned_username_input])
+	, [page_users, page_banned_users, page_normal_users, page_privilege_users, page_admin_users, allusers_inputs, banned_inputs, normal_inputs, privilege_inputs, admin_inputs])
 
 	
 	return (
@@ -331,14 +396,14 @@ function Podium() {
 									<div className="level-section">
 										<h2>Nivel</h2>
 										<div className="search-level">
-											<input className="form-control form-control-lg" id="filter_min_level" type="number" placeholder="minimo"/>
-											<input className="form-control form-control-lg" id="filter_max_level" type="number" placeholder="máximo"/>
+											<input className="form-control form-control-lg" id="filter_allusers_min_level" type="number" placeholder="minimo"/>
+											<input className="form-control form-control-lg" id="filter_allusers_max_level" type="number" placeholder="máximo"/>
 										</div>
 									</div>
 								</div>
 								
 								
-								<button id="searchButton" onClick={() => {setUsername(document.getElementById("filter_username").value); setFriendRequestSucess(false); setReportSucess(false)}} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
+								<button id="searchButton" onClick={() => {setAllUsersInputs({ username: document.getElementById("filter_username").value, min_level: document.getElementById("filter_allusers_min_level").value, max_level: document.getElementById("filter_allusers_max_level").value }); setFriendRequestSucess(false); setReportSucess(false)}} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
 							</form>
 							
 						</div>
@@ -511,7 +576,7 @@ function Podium() {
 										<div className="name-section">
 											<h2>Nome</h2>
 											<div className="search-name">
-												<input className="form-control form-control-lg" id="filter_banned_username" type="search" placeholder="Procurar pelo nome de utilizador"/>
+												<input className="form-control form-control-lg" id="filter_normal_username" type="search" placeholder="Procurar pelo nome de utilizador"/>
 											</div>
 										</div>
 										
@@ -519,13 +584,13 @@ function Podium() {
 										<div className="level-section">
 											<h2>Nivel</h2>
 											<div className="search-level">
-												<input className="form-control form-control-lg" id="filter_min_level" type="number" placeholder="minimo"/>
-												<input className="form-control form-control-lg" id="filter_max_level" type="number" placeholder="máximo"/>
+												<input className="form-control form-control-lg" id="filter_normal_min_level" type="number" placeholder="minimo"/>
+												<input className="form-control form-control-lg" id="filter_normal_max_level" type="number" placeholder="máximo"/>
 											</div>
 										</div>
 									</div>
 									{ current_user !== null && current_user["account_type"] === "A" &&
-										<button id="viewbanned" onClick={() => {setBannedUsername(document.getElementById("filter_banned_username").value); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
+										<button id="viewnormal" onClick={() => {setNormalInputs({ username: document.getElementById("filter_normal_username").value, min_level: document.getElementById("filter_normal_min_level").value, max_level: document.getElementById("filter_normal_max_level").value }); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
 									}
 								</form>
 								
@@ -535,7 +600,7 @@ function Podium() {
 					
 					<hr></hr>
 
-					{count_banned_users === 0 
+					{count_normal_users === 0 
 					? 
 					<h1 className="no-results">Não foram encontrados jogadores com os filtros escolhidos</h1>
 					:
@@ -563,8 +628,8 @@ function Podium() {
 								</div>
 							</li>
 							
-							{banned_users.map(function(user, index) {
-								numberClassificationBannedUsers++;
+							{normal_users.map(function(user, index) {
+								numberClassificationNormalUsers++;
 								var contador = 1;
 								while (true) {
 									var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
@@ -577,7 +642,7 @@ function Podium() {
 								return (
 									<li className="list-group-item d-flex justify-content-between align-items-center row">
 										<div className="col-lg-1 col-md-1 col-sm-1">
-											<span className="badge badge-primary badge-pill">{numberClassificationBannedUsers}</span>
+											<span className="badge badge-primary badge-pill">{numberClassificationNormalUsers}</span>
 										</div>
 
 										<div className="col-lg-2 col-md-2 col-sm-2">
@@ -594,7 +659,9 @@ function Podium() {
 											{user.account_level} pontos
 										</div>
 										<div className="col-lg-2 col-md-2 col-sm-2">
-											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_ban"); setConfirmModalShow(true) }}><IoIcons.IoRemoveCircle/></i>
+											<i className="subicon pointer" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("upgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleUp/></i>
+											<i className="subicon pointer" style={{marginLeft:"10px"}} onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("downgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleDown/></i>
+											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("ban"); setConfirmModalShow(true) }}><IoIcons.IoBan/></i>
 										</div>
 									</li>
 								)
@@ -612,13 +679,13 @@ function Podium() {
 						<div className="row justify-content-center">
 							<Pagination
 							className="my-3"
-							count={count_banned_users}
-							page={page_banned_users}
+							count={count_normal_users}
+							page={page_normal_users}
 							siblingCount={1}
 							boundaryCount={1}
 							variant="outlined"
 							shape="rounded"
-							onChange={handlePageChangeUsersBanned}
+							onChange={handlePageChangeUsersNormal}
 							/>
 						</div>
 					</>
@@ -642,7 +709,7 @@ function Podium() {
 										<div className="name-section">
 											<h2>Nome</h2>
 											<div className="search-name">
-												<input className="form-control form-control-lg" id="filter_banned_username" type="search" placeholder="Procurar pelo nome de utilizador"/>
+												<input className="form-control form-control-lg" id="filter_privilege_username" type="search" placeholder="Procurar pelo nome de utilizador"/>
 											</div>
 										</div>
 										
@@ -650,13 +717,13 @@ function Podium() {
 										<div className="level-section">
 											<h2>Nivel</h2>
 											<div className="search-level">
-												<input className="form-control form-control-lg" id="filter_min_level" type="number" placeholder="minimo"/>
-												<input className="form-control form-control-lg" id="filter_max_level" type="number" placeholder="máximo"/>
+												<input className="form-control form-control-lg" id="filter_privilege_min_level" type="number" placeholder="minimo"/>
+												<input className="form-control form-control-lg" id="filter_privilege_max_level" type="number" placeholder="máximo"/>
 											</div>
 										</div>
 									</div>
 									{ current_user !== null && current_user["account_type"] === "A" &&
-										<button id="viewbanned" onClick={() => {setBannedUsername(document.getElementById("filter_banned_username").value); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
+										<button id="viewprivilege" onClick={() => {setPrivilegeInputs({ username: document.getElementById("filter_privilege_username").value, min_level: document.getElementById("filter_privilege_min_level").value, max_level: document.getElementById("filter_privilege_max_level").value }); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
 									}
 								</form>
 								
@@ -666,7 +733,7 @@ function Podium() {
 					
 					<hr></hr>
 
-					{count_banned_users === 0 
+					{count_privilege_users === 0 
 					? 
 					<h1 className="no-results">Não foram encontrados jogadores com os filtros escolhidos</h1>
 					:
@@ -694,8 +761,8 @@ function Podium() {
 								</div>
 							</li>
 							
-							{banned_users.map(function(user, index) {
-								numberClassificationBannedUsers++;
+							{privilege_users.map(function(user, index) {
+								numberClassificationPrivilegeUsers++;
 								var contador = 1;
 								while (true) {
 									var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
@@ -708,7 +775,7 @@ function Podium() {
 								return (
 									<li className="list-group-item d-flex justify-content-between align-items-center row">
 										<div className="col-lg-1 col-md-1 col-sm-1">
-											<span className="badge badge-primary badge-pill">{numberClassificationBannedUsers}</span>
+											<span className="badge badge-primary badge-pill">{numberClassificationPrivilegeUsers}</span>
 										</div>
 
 										<div className="col-lg-2 col-md-2 col-sm-2">
@@ -725,7 +792,9 @@ function Podium() {
 											{user.account_level} pontos
 										</div>
 										<div className="col-lg-2 col-md-2 col-sm-2">
-											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_ban"); setConfirmModalShow(true) }}><IoIcons.IoRemoveCircle/></i>
+											<i className="subicon pointer" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("upgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleUp/></i>
+											<i className="subicon pointer" style={{marginLeft:"10px"}} onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("downgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleDown/></i>
+											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("ban"); setConfirmModalShow(true) }}><IoIcons.IoBan/></i>
 										</div>
 									</li>
 								)
@@ -743,13 +812,13 @@ function Podium() {
 						<div className="row justify-content-center">
 							<Pagination
 							className="my-3"
-							count={count_banned_users}
-							page={page_banned_users}
+							count={count_privilege_users}
+							page={page_privilege_users}
 							siblingCount={1}
 							boundaryCount={1}
 							variant="outlined"
 							shape="rounded"
-							onChange={handlePageChangeUsersBanned}
+							onChange={handlePageChangeUsersPrivilege}
 							/>
 						</div>
 					</>
@@ -773,7 +842,7 @@ function Podium() {
 										<div className="name-section">
 											<h2>Nome</h2>
 											<div className="search-name">
-												<input className="form-control form-control-lg" id="filter_banned_username" type="search" placeholder="Procurar pelo nome de utilizador"/>
+												<input className="form-control form-control-lg" id="filter_admin_username" type="search" placeholder="Procurar pelo nome de utilizador"/>
 											</div>
 										</div>
 										
@@ -781,13 +850,13 @@ function Podium() {
 										<div className="level-section">
 											<h2>Nivel</h2>
 											<div className="search-level">
-												<input className="form-control form-control-lg" id="filter_min_level" type="number" placeholder="minimo"/>
-												<input className="form-control form-control-lg" id="filter_max_level" type="number" placeholder="máximo"/>
+												<input className="form-control form-control-lg" id="filter_admin_min_level" type="number" placeholder="minimo"/>
+												<input className="form-control form-control-lg" id="filter_admin_max_level" type="number" placeholder="máximo"/>
 											</div>
 										</div>
 									</div>
 									{ current_user !== null && current_user["account_type"] === "A" &&
-										<button id="viewbanned" onClick={() => {setBannedUsername(document.getElementById("filter_banned_username").value); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
+										<button id="viewadmin" onClick={() => {setAdminInputs({ username: document.getElementById("filter_admin_username").value, min_level: document.getElementById("filter_admin_min_level").value, max_level: document.getElementById("filter_admin_max_level").value }); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
 									}
 								</form>
 								
@@ -797,7 +866,7 @@ function Podium() {
 					
 					<hr></hr>
 
-					{count_banned_users === 0 
+					{count_admin_users === 0 
 					? 
 					<h1 className="no-results">Não foram encontrados jogadores com os filtros escolhidos</h1>
 					:
@@ -825,8 +894,8 @@ function Podium() {
 								</div>
 							</li>
 							
-							{banned_users.map(function(user, index) {
-								numberClassificationBannedUsers++;
+							{admin_users.map(function(user, index) {
+								numberClassificationAdminUsers++;
 								var contador = 1;
 								while (true) {
 									var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
@@ -839,7 +908,7 @@ function Podium() {
 								return (
 									<li className="list-group-item d-flex justify-content-between align-items-center row">
 										<div className="col-lg-1 col-md-1 col-sm-1">
-											<span className="badge badge-primary badge-pill">{numberClassificationBannedUsers}</span>
+											<span className="badge badge-primary badge-pill">{numberClassificationAdminUsers}</span>
 										</div>
 
 										<div className="col-lg-2 col-md-2 col-sm-2">
@@ -856,7 +925,9 @@ function Podium() {
 											{user.account_level} pontos
 										</div>
 										<div className="col-lg-2 col-md-2 col-sm-2">
-											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_ban"); setConfirmModalShow(true) }}><IoIcons.IoRemoveCircle/></i>
+											<i className="subicon pointer" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("upgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleUp/></i>
+											<i className="subicon pointer" style={{marginLeft:"10px"}} onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("downgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleDown/></i>
+											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("ban"); setConfirmModalShow(true) }}><IoIcons.IoBan/></i>
 										</div>
 									</li>
 								)
@@ -874,13 +945,13 @@ function Podium() {
 						<div className="row justify-content-center">
 							<Pagination
 							className="my-3"
-							count={count_banned_users}
-							page={page_banned_users}
+							count={count_admin_users}
+							page={page_admin_users}
 							siblingCount={1}
 							boundaryCount={1}
 							variant="outlined"
 							shape="rounded"
-							onChange={handlePageChangeUsersBanned}
+							onChange={handlePageChangeUsersAdmin}
 							/>
 						</div>
 					</>
@@ -912,13 +983,13 @@ function Podium() {
 										<div className="level-section">
 											<h2>Nivel</h2>
 											<div className="search-level">
-												<input className="form-control form-control-lg" id="filter_min_level" type="number" placeholder="minimo"/>
-												<input className="form-control form-control-lg" id="filter_max_level" type="number" placeholder="máximo"/>
+												<input className="form-control form-control-lg" id="filter_banned_min_level" type="number" placeholder="minimo"/>
+												<input className="form-control form-control-lg" id="filter_banned_max_level" type="number" placeholder="máximo"/>
 											</div>
 										</div>
 									</div>
 									{ current_user !== null && current_user["account_type"] === "A" &&
-										<button id="viewbanned" onClick={() => {setBannedUsername(document.getElementById("filter_banned_username").value); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
+										<button id="viewbanned" onClick={() => {setBannedInputs({ username: document.getElementById("filter_banned_username").value, min_level: document.getElementById("filter_banned_min_level").value, max_level: document.getElementById("filter_banned_max_level").value }); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
 									}
 								</form>
 								

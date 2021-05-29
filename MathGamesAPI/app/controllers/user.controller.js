@@ -66,11 +66,19 @@ exports.findAllBanned = (req, res) => {
   if (typeof req.query.orderby !== "undefined") {
     const { page, size } = req.query;
     const username = !req.query.username ? "": req.query.username+"%";
+    var min_level =  0;
+    var max_level = 1000;
+    if (req.query.min_level) {
+      min_level = req.query.min_level === 1 ? 0 : 400 * Math.pow(req.query.min_level-1, 1.1);
+    }
+    if (req.query.max_level) {
+      max_level = 400 * Math.pow(req.query.max_level, 1.1);
+    }
     const { limit, offset } = getPagination(page, size);
     User.findAndCountAll({attributes: ['id', 'username', 'account_level', 'account_type', 
                                        'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 
                                        'avatar_trouser', 'banned'] , 
-                          where: {username: { [Op.like]: `%${username}` }, banned: true }, 
+                          where: {username: { [Op.like]: `%${username}` }, banned: true, account_level: { [Op.between]: [min_level, max_level - 1]} }, 
                           order: [[req.query.orderby, 'DESC']], limit, offset})
     .then(data => {
       const response = getPagingData(data, page, limit);
@@ -97,16 +105,162 @@ exports.findAllBanned = (req, res) => {
   }
 };
 
+
+// Retrieve all Normal Users with paginator.
+exports.findAllNormal = (req, res) => {
+  if (typeof req.query.orderby !== "undefined") {
+    const { page, size } = req.query;
+    const username = !req.query.username ? "": req.query.username+"%";
+    var min_level =  0;
+    var max_level = 1000;
+    if (req.query.min_level) {
+      min_level = req.query.min_level === 1 ? 0 : 400 * Math.pow(req.query.min_level-1, 1.1);
+    }
+    if (req.query.max_level) {
+      max_level = 400 * Math.pow(req.query.max_level, 1.1);
+    }
+    const { limit, offset } = getPagination(page, size);
+    User.findAndCountAll({attributes: ['id', 'username', 'account_level', 'account_type', 
+                                       'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 
+                                       'avatar_trouser', 'banned'] , 
+                          where: {username: { [Op.like]: `%${username}` }, account_type: "U", account_level: { [Op.between]: [min_level, max_level - 1]} }, 
+                          order: [[req.query.orderby, 'DESC']], limit, offset})
+    .then(data => {
+      const response = getPagingData(data, page, limit);
+      res.send(response);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving Users."
+      });
+    });
+  } else {
+    User.findAll({attributes: ['username', 'account_level', 'account_type', 
+                               'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 
+                               'avatar_trouser', 'banned'],
+                  where: {account_type: "U"}})
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({
+          message: err.message || "Some error occurred while retrieving Users."
+        });
+      });
+  }
+};
+
+
+// Retrieve all Privilege Users with paginator.
+exports.findAllPrivilege = (req, res) => {
+  if (typeof req.query.orderby !== "undefined") {
+    const { page, size } = req.query;
+    const username = !req.query.username ? "": req.query.username+"%";
+    var min_level =  0;
+    var max_level = 1000;
+    if (req.query.min_level) {
+      min_level = req.query.min_level === 1 ? 0 : 400 * Math.pow(req.query.min_level-1, 1.1);
+    }
+    if (req.query.max_level) {
+      max_level = 400 * Math.pow(req.query.max_level, 1.1);
+    }
+    const { limit, offset } = getPagination(page, size);
+    User.findAndCountAll({attributes: ['id', 'username', 'account_level', 'account_type', 
+                                       'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 
+                                       'avatar_trouser', 'banned'] , 
+                          where: {username: { [Op.like]: `%${username}` }, account_type: "T", account_level: { [Op.between]: [min_level, max_level - 1]} }, 
+                          order: [[req.query.orderby, 'DESC']], limit, offset})
+    .then(data => {
+      const response = getPagingData(data, page, limit);
+      res.send(response);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving Users."
+      });
+    });
+  } else {
+    User.findAll({attributes: ['username', 'account_level', 'account_type', 
+                               'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 
+                               'avatar_trouser', 'banned'],
+                  where: {account_type: "T"}})
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({
+          message: err.message || "Some error occurred while retrieving Users."
+        });
+      });
+  }
+};
+
+
+
+// Retrieve all Admin Users with paginator.
+exports.findAllAdmin = (req, res) => {
+  if (typeof req.query.orderby !== "undefined") {
+    const { page, size } = req.query;
+    const username = !req.query.username ? "": req.query.username+"%";
+    var min_level =  0;
+    var max_level = 1000;
+    if (req.query.min_level) {
+      min_level = req.query.min_level === 1 ? 0 : 400 * Math.pow(req.query.min_level-1, 1.1);
+    }
+    if (req.query.max_level) {
+      max_level = 400 * Math.pow(req.query.max_level, 1.1);
+    }
+    const { limit, offset } = getPagination(page, size);
+    User.findAndCountAll({attributes: ['id', 'username', 'account_level', 'account_type', 
+                                       'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 
+                                       'avatar_trouser', 'banned'] , 
+                          where: {username: { [Op.like]: `%${username}` }, account_type: "A", account_level: { [Op.between]: [min_level, max_level - 1]} }, 
+                          order: [[req.query.orderby, 'DESC']], limit, offset})
+    .then(data => {
+      const response = getPagingData(data, page, limit);
+      res.send(response);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving Users."
+      });
+    });
+  } else {
+    User.findAll({attributes: ['username', 'account_level', 'account_type', 
+                               'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 
+                               'avatar_trouser', 'banned'],
+                  where: {account_type: "A"}})
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({
+          message: err.message || "Some error occurred while retrieving Users."
+        });
+      });
+  }
+};
+
+
+
 // Retrieve all Users from the database.
 exports.findAll = (req, res) => {
   if (typeof req.query.orderby !== "undefined") {
     const { page, size } = req.query;
     const username = !req.query.username ? "": req.query.username+"%";
+    var min_level =  0;
+    var max_level = 1000;
+    if (req.query.min_level) {
+      min_level = req.query.min_level === 1 ? 0 : 400 * Math.pow(req.query.min_level-1, 1.1);
+    }
+    if (req.query.max_level) {
+      max_level = 400 * Math.pow(req.query.max_level, 1.1);
+    }
     const { limit, offset } = getPagination(page, size);
     User.findAndCountAll({attributes: ['id', 'username', 'account_level', 'account_type', 
                                         'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 
                                         'avatar_trouser'] , 
-                          where: {username: { [Op.like]: `%${username}` }, banned: false }, 
+                          where: {username: { [Op.like]: `%${username}` }, banned: false, account_level: { [Op.between]: [min_level, max_level - 1]} }, 
                           order: [[req.query.orderby, 'DESC']], limit, offset})
     .then(data => {
       const response = getPagingData(data, page, limit);

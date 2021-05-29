@@ -38,14 +38,32 @@ class UserService {
         return res.json();
     }
     
-    async getUsers(username, page, pageSize) {
-        var url = urlAPI + 'api/users?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username;
+    async getUsers(username, min_level, max_level, page, pageSize) {
+        var url = urlAPI + 'api/users?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username + '&min_level=' + min_level + '&max_level=' + max_level;
         var res = await fetch(url);
         return res.json();
     }
 
-    async getUsersBanned(username, page, pageSize) {
-        var url = urlAPI + '/api/users/banned?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username;
+    async getUsersBanned(username, min_level, max_level, page, pageSize) {
+        var url = urlAPI + 'api/users/banned?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username + '&min_level=' + min_level + '&max_level=' + max_level;
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+
+    async getUsersNormal(username, min_level, max_level, page, pageSize) {
+        var url = urlAPI + 'api/users/normal?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username + '&min_level=' + min_level + '&max_level=' + max_level;
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+
+    async getUsersPrivilege(username, min_level, max_level, page, pageSize) {
+        var url = urlAPI + 'api/users/privilege?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username + '&min_level=' + min_level + '&max_level=' + max_level;
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+
+    async getUsersAdmin(username, min_level, max_level, page, pageSize) {
+        var url = urlAPI + 'api/users/admin?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username + '&min_level=' + min_level + '&max_level=' + max_level;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         return res.json();
     }
