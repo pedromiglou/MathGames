@@ -43,43 +43,70 @@ db.sequelize.sync();
 var current_games = {};
 var match_queue = {0: [], 1: []};
 var users_info = {}
+var active_friend_invites = {}
 
 //Connecting new Users
 io.on("connection", (socket) => { 
   console.log("New client connected");
   console.log("id: ", socket.id);
-  
+
   //
-  // FRIEND GAME BY LINK SECTION 
+  // FRIEND GAME BY LINK SECTION
   // 
-  
-  //User sends user_id and want to play with a friend through a link
-  socket.on("friendbylink", (msg) => {
-    var user_id = msg["user_id"]
-    users_info[user_id] =  socket.id;
-    io.to(socket.id).emit("link_sent", {"match_id": uuid.v4()});
+
+  //User sends user_id and wants to play with a friend through a link
+  socket.on("generate_invite", (msg) => {
+    let user_id = msg["user_id"]
+
+    // If the user still has an active link, return null match_id
+    if ( Object.values(active_friend_invites).includes(user_id) ) {
+      io.to(socket.id).emit("invite_link", {"match_id": null});
+      return;
+    }
+
+    users_info[user_id] = socket.id;
+
+    let new_match_id = uuid.v4();
+    active_friend_invites[new_match_id] = user_id;
+
+    io.to(socket.id).emit("invite_link", {"match_id": new_match_id});
+    // After 2 minutes, the links expires
+    setTimeout(() => { delete active_friend_invites[new_match_id]; }, 120000);
+    console.log(active_friend_invites)
   })
 
   socket.on("entered_link", (msg) => {
     console.log("User conected through link.")
-    if (msg["user_id"] !== null) {
-      var user_id = msg["user_id"]
-      var match_id = msg["match_id"]
-      var game_id = msg["game_id"]
-      users_info[user_id] = socket.id
+    
+    var match_id = msg["match_id"]
+    var user_id = msg["user_id"]
+    var game_id = parseInt(msg["game_id"])
+    users_info[user_id] = socket.id
 
-      if (Object.keys(current_games).includes(match_id)) {
-        var other_user = Object.keys(current_games[match_id]['users'])[0];
-        current_games[match_id]['users'][user_id] = [other_user];
-        current_games[match_id]['users'][other_user] = [user_id];
-
-        if (other_user !== user_id)
-          initiate_game(match_id, other_user, user_id)
-
-      } else {
-        create_game(match_id, game_id, user_id, null, "amigo")
-      }
+    if ( Object.keys(active_friend_invites).includes(match_id) ) {
+      console.log("Vou criar e enviar!")
+      create_game(match_id, game_id, user_id, active_friend_invites[match_id], "amigo")
+      io.to( users_info[active_friend_invites[match_id]] ).emit("friend_joined", {"match_id": match_id, "player1": user_id, "player2": active_friend_invites[match_id]})
     }
+    
+    // if ( msg["user_id"] !== null ) {
+    //   var user_id = msg["user_id"]
+    //   var match_id = msg["match_id"]
+    //   var game_id = msg["game_id"]
+    //   users_info[user_id] = socket.id
+
+    //   if (Object.keys(current_games).includes(match_id)) {
+    //     var other_user = Object.keys(current_games[match_id]['users'])[0];
+    //     current_games[match_id]['users'][user_id] = [other_user];
+    //     current_games[match_id]['users'][other_user] = [user_id];
+
+    //     if (other_user !== user_id)
+    //       initiate_game(match_id, other_user, user_id)
+
+    //   } else {
+    //     create_game(match_id, game_id, user_id, null, "amigo")
+    //   }
+    // }
   })
   //
   // END OF FRIEND GAME BY LINK SECTION 
@@ -131,28 +158,45 @@ io.on("connection", (socket) => {
   socket.on("move", (new_pos, user_id, match_id) => {
     user_id = String(user_id);
     match_id = String(match_id);
-    if (Object.keys(current_games).includes(match_id))
-      if (Object.keys(current_games[match_id]['users']).includes(user_id))
-        if (valid_move(user_id, match_id, new_pos)) {
-          var opponent = users_info[ current_games[match_id]['users'][user_id][0] ]
-          io.to( opponent ).emit("move_piece", new_pos);
 
+    console.log(match_id)
+    console.log(current_games)
+    console.log(current_games[match_id])
+
+    console.log("New pos: ", new_pos)
+    console.log("Valid squares: ", current_games[match_id]['state']['valid_squares'])
+    console.log("Is valid:", valid_move(user_id, match_id, new_pos) )
+    
+
+
+
+    if ( Object.keys(current_games).includes(match_id) )
+      if ( Object.keys(current_games[match_id]['users'] ).includes(user_id))
+        if ( valid_move(user_id, match_id, new_pos) ) {
+          let opponent = current_games[match_id]['users'][user_id][0]
+          io.to( users_info[opponent] ).emit("move_piece", new_pos);
+
+          // Pause user's timer and restart opponent's
           current_games[match_id]['timers'][user_id].pause();
           current_games[match_id]['timers'][opponent].start();
 
-          if (current_games[match_id]['state']['isFinished'])
+          if ( current_games[match_id]['state']['isFinished'] ) {
+            current_games[match_id]['timers'][user_id].pause();
+            current_games[match_id]['timers'][opponent].pause();
+
             finish_game(match_id, "valid_move")
+          
+          }
+        
         } else {
           //Move is not valid. Match will end and oponnent will win.
+          let opponent = current_games[match_id]['users'][user_id][0]
+          
           current_games[match_id]['state']['isFinished'] = true
           current_games[match_id]['state']['winner'] = (user_id === current_games[match_id]['state']['player1']) ? "2" : "1"
-
-          //Tell this user that his movement was invalid and he lost the match
-          //io.to( users_info[ user_id ] ).emit("match_endby_invalid_move", {"match_result": "lost"});
-
-          //Tell oponnent that he have won the match by "default"
-          //io.to( users_info[ current_games[match_id]['users'][user_id][0] ] ).emit("match_endby_invalid_move", {"match_result": "win"});
-
+          current_games[match_id]['timers'][user_id].pause();
+          current_games[match_id]['timers'][opponent].pause();
+          
           finish_game(match_id, "invalid_move")
         }
   })
@@ -181,9 +225,10 @@ function create_game(match_id, game_id, user1, user2, game_type) {
     'winner': "",
     'isFinished': false
   }
+
   current_games[match_id]['timers'] = {}
   current_games[match_id]['timers'][user1] = new Timer(function() {
-                                              console.log("It's done")
+                                              console.log(current_games)
                                               current_games[match_id]['state']['isFinished'] = true;
                                               current_games[match_id]['state']['winner'] = "2";
                                               finish_game(match_id, "timeout");
@@ -209,12 +254,16 @@ function create_game(match_id, game_id, user1, user2, game_type) {
     current_games[match_id]['state']['player_1_first_move'] = true
   }
   
-  if (user1 !== null && user2 !== null)
-    initiate_game(match_id, user1, user2)
+  initiate_game(match_id)
   
 }
 
-function initiate_game(match_id, user1, user2) {
+function initiate_game(match_id) {
+  console.log("Initiating.")
+  console.log(current_games);
+  let user1 = current_games[match_id]['state']['player1'];
+  let user2 = current_games[match_id]['state']['player2'];
+
   let username1;
   let username2;
 
@@ -235,17 +284,6 @@ function initiate_game(match_id, user1, user2) {
     io.to(users_info[user1]).emit("match_found", {"match_id": match_id, "player1": username1, "player2": username2});
     io.to(users_info[user2]).emit("match_found", {"match_id": match_id, "player1": username1, "player2": username2});
   });
-}
-
-function end_by_timeout(match_id, winner) {
-  console.log(match_id)
-  console.log(current_games)
-  console.log(current_games[match_id])
-  console.log(current_games[match_id]['state'])
-  console.log(current_games[match_id]['state']['isFinished'])
-  current_games[match_id]['state']['isFinished'] = true;
-  current_games[match_id]['state']['winner'] = winner;
-  finish_game(match_id, "time_out");
 }
 
 function valid_move(user_id, match_id, new_pos) {
@@ -269,40 +307,56 @@ function validate_rastros_move(user_id, match_id, new_pos) {
 
   if ( valid_squares.has(current_pos) ) {
     valid_squares.clear()
+
+    console.log(valid_squares)
+
+    valid_squares.add(current_pos-6);
+    valid_squares.add(current_pos-7);
+    valid_squares.add(current_pos-8);
+
+    valid_squares.add(current_pos+6);
+    valid_squares.add(current_pos+7);
+    valid_squares.add(current_pos+8);
+
+    valid_squares.add(current_pos-1);
+    valid_squares.add(current_pos+1);
   
     // Add all possible positions
-    [new_pos-6, new_pos-7, new_pos-8, new_pos+6, new_pos+7, new_pos+8, new_pos-1, new_pos+1].forEach(this.valid_squares.add, this.valid_squares);
+    // [current_pos-6, current_pos-7, current_pos-8, current_pos+6, current_pos+7, current_pos+8, current_pos-1, current_pos+1].forEach(valid_squares.add, valid_squares);
     
     // Remove invalid squares (edge cases)
-    if ( [0,1,2,3,4,5,6].includes(new_pos) )
-      [new_pos-6, new_pos-7, new_pos-8].forEach(this.valid_squares.delete, this.valid_squares);
+    if ( [0,1,2,3,4,5,6].includes(current_pos) )
+      [current_pos-6, current_pos-7, current_pos-8].forEach(valid_squares.delete, valid_squares);
 
-    if ( [42,43,44,45,46,47,48].includes(new_pos) )
-      [new_pos+6, new_pos+7, new_pos+8].forEach(this.valid_squares.delete, this.valid_squares);
+    if ( [42,43,44,45,46,47,48].includes(current_pos) )
+      [current_pos+6, current_pos+7, current_pos+8].forEach(valid_squares.delete, valid_squares);
 
-    if ( [0,7,14,21,28,35,42].includes(new_pos) )
-      [new_pos-8, new_pos-1, new_pos+6].forEach(this.valid_squares.delete, this.valid_squares);
+    if ( [0,7,14,21,28,35,42].includes(current_pos) )
+      [current_pos-8, current_pos-1, current_pos+6].forEach(valid_squares.delete, valid_squares);
 
-    if ( [6,13,20,27,34,41,48].includes(new_pos) )
-      [new_pos-6, new_pos+1, new_pos+8].forEach(this.valid_squares.delete, this.valid_squares);
+    if ( [6,13,20,27,34,41,48].includes(current_pos) )
+      [current_pos-6, current_pos+1, current_pos+8].forEach(valid_squares.delete, valid_squares);
 
     // Remove blocked squares
     blocked_pos.forEach(square => valid_squares.delete(square));
 
     // Update game state
     current_games[match_id]['state']['blocked_pos'] = blocked_pos
-    current_games[match_id]['state']['current_pos'] = new_pos
+    current_games[match_id]['state']['current_pos'] = current_pos
     current_games[match_id]['state']['valid_squares'] = valid_squares
 
     // Check for win conditions
-    if (new_pos === 6 || new_pos === 42 || set_diff(valid_squares, blocked_pos).size === 0) {
-      current_games[match_id]['state']['isFinished'] = true
-      if (new_pos === 6)
-        current_games[match_id]['state']['winner'] = "2"
-      else if (new_pos === 42)
-        current_games[match_id]['state']['winner'] = "1"
-      else
-        current_games[match_id]['state']['winner'] = (user_id === current_games[match_id]['state']['player1']) ? "1" : "2"
+    if (current_pos === 6 || current_pos === 42 || set_diff(valid_squares, blocked_pos).size === 0) {
+      current_games[match_id]['state']['isFinished'] = true;
+      current_games[match_id]['state']['extra'] = "reached_goal";
+      if (current_pos === 6)
+        current_games[match_id]['state']['winner'] = "2";
+      else if (current_pos === 42)
+        current_games[match_id]['state']['winner'] = "1";
+      else {
+        current_games[match_id]['state']['extra'] = "no_moves";
+        current_games[match_id]['state']['winner'] = (user_id === current_games[match_id]['state']['player1']) ? "1" : "2";
+      }
     } 
 
     return true
@@ -311,9 +365,14 @@ function validate_rastros_move(user_id, match_id, new_pos) {
 }
 
 function validate_gatoscaes_move(user_id, match_id, new_pos) {
+  console.log("Passei aqui1")
+  console.log(current_games[match_id]['state']['player_0_valid_squares'].has(new_pos))
+  console.log(user_id)
+  console.log(current_games[match_id]['state']['current_player'] === user_id)
   if ( !( (current_games[match_id]['state']['player_0_valid_squares'].has(new_pos) && current_games[match_id]['state']['current_player'] === user_id) 
       || (current_games[match_id]['state']['player_1_valid_squares'].has(new_pos) && current_games[match_id]['state']['current_player'] === user_id) ) )
       return false
+  console.log("Passei aqui")
 
   if (current_games[match_id]['state']['player_0_first_move'] && current_games[match_id]['state']['player1'] === user_id)
     current_games[match_id]['state']['player_0_first_move'] = false
@@ -322,7 +381,7 @@ function validate_gatoscaes_move(user_id, match_id, new_pos) {
   
   // Get new square's position [0..49]
   var adjacents = new Set()
-  var current_pos = parseInt(new_pos)
+  var current_pos = new_pos;
 
   current_games[match_id]['state']['player_0_valid_squares'].delete(String(current_pos))
   current_games[match_id]['state']['player_1_valid_squares'].delete(String(current_pos))
@@ -350,12 +409,14 @@ function validate_gatoscaes_move(user_id, match_id, new_pos) {
     if (current_games[match_id]['state']['player_1_valid_squares'].size === 0) {
       current_games[match_id]['state']['isFinished'] = true
       current_games[match_id]['state']['winner'] = "1"
+      current_games[match_id]['state']['extra'] = "no_moves";
     }
   } else {
     current_games[match_id]['state']['player_0_valid_squares'] = set_diff(current_games[match_id]['state']['player_0_valid_squares'], adjacents)
     if (current_games[match_id]['state']['player_0_valid_squares'].size === 0) {
       current_games[match_id]['state']['isFinished'] = true
       current_games[match_id]['state']['winner'] = "2"
+      current_games[match_id]['state']['extra'] = "no_moves";
 
     }
   }
@@ -414,10 +475,11 @@ async function finish_game(match_id, endMode) {
     var res = await GameMatch.create(gameMatch)  
   }
 
-  io.to(users_info[player1]).emit("match_end", {"match_id": match_id, "match_result": player1_final_result, "endMode": endMode});
-  io.to(users_info[player2]).emit("match_end", {"match_id": match_id, "match_result": player2_final_result, "endMode": endMode});
+  io.to(users_info[player1]).emit("match_end", {"match_id": match_id, "match_result": player1_final_result, "end_mode": endMode, "extra": current_games[match_id]['state']['extra']});
+  io.to(users_info[player2]).emit("match_end", {"match_id": match_id, "match_result": player2_final_result, "end_mode": endMode, "extra": current_games[match_id]['state']['extra']});
 
-  delete current_games[match_id]
+  delete current_games[match_id];
+  delete active_friend_invites[match_id];
 
 }
 

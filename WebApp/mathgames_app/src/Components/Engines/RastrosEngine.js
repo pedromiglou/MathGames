@@ -5,17 +5,16 @@ import AuthService from '../../Services/auth.service';
 import UserService from '../../Services/user.service';
 import RastrosAI from "../AI/RastrosAI";
 
-var game_mode;
-var ai_diff;
-var auth_user;
-var current_match;
+var game_mode, ai_diff, auth_user, current_match, processGameOver;
 
-export const RastrosEngine = ({arg_game_mode, arg_ai_diff, curr_match}) => {
+export const RastrosEngine = ({process_game_over, arg_game_mode, arg_ai_diff, curr_match}) => {
     useEffect(() => {
         // Clear listeners to make sure there are no repeated events
+        socket.off("match_end");
         socket.off("move_piece");
 
         current_match = curr_match;
+        processGameOver = process_game_over;
         game_mode = arg_game_mode;
         auth_user = AuthService.getCurrentUser();
 
@@ -26,15 +25,15 @@ export const RastrosEngine = ({arg_game_mode, arg_ai_diff, curr_match}) => {
         else
             ai_diff = 0.8
 
-            const config = {
-                parent: document.getElementById("my_div_game"),
-                transparent: true,
-                type: Phaser.AUTO,
-                scale: {
-                    mode: Phaser.Scale.RESIZE
-                },
-                scene: [RastrosScene]
-            }
+        const config = {
+            parent: document.getElementById("my_div_game"),
+            transparent: true,
+            type: Phaser.AUTO,
+            scale: {
+                mode: Phaser.Scale.RESIZE
+            },
+            scene: [RastrosScene]
+        }
         new Phaser.Game(config);
     }, [arg_game_mode, arg_ai_diff, curr_match]);
     return (<></>);
@@ -95,7 +94,6 @@ class RastrosScene extends Phaser.Scene {
                 this.player.add(1);
             else
                 this.player.add(2);
-            
 
             socket.emit("start_game", { "user_id": AuthService.getCurrentUserId(),"match_id": current_match['match_id'],  "account_player": false});
 
@@ -105,8 +103,9 @@ class RastrosScene extends Phaser.Scene {
             });
 
             socket.on("match_end", (msg) => {
+                console.log("Game Over Received")
                 if (this.game_over === false)
-                    this.finish_game(null, msg["endMode"], msg["match_result"])
+                    this.finish_game(msg)
                 atualizarUserInfo();
             })
         }
@@ -152,9 +151,8 @@ class RastrosScene extends Phaser.Scene {
 
         if ( this.valid_squares.has( parseInt(clicked_square.name) ) ) {
             this.move(clicked_square);
-            if ( game_mode === "online" || game_mode === "amigo" ) {
+            if ( game_mode === "online" || game_mode === "amigo" )
                 socket.emit("move", clicked_square.name, AuthService.getCurrentUserId(), current_match['match_id']);
-            }
         }
         
     }
@@ -215,63 +213,37 @@ class RastrosScene extends Phaser.Scene {
         this.blocked_squares.forEach(this.valid_squares.delete, this.valid_squares);
 
         // Check for win conditions
-        if (current_pos === 6 || current_pos === 42 || set_diff(this.valid_squares, this.blocked_squares).size === 0) {
-            this.finish_game(current_pos, "valid_move", null);
-        }   else {
-            this.current_player = (this.current_player===1 ? 2:1)
-            this.current_player_text.setText("Jogador " + this.current_player);
+        if ( game_mode === "offline" || game_mode === "ai" ) {
+            let winner = "";
+
+            if ( current_pos === 6 )
+                winner = "player2"
+            if ( current_pos === 42 )
+                winner = "player1"
+            if ( set_diff(this.valid_squares, this.blocked_squares).size === 0 )
+                winner = "player" + String(this.current_player);
+
+            if ( winner !== "" ) {
+                this.finish_game( {match_id: current_match['match_id'], match_result: winner, end_mode: "valid_move"} );
+                return;
+            }
         }
+
+        this.current_player = this.current_player===1 ? 2 : 1
+        this.current_player_text.setText("Jogador " + this.current_player);
+
     }
 
-    finish_game(current_pos, cause, message) {
+    finish_game(end_message) {
+        if ( String(end_message['match_id']) !== String(current_match['match_id']) )
+            return;
+
         this.game_over = true;
         this.valid_squares.clear();
         this.player.clear();
-        
-        if ( cause === "valid_move") {
-            var winner = this.current_player;
-
-            if (current_pos === 42)
-                winner = 1
-            if (current_pos === 6)
-                winner = 2
-
-            this.text = this.add.text(0, 0, "O jogador " + winner + " ganhou.", {font: "60px Impact", color: "Red"});
-            this.tweens.add ({
-                targets: this.text,
-                x: 50,
-                y: 250,
-                durations: 2000,
-                ease: "Elastic",
-                easeParams: [1.5, 0.5],
-                delay: 0
-            }, this);
-        } else if ( cause === "invalid_move" ) {
-            this.text = this.add.text(0, 0, "An invalid move has been detected.\n Game aborted.\n Result: " + message, {font: "40px Impact", color: "Red"});
-            this.tweens.add ({
-                targets: this.text,
-                x: 50,
-                y: 250,
-                durations: 1000,
-                ease: "Cubic.easeIn",
-                easeParams: [1.5, 0.5],
-                delay: 0
-            }, this);
-        } else if ( cause === "time_out" ) {
-            this.text = this.add.text(0, 0, "Time out", {font: "60px Impact", color: "Red"});
-            this.tweens.add ({
-                targets: this.text,
-                x: 50,
-                y: 250,
-                durations: 1000,
-                ease: "Cubic.easeIn",
-                easeParams: [1.5, 0.5],
-                delay: 0
-            }, this);
-        }
-
         this.squares_group.getChildren().forEach(x => x.disableInteractive());
 
+        processGameOver(end_message);
     }
 }
 

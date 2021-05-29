@@ -29,8 +29,7 @@
 //       }
 // }
 
-export default function matchApp(state=[], action) {
-  console.log(action)
+export default function active_matches(state=[], action) {
   switch(action.type){
     case 'ADD_MATCH':
       if (state.find(match => match.match_id === action.match.match_id) === undefined)
