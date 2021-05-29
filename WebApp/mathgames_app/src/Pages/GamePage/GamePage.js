@@ -20,7 +20,6 @@ import { addMatch } from '../../store/modules/matches/actions';
 
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
 function GamePage() {
-	console.log("Passei na game page")
 	var history = useHistory();
 	var user = AuthService.getCurrentUser();
 	const dispatch = useDispatch();
@@ -196,6 +195,11 @@ function GamePage() {
     }
 	
 	function find_match() {
+		// Clear listeners in case user presses Find Match button multiple times
+		socket.off("invite_link");
+		socket.off("friend_joined");
+		socket.off("match_found");
+
 		if (gameMode === "amigo") {
 			socket.emit("generate_invite", {"user_id": AuthService.getCurrentUserId()})
 
