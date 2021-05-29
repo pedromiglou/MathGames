@@ -130,7 +130,7 @@ function Navbar() {
 		<IconContext.Provider value={{color: 'grey'}}>
 			<div id="horizontal_nav_row" className="row sticky-top">
 
-				<div id="row-logo" className="col-lg-8 d-flex align-items-center">
+				<div id="row-logo" className="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 d-flex align-items-center">
 					<div className="nav-logo ml-5">
 						<Link to="/">
 							<img  className="logo" src={process.env.PUBLIC_URL + "/images/logo-light.png"}  alt="logo"/>
@@ -139,9 +139,9 @@ function Navbar() {
 				</div>
 
 				{user_authenticated &&
-				<div className="col-lg-4">
-					<div className="row h-100">
-						<div title="Notificações" className="col-2 d-flex align-items-center justify-content-center">
+				<div className="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8">
+					<div className="row h-100 nav-options float-right">
+						<div title="Notificações" className="col-xl-2 col-lg-2 col-md-2 col-sm-3 col-xs-3 d-flex align-items-center justify-content-center">
 							<span id="notifs-number">{ notifications.length }</span>
 							<DropdownButton	menuAlign="right" title={<FaIcons.FaBell size={42}/>} id="notifs-dropdown" className="navbar-dropdown">
 								<Dropdown.ItemText><h4>Notificações</h4></Dropdown.ItemText>
@@ -202,7 +202,7 @@ function Navbar() {
 								}
 							</DropdownButton>
 						</div>
-						<div title="Amigos" className="col-2 d-flex align-items-center justify-content-center">
+						<div title="Amigos" className="col-xl-2 col-lg-2 col-md-2 col-sm-3 col-xs-3 d-flex align-items-center justify-content-center">
 							<DropdownButton	menuAlign="right" title={<FaIcons.FaUserFriends size={42}/>} id="friends-dropdown">
 								<Dropdown.ItemText><div style={{width: 230}}><h4>Amigos</h4></div></Dropdown.ItemText>
 								<Dropdown.Divider />
@@ -230,24 +230,25 @@ function Navbar() {
 							</DropdownButton>
 						</div>
 
-						<div className="col-8">
-							<div className="row h-100 d-flex align-items-center mr-3">
-								<div className="col">
+						<div className="col-xl-6 col-lg-8 col-md-8 col-sm-6 col-xs-6 no-margin">
+							<div className="h-100 d-flex align-items-center ">
+								<div className="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-6">
 									<div title="Perfil" className="round_profile_logo float-right">
 										<Link to="/profile">
 											<Avatar navbar={true} skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser}/>
 										</Link>
 									</div>
 								</div>
-								<div className="col navbar-account-info">
+								<div className="col-xl-4 col-lg-4 col-md-4 col-sm-6 col-xs-6 navbar-account-info">
 									<h5>Nome: {user.username} </h5>
 									<h5>Nivel: {getLevel(user.account_level)} </h5>
 								</div>
-								<Link to="/">
-									<h2 onClick={run_logout} className="h2-login">Logout <IconContext.Provider value={{color: '#007bff'}}><FiIcons.FiLogOut className="icon_notifications"  size={42} /></IconContext.Provider>
-									</h2>
-								</Link>
-								
+								<div className="col-xl-5 col-lg-5 col-md-4 col-sm-6 col-xs-6">
+									<Link to="/">
+										<h2 onClick={run_logout} className="h2-login">Logout</h2>
+										<IconContext.Provider value={{color: '#007bff'}}><FiIcons.FiLogOut className="icon_notifications"  size={42} /></IconContext.Provider>
+									</Link>
+								</div>
 							</div>
 						</div>
 					</div>

@@ -155,7 +155,6 @@ const Legs = ({ position, args, color, tex, props, trouserBool }) => {
 
 	if (color !== "none") {
 		if(tex) {
-
 			switch(props.trouserName) {
 				case "TrouserJeans":
 					var textureLoaded = TrouserJeans;
