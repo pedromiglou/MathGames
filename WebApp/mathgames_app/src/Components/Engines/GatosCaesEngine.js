@@ -4,7 +4,7 @@ import socket from "../../index"
 import AuthService from '../../Services/auth.service';
 import GatosCaesAI from "../AI/GatosCaesAI";
 
-var game_mode, ai_diff, auth_user, current_match, processGameOver;
+var game_mode, ai_diff, current_match, processGameOver;
 
 export const GatosCaesEngine = ({process_game_over, arg_game_mode, arg_ai_diff, curr_match}) => {
     useEffect(() => {
@@ -15,7 +15,7 @@ export const GatosCaesEngine = ({process_game_over, arg_game_mode, arg_ai_diff, 
         current_match = curr_match;
         processGameOver = process_game_over;
         game_mode = arg_game_mode;
-        auth_user = AuthService.getCurrentUser();
+        //auth_user = AuthService.getCurrentUser();
 
         if (arg_ai_diff === "easy")
             ai_diff = 0.2
@@ -34,7 +34,7 @@ export const GatosCaesEngine = ({process_game_over, arg_game_mode, arg_ai_diff, 
             scene: [GatosCaesScene]
         }
         new Phaser.Game(config);
-    }, [arg_game_mode, arg_ai_diff]);
+    }, [process_game_over, arg_game_mode, arg_ai_diff, curr_match]);
     
     return (<></>);
 }

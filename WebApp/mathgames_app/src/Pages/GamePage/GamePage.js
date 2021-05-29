@@ -14,7 +14,7 @@ import * as FaIcons from "react-icons/fa";
 import * as FiIcons from "react-icons/fi";
 import {IconContext} from 'react-icons';
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { addMatch } from '../../store/modules/matches/actions';
 
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo

@@ -35,7 +35,7 @@ export const RastrosEngine = ({process_game_over, arg_game_mode, arg_ai_diff, cu
             scene: [RastrosScene]
         }
         new Phaser.Game(config);
-    }, [arg_game_mode, arg_ai_diff, curr_match]);
+    }, [process_game_over, arg_game_mode, arg_ai_diff, curr_match]);
     return (<></>);
 }
 

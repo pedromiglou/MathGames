@@ -6,9 +6,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { RastrosEngine } from "../../Components/Engines/RastrosEngine";
 import { GatosCaesEngine } from "../../Components/Engines/GatosCaesEngine";
 
-
-import { useDispatch } from 'react-redux';
-
 import { EndGameStatements } from '../../data/EndGameStatements';
 
 function Game()  {
