@@ -247,7 +247,7 @@ function Navbar() {
 								<div className="col-xl-5 col-lg-5 col-md-4 col-sm-6 col-xs-6">
 									<Link to="/">
 										<h2 onClick={run_logout} className="h2-login">Logout</h2>
-										<IconContext.Provider value={{color: '#007bff'}}><FiIcons.FiLogOut className="icon_notifications"  size={42} /></IconContext.Provider>
+										<IconContext.Provider  value={{color: '#007bff'}}><FiIcons.FiLogOut className="icon_notifications"  size={42} onClick={run_logout}/></IconContext.Provider>
 									</Link>
 								</div>
 							</div>

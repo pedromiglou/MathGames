@@ -10,7 +10,7 @@ class UserService {
 
     async getUserRanksById(userId) {
         var url = urlAPI + 'api/userranks/' + userId;
-        var res = await fetch(url);
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         return res.json();
     }
 
