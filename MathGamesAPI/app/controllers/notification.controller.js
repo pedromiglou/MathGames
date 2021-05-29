@@ -44,11 +44,14 @@ exports.create = (req, res) => {
         })
         .catch(err => {
           res.status(500).send({
-            message:
-              err.message || "Some error occurred while creating the Notification."
+            message: err.message || "Some error occurred while creating the Notification."
           });
         });
       }
+    }).catch(err => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while searching for Notification Duplication."
+      });
     })
   } else {
     // Save Notification in the database
@@ -58,8 +61,7 @@ exports.create = (req, res) => {
       })
       .catch(err => {
         res.status(500).send({
-          message:
-            err.message || "Some error occurred while creating the Notification."
+          message: err.message || "Some error occurred while creating the Notification."
         });
       });
   }
@@ -73,8 +75,7 @@ exports.findAll = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving Notifications."
+        message: err.message || "Some error occurred while retrieving Notifications."
       });
     });
 };
@@ -82,8 +83,6 @@ exports.findAll = (req, res) => {
 // Find a single Notification with an id
 exports.findByUserId = (req, res) => {
   const id = req.params.id;
-  // SELECT Notifications.id, User.id as sender_id, username as sender, receiver, notification_type, notification_date 
-  // FROM Notifications JOIN User ON sender = User.id WHERE receiver = ? ORDER BY notification_date desc
 
   if (parseInt(req.userId) !== parseInt(id)) {
     res.status(401).send({
@@ -99,7 +98,6 @@ exports.findByUserId = (req, res) => {
       res.send(data);
     })
     .catch(err => {
-      console.log(err)
       res.status(500).send({
         message: "Error retrieving Notifications received by user id=" + id
       });
@@ -111,11 +109,19 @@ exports.delete = (req, res) => {
   const id = req.params.id;
 
   Notification.findOne({where: {id: id}}).then(notif => {
-    if (parseInt(notif.receiver) !== parseInt(req.userId)) {
+    if (notif === null) {
+      res.status(404).send({
+        message: "Notification not found"
+      });
+      return;
+    }
+    
+    if ( (parseInt(notif.receiver) !== parseInt(req.userId)) && (parseInt(notif.sender) !== parseInt(req.userId)) ) {
       res.status(401).send({
         message: "Unauthorized!"
       });
       return;
+
     } else {
       Notification.destroy({
         where: { id: id }
@@ -126,7 +132,7 @@ exports.delete = (req, res) => {
               message: "Notification was deleted successfully!"
             });
           } else {
-            res.send({
+            res.status(500).send({
               message: `Cannot delete Notification with id=${id}. Maybe Notification was not found!`
             });
           }
@@ -140,7 +146,7 @@ exports.delete = (req, res) => {
     }
   }).catch(err => {
     res.status(500).send({
-        message: "Notification not found."
+        message:  err.message || "Some error occurred while removing Notification."
     })
 });
 };

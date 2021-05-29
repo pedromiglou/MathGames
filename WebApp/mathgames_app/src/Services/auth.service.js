@@ -1,13 +1,14 @@
+import {urlAPI} from "./../data/data";
 
 class AuthService {
     async login(username, password) {
-
+            
         let userInfo= {
             username: username,
             password: password,
         }
 
-        var res = await fetch('http://localhost:4000/api/users/login', {
+        var res = await fetch(urlAPI + 'api/users/login', {
             method:'POST',
             headers:{'Content-type':'application/json'},
             body: JSON.stringify(userInfo)
@@ -16,12 +17,9 @@ class AuthService {
         var json = await res.json()
         
         if(json.id) {
-            localStorage.setItem("user", JSON.stringify(json));
-            console.log("vou return")
-            return true
-        } else {
-            return false
-        }
+            sessionStorage.setItem("user", JSON.stringify(json));
+        } 
+        return json
 
     }
 
@@ -34,23 +32,26 @@ class AuthService {
         }
         
 
-        var res = await fetch('http://localhost:4000/api/users/register', {
+        var res = await fetch(urlAPI + 'api/users/register', {
             method:'POST',
             headers:{'Content-type':'application/json'},
             body: JSON.stringify(userInfo)
         })
-        console.log(res)
+
         var json = await res.json()
         
-        console.log(json)
         if(json.id) {
-            return true
+            return { ok: true}
         }
-        return false
+        if(json.message === "Failed! Username is already in use!")
+            return { ok: false, error: "username"}
+        if(json.message === "Failed! Email is already in use!")
+            return { ok: false, error: "email"}
+        return { ok: false, error: json.message}
     }
 
     getCurrentUser() {
-        return JSON.parse(localStorage.getItem("user"))
+        return JSON.parse(sessionStorage.getItem("user"))
     }
 
     getCurrentUserId() {

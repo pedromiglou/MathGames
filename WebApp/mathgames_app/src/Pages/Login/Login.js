@@ -2,25 +2,37 @@ import { React, useState } from "react";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Login.css";
-import AuthService from "../../Services/auth.service"
+import AuthService from "../../Services/auth.service";
+import {urlWeb} from "./../../data/data";
 
 function Login() {
     const [signIn, setSignIn] = useState(true);
     const [errorLogin, setErroLogin] = useState(false);
+    const [errorBan, setErroBan] = useState(false);
     const [errorRegisto, setErroRegisto] = useState(false);
+    const [errorNamesAlreadyTakenRegisto, setErroNamesAlreadyTakenRegisto] = useState("");
+    const [errorPasswordRegisto, setErroPasswordRegisto] = useState(false);
+    const [errorEmailUsernameRegisto, setErroEmailUsernameRegisto] = useState("");
     const [sucessoRegisto, setSucessoRegisto] = useState(false);
 
     async function login() {
         setErroRegisto(false);
-        setErroLogin(false)
+        setErroLogin(false);
+        setErroBan(false);
+        setSucessoRegisto(false);
+        setErroPasswordRegisto(false);
+        setErroEmailUsernameRegisto("");
+        setErroNamesAlreadyTakenRegisto("");
         var response = await AuthService.login(
             document.getElementById("nomeUtilizadorLogin").value,
             document.getElementById("passwordLogin").value
         )   
-        
-        if (response === true)
-            window.location.assign("http://localhost:3000/");
-        else {
+
+        if (response.id !== undefined)
+            window.location.assign(urlWeb);
+        else if (response.msg === "This account is banned") {
+            setErroBan(true);
+        } else {
             setErroLogin(true);
         }
     }
@@ -29,22 +41,53 @@ function Login() {
 
     async function register() {
         setErroRegisto(false);
-        setErroLogin(false)
-        var response = await AuthService.register(
-            document.getElementById("nomeUtilizadorRegisto").value,
-            document.getElementById("emailRegisto").value,
-            document.getElementById("passwordRegisto").value
-        )
+        setErroLogin(false);
+        setErroBan(false);
+        setSucessoRegisto(false);
+        setErroPasswordRegisto(false);
+        setErroEmailUsernameRegisto("");
+        setErroNamesAlreadyTakenRegisto("");
+        if (document.getElementById("passwordRegisto").value.match(/^(?=.*\d)(?=.*[a-zA-Z]).{5,25}$/)) {
 
-        if (response === true) {
-            document.getElementById('nomeUtilizadorRegisto').value = ''
-            document.getElementById('emailRegisto').value = ''
-            document.getElementById('passwordRegisto').value = ''
-            document.getElementById('change_button').click()
-            setSucessoRegisto(true);
+            if (25 >= document.getElementById("nomeUtilizadorRegisto").value.length && document.getElementById("nomeUtilizadorRegisto").value.length >= 3) {
+                
+                if (/\S+@\S+\.\S+/.test(document.getElementById("emailRegisto").value)) {
+                    var response = await AuthService.register(
+                        document.getElementById("nomeUtilizadorRegisto").value,
+                        document.getElementById("emailRegisto").value,
+                        document.getElementById("passwordRegisto").value
+                    )
+
+                    if (response.ok === true) {
+                        document.getElementById('nomeUtilizadorRegisto').value = ''
+                        document.getElementById('emailRegisto').value = ''
+                        document.getElementById('passwordRegisto').value = ''
+                        document.getElementById('change_button').click()
+                        setSucessoRegisto(true);
+                        }
+                    else {
+                        if (response.error === "username")
+                            // username já foi escolhido
+                            setErroNamesAlreadyTakenRegisto("Username");
+                        if (response.error === "email")
+                            // email já foi escolhido
+                            setErroNamesAlreadyTakenRegisto("Email");
+                        if (response.error === "error")
+                            // outro erro na base de dados
+                            setErroRegisto(true);
+                    }
+                } else {
+                    // erro email
+                    setErroEmailUsernameRegisto("Email");
+                }
+            } else {
+                // erro username
+                setErroEmailUsernameRegisto("Username");
             }
-        else
-            setErroRegisto(true);
+        } else {
+            // password tem que ter 5 caracteres, no minimo uma letra e um numero
+            setErroPasswordRegisto(true);
+        }
     }
 
 
@@ -87,21 +130,46 @@ function Login() {
             
 
             <div className="container container-login">
+            {errorBan === true 
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}> 
+                Esta conta encontra-se banida.
+                 </div> : null}
+
             {errorLogin === true 
                 ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}> 
                 Ocorreu um erro no seu processo login. As suas credênciais são inválidas.
-                 </div> 
-                : null}
+                 </div> : null}
 
             {errorRegisto === true 
                 ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
-                Ocorreu um erro no seu processo registo. Username/Email já se encontram em utilização.
+                Erro. Por favor efetue novamente.
+                 </div> : null}
+
+            {errorNamesAlreadyTakenRegisto !== "" 
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                Erro. {errorNamesAlreadyTakenRegisto} já se encontra em utilização.
+                 </div> : null}
+            
+            {errorPasswordRegisto === true 
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", textAlign:"center", fontSize:"22px"}}>
+                Palavra-passe inválida. Palavra-passe tem que ter no mínimo 5 caracteres, um número e uma letra.
+                 </div> : null}
+
+            {errorEmailUsernameRegisto === "Username"
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                Username inválido. Username tem que ter no minimo 3 caracteres, e um maximo de 20.
+                 </div> : null}
+
+            {errorEmailUsernameRegisto === "Email"
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                Email inválido. Insira um email válido.
                  </div> : null}
 
             {sucessoRegisto === true 
                 ? <div className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
                 A sua conta foi criada com sucesso! 
                 </div> : null}
+                
             <div className="forms-container-login">
                 <div id="signin_id" className={"signin"}>
                     <form action="#" className="sign-in-form">

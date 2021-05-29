@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config.js");
 const db = require("../models");
-const User = db.users;
+const User = db.user;
 
 verifyToken = (req, res, next) => {
     let token = req.headers["x-access-token"];
@@ -19,14 +19,29 @@ verifyToken = (req, res, next) => {
         });
         }
         req.userId = decoded.id;
+        req.account_type = decoded.account_type;
         next();
+    });
+};
+
+isAdmin = (req, res, next) => {
+    User.findByPk(req.userId).then(user => {
+        if (user.account_type == "A") {
+            next();
+            return;
+        }
+
+        res.status(403).send({
+            message: "Require Admin Role!"
+        });
+        return;
     });
 };
 
 const authJwt = {
     verifyToken: verifyToken,
-    /*
     isAdmin: isAdmin,
+    /*
     isModerator: isModerator,
     isModeratorOrAdmin: isModeratorOrAdmin
     */

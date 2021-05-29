@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, Suspense } from "react";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Profile.css";
@@ -6,11 +6,12 @@ import Avatar from "../../Components/Avatar";
 import InventoryItems from "../../Components/InventoryItems";
 
 import { games_info } from "../../data/GamesInfo";
+import { ranks_info } from '../../data/ranksInfo';
+
 
 import AuthService from "../../Services/auth.service"
 import UserService from "../../Services/user.service"
-
-
+import { Modal, Button } from "react-bootstrap";
 
 const Profile = () => {
     const [menuOption, setMenuOption] = useState("Geral");
@@ -18,30 +19,93 @@ const Profile = () => {
     const [user, setUser] = useState("");
     const [games, setGames] = useState([]);
 
-    const [hat, setHat] = useState("MagicianHat");
-    const [shirt, setShirt] = useState("");
+    const [hat, setHat] = useState("none");
+    const [shirt, setShirt] = useState("none");
     const [color, setColor] = useState("#FFAF00");
-    const [accessorie, setAccessorie] = useState("None");
-    const [trouser, setTrouser] = useState("#808080");
-
+    const [accessorie, setAccessorie] = useState("none");
+    const [trouser, setTrouser] = useState("none");
+    const [modalSaveShow, setSaveModalShow] = useState(false);
+    const [modalCancelShow, setCancelModalShow] = useState(false);
     var geral_e;
     var inventario_e;
     var last_games_e;
 
+    var current_user = AuthService.getCurrentUser();
+    var ranks_dict = {}
+    for (const [, value] of Object.entries(games_info)) {
+        if (value["toBeDone"] === false) {
+            var userRankValue;
+            var userRank = 0
+            switch (value["id"]) {
+                case 0:
+                    userRankValue = current_user.userRanksData.rastros
+                    break;
+                case 1:
+                    userRankValue = current_user.userRanksData.gatos_e_caes
+                    break;
+                default:
+                    userRankValue = 0;
+                    break;
+            }
+
+            if (userRankValue <= 25)
+                userRank = 0
+            else if (userRankValue <= 75)
+                userRank = 1
+            else if (userRankValue <= 175)
+                userRank = 2
+            else if (userRankValue <= 275)
+                userRank = 3
+            else if (userRankValue <= 400)
+                userRank = 4
+            else if (userRankValue <= 550)
+                userRank = 5
+            else if (userRankValue <= 700)
+                userRank = 6
+            else if (userRankValue <= 850)
+                userRank = 7
+            else if (userRankValue <= 1050)
+                userRank = 8
+            else if (userRankValue <= 1250)
+                userRank = 9
+            else if (userRankValue <= 1450)
+                userRank = 10
+            else if (userRankValue <= 1700)
+                userRank = 11
+            else
+                userRank = 12
+
+            ranks_dict[value["id"]]  = userRank
+        }
+    }
 
     // Tem de colocar no redux o tipo de user
     useEffect(() => {
 		var current_user = AuthService.getCurrentUser();
-		setUser(current_user);
+        
+        async function fetchApiUserById() {
+            var user = await UserService.getUserById(current_user.id);
+
+            setUser(user);
+            setHat(user.avatar_hat);
+            setShirt(user.avatar_shirt);
+            setColor(user.avatar_color);
+            setAccessorie(user.avatar_accessorie);
+            setTrouser(user.avatar_trouser);
+        }
 
 		// Load user games history
         async function fetchApiLastGames() {
-            console.log(current_user.id)
             var response = await UserService.getLastGames(current_user.id);
-            setGames(response);
+
+            if (!response.error)
+                setGames(response);
+            else
+                setGames("erro")
         }
 
         if (current_user !== null) {
+            fetchApiUserById();
             fetchApiLastGames();
         }
 
@@ -121,6 +185,63 @@ const Profile = () => {
         setTrouser(trousersName);
     }
 
+    async function saveAvatar() {
+        var current_user = AuthService.getCurrentUser();
+        await UserService.update_user(color, hat, shirt, accessorie, trouser, current_user.id);
+        window.location.reload();
+    }
+
+    function SaveChangesModal(props) {
+        return (
+          <Modal
+            {...props}
+            size="md"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header closeButton>
+              <Modal.Title id="contained-modal-title-vcenter" style={{color: "#0056b3", fontSize: 30}}>
+                Guardar alterações
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p style={{color: "#0056b3", fontSize: 20}}>Tem a certeza que pretende guardar as alterações efetuadas?</p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button style={{fontSize: 18}} onClick={() => {saveAvatar();}} className="btn save-btn">Guardar</Button>
+              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Cancelar</Button>
+            </Modal.Footer>
+          </Modal>
+        );
+      }
+
+      function CancelChangesModal(props) {
+        return (
+          <Modal
+            {...props}
+            size="md"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header closeButton>
+              <Modal.Title id="contained-modal-title-vcenter" style={{color: "#0056b3", fontSize: 30}}>
+                Cancelar alterações
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p style={{color: "#0056b3", fontSize: 20}}>Tem a certeza que pretende descartar as alterações efetuadas?</p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button style={{fontSize: 18}} onClick={() => window.location.reload()} className="btn save-btn">Sim</Button>
+              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Não</Button>
+            </Modal.Footer>
+          </Modal>
+        );
+      }
+
+    var userLevel = getLevel(user.account_level);
+
+
     return (
         <div className="hero-container">
             <div className="header">
@@ -162,10 +283,18 @@ const Profile = () => {
                 </div>
                 {menuOption === "Geral" && (
                     <div className="col-lg-9 no-margins profile ">
+                        {
+                            
+                        user.message !== undefined ?
+                        <p>Perfil Indisponível</p>
+                        :
+                        <>
                         <div className="container row container-hidden top-profile">
                             <div className="col-lg-8 row">
                                 <div className="col-lg-4 avatar-geral">
-                                    <Avatar skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser}/>
+                                    <Suspense fallback={<h1>Loading ...</h1>}>	
+                                        <Avatar skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser}/>
+                                    </Suspense>
                                 </div>
                                 <div className="col-lg-8">
                                     <div className="account-name">
@@ -177,7 +306,7 @@ const Profile = () => {
                                 <p className="lvl"> Nivel </p>
                                 <div className="lvl-style row">
                                     <div className="col-12 col-sm-12 col-lg-2">
-                                        <p>{getLevel(user.account_level)}</p>
+                                        <p>{userLevel}</p>
                                     </div>
                                     <div className="col-12 col-sm-12 col-lg-7">
                                         <div className="progress">
@@ -194,15 +323,16 @@ const Profile = () => {
                                         </div>
                                     </div>
                                     <div className="col-12 col-sm-12 col-lg-2">
-                                        <p>{getLevel(user.account_level) + 1}</p>
+                                        <p>{userLevel + 1}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <hr className="solid" />
                         {Object.entries(games_info).map(([key, value]) => (	
-			
-                            <>
+                            value["toBeDone"] === false &&
+
+                            <div key={key}>
                                 <div className="row profile-games">
                                     <img
                                         src={value["img"]}
@@ -212,27 +342,78 @@ const Profile = () => {
                                     <div className="game-name">
                                         <p>{value["title"]}</p>
                                     </div>
+
+                                    <img
+                                        src={process.env.PUBLIC_URL +
+                                            ranks_info[ranks_dict[key]].image}
+                                        alt="Rank"
+                                    />
+                                    <p>{ranks_info[ranks_dict[key]].name}</p>
                                 </div>
                                 <hr className="solid solid-pos" />
-                            </>
+                            </div>
                             )
                         )}
-                        
+                        <br></br>
+                        </>
+                    }
                     </div>
                 )}
 
                 {menuOption === "Inventario" && (
                     <div className="col-lg-9 no-margins inventory">
                         <div className="row no-margins">
-                            <div className="col-lg-5 avatar-display container">
-                                <h1>{user.username}</h1>
-                                    <Avatar skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser}/>
-                                <div className="container skin-pallette" id="skin-pallette">
-                                    <h3>Cor de pele</h3>
-                                    <span className="dot-1" onClick={() => setColor("#FFAF00")}></span>
-                                    <span className="dot-2" onClick={() => setColor("#694028")}></span>
-                                    <span className="dot-3" onClick={() => setColor("#B1A7FF")}></span>
-                                    <span className="dot-4" onClick={() => setColor("#12EED4")}></span>
+                            <div className="col-lg-5 container">
+                                <div className="avatar-display">
+                                    <h1>{user.username}</h1>
+                                    <Avatar skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser} />
+                                </div>
+                                <h3 className="centered">Cor de pele</h3>
+                                <div className="row">
+                                    <div className="col-xl-6 col-lg-12 col-md-12 col-sm-12 no-margin">
+                                        <div className="container skin-pallette-2" id="skin-pallette-1">
+                                            <span className="dot d1" onClick={() => setColor("#7B241C")}></span>
+                                            <span className="dot d2" onClick={() => setColor("#C0392B")}></span>
+                                            <span className="dot d3" onClick={() => setColor("#D98880")}></span>
+                                        </div>
+                                        <div className="container skin-pallette-2" id="skin-pallette-1">
+                                            <span className="dot d4" onClick={() => setColor("#512E5F")}></span>
+                                            <span className="dot d5" onClick={() => setColor("#7D3C98")}></span>
+                                            <span className="dot d6" onClick={() => setColor("#A569BD")}></span>
+                                        </div>
+                                        <div className="container skin-pallette-2" id="skin-pallette-1">
+                                            <span className="dot d7" onClick={() => setColor("#1B4F72")}></span>
+                                            <span className="dot d8" onClick={() => setColor("#2E86C1")}></span>
+                                            <span className="dot d9" onClick={() => setColor("#5DADE2")}></span>
+                                        </div>
+                                        <div className="container skin-pallette-2" id="skin-pallette-1">
+                                            <span className="dot d10" onClick={() => setColor("#186A3B")}></span>
+                                            <span className="dot d11" onClick={() => setColor("#28B463")}></span>
+                                            <span className="dot d12" onClick={() => setColor("#58D68D")}></span>
+                                        </div>
+                                    </div>
+                                    <div className="col-xl-6 col-lg-12 col-md-12 col-sm-12 no-margin">
+                                        <div className="container skin-pallette-2" id="skin-pallette-1">
+                                            <span className="dot d13" onClick={() => setColor("#7E5109")}></span>
+                                            <span className="dot d14" onClick={() => setColor("#D68910")}></span>
+                                            <span className="dot d15" onClick={() => setColor("#F5B041")}></span>
+                                        </div>
+                                        <div className="container skin-pallette-2" id="skin-pallette-1">
+                                            <span className="dot d16" onClick={() => setColor("#6E2C00")}></span>
+                                            <span className="dot d17" onClick={() => setColor("#BA4A00")}></span>
+                                            <span className="dot d18" onClick={() => setColor("#DC7633")}></span>
+                                        </div>
+                                        <div className="container skin-pallette-2" id="skin-pallette-1">
+                                            <span className="dot d19" onClick={() => setColor("#626567")}></span>
+                                            <span className="dot d20" onClick={() => setColor("#A6ACAF")}></span>
+                                            <span className="dot d21" onClick={() => setColor("#CACFD2")}></span>
+                                        </div>
+                                        <div className="container skin-pallette-2" id="skin-pallette-1">
+                                            <span className="dot d22" onClick={() => setColor("#17202A")}></span>
+                                            <span className="dot d23" onClick={() => setColor("#273746")}></span>
+                                            <span className="dot d24" onClick={() => setColor("#566573")}></span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -275,33 +456,45 @@ const Profile = () => {
                                 <div className="inv-list">
                                     {invOption === "Chapeus" && (
                                         <div >
-                                            <InventoryItems option={"Chapeus"} hatName={changeHat} current={hat} />
+                                            <InventoryItems option={"Chapeus"} hatName={changeHat} current={hat} lvl={userLevel}/>
                                         </div>
                                     )}
                                     {invOption === "Camisolas" && (
                                         <div >
-                                            <InventoryItems option={"Camisolas"} shirtName={changeShirt} current={shirt} />
+                                            <InventoryItems option={"Camisolas"} shirtName={changeShirt} current={shirt} lvl={userLevel}/>
                                         </div>
                                     )}
                                     {invOption === "Acessorios" && (
                                         <div >
-                                            <InventoryItems option={"Acessorios"} accessorieName={changeAccessorie} current={accessorie} />
+                                            <InventoryItems option={"Acessorios"} accessorieName={changeAccessorie} current={accessorie} lvl={userLevel}/>
                                         </div>
                                     )}
                                     {invOption === "Calcas" && (
                                         <div >
-                                            <InventoryItems option={"Calcas"} trouserName={changeTrousers} current={trouser} />
+                                            <InventoryItems option={"Calcas"} trouserName={changeTrousers} current={trouser} lvl={userLevel}/>
                                         </div>
                                     )}
                                 </div>
 
                                 <div className="row save-cancel-btns">
                                     <div className="col-lg-6 col-sm-12">
-                                        <button className="btn save-btn"> Salvar </button>
+                                    <button className="btn save-btn" onClick={() => setSaveModalShow(true)}>
+                                        Salvar
+                                    </button>
+
+                                    <SaveChangesModal
+                                        show={modalSaveShow}
+                                        onHide={() => setSaveModalShow(false)}
+                                    />
                                     </div>
                                     <div className="col-lg-6 col-sm-12">
-                                        <button className="btn cancel-btn"> Cancelar </button>
+                                        <button className="btn cancel-btn" onClick={() => setCancelModalShow(true)}> Cancelar </button>
                                     </div>
+
+                                    <CancelChangesModal
+                                        show={modalCancelShow}
+                                        onHide={() => setCancelModalShow(false)}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -319,7 +512,10 @@ const Profile = () => {
                                     <div className="col col-2">Exp. Ganha</div>
                                     <div className="col col-2">Detalhes</div>
                                 </li>
-                                {Object.entries(games).length === 0 
+                                {
+                                games === "erro" 
+                                ?  <p className="no-games-found">Histórico de jogos indisponível!</p>
+                                : Object.entries(games).length === 0 
                                     ? <p className="no-games-found">O seu histório de jogos é vazio!</p>
                                     :
                                     Object.entries(games).map(

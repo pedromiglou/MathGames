@@ -136,7 +136,7 @@ class caes_gatosAI {
                         }
                     }
                 }
-                var newScore = this.minimax(validSquares2, Math.ceil(this.turnCount/7), false);
+                var newScore = this.minimax(validSquares2, 2+ Math.floor(this.turnCount/7), -100, 100, false);
                 if (newScore > score) {
                     chosen = piece;
                     score = newScore;
@@ -153,13 +153,13 @@ class caes_gatosAI {
     }
 
     //minimax algorithmn
-    minimax(validSquares, depth, maximizingPlayer) {
+    minimax(validSquares, depth, alpha, beta, maximizingPlayer) {
         if (depth == 0 || validSquares.length==0) {
             return this.heuristic(this.aiPieces, this.playerPieces);
         }
         if (maximizingPlayer) {
             var value = -100;
-            validSquares.forEach((piece) => {
+            for (const piece of validSquares) {
                 var validSquares2 = [];
                 this.aiPieces[piece[0]][piece[1]] = true;
                 for (var y=0; y<8; y++) {
@@ -171,16 +171,18 @@ class caes_gatosAI {
                     }
                 }
 
-                var newValue = this.minimax(validSquares2, depth-1, false);
+                var newValue = this.minimax(validSquares2, depth-1, alpha, beta, false);
+                this.aiPieces[piece[0]][piece[1]] = false;
+                
                 if (newValue > value) {
                     value = newValue;
                 }
-                
-                this.aiPieces[piece[0]][piece[1]] = false;
-            })
+                if (value>alpha) alpha = value;
+                if (alpha>=beta) return value;
+            }
         } else {
             var value = 100;
-            validSquares.forEach((piece) => {
+            for (const piece of validSquares) {
                 var validSquares2 = [];
                 this.playerPieces[piece[0]][piece[1]] = true;
                 for (var y=0; y<8; y++) {
@@ -192,13 +194,15 @@ class caes_gatosAI {
                     }
                 }
 
-                var newValue = this.minimax(validSquares2, depth-1, true);
+                var newValue = this.minimax(validSquares2, depth-1, alpha, beta, true);
+                this.playerPieces[piece[0]][piece[1]] = false;
+
                 if (newValue < value) {
                     value = newValue;
                 }
-                
-                this.playerPieces[piece[0]][piece[1]] = false;
-            })
+                if (value<beta) beta=value;
+                if (beta<=alpha) return value;
+            }
         }
         return value;
     }

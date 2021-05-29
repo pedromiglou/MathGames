@@ -1,5 +1,5 @@
 /* React and React-Icons */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {IconContext} from 'react-icons';
 import * as AiIcons from 'react-icons/ai';
 
@@ -9,9 +9,28 @@ import { Link } from 'react-router-dom';
 import './Menu.css'
 
 /* Data and Service */
-import {sidebarData_group1, sidebarData_group2} from '../../data/SidebarData';
+import {sidebarData_group1, sidebarData_group2, sidebarData_group_admin} from '../../data/SidebarData';
+import AuthService from '../../Services/auth.service';
 
 function Sidemenu() {
+	const [Admin, setAdmin] = useState(false);
+	const [normalUser, setNormalUser] = useState(false);
+	
+
+	// Tem de colocar no redux o tipo de user
+    useEffect(() => {
+		var current_user = AuthService.getCurrentUser();
+
+		if (current_user === null){
+			setNormalUser(true);
+		} else if (current_user['account_type'] === 'A') {
+			setAdmin(true);
+		} else {
+			setNormalUser(true);
+		}
+		
+    }, [])
+
 	return (
 		<IconContext.Provider value={{color: 'grey'}}>
 			{/* <nav className={sidebar ? "nav-menu active" : "nav-menu collapsed"}> */}
@@ -27,21 +46,47 @@ function Sidemenu() {
 				</div>
 
 				<hr></hr>
-				{sidebarData_group1.map((item) =>{
-					return(
-						<div key={item.id} className="nav-item">
-							<li className={item.cName}>
-								<Link to={item.path}> 
-									<i className="subicon">{item.icon}</i>
-									<span className="sidebar-icons icons-name">{item.title}</span>
-									{/* <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span> */}
-									
-								</Link>
-							</li>
-						</div>
-					);
-				})}
+
+				{ Admin && 
+					<div>
+						{sidebarData_group_admin.map((item) =>{
+						return(
+							<div key={item.id} className="nav-item">
+								<li  className={item.cName}>
+									<Link to={item.path}> 
+										<i className="subicon">{item.icon}</i>
+										<span className="sidebar-icons icons-name">{item.title}</span>
+										{/* <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span> */}
+									</Link>
+								</li>
+							</div>
+							);
+						})}
+					</div>
+				}
+
+				{ normalUser && 
+					<div>
+						{sidebarData_group1.map((item) =>{
+						return(
+							<div key={item.id} className="nav-item">
+								<li className={item.cName}>
+									<Link to={item.path}> 
+										<i className="subicon">{item.icon}</i>
+										<span className="sidebar-icons icons-name">{item.title}</span>
+										{/* <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span> */} 
+										
+									</Link>
+								</li>
+							</div>
+							);
+						})}
+					</div>
+				}
+				
+
 				<hr></hr>
+				
 				{sidebarData_group2.map((item) =>{
 					return(
 						<div key={item.id} className="nav-item">

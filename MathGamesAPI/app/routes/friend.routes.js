@@ -8,16 +8,16 @@ module.exports = app => {
     router.post("/", authJwt.verifyToken, friends.create);
   
     // Retrieve all friends
-    router.get("/", friends.findAll);
+    router.get("/", [authJwt.verifyToken, authJwt.isAdmin], friends.findAll);
   
     // Retrieve all friends of a userId
     router.get("/:id", authJwt.verifyToken, friends.findByUserId);
   
     // Delete a friendship of two users
-    router.delete("/:friendId1/:friendId2", friends.delete);
+    router.delete("/:friendId1/:friendId2", authJwt.verifyToken,  friends.delete);
   
     // Delete all friends
-    router.delete("/", friends.deleteAll);
+    router.delete("/", [authJwt.verifyToken, authJwt.isAdmin], friends.deleteAll);
   
     app.use('/api/friends', router);
   };

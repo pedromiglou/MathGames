@@ -13,14 +13,16 @@ import * as RiIcons from "react-icons/ri";
 import * as FaIcons from "react-icons/fa";
 import * as FiIcons from "react-icons/fi";
 import {IconContext} from 'react-icons';
+import { ranks_info } from '../../data/ranksInfo';
 
 import { useDispatch } from 'react-redux';
 import { addMatch } from '../../store/modules/matches/actions';
 
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
 function GamePage() {
+	console.log("Passei na game page")
 	var history = useHistory();
-	//var user = AuthService.getCurrentUser();
+	var user = AuthService.getCurrentUser();
 	const dispatch = useDispatch();
 
 	const dif_options = [
@@ -31,6 +33,7 @@ function GamePage() {
 
 	//De alguma maneira verificar se estiver vazio
 	const [gameMode, setGameMode] = useState("");
+	
 	//Depois aqui podemos meter conforme as preferencias no perfil
 	const [AIdiff, setAIdiff] = useState("");
 
@@ -65,6 +68,44 @@ function GamePage() {
 
 		socket.emit("entered_link", {"user_id": AuthService.getCurrentUserId(), "match_id": new_match_id, "game_id": game_id})
 	}
+
+	var userRank = 0
+	var userRankValue = 0;
+	if (user !== null) {
+		if (game_id === "0") {
+			userRankValue = user.userRanksData.rastros
+		} else if (game_id === "1") {
+			userRankValue = user.userRanksData.gatos_e_caes
+		}
+
+		if (userRankValue <= 25)
+			userRank = 0
+		else if (userRankValue <= 75)
+			userRank = 1
+		else if (userRankValue <= 175)
+			userRank = 2
+		else if (userRankValue <= 275)
+			userRank = 3
+		else if (userRankValue <= 400)
+			userRank = 4
+		else if (userRankValue <= 550)
+			userRank = 5
+		else if (userRankValue <= 700)
+			userRank = 6
+		else if (userRankValue <= 850)
+			userRank = 7
+		else if (userRankValue <= 1050)
+			userRank = 8
+		else if (userRankValue <= 1250)
+			userRank = 9
+		else if (userRankValue <= 1450)
+			userRank = 10
+		else if (userRankValue <= 1700)
+			userRank = 11
+		else
+			userRank = 12
+	}
+
 
 	function changeMode(val) {
 		var card_comp = document.getElementById("online");
@@ -266,217 +307,228 @@ function GamePage() {
 					</div>
 				</IconContext.Provider>
 			</div>
-		);
+		)
 	}
-	else {
+	else
 		return (
 			<>
 				<div className="container choose-game-mode-container">
-					<div className="row">
-						<div className="col-lg-4 game-details orange left">
-							<h1 className="game-Name"> {game_info["title"]} </h1>
-							<div className="image">
-								<img
-								src={game_info["img"]}
-								alt="Info"
-								className="game-image"
-								/>	
-							</div>
-
-							<p className="game-details-p">
-								{game_info["description"]}
-							</p>
-							<hr className="descr-div-caract"></hr>
-							<div className="col-lg-12 game-caracteristics">
-								<h2 className="caract-gamemode"> Caracteristicas </h2>
-								
-								<h4>Dificuldade</h4>
-								<div className="progress caract">
-									<div
-										className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
-										role="progressbar"
-										aria-valuenow="75"
-										aria-valuemin="0"
-										aria-valuemax="100"
-										style={{ width: game_info["dificulty"]+"%" }}
-									>
-										<span>fácil</span>
-									</div>
-								</div>
-								<h4>Idade: +{ game_info["age"] } </h4>
-								{/* <div className="progress caract">
-									<div
-										className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
-										role="progressbar"
-										aria-valuenow="75"
-										aria-valuemin="0"
-										aria-valuemax="100"
-										style={{ width: "50%" }}
-									>
-										<span>Idade</span>
-									</div>
-								</div> */}
-							</div>
+				<div className="row">
+					<div className="col-lg-4 game-details orange left">
+						<h1 className="game-Name"> {game_info["title"]} </h1>
+						<div className="image">
+							<img
+							src={game_info["img"]}
+							alt="Info"
+							className="game-image"
+							/>	
 						</div>
-						<div className="col-lg-8 player-info-and-modes">
-							<div className="col-lg-12 player-rank container-hidden orange top-right">
-								<h2 className="rank-gamemode">Rank</h2>
-								<div className="col-lg-12 ranks-section">
-									<div className="col-lg-3 ant-next centered">
-										<div className="a-n-div">
-											<img
-												src={
-													process.env.PUBLIC_URL +
-													"/images/prata.png"
-												}
-												alt="Info"
-												className="a-n-rank-img"
-											/>
-											<h4>Prata</h4>
-										</div>
-									</div>
-									<div className="col-lg-1 updo-icon centered">
-										<FaIcons.FaAngleDoubleDown/>
-										{/* <h6>anterior</h6> */}
-									</div>
-									<div className="col-lg-3 centered">
-										<div>
-											<img
-												src={
-													process.env.PUBLIC_URL +
-													"/images/platina.png"
-												}
-												alt="Info"
-												className="rank-img"
-											/>
-											<h4>Platina</h4>
-										</div>
-									</div>
-									<div className="col-lg-1 updo-icon centered">
-										<FaIcons.FaAngleDoubleUp/>
-										{/* <h6>seguinte</h6> */}
-									</div>
-									<div className="col-lg-3 ant-next centered">
-										
-										<div className="a-n-div">
-											<img
-												src={
-													process.env.PUBLIC_URL +
-													"/images/diamond.png"
-												}
-												alt="Info"
-												className="a-n-rank-img"
-											/>
-											<h4>Diamante</h4>
-										</div>
-									</div>
-								</div>	
-								
-								{/* <div className="col-lg-6 no-padding center-progress-bar">
-									<p>Nivel</p>
-									<div className="row no-margin">
-										<div className="col-lg-2 lvl-left">
-											<p>99</p>
-										</div>
-										<div className="col-lg-8 center-progress-bar">
-											<div className="progress">
-												<div
-													className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
-													role="progressbar"
-													aria-valuenow="75"
-													aria-valuemin="0"
-													aria-valuemax="100"
-													style={{ width: "70%" }}
-												></div>
-											</div>
-										</div>
-										<div className="col-lg-2 lvl-right">
-											<p>100</p>
-										</div>
-									</div>
-								</div>	 */}
-							</div>
 
-							<div className="col-lg-12 game-mode orange bottom-right">
-								<IconContext.Provider  value={{color: 'white'}}>
-									<h2 className="title-gamemode">Escolhe modo de jogo</h2>
-									<div className="row">
-										<div className="col-lg-6 centered set-padding">
-									
-											<Card id="online" className="mode-card" onClick={() => changeMode("online")}>
-												<div>
-												
-													<i className="mode-icon"><RiIcons.RiSwordFill/></i>
-												
-													<h2>
-														Competitivo
-													</h2>
-												</div>
-											</Card>
-										</div>
-
-										<div className="col-lg-6 centered set-padding">
-											<Card id="offline" className="mode-card" onClick={() => changeMode("offline")}>
-												<div>
-													
-													<i className="mode-icon"><FaIcons.FaUserFriends/></i>
-													
-													<h2>
-														No mesmo computador
-													</h2>
-													
-												</div>
-											</Card>
-											<div id="choose_names" className="choose_names" onChange={(e) => changeDif(e)} style={{display: "none"}}>
-												<input placeholder="nome jogador 1" className="name" onChange={(e) => setName1(e.target.value)} ></input>
-												<input placeholder="nome jogador 2" className="name" onChange={(e) => setName2(e.target.value)}></input>
-											</div>
-										</div>
-									</div>
-									<div className="row">
-										<div className="col-lg-6 centered set-padding">
-											<Card id="amigo" className="mode-card" onClick={() => changeMode("amigo")}>
-												<div>
-													<i className="mode-icon"><FiIcons.FiLink/></i>
-													
-													<h2>
-														Gerar link de convite
-													</h2>
-													
-												</div>
-											</Card>
-										</div>
-										<div className="col-lg-6 centered set-padding">
-											<Card id="ai" className="mode-card" onClick={() => changeMode("ai")}>
-												<div>
-													<i className="mode-icon"><FaIcons.FaRobot/></i>
-													
-													<h2>
-														Contra o computador
-													</h2>
-												</div>
-											</Card>
-											{/* fazer isto com divs para ficar igual á parte de cima */}
-											<select id="sel_dif" className="select-dif" onChange={(e) => changeDif(e)} style={{display: "none"}}>
-												{dif_options.map((option) => (
-													<option key={option.label} value={option.value}>{option.label}</option>
-												))}
-											</select>
-										</div>
-									</div>
-									<div className="div-button">
-										<button id="button-play" className="button-play disabled" onClick={() => find_match()}>Jogar</button>
-									</div>
-								
-								</IconContext.Provider>
-							</div>
+						<p className="game-details-p">
+							{game_info["description"]}
+						</p>
+						<hr className="descr-div-caract"></hr>
+						<div className="col-lg-12 game-caracteristics">
+							<h2 className="caract-gamemode"> Caracteristicas </h2>
 							
+							<h4>Dificuldade</h4>
+							<div className="progress caract">
+								<div
+									className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
+									role="progressbar"
+									aria-valuenow="75"
+									aria-valuemin="0"
+									aria-valuemax="100"
+									style={{ width: game_info["dificulty"]+"%" }}
+								>
+									<span>fácil</span>
+								</div>
+							</div>
+							<h4>Idade: +{ game_info["age"] } </h4>
+							{/* <div className="progress caract">
+								<div
+									className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
+									role="progressbar"
+									aria-valuenow="75"
+									aria-valuemin="0"
+									aria-valuemax="100"
+									style={{ width: "50%" }}
+								>
+									<span>Idade</span>
+								</div>
+							</div> */}
 						</div>
 					</div>
+					<div className="col-lg-8 player-info-and-modes">
+						<div className="col-lg-12 player-rank container-hidden orange top-right">
+							<h2 className="rank-gamemode">Rank</h2>
+							<div className="col-lg-12 ranks-section">
+								<div className="col-lg-3 ant-next centered">
+									<div className="a-n-div">
+										
+									{ (userRank-1) >= 0 &&	
+										<>
+										<img
+											src={
+												process.env.PUBLIC_URL +
+												ranks_info[userRank-1].image
+											}
+											alt="Info"
+											className="a-n-rank-img"
+										/>
+
+										<h4>{ranks_info[userRank-1].name}</h4>
+										</>
+									}
+									</div>
+								</div>
+								<div className="col-lg-1 updo-icon centered">
+									<FaIcons.FaAngleDoubleDown/>
+									{/* <h6>anterior</h6> */}
+								</div>
+								<div className="col-lg-3 centered">
+									<div>
+										<img
+											src={
+												process.env.PUBLIC_URL +
+												ranks_info[userRank].image
+											}
+											alt="Info"
+											className="rank-img"
+										/>
+										<h4>{ranks_info[userRank].name}</h4>
+									</div>
+								</div>
+								<div className="col-lg-1 updo-icon centered">
+									<FaIcons.FaAngleDoubleUp/>
+									{/* <h6>seguinte</h6> */}
+								</div>
+								<div className="col-lg-3 ant-next centered">
+								
+							
+									<div className="a-n-div">
+									{ (userRank+1) <= 12 &&	
+										<>
+										<img
+											src={
+												process.env.PUBLIC_URL +
+												ranks_info[userRank+1].image
+											}
+											alt="Info"
+											className="a-n-rank-img"
+										/>
+										<h4>{ranks_info[userRank+1].name}</h4>
+										</>
+									}
+									</div>
+								</div>
+							</div>	
+							
+							{/* <div className="col-lg-6 no-padding center-progress-bar">
+								<p>Nivel</p>
+								<div className="row no-margin">
+									<div className="col-lg-2 lvl-left">
+										<p>99</p>
+									</div>
+									<div className="col-lg-8 center-progress-bar">
+										<div className="progress">
+											<div
+												className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
+												role="progressbar"
+												aria-valuenow="75"
+												aria-valuemin="0"
+												aria-valuemax="100"
+												style={{ width: "70%" }}
+											></div>
+										</div>
+									</div>
+									<div className="col-lg-2 lvl-right">
+										<p>100</p>
+									</div>
+								</div>
+							</div>	 */}
+						</div>
+
+						<div className="col-lg-12 game-mode orange bottom-right">
+							<IconContext.Provider  value={{color: 'white'}}>
+								<h2 className="title-gamemode">Escolhe modo de jogo</h2>
+								<div className="row">
+									<div className="col-lg-6 centered set-padding">
+								
+										<Card id="online" className="mode-card" onClick={() => changeMode("online")}>
+											<div>
+											
+												<i className="mode-icon"><RiIcons.RiSwordFill/></i>
+											
+												<h2>
+													Competitivo
+												</h2>
+											</div>
+										</Card>
+									</div>
+
+									<div className="col-lg-6 centered set-padding">
+										<Card id="offline" className="mode-card" onClick={() => changeMode("offline")}>
+											<div>
+												
+												<i className="mode-icon"><FaIcons.FaUserFriends/></i>
+												
+												<h2>
+													No mesmo computador
+												</h2>
+												
+											</div>
+										</Card>
+										<div id="choose_names" className="choose_names" onChange={(e) => changeDif(e)} style={{display: "none"}}>
+											<input placeholder="nome jogador 1" className="name" onChange={(e) => setName1(e.target.value)} ></input>
+											<input placeholder="nome jogador 2" className="name" onChange={(e) => setName2(e.target.value)}></input>
+										</div>
+									</div>
+								</div>
+								<div className="row">
+									<div className="col-lg-6 centered set-padding">
+										<Card id="amigo" className="mode-card" onClick={() => changeMode("amigo")}>
+											<div>
+												<i className="mode-icon"><FiIcons.FiLink/></i>
+												
+												<h2>
+													Gerar link de convite
+												</h2>
+												
+											</div>
+										</Card>
+									</div>
+									<div className="col-lg-6 centered set-padding">
+										<Card id="ai" className="mode-card" onClick={() => changeMode("ai")}>
+											<div>
+												<i className="mode-icon"><FaIcons.FaRobot/></i>
+												
+												<h2>
+													Contra o computador
+												</h2>
+											</div>
+										</Card>
+										{/* fazer isto com divs para ficar igual á parte de cima */}
+										<select id="sel_dif" className="select-dif" onChange={(e) => changeDif(e)} style={{display: "none"}}>
+											{dif_options.map((option) => (
+												<option key={option.label} value={option.value}>{option.label}</option>
+											))}
+										</select>
+									</div>
+								</div>
+								<div className="div-button">
+									<button id="button-play" className="button-play disabled" onClick={() => find_match()}>Jogar</button>
+								</div>
+							
+							</IconContext.Provider>
+						</div>
+						
+					</div>
 				</div>
-			</>
+			</div>
+		</>
+
 		);
-	}
 }
 
 export default GamePage;

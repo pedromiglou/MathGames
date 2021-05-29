@@ -9,6 +9,7 @@ import { GatosCaesEngine } from "../../Components/Engines/GatosCaesEngine";
 import { EndGameStatements } from '../../data/EndGameStatements';
 
 function Game()  {
+    console.log("Passei aqui")
     //const games_list = useSelector(state => state.matchApp);
     let current_match = useRef(null);
 
@@ -93,12 +94,12 @@ function Game()  {
                     </div>
                 </div>
                 <div className="col-9">
-                    {game_id===0 &&
+                    {!finishMatchModalShow && game_id===0 &&
                         <div id="my_div_game" className="container-canvas" style={{width: '1100px', height: '577px'}}>
                             <RastrosEngine process_game_over={processGameOver} arg_game_mode={game_mode} arg_ai_diff={ai_diff} curr_match={current_match.current}></RastrosEngine>
                         </div>
                     }
-                    {game_id===1 &&
+                    {!finishMatchModalShow && game_id===1 &&
                         <div id="my_div_game" className="container-canvas" style={{width: '1200px', height: '624px'}}>
                             <GatosCaesEngine process_game_over={processGameOver} arg_game_mode={game_mode} arg_ai_diff={ai_diff} curr_match={current_match.current}></GatosCaesEngine>
                         </div>

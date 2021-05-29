@@ -252,7 +252,10 @@ async function atualizarUserInfo() {
     if (!AuthService.isAuthenticated())
         return;
     var response = await UserService.getUserById(auth_user.id)
-    localStorage.setItem("user", JSON.stringify(response));
+    var newResponse = await UserService.getUserRanksById(auth_user.id)
+    response["token"] = JSON.parse(sessionStorage.getItem("user"))["token"]
+    response["userRanksData"] = newResponse
+    sessionStorage.setItem("user", JSON.stringify(response));
 }
 
 function set_diff(a, b) {
