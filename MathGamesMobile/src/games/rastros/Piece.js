@@ -1,21 +1,22 @@
 import * as React from "react";
 import {Image} from 'react-native';
 
-export default class Piece extends React.Component {
-    constructor(props) {
-        super(props);
+function Piece(props) {
+    const imageStyle = {
+        width: props.size,
+        height: props.size,
+        position: 'absolute',
+        left: props.position[0] * props.size,
+        top: props.position[1] * props.size
     }
 
-    render() {
-        const x = this.props.position[0];
-        const y = this.props.position[1];
-
-        return (
-            <Image
-              style={{width: this.props.size, height: this.props.size, position: 'absolute', left: x * this.props.size, top: y * this.props.size}}
-              resizeMode = {'contain'}
-              source={require("./../../../public/game_assets/rastros/piece.png")}
-            />
-        )
-    }
+    return (
+        <Image
+            style={imageStyle}
+            resizeMode = {'contain'}
+            source={require("./../../../public/game_assets/rastros/piece.png")}
+        />
+    )
 }
+
+export default Piece;

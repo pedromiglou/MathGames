@@ -6,37 +6,34 @@ import Square from './Square';
 import Piece from './Piece';
 import {GameLoop} from './GameLoop';
 
-export default class RastrosEngine extends React.Component {
-    constructor(props) {
-        super(props);
-        this.boardSize = Constants.GRID_SIZE * Constants.CELL_SIZE;
-        var temp = [];
-        for (let x = 0; x<7; x++) {
-            for (let y=0; y<7; y++) {
-                temp.push([x, y]);
-            }
+function RastrosEngine(props) {
+    const boardSize = Constants.GRID_SIZE * Constants.CELL_SIZE;
+    var entities = [];
+    for (let x = 0; x<7; x++) {
+        for (let y=0; y<7; y++) {
+            entities.push([x, y]);
         }
-        this.entities = temp.map(X=>{
-            return {position: X, size: Constants.CELL_SIZE, renderer: <Square></Square>};
-        });
-        this.entities.push({position: [4,2], size: Constants.CELL_SIZE, renderer: <Piece></Piece>})
-
     }
+    entities = entities.map(X=>{
+        return {position: X, size: Constants.CELL_SIZE, renderer: <Square></Square>};
+    });
+    entities.push({position: [4,2], size: Constants.CELL_SIZE, renderer: <Piece></Piece>})
 
-    render() {
-        return (<View style={styles.container}>
+    return (
+        <View style={styles.container}>
             <Text style={styles.title}>Player1</Text>
             <GameEngine
                 ref={(ref)=>{this.engine=ref}}
-                style={{width: this.boardSize, height: this.boardSize, flex: null}}
+                style={{width: boardSize, height: boardSize, flex: null}}
                 systems={[ GameLoop ]}
-                entities={this.entities}
+                entities={entities}
             />
             <Text style={styles.title}>Player2</Text>
-            
-        </View>);
-    }
+        </View>
+    );
 }
+
+export default RastrosEngine;
 
 const styles = StyleSheet.create({
     container: {

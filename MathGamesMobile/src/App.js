@@ -2,16 +2,18 @@ import * as React from 'react';
 import { Text, View, Image, StyleSheet, Dimensions, TouchableHighlight } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import Welcome from './screens/Welcome';
-import GameDashboard from './screens/GameDashboard';
 import ChooseGame from './screens/ChooseGame';
+import GamePage from './screens/GamePage';
 import Login from './screens/Login';
 import Constants from 'expo-constants';
 import { useState, useEffect } from 'react';
 import { useFonts } from 'expo-font';
-import {readData} from './utilities/AsyncStorage';
+import {readData, saveData} from './utilities/AsyncStorage';
 import Game from './screens/Game';
+/* Uuid */
+import { v4 as uuidv4 } from 'uuid';
 
 const win = Dimensions.get('window');
 
@@ -26,12 +28,12 @@ function Games() {
   }, [currentGame]);
   return (
     <Stack.Navigator screenOptions={{headerStyle: {backgroundColor: '#78c9ff'}}}>
-      <Stack.Screen name="GameDashboard" options={{headerTitle: () => (<Text style={styles.header}>Jogos</Text>)}} component={GameDashboard} />
-      <Stack.Screen name="ChooseGame" options={{
+      <Stack.Screen name="ChooseGame" options={{headerTitle: () => (<Text style={styles.header}>Jogos</Text>)}} component={ChooseGame} />
+      <Stack.Screen name="GamePage" options={{
         headerTitle: () => (<Text style={styles.headerWithArrow}>{currentGame.name}</Text>),
         headerTintColor: "white",
         headerTitleAlign: "center"
-      }} component={ChooseGame} />
+      }} component={GamePage} />
       <Stack.Screen name="Game" options={{
         headerTitle: () => (<Text style={styles.headerWithArrow}>{currentGame.name}</Text>),
         headerTintColor: "white",
@@ -48,6 +50,13 @@ function App() {
     BubblegumSans: require('./../public/fonts/BubblegumSans-Regular.ttf'),
   });
   const [login, setLogin] = useState(false);
+
+  readData('user_id').then(id=>{
+    if (id===null) {
+      saveData('user_id', uuidv4());
+      console.log("A");
+    }
+  })
   
   if (!loaded) {
     return <Text>Loading...</Text>;
