@@ -3,10 +3,14 @@ import Constants from './Constants';
 import Blocked from './Blocked';
 import { Audio } from 'expo-av';
 import RastrosAI from './RastrosAI';
+import {readData} from './../../utilities/AsyncStorage';
 
 let ai = new RastrosAI();
+let gameMode = "";
+readData("gameMode").then(X=>gameMode=X.slice(1,-1));
 
 const GameLoop = (entities, {touches, events, dispatch }) => {
+    readData("gameMode").then(X=>gameMode=X.slice(1,-1));
     let piece = entities[49];
     let squares = entities.slice(0, 49);
     let blockedSquares = entities.slice(50);
@@ -43,11 +47,14 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
         playSound();
         entities.push({position: [piece.position[0], piece.position[1]], size: Constants.CELL_SIZE, renderer: <Blocked></Blocked>})
         piece.position = [x, y];
-        ai.AI_blocked_squares[y][x] = true;
-        dispatch({type: "ai"});
+
+        if (gameMode==="Contra o Computador") {
+          ai.AI_blocked_squares[y][x] = true;
+          dispatch({type: "ai"});
+        }
+        
       });
   
-    
     return entities;
 }
 
