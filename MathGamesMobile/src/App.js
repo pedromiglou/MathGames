@@ -10,6 +10,7 @@ import Login from './screens/Login';
 import Profile from './screens/Profile';
 import LastGames from './screens/LastGames';
 import Inventory from './screens/Inventory';
+import Loading from './components/Loading';
 
 import Constants from 'expo-constants';
 import { useState, useEffect } from 'react';
@@ -23,7 +24,6 @@ import { LogBox } from 'react-native'
 LogBox.ignoreLogs([
   'Require cycle:'
 ])
-
 
 const win = Dimensions.get('window');
 
@@ -40,12 +40,12 @@ function Games() {
     <Stack.Navigator screenOptions={{headerStyle: {backgroundColor: '#78c9ff'}}}>
       <Stack.Screen name="ChooseGame" options={{headerTitle: () => (<Text style={styles.header}>Jogos</Text>)}} component={ChooseGame} />
       <Stack.Screen name="GamePage" options={{
-        headerTitle: () => (<Text style={styles.headerWithArrow}>{currentGame.name}</Text>),
+        headerTitle: () => (<Text style={styles.headerWithArrow}>{currentGame.title}</Text>),
         headerTintColor: "white",
         headerTitleAlign: "center"
       }} component={GamePage} />
       <Stack.Screen name="Game" options={{
-        headerTitle: () => (<Text style={styles.headerWithArrow}>{currentGame.name}</Text>),
+        headerTitle: () => (<Text style={styles.headerWithArrow}>{currentGame.title}</Text>),
         headerTintColor: "white",
         headerTitleAlign: "center"
       }} component={Game} />
@@ -64,7 +64,6 @@ function App() {
   readData('user_id').then(id=>{
     if (id===null) {
       saveData('user_id', uuidv4());
-      console.log("A");
     }
   })
   
@@ -91,11 +90,11 @@ function App() {
         <Drawer.Navigator>
           <Drawer.Screen name="Welcome" component={Welcome} />
           <Drawer.Screen name="Games" component={Games} />
-          <Drawer.Screen name="Tournaments" component={Welcome} />
-          <Drawer.Screen name="Rankings" component={Welcome} />
-          <Drawer.Screen name="Settings" component={Welcome} />
+          <Drawer.Screen name="Tournaments" component={Loading} />
+          <Drawer.Screen name="Rankings" component={Loading} />
+          <Drawer.Screen name="Settings" component={Loading} />
           <Drawer.Screen name="Profile" component={Profile} />
-          <Drawer.Screen name="About us" component={Welcome} />
+          <Drawer.Screen name="About us" component={Loading} />
 
           <Drawer.Screen name="LastGames" component={LastGames} />
           <Drawer.Screen name="Inventory" component={Inventory} />

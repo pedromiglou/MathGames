@@ -35,7 +35,7 @@ function GamePage({navigation}) {
             <Image
               style={styles.image}
               resizeMode = {'contain'}
-              source={game.image}
+              source={game.img}
             />
 
           </View>
