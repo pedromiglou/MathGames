@@ -22,11 +22,7 @@
 }
 
 .Section > .statsPlayers {
-    flex: 1 1 49%;
-}
-
-.Section > .statsBannedPlayers {
-    flex: 1 1 49%;
+    flex: 1 1 100%;
 }
 
 .shadow3D{
@@ -117,4 +113,215 @@
 .up:focus {
   box-shadow: inset 0 -4.25em 0 0 #faad06;
   color: white;
+}
+
+
+/* Statistics Games */
+
+.statsGames h1{
+	text-align: center;
+	padding: 0.5em 0 1em 0;
+}
+
+.game-stats-section{
+	margin: 1.5em;
+	padding-bottom: 2em;
+	border-radius: 20px;
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 7px;
+}
+
+.game-stats{
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 0.7em;
+	padding: 0 2em;
+}
+
+.game-stats > .game-stats-choose {
+	flex: 1 1 25%;
+	color: white;
+	background: hsl(197, 75%, 55%);
+	border: none;
+	border-radius: 12px;
+	padding: 0;
+	cursor: pointer;
+	position: relative;
+}
+
+.game-stats > .game-stats-choose span.front {
+	display: block;
+	padding: 12px 42px;
+	border-radius: 12px;
+	font-size: 2em;
+	background: hsl(197, 86%, 58%);
+	color: white;
+	transform: translateY(-8px);
+	text-align: center;
+}
+
+
+
+.game-stats > .game-stats-choose.active span.front {
+	transform: translateY(-4px);
+	filter: brightness(110%);
+}
+
+
+
+.game-stats > .game-stats-choose:hover span.front{
+	transform: translateY(-4px);
+	transition: filter 250ms;
+  	filter: brightness(110%);
+}
+
+.game-stats > .game-stats-choose:active span.front{
+	transform: translateY(-1px);
+	transition: filter 250ms;
+  	filter: brightness(110%);
+}
+
+.shadow {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	border-radius: 12px;
+	background: hsl(0deg 0% 0% / 0.25);
+	transform: translateY(2px);
+	filter: blur(4%);
+  }
+
+/* geral game stats */
+
+.geral-stats{
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 4%;
+}
+
+.geral-stats > :nth-child(1){
+	flex: 1 1 48%;
+}
+
+.geral-stats > :nth-child(2){
+	flex: 1 1 48%;
+}
+
+.geral-graphs{
+	display: flex;
+	flex-direction: column;
+	gap: 2em;
+}
+
+.geral-graphs h2{
+	margin: 0;
+	padding: 1em;
+}
+
+.geral-graphs .graph{
+	padding: 0 2.5em 2.5em 2.5em;
+}
+
+/* Specific game Stats */
+
+.ranks{
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: 5%;
+	padding: 1.5em;
+}
+
+
+.ranks > *{
+	max-width: 30%;
+	flex: 1 1 30%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	border-radius: 15px;
+	box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+	margin-bottom: 1em;
+	/* box-shadow: rgba(15, 220, 247, 0.4) -5px 5px, rgba(88, 226, 245, 0.4) -10px 10px, rgba(140, 230, 241, 0.4) -15px 15px, rgba(168, 239, 248, 0.4) -20px 20px, rgba(214, 250, 255, 0.4) -25px 25px; */
+}
+
+.ranks img{
+	width: 100%;
+	max-width: 200px;
+}
+
+.ranks h4{
+	padding: 1em 1em 0 1em;
+}
+
+.ranks h5{
+	padding: 0 1em 1em 1em;
+}
+
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media screen and (max-width: 868px) {
+	.ranks > *{
+		flex: 1 1 40%;
+	}
+}
+
+
+.specific-stats{
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 4%;
+	padding-top: 2em;
+}
+
+.specific-stats > :nth-child(1){
+	flex: 1 1 48%;
+}
+
+.specific-stats > :nth-child(2){
+	flex: 1 1 48%;
+}
+
+/* players stats*/
+
+.player-stats{
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 4%;
+}
+
+.player-stats > :nth-child(1){
+	flex: 1 1 48%;
+}
+
+.player-stats > :nth-child(2){
+	flex: 1 1 48%;
+}
+
+.player-graphs{
+	display: flex;
+	flex-direction: column;
+	gap: 2em;
+}
+
+.player-graphs h2{
+	margin: 0;
+	padding: 1em;
+}
+
+.player-graphs .graph{
+	padding: 0 2.5em 2.5em 2.5em;
+}
+
+.statsPlayers h1{
+	text-align: center;
+	padding: 0.5em 0 1em 0;
 }

@@ -117,6 +117,7 @@ exports.deleteAll = (req, res) => {
 
 // Retrieve statistics
 exports.statistics = (req, res) => {
+
   var response = [0, 0, 0, 0, 0, 0, 0]
   var date = new Date();
   var last = new Date(date.getTime() - (6 * 24 * 60 * 60 * 1000));

@@ -13,8 +13,17 @@ module.exports = app => {
     // Retrieve ban statistics
     router.get("/statistics", [authJwt.verifyToken, authJwt.isAdmin], users.statistics)
 
-     // Retrieve all Users with Admin permissions
-     router.get("/banned", [authJwt.verifyToken, authJwt.isAdmin], users.findAllBanned);
+    // Retrieve all Users with Admin permissions
+    router.get("/banned", [authJwt.verifyToken, authJwt.isAdmin], users.findAllBanned);
+
+    // Retrieve all Normal Users with Admin permissions
+    router.get("/normal", [authJwt.verifyToken, authJwt.isAdmin], users.findAllNormal);
+
+    // Retrieve all Privilege Users with Admin permissions
+    router.get("/privilege", [authJwt.verifyToken, authJwt.isAdmin], users.findAllPrivilege);
+
+    // Retrieve all Administrator Users with Admin permissions
+    router.get("/admin", [authJwt.verifyToken, authJwt.isAdmin], users.findAllAdmin);
 
     // Retrieve a single User with id
     router.get("/:id", users.findOne);
