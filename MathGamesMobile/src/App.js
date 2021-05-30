@@ -18,6 +18,12 @@ import {readData, saveData} from './utilities/AsyncStorage';
 import Game from './screens/Game';
 /* Uuid */
 import { v4 as uuidv4 } from 'uuid';
+import { LogBox } from 'react-native'
+
+LogBox.ignoreLogs([
+  'Require cycle:'
+])
+
 
 const win = Dimensions.get('window');
 
