@@ -3,10 +3,15 @@ import { Text, View, Image, StyleSheet, Dimensions, TouchableHighlight } from 'r
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack';
+
 import Welcome from './screens/Welcome';
 import GameDashboard from './screens/GameDashboard';
 import ChooseGame from './screens/ChooseGame';
 import Login from './screens/Login';
+import Profile from './screens/Profile';
+import LastGames from './screens/LastGames';
+import Inventory from './screens/Inventory';
+
 import Constants from 'expo-constants';
 import { useState, useEffect } from 'react';
 import { useFonts } from 'expo-font';
@@ -69,7 +74,12 @@ function App() {
           <Drawer.Screen name="Tournaments" component={Welcome} />
           <Drawer.Screen name="Rankings" component={Welcome} />
           <Drawer.Screen name="Settings" component={Welcome} />
+          <Drawer.Screen name="Profile" component={Profile} />
           <Drawer.Screen name="About us" component={Welcome} />
+
+          <Drawer.Screen name="LastGames" component={LastGames} />
+          <Drawer.Screen name="Inventory" component={Inventory} />
+
         </Drawer.Navigator>}
       </NavigationContainer>
     );
