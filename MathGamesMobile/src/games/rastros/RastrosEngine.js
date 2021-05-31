@@ -15,7 +15,7 @@ function RastrosEngine(props) {
         }
     }
     entities = entities.map(X=>{
-        return {position: X, size: Constants.CELL_SIZE, valid: true, renderer: <Square></Square>};
+        return {position: X, size: Constants.CELL_SIZE, valid: false, renderer: <Square></Square>};
     });
     entities.push({position: [4,2], size: Constants.CELL_SIZE, renderer: <Piece></Piece>})
 

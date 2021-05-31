@@ -7,21 +7,30 @@ import {readData} from './../../utilities/AsyncStorage';
 
 let ai = new RastrosAI();
 let gameMode = "";
-readData("gameMode").then(X=>gameMode=X.slice(1,-1));
+let dif = "";
+let player = "";
+let aiPlayed = false;
+
+async function playSound() {
+  const { sound } = await Audio.Sound.createAsync(
+     require('../../../public/game_assets/rastros/move.wav')
+  );
+
+  await sound.playAsync();
+}
 
 const GameLoop = (entities, {touches, events, dispatch }) => {
     readData("gameMode").then(X=>gameMode=X.slice(1,-1));
+    readData("dif").then(X=>dif=X.slice(1,-1));
+    readData("player").then(X=>player=X.slice(1,-1));
+
+    if (gameMode==="Contra o Computador" && player==="2" && entities.length === 50 && !aiPlayed) {
+      aiPlayed = true;
+      dispatch({type: "ai"});
+    }
     let piece = entities[49];
     let squares = entities.slice(0, 49);
     let blockedSquares = entities.slice(50);
-
-    async function playSound() {
-        const { sound } = await Audio.Sound.createAsync(
-           require('../../../public/game_assets/rastros/move.wav')
-        );
-
-        await sound.playAsync();
-    }
 
     if (events.length){
       for(let i=0; i<events.length; i++){
@@ -35,8 +44,8 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
                 }
               }
             }
-          piece.position = ai.randomPlay(1, valid_squares, piece.position);
-          }
+          piece.position = ai.randomPlay(dif, valid_squares, piece.position);
+        }
       }
     }
 
@@ -52,9 +61,8 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
           ai.AI_blocked_squares[y][x] = true;
           dispatch({type: "ai"});
         }
-        
-      });
-  
+    });
+
     return entities;
 }
 

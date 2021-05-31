@@ -16,12 +16,8 @@ function GamePage({navigation}) {
   useEffect(() => {
     readData("game").then(value => {if (value !== null) {setGame(JSON.parse(value));}})
   }, []);
+  const [aiMode, setAIMode] = useState("");
 
-  const gameModes=[{key:1, name:'Competitivo', icon:<MaterialCommunityIcons name="sword-cross" size={22} color="black" style={styles.icon}/>},
-                  {key:2, name:'No mesmo Computador', icon:<Ionicons name="md-people-sharp" size={22} color="black" style={styles.icon} />},
-                  {key:3, name:'Gerar link de convite', icon:<Feather name="link" size={22} color="black" style={styles.icon} />},
-                  {key:4, name:'Contra o Computador', icon:<FontAwesome5 name="robot" size={22} color="black" style={styles.icon} />}];
-  
   return (
       <ScrollView style={{ flex: 1 }}>
         <LinearGradient colors={['#78c9ff', '#6699f8', '#5379f7', '#5867f7', '#8a54ee']} start={[0,0]} end={[1,1]}>
@@ -67,21 +63,111 @@ function GamePage({navigation}) {
             
           </View>
           
+          <TouchableHighlight style={styles.button} onPress = {() => {
+                        saveData("gameMode", "Competitivo");
+                        navigation.navigate("Game");
+                      }}>
+            <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
+              <View style={styles.buttonView}>
+                <MaterialCommunityIcons name="sword-cross" size={22} color="black" style={styles.icon}/>
+                <Text style={styles.modeName}>Competitivo</Text>
+              </View>
+            </LinearGradient>
+          </TouchableHighlight>
+
+          <TouchableHighlight style={styles.button} onPress = {() => {
+                        saveData("gameMode", "Gerar link de convite");
+                        navigation.navigate("Game");
+                      }}>
+            <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
+              <View style={styles.buttonView}>
+                <Feather name="link" size={22} color="black" style={styles.icon} />
+                <Text style={styles.modeName}>Gerar link de convite</Text>
+              </View>
+            </LinearGradient>
+          </TouchableHighlight>
+
+          <TouchableHighlight style={styles.button} onPress = {() => {
+                        saveData("gameMode", "Contra o Computador");
+                        setAIMode("D");
+                      }}>
+            <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
+              <View style={styles.buttonView}>
+                <FontAwesome5 name="robot" size={22} color="black" style={styles.icon} />
+                <Text style={styles.modeName}>Contra o Computador</Text>
+              </View>
+            </LinearGradient>
+          </TouchableHighlight>
           
-          {gameModes.map(X => {
-            return (<TouchableHighlight style={styles.button} key={X.key} onPress = {() => {
-                          saveData("gameMode", X.name)
+          {aiMode==="D" && <View style={styles.buttonView}>
+            <TouchableHighlight style={styles.button} onPress = {() => {
+                          saveData("dif", "easy");
+                          setAIMode("P");
+                        }}>
+              <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
+                <View style={styles.buttonView}>
+                  <Text style={styles.modeName}>Fácil</Text>
+                </View>
+              </LinearGradient>
+            </TouchableHighlight>
+            <TouchableHighlight style={styles.button} onPress = {() => {
+                          saveData("dif", "medium");
+                          setAIMode("P");
+                        }}>
+              <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
+                <View style={styles.buttonView}>
+                  <Text style={styles.modeName}>Médio</Text>
+                </View>
+              </LinearGradient>
+            </TouchableHighlight>
+            <TouchableHighlight style={styles.button} onPress = {() => {
+                          saveData("dif", "hard");
+                          setAIMode("P");
+                        }}>
+              <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
+                <View style={styles.buttonView}>
+                  <Text style={styles.modeName}>Difícil</Text>
+                </View>
+              </LinearGradient>
+            </TouchableHighlight>
+          </View>}
+
+          {aiMode==="P" && <View style={styles.buttonView}>
+            <TouchableHighlight style={styles.button} onPress = {() => {
+                          saveData("player", "1");
                           navigation.navigate("Game");
                         }}>
               <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
                 <View style={styles.buttonView}>
-                  {X.icon}
-                  <Text style={styles.modeName}>{X.name}</Text>
+                  <Text style={styles.modeName}>Jogador 1</Text>
                 </View>
               </LinearGradient>
-            </TouchableHighlight>)
-          })}
-        </LinearGradient>
+            </TouchableHighlight>
+            <TouchableHighlight style={styles.button} onPress = {() => {
+                          saveData("player", "2");
+                          navigation.navigate("Game");
+                        }}>
+              <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
+                <View style={styles.buttonView}>
+                  <Text style={styles.modeName}>Jogador 2</Text>
+                </View>
+              </LinearGradient>
+            </TouchableHighlight>
+          </View>}
+
+          <TouchableHighlight style={styles.button} onPress = {() => {
+                        saveData("gameMode", "No mesmo Computador");
+                        navigation.navigate("Game");
+                      }}>
+            <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
+              <View style={styles.buttonView}>
+                <Ionicons name="md-people-sharp" size={22} color="black" style={styles.icon} />
+                <Text style={styles.modeName}>No mesmo Computador</Text>
+              </View>
+            </LinearGradient>
+          </TouchableHighlight>
+          
+      </LinearGradient>
       </ScrollView>
   );
 }
@@ -100,7 +186,8 @@ const styles = StyleSheet.create({
     borderColor: "white"
   },
   buttonView: {
-    flexDirection: "row"
+    flexDirection: "row",
+    alignSelf: "center"
   },
   arrowIcon: {
     marginTop: 35,
