@@ -186,6 +186,7 @@ exports.statisticsbygame = (req, res) => {
       for (var i = 0; i < countMatches.length; i++) {
         countMatches[i].matchesCount = (countMatches[i].matchesCount / countAllMatches) * 100;
       }
+      countMatches.sort((a, b) => (a.matchesCount > b.matchesCount) ? -1 : 1);
       res.send({matches: countMatches, countAllMatches: countAllMatches});
     })
     .catch(err => {
@@ -240,7 +241,12 @@ exports.statistics = (req, res) => {
   primeiroDia = primeiroDia.toISOString().slice(0, 19).replace('T', ' ');
   primeiroDia = primeiroDia.split(" ")[0]
 
-  GameMatch.findAll({where: { createdAt: {[Op.gte]: setimoDia} }})
+  var filters = { createdAt: {[Op.gte]: setimoDia} };
+  if (req.query.game !== undefined) {
+    filters = { createdAt: {[Op.gte]: setimoDia}, game_id: req.query.game };
+  }
+
+  GameMatch.findAll({where: filters})
     .then(data => {
       for (var element of data) {
         if (element.createdAt.split(" ")[0] === setimoDia)
