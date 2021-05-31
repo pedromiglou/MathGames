@@ -53,7 +53,7 @@ function Inventory({ navigation }) {
                    {/*  <GraphicsView
                         onContextCreate={this.onContextCreate}
                     /> */}
-                 <Avatar shirtName="Camouflage2" accessorieName="PixelGlasses" />
+                <Avatar shirtName="Camouflage2" accessorieName="SunGlasses" hatName="MagicianHat" />
                 
 
 			</LinearGradient>

@@ -10,6 +10,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 import OrbitControlsView from "expo-three-orbit-controls";
 
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+
 import {
 	View,
 	ScrollView,
@@ -67,16 +69,12 @@ export default class Avatar extends React.Component {
 			1000
 		);
 		this.camera.position.z = 5;
-		/* const geometry = new THREE.BoxGeometry(1, 1, 1);
 
-		const material = new THREE.MeshPhongMaterial({
-			color: 0xff0000,
-		});
-
-		this.cube = new THREE.Mesh(geometry, material);
-		this.scene.add(this.cube); */
-
-
+		this.controls = new OrbitControls(
+			this.camera,
+			this.renderer.domElement
+		);
+		this.controls.update();
 
 		this.scene.add(new THREE.AmbientLight(0x404040));
 
@@ -88,6 +86,95 @@ export default class Avatar extends React.Component {
 			color: 0x00ff00,
 		});
 
+		// ************************** //
+		// Hats
+		// ************************** //
+		var scaleX1, scaleY1, scaleZ1;
+		var rotationX1, rotationY1;
+		var positionX1, positionY1, positionZ1;
+		var hatFlag = true;
+		console.log(this.props.hatName);
+
+		switch (this.props.hatName) {
+			case "CowboyHat":
+				try {
+					var hatAsset = Asset.fromModule(
+						require("../../public/avatar_assets/hats/cowboyHat/cowboyHat.glb")
+					);
+					await hatAsset.downloadAsync();
+				} catch(error) {
+					console.log(error)
+				}
+
+				scaleX1 = 0.1;
+				scaleY1 = 0.1;
+				scaleZ1 = 0.1;
+				rotationX1 = 1;
+				rotationY1 = 1;
+				positionX1 = 0;
+				positionY1 = 0;
+				positionZ1 = 0;
+
+				break;
+
+			case "MagicianHat":
+				try {
+					var hatAsset = Asset.fromModule(
+						require("../../public/avatar_assets/hats/magicianHat/magicianHat.glb")
+					);
+					await hatAsset.downloadAsync();
+				} catch(error) {
+					console.log(error)
+				}
+
+				scaleX1 = 0.1;
+				scaleY1 = 0.1;
+				scaleZ1 = 0.1;
+				rotationX1 = 1;
+				rotationY1 = 1;
+				positionX1 = 0;
+				positionY1 = 0;
+				positionZ1 = 0;
+
+				break;
+
+			default:
+				hatFlag = false;
+		}
+
+		if (hatFlag) {
+			const loader = new GLTFLoader();
+
+			const dracoLoader = new DRACOLoader();
+			dracoLoader.setDecoderPath("/examples/js/libs/draco/");
+			loader.setDRACOLoader(dracoLoader);
+			console.log("loading");
+			loader.load(
+				hatAsset.uri,
+				(gltf) => {
+					// ADD MODEL TO THE SCENE
+					const root = gltf.scene;
+
+					console.log(root);
+
+					root.rotateX(rotationX1);
+					root.rotateY(rotationY1);
+					root.scale.set(scaleX1, scaleY1, scaleZ1);
+
+					root.position.set(positionX1, positionY1, positionZ1);
+					this.scene.add(root);
+
+					this.renderer.render(this.scene, this.camera);
+				},
+				function (xhr) {
+					console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+				},
+
+				(error) => {
+					console.log(error);
+				}
+			);
+		}
 
 		// ************************** //
 		// Accessories
@@ -97,13 +184,38 @@ export default class Avatar extends React.Component {
 		var scaleX, scaleY, scaleZ;
 		var rotationX, rotationY;
 		var positionX, positionY, positionZ;
+		var accessorieFlag = true;
 
 		switch (this.props.accessorieName) {
 			case "SunGlasses":
-				var accessorieAsset = Asset.fromModule(
-					require("../../public/avatar_assets/accessories/aviatorGlasses/scene.gltf")
-				);
-				await accessorieAsset.downloadAsync();
+				try {
+					var accessorieAsset = Asset.fromModule(
+						require("../../public/avatar_assets/accessories/sunGlasses/scene.gltf")
+					);
+					await accessorieAsset.downloadAsync();
+				} catch(error) {
+					console.log(error)
+				}
+
+				scaleX = 1;
+				scaleY = 1;
+				scaleZ = 1;
+				rotationX = 1;
+				rotationY = 1;
+				positionX = 0;
+				positionY = 1.6;
+				positionZ = 0;
+
+				break;
+			case "AviatorGlasses":
+				try {
+					var accessorieAsset = Asset.fromModule(
+						require("../../public/avatar_assets/accessories/aviatorGlasses/scene.gltf")
+					);
+					await accessorieAsset.downloadAsync();
+				} catch(error) {
+					console.log(error)
+				}
 
 				scaleX = 0.005;
 				scaleY = 0.006;
@@ -113,67 +225,67 @@ export default class Avatar extends React.Component {
 				positionX = 0;
 				positionY = 1.6;
 				positionZ = 0.5;
-
-				break;
-			case "AviatorGlasses":
-				accessorieAsset = null;
 				break;
 			case "SteamPunkGlasses":
 				accessorieAsset = null;
 				break;
 			case "PixelGlasses":
-				accessorieAsset = Asset.fromModule(
-					require("../../public/avatar_assets/accessories/pixelGlasses/scene.gltf")
-				);
-				await accessorieAsset.downloadAsync();
+				try { 
+					accessorieAsset = Asset.fromModule(
+						require("../../public/avatar_assets/accessories/pixelGlasses/scene.gltf")
+					);
+					await accessorieAsset.downloadAsync();
+				} catch(error) {
+					console.log(error)
+				}
 
 				scaleX = 0.035;
 				scaleY = 0.05;
 				scaleZ = 0.05;
-				rotationX = 0;
+				rotationX = Math.PI / 10;
 				rotationY = Math.PI / 4;
-				positionX = 0.4;
-				positionY = 1.4;
+				positionX = 0;
+				positionY = 1.2;
 				positionZ = 1.5;
 
 				break;
 			default:
-				var accessorieAsset = Asset.fromModule(
-					require("../../public/avatar_assets/accessories/aviatorGlasses/scene.gltf")
-				);
-				await accessorieAsset.downloadAsync();
+				accessorieFlag = false;
 		}
-		console.log("4");
 
-		const loader = new GLTFLoader();
+		if (accessorieFlag) {
+			const loader = new GLTFLoader();
 
-		const dracoLoader = new DRACOLoader();
-		dracoLoader.setDecoderPath("/examples/js/libs/draco/");
-		loader.setDRACOLoader(dracoLoader);
+			const dracoLoader = new DRACOLoader();
+			dracoLoader.setDecoderPath("/examples/js/libs/draco/");
+			loader.setDRACOLoader(dracoLoader);
 
-		loader.load(
-			accessorieAsset.uri,
-			(gltf) => {
-				// ADD MODEL TO THE SCENE
-				const root = gltf.scene;
+			loader.load(
+				accessorieAsset.uri,
+				(gltf) => {
+					// ADD MODEL TO THE SCENE
+					const root = gltf.scene;
 
-				root.rotateX(rotationX);
-				root.rotateY(rotationY);
-				root.scale.set(scaleX, scaleY, scaleZ);
+					root.rotateX(rotationX);
+					root.rotateY(rotationY);
+					root.scale.set(scaleX, scaleY, scaleZ);
 
-				root.position.set(positionX, positionY, positionZ);
-				this.scene.add(root);
+					root.position.set(positionX, positionY, positionZ);
+					this.scene.add(root);
 
-				this.renderer.render(this.scene, this.camera);
-			},
-			undefined,
+					this.renderer.render(this.scene, this.camera);
+				},
+				function (xhr) {
+					console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+				},
 
-			(error) => {
-				console.log(error);
-			}
-		);
-		console.log("5");
+				(error) => {
+					console.log(error);
+				}
+			);
+		}
 
+		/* 
 		// ************************** //
 		// Head
 		// ************************** //
@@ -268,8 +380,9 @@ export default class Avatar extends React.Component {
 		const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
 		this.scene.add(body);
 
-		/* Arms */
-		const armsGeometry = new THREE.BoxGeometry(0.75, 2, 1);
+		// ************************** //
+		// Arms
+		// ************************** //		const armsGeometry = new THREE.BoxGeometry(0.75, 2, 1);
 		const arm1 = new THREE.Mesh(armsGeometry, avatarMaterial);
 		arm1.position.set(-1.375, 0, 0);
 		this.scene.add(arm1);
@@ -289,13 +402,14 @@ export default class Avatar extends React.Component {
 		const leg2 = new THREE.Mesh(legGeometry, avatarMaterial);
 		leg2.position.set(0.5, -2, 0);
 		this.scene.add(leg2);
+		*/
 	};
 
 	onRender = (delta) => {
 		/* this.cube.rotation.x += 3.5 * delta;
 		this.cube.rotation.y += 2 * delta; */
+		this.controls.update();
 		this.renderer.render(this.scene, this.camera);
-
 	};
 }
 
