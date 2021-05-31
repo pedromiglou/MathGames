@@ -67,7 +67,7 @@ exports.findAllBanned = (req, res) => {
     const { page, size } = req.query;
     const username = !req.query.username ? "": req.query.username+"%";
     var min_level =  0;
-    var max_level = 1000;
+    var max_level = 2147483647;
     if (req.query.min_level) {
       min_level = req.query.min_level === 1 ? 0 : 400 * Math.pow(req.query.min_level-1, 1.1);
     }
@@ -112,7 +112,7 @@ exports.findAllNormal = (req, res) => {
     const { page, size } = req.query;
     const username = !req.query.username ? "": req.query.username+"%";
     var min_level =  0;
-    var max_level = 1000;
+    var max_level = 2147483647;
     if (req.query.min_level) {
       min_level = req.query.min_level === 1 ? 0 : 400 * Math.pow(req.query.min_level-1, 1.1);
     }
@@ -157,7 +157,7 @@ exports.findAllPrivilege = (req, res) => {
     const { page, size } = req.query;
     const username = !req.query.username ? "": req.query.username+"%";
     var min_level =  0;
-    var max_level = 1000;
+    var max_level = 2147483647;
     if (req.query.min_level) {
       min_level = req.query.min_level === 1 ? 0 : 400 * Math.pow(req.query.min_level-1, 1.1);
     }
@@ -203,7 +203,7 @@ exports.findAllAdmin = (req, res) => {
     const { page, size } = req.query;
     const username = !req.query.username ? "": req.query.username+"%";
     var min_level =  0;
-    var max_level = 1000;
+    var max_level = 2147483647;
     if (req.query.min_level) {
       min_level = req.query.min_level === 1 ? 0 : 400 * Math.pow(req.query.min_level-1, 1.1);
     }
@@ -249,7 +249,7 @@ exports.findAll = (req, res) => {
     const { page, size } = req.query;
     const username = !req.query.username ? "": req.query.username+"%";
     var min_level =  0;
-    var max_level = 1000;
+    var max_level = 2147483647;
     if (req.query.min_level) {
       min_level = req.query.min_level === 1 ? 0 : 400 * Math.pow(req.query.min_level-1, 1.1);
     }
