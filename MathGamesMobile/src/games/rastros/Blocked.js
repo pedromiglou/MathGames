@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Image} from 'react-native';
+import {Image, TouchableOpacity} from 'react-native';
 
 function Blocked(props) {
     const imageStyle= {
@@ -11,11 +11,13 @@ function Blocked(props) {
     }
 
     return (
-        <Image
-            style={imageStyle}
-            resizeMode = {'contain'}
-            source={require("./../../../public/game_assets/rastros/blocked.png")}
-        />
+        <TouchableOpacity>
+            <Image
+                style={imageStyle}
+                resizeMode = {'contain'}
+                source={require("./../../../public/game_assets/rastros/blocked.png")}
+            />
+        </TouchableOpacity>
     )
 }
 
