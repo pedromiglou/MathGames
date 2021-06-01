@@ -445,3 +445,25 @@ span.icons-noname{
 .icon_notifications:hover {
     cursor: pointer;
 }
+
+/* Modal Amigos */
+.friends-modal{
+    min-width: 230px;
+}
+
+.list-item-friends{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    border-bottom: 1px solid lightgray;
+    padding: 0.2em 0;
+    font-size: 1.5em;
+    gap: 1em;
+}
+
+.list-item-friends > *:last-child{
+    margin-left: auto;
+    display: flex;
+    gap: 0.3em;
+}

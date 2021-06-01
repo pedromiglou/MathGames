@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import {IconContext} from 'react-icons';
 import * as FaIcons from 'react-icons/fa';
 import * as FiIcons from "react-icons/fi";
+import * as IoIcons from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -204,16 +205,20 @@ function Navbar() {
 						</div>
 						<div title="Amigos" className="col-xl-2 col-lg-2 col-md-2 col-sm-3 col-xs-3 d-flex align-items-center justify-content-center">
 							<DropdownButton	menuAlign="right" title={<FaIcons.FaUserFriends size={42}/>} id="friends-dropdown">
-								<Dropdown.ItemText><div style={{width: 230}}><h4>Amigos</h4></div></Dropdown.ItemText>
+								<Dropdown.ItemText><div className="friends-modal"><h4>Amigos</h4></div></Dropdown.ItemText>
 								<Dropdown.Divider />
 								{ friends.length > 0 &&
 								<Dropdown.ItemText>{
-										<ul style={{fontSize:20}}>
+										<ul className="list-friends">
 										{friends.map(function(user, index) {
 											return (
-												<li key={user.id} class="list-group-item d-flex justify-content-between align-items-center" style={{border: 0, padding: 5}}>
+												<li key={user.id} className="list-item-friends">
 													{user.username}
-													<FaIcons.FaEnvelopeSquare className="icon_notifications" style={{fontSize: 25}} />
+													<div>
+														<FaIcons.FaEnvelopeSquare className="icon_notifications" style={{fontSize: 25}} />
+														<IoIcons.IoPersonAdd className="icon_notifications" style={{fontSize: 25}} />
+													</div>
+													
 												</li>
 											);
 										})}
