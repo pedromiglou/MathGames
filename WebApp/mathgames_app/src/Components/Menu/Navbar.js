@@ -17,6 +17,7 @@ import UserService from '../../Services/user.service';
 import {urlWeb} from './../../data/data';
 
 import Avatar from "../../Components/Avatar";
+import socket from "../../index"
 
 
 /* Redux */
@@ -41,7 +42,9 @@ function Navbar() {
     const [color, setColor] = useState("#FFAF00");
     const [accessorie, setAccessorie] = useState("none");
     const [trouser, setTrouser] = useState("#808080");
+	const [linktogame2href, setLinkToGame2Href] = useState("/profile")
 
+	var current_user = AuthService.getCurrentUser();
 
     const notifyFriendshipSucess = () => toast.success('Pedido de amizade aceite!', {
         icon: <FaIcons.FaCheckCircle />,
@@ -75,6 +78,37 @@ function Navbar() {
 		} else {
 			return 0;
 		}
+	}
+
+	async function invite_for_game(invited_player) {
+		localStorage.setItem("jogoporinvite", true)
+		localStorage.setItem("outrojogador", invited_player)
+		await UserService.send_notification_request(current_user.id, invited_player, "P");
+		document.getElementById("linktogame").click()
+		//window.location.href = "http://localhost:3000/gamePage?id=0"
+	}
+
+	function accept_game(notification, index) {
+		deleteNotification(index);
+		UserService.delete(notification.id);
+		var id_outro_jogador = notification.sender_user.sender_id
+		
+		socket.once("match_link", (msg) => {
+			if (msg["match_id"]) {
+				let new_match_id = msg['match_id'];
+				localStorage.setItem("entreijogoporinvite", true)
+				localStorage.setItem("outrojogador", id_outro_jogador)
+				var elemento = document.getElementById("linktogame2")
+				var url = "/gamePage?id=0&mid=" + new_match_id
+				setLinkToGame2Href(url)
+				elemento.click()
+				//window.location.href = "http://localhost:3000/gamePage?id=0&mid=" + new_match_id
+			} else if (msg["error"]) {
+				console.log("tou erro")
+			}
+		})
+
+		socket.emit("get_match_id", {"user_id": AuthService.getCurrentUserId(), "outro_id": id_outro_jogador})
 	}
 
 	function run_logout() {
@@ -181,7 +215,7 @@ function Navbar() {
 															|| (notification.notification_type === "T" && 
 																<FaIcons.FaCheckCircle  className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															|| (notification.notification_type === "P" && 
-																<FaIcons.FaCheckCircle className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
+																<FaIcons.FaCheckCircle  onClick={ () => {accept_game(notification, index);}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															}
 															<span> </span>
 															<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {UserService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25}} color="#ff0015" />
@@ -212,9 +246,9 @@ function Navbar() {
 										<ul style={{fontSize:20}}>
 										{friends.map(function(user, index) {
 											return (
-												<li key={user.id} class="list-group-item d-flex justify-content-between align-items-center" style={{border: 0, padding: 5}}>
+												<li key={user.id} className="list-group-item d-flex justify-content-between align-items-center" style={{border: 0, padding: 5}}>
 													{user.username}
-													<FaIcons.FaEnvelopeSquare className="icon_notifications" style={{fontSize: 25}} />
+													<FaIcons.FaEnvelopeSquare className="icon_notifications" style={{fontSize: 25}} onClick={() => {invite_for_game(user.id)}} />
 												</li>
 											);
 										})}
@@ -275,6 +309,16 @@ function Navbar() {
             color: '#4BB543',
             },
             }} /> */}
+
+			<div style={{display:"none", visibility:"hidden"}}>
+				<Link id="linktogame" to="/gamePage?id=0">
+				
+				</Link>
+	
+				<Link id="linktogame2" to={linktogame2href}>
+					
+				</Link>
+			</div>
 		</IconContext.Provider>
 	)
 }

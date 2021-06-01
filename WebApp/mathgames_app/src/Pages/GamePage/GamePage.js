@@ -20,7 +20,7 @@ import { addMatch } from '../../store/modules/matches/actions';
 
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
 function GamePage() {
-	var history = useHistory();
+
 	var user = AuthService.getCurrentUser();
 	const dispatch = useDispatch();
 
@@ -41,6 +41,7 @@ function GamePage() {
 
 	const [canPlay, setCanPlay] = useState(false);
 
+	const [gerarLinkMode, setGerarLinkMode] = useState(false);
 	const [inviteFriendMode, setInviteFriendMode] = useState(false);
 
 	const url = new URLSearchParams(window.location.search);
@@ -49,9 +50,70 @@ function GamePage() {
 	var friend_match = useRef(null);
 	let new_match_id = url.get("mid")
 
-	if ( new_match_id !== null ) {
+	let history = useHistory()
+
+	var id_outro_jogador;
+	if (localStorage.getItem("jogoporinvite")) {
+		localStorage.removeItem("jogoporinvite")
+
+		id_outro_jogador = localStorage.getItem("outrojogador")
+		localStorage.removeItem("outrojogador")
+
+		socket.emit("generate_invite", {"user_id": AuthService.getCurrentUserId(), "outro_id": id_outro_jogador})
+
+		socket.once("invite_link", (msg) => {
+			let new_match_id = msg['match_id'];
+			
+			if ( new_match_id === null ) {
+				alert("Criaste um link recentemente, espera mais um pouco até criares um novo.")
+				return;
+			}
+			
+			friend_match.current = new_match_id;
+			setInviteFriendMode(true);
+		})
+
+		socket.once("friend_joined", (msg) => {
+			console.log("Friend just joined!");
+			var match = { match_id: msg['match_id'], player1: msg['player1'], player2: msg['player2'] };
+			dispatch( addMatch(match) );
+			history.push({
+				pathname: "/game/?g="+game_id, 
+				state: {
+					game_id: game_id,
+					game_mode: "amigo",
+					match: match
+				} 
+			})
+		})
+		
+	} 
+	else if (localStorage.getItem("entreijogoporinvite")) {
+		localStorage.removeItem("entreijogoporinvite")
+
+		id_outro_jogador = localStorage.getItem("outrojogador")
+		localStorage.removeItem("outrojogador")
+
 		socket.once("match_found", (msg) => {
-			console.log("Joined a game through invite link!");
+			console.log("Joined a game through invite!");
+			var match = { match_id: msg['match_id'], player1: msg['player1'], player2: msg['player2'] };
+			dispatch( addMatch(match) );
+			history.push({
+				pathname: "/game/?g="+game_id, 
+				state: {
+					game_id: game_id,
+					game_mode: "amigo",
+					ai_diff: AIdiff,
+					match: match
+				} 
+			})
+		})
+
+		socket.emit("entered_invite", {"user_id": AuthService.getCurrentUserId(), "outro_id": id_outro_jogador, "match_id": new_match_id, "game_id": game_id})
+		
+	} else if ( new_match_id !== null ) {
+		socket.once("match_found", (msg) => {
+			console.log("Joined a game through link!");
 			var match = { match_id: msg['match_id'], player1: msg['player1'], player2: msg['player2'] };
 			dispatch( addMatch(match) );
 			history.push({
@@ -201,7 +263,7 @@ function GamePage() {
 		socket.off("match_found");
 
 		if (gameMode === "amigo") {
-			socket.emit("generate_invite", {"user_id": AuthService.getCurrentUserId()})
+			socket.emit("generate_link", {"user_id": AuthService.getCurrentUserId()})
 
 			socket.once("invite_link", (msg) => {
 				let new_match_id = msg['match_id'];
@@ -212,7 +274,7 @@ function GamePage() {
 				}
 				
 				friend_match.current = new_match_id;
-				setInviteFriendMode(true);
+				setGerarLinkMode(true);
 			})
 
 			socket.once("friend_joined", (msg) => {
@@ -295,7 +357,9 @@ function GamePage() {
 
 	}, [name1,name2]);
 
-	if ( inviteFriendMode ) {
+
+
+	if ( gerarLinkMode ) {
 		return (
 			<div className="col-lg-12 link-geral-position">
 				<IconContext.Provider  value={{color: 'white'}}>
@@ -308,6 +372,17 @@ function GamePage() {
 								<button id="button-copy" className="button-copy" onClick={() => copy()}><i className="copy-icon"><FaIcons.FaCopy/></i></button>
 							</div>
 						</div>
+					</div>
+				</IconContext.Provider>
+			</div>
+		)
+	} else if (inviteFriendMode) {
+		return (
+			<div className="col-lg-12 link-geral-position">
+				<IconContext.Provider  value={{color: 'white'}}>
+					<div className="link-card">
+						<h2>À espera do teu amigo...!</h2>
+						<hr className="link-hr"></hr>
 					</div>
 				</IconContext.Provider>
 			</div>

@@ -75,6 +75,7 @@ class RastrosScene extends Phaser.Scene {
     }
 
     create() {
+        console.log("tou create")
         this.squares_group = this.add.group();
     
         // Sound effect played after every move
@@ -90,6 +91,7 @@ class RastrosScene extends Phaser.Scene {
             this.player.add(1);
 
         if ( game_mode === "online" || game_mode === "amigo" ) {
+            console.log("tou criar listeners")
             if ( AuthService.getCurrentUsername() === current_match['player1'] )
                 this.player.add(1);
             else
