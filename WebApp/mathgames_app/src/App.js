@@ -20,6 +20,7 @@ import GamePage from './Pages/GamePage/GamePage';
 import Profile from './Pages/Profile/Profile';
 import Podium from './Pages/Podium/Podium';
 import Statistics from './Pages/Admin/Statistics/Statistics';
+import AboutUs from './Pages/AboutUs/AboutUs';
 
 
 /* Uuid */
@@ -61,6 +62,7 @@ function App() {
                             <Route exact path='/profile' component={withRouter(Profile)}/>
                             <Route exact path='/podium' component={withRouter(Podium)}/>
                             <Route exact path='/statistics' component={withRouter(Statistics)}/>
+                            <Route exact path='/about' component={withRouter(AboutUs)}/>
                         </Switch>
                     </div>
 

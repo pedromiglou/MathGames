@@ -2,6 +2,26 @@ const db = require("../models");
 const Report = db.report;
 const User = db.user;
 const Op = db.Sequelize.Op;
+const Sequelize = db.Sequelize;
+const sequelize = db.sequelize;
+
+const getPagination = (page, size) => {
+  const limit = size ? +size : 3;
+  const offset = page ? page * limit : 0;
+
+  return { limit, offset };
+};
+
+const getPagingData = (data, page, limit) => {
+  const totalItems = data.count.length;
+  const reports = data.rows;
+  const currentPage = page ? +page : 0;
+  const totalPages = Math.ceil(totalItems / limit);
+
+  return { totalItems, reports, totalPages, currentPage };
+};
+
+
 
 // Create and Save a new Report
 exports.create = (req, res) => {
@@ -106,6 +126,28 @@ exports.delete = (req, res) => {
     .catch(err => {
       res.status(500).send({
         message: "Could not delete Report with id=" + id
+      });
+    });
+};
+
+// Retrieve top 10 users with most reports.
+exports.findUsersWithMostReports = (req, res) => {
+  const { page, size } = req.query;
+  const { limit, offset } = getPagination(page, size);
+
+  Report.findAndCountAll({ attributes: [[Sequelize.fn("COUNT", Sequelize.col("Reports.id")), "reportCount"]] ,
+  include: [{
+    model: User, as: "receiver_user", attributes: ["username", "id"]
+  }],
+  group: ['receiver'],
+  order: [[sequelize.literal("reportCount"), 'DESC']], limit, offset})
+    .then(data => {
+      const response = getPagingData(data, page, limit);
+      res.send(response);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:  err.message || "Some error occurred while retrieving the Reports."
       });
     });
 };

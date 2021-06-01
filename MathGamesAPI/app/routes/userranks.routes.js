@@ -7,6 +7,9 @@ module.exports = app => {
     // Retrieve all usersranks
     router.get("/", [authJwt.verifyToken, authJwt.isAdmin],  usersranks.findAll);
   
+    // Retrieve percentage of ranks user with game id
+    router.get("/statistics/:gameName", authJwt.verifyToken, usersranks.statistics);
+
     // Retrieve all ranks of a user with userId
     router.get("/:userId", authJwt.verifyToken, usersranks.findByUserId);
   

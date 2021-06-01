@@ -77,3 +77,41 @@ exports.deleteAll = (req, res) => {
       });
     });
 };
+
+
+// Retrieve percentage of ranks by a game id.
+exports.statistics = (req, res) => {
+  const game_name = req.params.gameName;
+
+  UserRank.findAll()
+    .then(data => {
+      var response = [];
+      var total_userranks = data.length;
+      var userrankselo = [0, 26, 76, 176, 276, 401, 551, 701, 851, 1051, 1251, 1451, 1701, 2147483647];
+      for (var i = 0; i < userrankselo.length - 1; i++) {
+        response[i] = 0;
+        var minimo = userrankselo[i];
+        var maximo = userrankselo[i+1];
+        var indices = []
+        data.forEach( (rank, index) => {
+          if ( ( minimo <= rank.dataValues[game_name]) && (rank.dataValues[game_name] < maximo)) {
+            response[i]++; 
+            indices.push(index)
+          }
+        })
+        for (var x = indices.length - 1; x >= 0; x--) {
+          data.splice(indices[x], 1);
+        }
+        indices = [];
+      }
+      for (var i = 0; i < response.length; i++) {
+        response[i] = (response[i] / total_userranks) * 100;
+      }
+      res.send(response);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving UserRanks."
+      });
+    });
+};

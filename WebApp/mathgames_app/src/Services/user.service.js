@@ -68,6 +68,12 @@ class UserService {
         return res.json();
     }
 
+    async getReportUsers(page, pageSize) {
+        var url = urlAPI + 'api/reports/top?page=' + page + '&size=' + pageSize;
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+
 
     //Statistics Requests
     async getNumberOfBans() {
@@ -89,8 +95,20 @@ class UserService {
         return res.json();
     }
 
+    async getMatchesStatistics7Days(game) {
+        var url = urlAPI + 'api/matches/statistics?game=' + game;
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+
     async getMatchesStatisticsByGame() {
         var url = urlAPI + 'api/matches/statisticsbygame/';
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+
+    async getRanksStatisticsByGame(name) {
+        var url = urlAPI + 'api/userranks/statistics/' + name;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         return res.json();
     }
