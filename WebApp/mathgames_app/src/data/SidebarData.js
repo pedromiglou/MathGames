@@ -41,7 +41,7 @@ export const sidebarData_group2 = [
     {
         id: 4,
         title: 'Quem somos',
-        path: '/aboutus',
+        path: '/about',
         icon: <BsIcons.BsQuestionCircle/>,
         cName: 'nav-text',
     }

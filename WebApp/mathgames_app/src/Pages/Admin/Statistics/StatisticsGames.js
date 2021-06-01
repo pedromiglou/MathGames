@@ -1,4 +1,3 @@
-import * as FaIcons from 'react-icons/fa';
 import React, { useState, useEffect } from 'react';
 import UserService from '../../../Services/user.service';
 import './Statistics.css';
@@ -190,67 +189,67 @@ function StatisticsGames(props){
                         <div className="ranks">
                             <div className="ranks-distr">
                                 <h4>Bronze 1</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/bronze1.png"}></img>
+                                <img alt="bronze1" src={process.env.PUBLIC_URL + "/images/ranks/bronze1.png"}></img>
                                 <h5>{rastros_ranks[0]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Bronze 2</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/bronze2.png"}></img>
+                                <img alt="bronze2" src={process.env.PUBLIC_URL + "/images/ranks/bronze2.png"}></img>
                                 <h5>{rastros_ranks[1]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Bronze 3</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/bronze3.png"}></img>
+                                <img alt="bronze3"src={process.env.PUBLIC_URL + "/images/ranks/bronze3.png"}></img>
                                 <h5>{rastros_ranks[2]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Prata 1</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/prata1.png"}></img>
+                                <img alt="prata1" src={process.env.PUBLIC_URL + "/images/ranks/prata1.png"}></img>
                                 <h5>{rastros_ranks[3]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Prata 2</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/prata2.png"}></img>
+                                <img alt="prata2" src={process.env.PUBLIC_URL + "/images/ranks/prata2.png"}></img>
                                 <h5>{rastros_ranks[4]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Prata 3</h4>  
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/prata3.png"}></img>
+                                <img alt="prata3" src={process.env.PUBLIC_URL + "/images/ranks/prata3.png"}></img>
                                 <h5>{rastros_ranks[5]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Ouro 1</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/ouro1.png"}></img>
+                                <img alt="ouro1" src={process.env.PUBLIC_URL + "/images/ranks/ouro1.png"}></img>
                                 <h5>{rastros_ranks[6]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Ouro 2</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/ouro2.png"}></img>
+                                <img alt="ouro2" src={process.env.PUBLIC_URL + "/images/ranks/ouro2.png"}></img>
                                 <h5>{rastros_ranks[7]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Ouro 3</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/ouro3.png"}></img>
+                                <img alt="ouro3" src={process.env.PUBLIC_URL + "/images/ranks/ouro3.png"}></img>
                                 <h5>{rastros_ranks[8]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Platina 1</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/platina1.png"}></img>
+                                <img alt="platina1" src={process.env.PUBLIC_URL + "/images/ranks/platina1.png"}></img>
                                 <h5>{rastros_ranks[9]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Platina 2</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/platina2.png"}></img>
+                                <img alt="platina2" src={process.env.PUBLIC_URL + "/images/ranks/platina2.png"}></img>
                                 <h5>{rastros_ranks[10]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Platina 3</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/platina3.png"}></img>
+                                <img alt="platina3" src={process.env.PUBLIC_URL + "/images/ranks/platina3.png"}></img>
                                 <h5>{rastros_ranks[11]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Diamante</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/diamante.png"}></img>
+                                <img alt="diamante" src={process.env.PUBLIC_URL + "/images/ranks/diamante.png"}></img>
                                 <h5>{rastros_ranks[12]}%</h5>
                             </div>
                         </div>
@@ -284,67 +283,67 @@ function StatisticsGames(props){
                         <div className="ranks">
                             <div className="ranks-distr">
                                 <h4>Bronze 1</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/bronze1.png"}></img>
+                                <img alt="bronze1" src={process.env.PUBLIC_URL + "/images/ranks/bronze1.png"}></img>
                                 <h5>{gatos_e_caes_ranks[0]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Bronze 2</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/bronze2.png"}></img>
+                                <img alt="bronze2" src={process.env.PUBLIC_URL + "/images/ranks/bronze2.png"}></img>
                                 <h5>{gatos_e_caes_ranks[1]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Bronze 3</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/bronze3.png"}></img>
+                                <img alt="bronze3" src={process.env.PUBLIC_URL + "/images/ranks/bronze3.png"}></img>
                                 <h5>{gatos_e_caes_ranks[2]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Prata 1</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/prata1.png"}></img>
+                                <img alt="prata1" src={process.env.PUBLIC_URL + "/images/ranks/prata1.png"}></img>
                                 <h5>{gatos_e_caes_ranks[3]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Prata 2</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/prata2.png"}></img>
+                                <img alt="prata2" src={process.env.PUBLIC_URL + "/images/ranks/prata2.png"}></img>
                                 <h5>{gatos_e_caes_ranks[4]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Prata 3</h4>  
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/prata3.png"}></img>
+                                <img alt="prata3" src={process.env.PUBLIC_URL + "/images/ranks/prata3.png"}></img>
                                 <h5>{gatos_e_caes_ranks[5]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Ouro 1</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/ouro1.png"}></img>
+                                <img alt="ouro1" src={process.env.PUBLIC_URL + "/images/ranks/ouro1.png"}></img>
                                 <h5>{gatos_e_caes_ranks[6]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Ouro 2</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/ouro2.png"}></img>
+                                <img alt="ouro2" src={process.env.PUBLIC_URL + "/images/ranks/ouro2.png"}></img>
                                 <h5>{gatos_e_caes_ranks[7]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Ouro 3</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/ouro3.png"}></img>
+                                <img alt="ouro3" src={process.env.PUBLIC_URL + "/images/ranks/ouro3.png"}></img>
                                 <h5>{gatos_e_caes_ranks[8]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Platina 1</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/platina1.png"}></img>
+                                <img alt="platina1" src={process.env.PUBLIC_URL + "/images/ranks/platina1.png"}></img>
                                 <h5>{gatos_e_caes_ranks[9]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Platina 2</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/platina2.png"}></img>
+                                <img alt="platina2" src={process.env.PUBLIC_URL + "/images/ranks/platina2.png"}></img>
                                 <h5>{gatos_e_caes_ranks[10]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Platina 3</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/platina3.png"}></img>
+                                <img alt="platina3" src={process.env.PUBLIC_URL + "/images/ranks/platina3.png"}></img>
                                 <h5>{gatos_e_caes_ranks[11]}%</h5>
                             </div>
                             <div className="ranks-distr">
                                 <h4>Diamante</h4>
-                                <img src={process.env.PUBLIC_URL + "/images/ranks/diamante.png"}></img>
+                                <img alt="diamante" src={process.env.PUBLIC_URL + "/images/ranks/diamante.png"}></img>
                                 <h5>{gatos_e_caes_ranks[12]}%</h5>
                             </div>
                         </div>
