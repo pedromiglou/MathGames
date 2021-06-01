@@ -5,8 +5,8 @@ import { React, useState, useEffect } from "react";
 import StatisticsGames from './StatisticsGames';
 import StatisticsTournaments from './StatisticsTournaments';
 import StatisticsPlayers from './StatisticsPlayers';
-import { FaThumbsDown } from 'react-icons/fa';
-import { RGBAFormat, RGBA_ASTC_4x4_Format } from 'three';
+// import { FaThumbsDown } from 'react-icons/fa';
+// import { RGBAFormat, RGBA_ASTC_4x4_Format } from 'three';
 
 
 function Statistics() {
