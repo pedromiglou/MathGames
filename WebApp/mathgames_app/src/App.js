@@ -21,6 +21,7 @@ import Profile from './Pages/Profile/Profile';
 import Podium from './Pages/Podium/Podium';
 import Statistics from './Pages/Admin/Statistics/Statistics';
 import AboutUs from './Pages/AboutUs/AboutUs';
+import Tournaments from './Pages/Tournaments/Tournaments';
 
 
 /* Uuid */
@@ -63,6 +64,7 @@ function App() {
                             <Route exact path='/podium' component={withRouter(Podium)}/>
                             <Route exact path='/statistics' component={withRouter(Statistics)}/>
                             <Route exact path='/about' component={withRouter(AboutUs)}/>
+                            <Route exact path='/tournaments' component={withRouter(Tournaments)}/>
                         </Switch>
                     </div>
 
