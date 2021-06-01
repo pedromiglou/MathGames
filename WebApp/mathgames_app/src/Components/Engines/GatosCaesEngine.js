@@ -5,12 +5,16 @@ import AuthService from '../../Services/auth.service';
 import UserService from '../../Services/user.service';
 import GatosCaesAI from "../AI/GatosCaesAI";
 
-var game_mode;
-var ai_diff;
-var auth_user;
+var game_mode, ai_diff, auth_user, current_match, processGameOver;
 
-export const GatosCaesEngine = ({arg_game_mode, arg_ai_diff}) => {
+export const GatosCaesEngine = ({process_game_over, arg_game_mode, arg_ai_diff, curr_match}) => {
     useEffect(() => {
+        // Clear listeners to make sure there are no repeated events
+        socket.off("match_end");
+        socket.off("move_piece");
+
+        current_match = curr_match;
+        processGameOver = process_game_over;
         game_mode = arg_game_mode;
         auth_user = AuthService.getCurrentUser();
 
@@ -23,7 +27,6 @@ export const GatosCaesEngine = ({arg_game_mode, arg_ai_diff}) => {
 
         const config = {
             parent: document.getElementById("my_div_game"),
-            canvas: document.getElementById("game_canvas"),
             transparent: true,
             type: Phaser.WEBGL,
             scale: {
@@ -32,7 +35,7 @@ export const GatosCaesEngine = ({arg_game_mode, arg_ai_diff}) => {
             scene: [GatosCaesScene]
         }
         new Phaser.Game(config);
-    }, [arg_game_mode, arg_ai_diff]);
+    }, [process_game_over, arg_game_mode, arg_ai_diff, curr_match]);
     
     return (<></>);
 }
@@ -85,20 +88,16 @@ class GatosCaesScene extends Phaser.Scene {
                 this.player.add(1);
             else
                 this.player.add(0);
-
-            if (auth_user === null)
-                socket.emit("start_game", { "user_id": sessionStorage.getItem("user_id"),"match_id": sessionStorage.getItem("match_id"),  "account_player": false});
-            else
-                socket.emit("start_game", { "user_id": String(auth_user.id), "match_id": sessionStorage.getItem("match_id"), "account_player": true});
-
+            
             socket.on("move_piece", (new_pos) => {
                 console.log("Received move: ", new_pos);
                 this.move(this.squares_group.getChildren()[new_pos]);
             });
 
             socket.on("match_end", (msg) => {
+                console.log("Game Over Received")
                 if (this.game_over === false)
-                    this.finish_game(msg["endMode"], msg["match_result"])
+                    this.finish_game(msg)
                 atualizarUserInfo();
             })
         }
@@ -143,10 +142,7 @@ class GatosCaesScene extends Phaser.Scene {
                 return;
             this.move( clicked_square );
             if ( game_mode === "online" || game_mode === "amigo" )
-                if (auth_user === null)
-                    socket.emit("move", clicked_square.name, sessionStorage.getItem("user_id"), sessionStorage.getItem("match_id"));
-                else
-                    socket.emit("move", clicked_square.name, String(auth_user.id), sessionStorage.getItem("match_id"));
+                socket.emit("move", clicked_square.name, AuthService.getCurrentUserId(), current_match['match_id']);
         }
     }
 
@@ -189,10 +185,17 @@ class GatosCaesScene extends Phaser.Scene {
         // Remove adjacent squares from opponent's valid moves
         this.valid_squares[1 - this.current_player] = set_diff(this.valid_squares[1 - this.current_player], adjacents)
 
-        // If win condition has been met => Game Over
-        if (this.valid_squares[1 - this.current_player].size === 0) {
-            this.finish_game("valid_move", null);
-            return;
+        // Check for win conditions
+        if ( game_mode === "offline" || game_mode === "ai" ) {
+            let winner = "";
+
+            if ( this.valid_squares[1 - this.current_player].size === 0 )
+                winner = "player" + String(1+this.current_player);
+
+            if ( winner !== "" ) {
+                this.finish_game( {match_id: current_match['match_id'], match_result: winner, end_mode: "valid_move"} );
+                return;
+            }
         }
 
         // Update AI's data structures
@@ -207,34 +210,13 @@ class GatosCaesScene extends Phaser.Scene {
         this.current_player_text.setText("Jogador " + (this.current_player+1));
     }
 
-    finish_game(cause, message) {   
-        this.game_over = true; 
+    finish_game(end_message) {
+        if ( String(end_message['match_id']) !== String(current_match['match_id']) )
+            return;
 
-        if ( cause === "valid_move") {
-            var winner = this.current_player;
+        this.game_over = true;
 
-            this.text = this.add.text(0, 0, "O jogador " + winner + " ganhou.", {font: "70px Impact", color: "Red"});
-            this.tweens.add ({
-                targets: this.text,
-                x: 45,
-                y: 265,
-                durations: 2000,
-                ease: "Elastic",
-                easeParams: [1.5, 0.5],
-                delay: 0
-            }, this);
-        } else if ( cause === "invalid_move" ) {
-            this.text = this.add.text(0, 0, "An invalid move has been detected.\n Game aborted.\n Result: " + message, {font: "40px Impact", color: "Red"});
-            this.tweens.add ({
-                targets: this.text,
-                x: 45,
-                y: 265,
-                durations: 2000,
-                ease: "Cubic.easeIn",
-                easeParams: [1.5, 0.5],
-                delay: 0
-            }, this);
-        }
+        processGameOver(end_message);
     }
 }
 

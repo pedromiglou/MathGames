@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import { Card } from "react-bootstrap";
 //import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
@@ -15,12 +15,14 @@ import * as FiIcons from "react-icons/fi";
 import {IconContext} from 'react-icons';
 import { ranks_info } from '../../data/ranksInfo';
 
+import { useDispatch } from 'react-redux';
+import { addMatch } from '../../store/modules/matches/actions';
 
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
 function GamePage() {
-	var history = useHistory();
-	var user = AuthService.getCurrentUser();
 
+	var user = AuthService.getCurrentUser();
+	const dispatch = useDispatch();
 
 	const dif_options = [
 		{ label: "fácil", value: "easy" },
@@ -39,9 +41,94 @@ function GamePage() {
 
 	const [canPlay, setCanPlay] = useState(false);
 
-	const params = new URLSearchParams(window.location.search);
-	let game_id = params.get("id");
+	const [gerarLinkMode, setGerarLinkMode] = useState(false);
+	const [inviteFriendMode, setInviteFriendMode] = useState(false);
+
+	const url = new URLSearchParams(window.location.search);
+	let game_id = url.get("id");
 	const game_info = games_info[game_id];
+	var friend_match = useRef(null);
+	let new_match_id = url.get("mid")
+
+	let history = useHistory()
+
+	var id_outro_jogador;
+	if (localStorage.getItem("jogoporinvite")) {
+		localStorage.removeItem("jogoporinvite")
+
+		id_outro_jogador = localStorage.getItem("outrojogador")
+		localStorage.removeItem("outrojogador")
+
+		socket.emit("generate_invite", {"user_id": AuthService.getCurrentUserId(), "outro_id": id_outro_jogador})
+
+		socket.once("invite_link", (msg) => {
+			let new_match_id = msg['match_id'];
+			
+			if ( new_match_id === null ) {
+				alert("Criaste um link recentemente, espera mais um pouco até criares um novo.")
+				return;
+			}
+			
+			friend_match.current = new_match_id;
+			setInviteFriendMode(true);
+		})
+
+		socket.once("friend_joined", (msg) => {
+			console.log("Friend just joined!");
+			var match = { match_id: msg['match_id'], player1: msg['player1'], player2: msg['player2'] };
+			dispatch( addMatch(match) );
+			history.push({
+				pathname: "/game/?g="+game_id, 
+				state: {
+					game_id: game_id,
+					game_mode: "amigo",
+					match: match
+				} 
+			})
+		})
+		
+	} 
+	else if (localStorage.getItem("entreijogoporinvite")) {
+		localStorage.removeItem("entreijogoporinvite")
+
+		id_outro_jogador = localStorage.getItem("outrojogador")
+		localStorage.removeItem("outrojogador")
+
+		socket.once("match_found", (msg) => {
+			console.log("Joined a game through invite!");
+			var match = { match_id: msg['match_id'], player1: msg['player1'], player2: msg['player2'] };
+			dispatch( addMatch(match) );
+			history.push({
+				pathname: "/game/?g="+game_id, 
+				state: {
+					game_id: game_id,
+					game_mode: "amigo",
+					ai_diff: AIdiff,
+					match: match
+				} 
+			})
+		})
+
+		socket.emit("entered_invite", {"user_id": AuthService.getCurrentUserId(), "outro_id": id_outro_jogador, "match_id": new_match_id, "game_id": game_id})
+		
+	} else if ( new_match_id !== null ) {
+		socket.once("match_found", (msg) => {
+			console.log("Joined a game through link!");
+			var match = { match_id: msg['match_id'], player1: msg['player1'], player2: msg['player2'] };
+			dispatch( addMatch(match) );
+			history.push({
+				pathname: "/game/?g="+game_id, 
+				state: {
+					game_id: game_id,
+					game_mode: "amigo",
+					ai_diff: AIdiff,
+					match: match
+				} 
+			})
+		})
+
+		socket.emit("entered_link", {"user_id": AuthService.getCurrentUserId(), "match_id": new_match_id, "game_id": game_id})
+	}
 
 	var userRank = 0
 	var userRankValue = 0;
@@ -112,12 +199,9 @@ function GamePage() {
 			setCanPlay(true);
 		}
 
-		for (let i = 0; i < cards.length; i++){
-			if (cards[i].id !== val){
+		for (let i = 0; i < cards.length; i++)
+			if (cards[i].id !== val)
 				cards[i].classList.add("not-active")
-			}
-		}
-		
 		
 		setGameMode(val);
 		if (val === "ai") {
@@ -159,60 +243,85 @@ function GamePage() {
 		var x = document.getElementById("choose_names");
 		x.style.display = "none";
 	}
+
+	function copy() {
+        var link = document.getElementById("link");
+        
+        link.select();
+        link.setSelectionRange(0, 99999); /* For mobile devices */
+
+        document.execCommand("copy");
+
+        /* Alert the copied text */
+        alert("O link foi copiado!");
+    }
 	
 	function find_match() {
+		// Clear listeners in case user presses Find Match button multiple times
+		socket.off("invite_link");
+		socket.off("friend_joined");
+		socket.off("match_found");
+
 		if (gameMode === "amigo") {
-			if (user === null)
-				socket.emit("friendbylink", {"user_id": sessionStorage.getItem("user_id"), "game_id": game_id})
-			else
-				socket.emit("friendbylink", {"user_id": String(user.id), "game_id": game_id})
+			socket.emit("generate_link", {"user_id": AuthService.getCurrentUserId()})
 
-			socket.on("link_sent", (msg) => {
-				history.push({
-					pathname: "/game/?g="+game_id+"&id="+msg['match_id'], 
-					state: {
-						game_id: game_id,
-						game_mode: gameMode,
-						ai_diff: AIdiff,
-						player: user !== null ? user.username : "Guest_" + sessionStorage.getItem("user_id"),
-						opponent: msg['opponent']
-					  } 
-				})
+			socket.once("invite_link", (msg) => {
+				let new_match_id = msg['match_id'];
+				
+				if ( new_match_id === null ) {
+					alert("Criaste um link recentemente, espera mais um pouco até criares um novo.")
+					return;
+				}
+				
+				friend_match.current = new_match_id;
+				setGerarLinkMode(true);
 			})
-		} else if (gameMode === "online") {
-			if (user === null)
-				socket.emit("user_id", {"user_id": sessionStorage.getItem("user_id"), "game_id": game_id})
-			else
-				socket.emit("user_id", {"user_id": String(user.id), "game_id": game_id})
 
-			socket.on("match_found", (msg) => {
-				console.log("Match found!");
-				sessionStorage.setItem('match_id', msg['match_id']);
-				sessionStorage.setItem('starter', msg['starter']);
-				history.push(
-					{
+			socket.once("friend_joined", (msg) => {
+				console.log("Friend just joined!");
+				var match = { match_id: msg['match_id'], player1: msg['player1'], player2: msg['player2'] };
+				dispatch( addMatch(match) );
+				history.push({
 					pathname: "/game/?g="+game_id, 
 					state: {
 						game_id: game_id,
 						game_mode: gameMode,
 						ai_diff: AIdiff,
-						player: user !== null ? user.username : "Guest_" + sessionStorage.getItem("user_id"),
-						opponent: msg['opponent']
-						}  
-					})
+						match: match
+					} 
+				})
+			})
+		} else if (gameMode === "online") {
+			socket.emit("user_id", {"user_id": AuthService.getCurrentUserId(), "game_id": game_id})
+
+			socket.once("match_found", (msg) => {
+				console.log("Match found!");
+				var match = { match_id: msg['match_id'], player1: msg['player1'], player2: msg['player2'] };
+				dispatch( addMatch(match) );
+				history.push({
+					pathname: "/game/?g="+game_id, 
+					state: {
+						game_id: game_id,
+						game_mode: gameMode,
+						ai_diff: AIdiff,
+						match: match
+					}  
+				})
 			})
 		} else {
-			history.push(
-				{
+			let curr_username = AuthService.getCurrentUsername();
+			var username1 = gameMode==="ai" ? curr_username : name1;
+			var username2 = gameMode==="ai" ? "AI " + AIdiff + " difficulty" : name2;
+
+			history.push({
 				pathname: "/game/?g="+game_id, 
 				state: {
 					game_id: game_id,
 					game_mode: gameMode,
 					ai_diff: AIdiff,
-					player: gameMode==="ai" ? user !== null ? user.username : "Guest_" + sessionStorage.getItem("user_id") : name1,
-					opponent: gameMode==="ai" ? "AI " + AIdiff + " difficulty" : name2,
-					}  
-				})
+					match: { match_id: 0, player1: username1, player2: username2 }
+				}  
+			})
 		}
 	}
 
@@ -249,9 +358,40 @@ function GamePage() {
 	}, [name1,name2]);
 
 
-	return (
-		<>
-			<div className="container choose-game-mode-container">
+
+	if ( gerarLinkMode ) {
+		return (
+			<div className="col-lg-12 link-geral-position">
+				<IconContext.Provider  value={{color: 'white'}}>
+					<div className="link-card">
+						<h2>Copia o link para convidar alguém!</h2>
+						<hr className="link-hr"></hr>
+						<div className="bottom-link row">
+							<input readOnly={true} className="link" id="link" value={"http://localhost:3000/gamePage?id="+game_id+"&mid="+friend_match.current}></input>
+							<div className="div-link-button">
+								<button id="button-copy" className="button-copy" onClick={() => copy()}><i className="copy-icon"><FaIcons.FaCopy/></i></button>
+							</div>
+						</div>
+					</div>
+				</IconContext.Provider>
+			</div>
+		)
+	} else if (inviteFriendMode) {
+		return (
+			<div className="col-lg-12 link-geral-position">
+				<IconContext.Provider  value={{color: 'white'}}>
+					<div className="link-card">
+						<h2>À espera do teu amigo...!</h2>
+						<hr className="link-hr"></hr>
+					</div>
+				</IconContext.Provider>
+			</div>
+		)
+	}
+	else
+		return (
+			<>
+				<div className="container choose-game-mode-container">
 				<div className="row">
 					<div className="col-lg-4 game-details orange left">
 						<h1 className="game-Name"> {game_info["title"]} </h1>
@@ -466,7 +606,8 @@ function GamePage() {
 				</div>
 			</div>
 		</>
-	);
+
+		);
 }
 
 export default GamePage;
