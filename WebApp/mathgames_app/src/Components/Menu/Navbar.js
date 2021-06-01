@@ -215,8 +215,8 @@ function Navbar() {
 												<li key={user.id} className="list-item-friends">
 													{user.username}
 													<div>
-														<FaIcons.FaEnvelopeSquare className="icon_notifications" style={{fontSize: 25}} />
-														<IoIcons.IoPersonAdd className="icon_notifications" style={{fontSize: 25}} />
+														<FaIcons.FaEnvelopeSquare title="Convidar para jogo" className="icon_notifications" style={{fontSize: 25}} />
+														<IoIcons.IoPersonRemove title="Remover Amigo" className="icon_notifications" style={{fontSize: 25}} />
 													</div>
 													
 												</li>
