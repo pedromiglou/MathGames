@@ -17,7 +17,7 @@ export const sidebarData_group1 = [
     {
         id: 1,
         title: 'Torneio',
-        path: '/tournament',
+        path: '/tournaments',
         icon: <RiIcons.RiTrophyFill/>,
         cName: 'nav-text',
     },

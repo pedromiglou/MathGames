@@ -82,7 +82,7 @@ function Podium() {
 	};
 	
 	function friend_request(friend2) {
-		UserService.make_friend_request(current_user.id, friend2);
+		UserService.send_notification_request(current_user.id, friend2, "F");
 	}
 
 	async function remove_friend(friend2) {
