@@ -708,18 +708,18 @@ async function finish_game(match_id, endMode) {
     player2_final_result = "draw"
   }
 
-  if (player_1_account_player === true || player_2_account_player === true) {
-    if (!player_1_account_player) {
-      gameMatch["player1"] = null
-    }
-    if (!player_2_account_player) {
-      gameMatch["player2"] = null
-    }
+  if (!player_1_account_player) {
+    gameMatch["player1"] = null
+  }
+  if (!player_2_account_player) {
+    gameMatch["player2"] = null
+  }
 
-    // Save GameMatch in the database
-    var res = await GameMatch.create(gameMatch)
+  // Save GameMatch in the database
+  var res = await GameMatch.create(gameMatch)
 
     console.log(current_games)
+  if (player_1_account_player === true || player_2_account_player === true) {
 
     if (game_type === "online") {
       var jogo = null;
