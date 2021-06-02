@@ -103,7 +103,7 @@ class UserService {
 
     async getMatchesStatisticsByGame() {
         var url = urlAPI + 'api/matches/statisticsbygame/';
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        var res = await fetch(url);
         return res.json();
     }
 
