@@ -125,12 +125,9 @@ function ChooseGame() {
 			</div>
 			<hr className="division-menu-games"></hr>
 			<div className="games-list">
-				{/* TODO: Passar props para filtrar pedido de jogos `a api */}
-				{filterOption === "AllGames" && <GamesList />}
-				{filterOption === "RecommendedGames" && <GamesList />}
-				{filterOption === "MostPlayedGames" && (
-					 <GamesList />
-				)}
+				{filterOption === "AllGames" && <GamesList filter={"AllGames"} />}
+				{filterOption === "RecommendedGames" && <GamesList filter={"RecommendedGames"} />}
+				{filterOption === "MostPlayedGames" && <GamesList  filter={"MostPlayedGames"} />}
 			</div>
 		</div>
 	);

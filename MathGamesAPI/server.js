@@ -470,13 +470,13 @@ function create_game(match_id, game_id, user1, user2, game_type) {
                                               current_games[match_id]['state']['isFinished'] = true;
                                               current_games[match_id]['state']['winner'] = "2";
                                               finish_game(match_id, "timeout");
-                                            }, 15000);
+                                            }, 5000);
   current_games[match_id]['timers'][user2] = new Timer(function() {
                                               console.log("It's done")
                                               current_games[match_id]['state']['isFinished'] = true;
                                               current_games[match_id]['state']['winner'] = "1";
                                               finish_game(match_id, "timeout");
-                                            }, 15000);
+                                            }, 5000);
 
   current_games[match_id]['timers'][user1].start();
 

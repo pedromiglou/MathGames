@@ -170,9 +170,10 @@ exports.statisticsbygame = (req, res) => {
 
   Game.findAll({
     attributes: {include: [[Sequelize.fn("COUNT", Sequelize.col("GameMatches.id")), "matchesCount"]]},
-    where: {"$GameMatches.createdAt$": {[Op.gte]: setimoDia}},
+    and: {"$GameMatches.createdAt$": {[Op.gte]: setimoDia}},
     include: [{
-      model: GameMatch, attributes: []
+      model: GameMatch, attributes: [],
+
     }],
     group: ['Games.id']
   })
