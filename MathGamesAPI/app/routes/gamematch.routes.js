@@ -14,7 +14,7 @@ module.exports = app => {
     router.get("/statistics", [authJwt.verifyToken, authJwt.isAdmin], matches.statistics);
 
     // Retrieve statistics. Percentage of each game played
-    router.get("/statisticsbygame", [authJwt.verifyToken, authJwt.isAdmin], matches.statisticsbygame);
+    router.get("/statisticsbygame", matches.statisticsbygame);
   
     // Retrieve match by id
     router.get("/:id", authJwt.verifyToken, matches.findOne);

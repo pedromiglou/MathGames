@@ -470,13 +470,13 @@ function create_game(match_id, game_id, user1, user2, game_type) {
                                               current_games[match_id]['state']['isFinished'] = true;
                                               current_games[match_id]['state']['winner'] = "2";
                                               finish_game(match_id, "timeout");
-                                            }, 15000);
+                                            }, 5000);
   current_games[match_id]['timers'][user2] = new Timer(function() {
                                               console.log("It's done")
                                               current_games[match_id]['state']['isFinished'] = true;
                                               current_games[match_id]['state']['winner'] = "1";
                                               finish_game(match_id, "timeout");
-                                            }, 15000);
+                                            }, 5000);
 
   current_games[match_id]['timers'][user1].start();
 
@@ -708,18 +708,18 @@ async function finish_game(match_id, endMode) {
     player2_final_result = "draw"
   }
 
-  if (player_1_account_player === true || player_2_account_player === true) {
-    if (!player_1_account_player) {
-      gameMatch["player1"] = null
-    }
-    if (!player_2_account_player) {
-      gameMatch["player2"] = null
-    }
+  if (!player_1_account_player) {
+    gameMatch["player1"] = null
+  }
+  if (!player_2_account_player) {
+    gameMatch["player2"] = null
+  }
 
-    // Save GameMatch in the database
-    var res = await GameMatch.create(gameMatch)
+  // Save GameMatch in the database
+  var res = await GameMatch.create(gameMatch)
 
     console.log(current_games)
+  if (player_1_account_player === true || player_2_account_player === true) {
 
     if (game_type === "online") {
       var jogo = null;
