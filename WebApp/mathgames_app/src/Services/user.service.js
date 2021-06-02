@@ -70,47 +70,97 @@ class UserService {
 
     async getReportUsers(page, pageSize) {
         var url = urlAPI + 'api/reports/top?page=' + page + '&size=' + pageSize;
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
-        return res.json();
+        try {
+            var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+            if (res.status !== 200) {
+                return {"error": true};
+            }
+            return res.json();
+        }
+        catch {
+            return {"error": true};
+        }
     }
 
 
     //Statistics Requests
     async getNumberOfBans() {
         var url = urlAPI + 'api/bans/statistics/';
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
-        return res.json();
+        try {
+            var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+            if (res.status !== 200) {
+                return {"error": true};
+            }
+            return res.json();
+        } catch {
+            return {"error": true};
+        }
     }
 
     async getNumberOfNewPlayers() {
         var url = urlAPI + 'api/users/statistics/';
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
-        return res.json();
+        try {
+            var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+            if (res.status !== 200) {
+                return {"error": true};
+            }
+            return res.json();
+        } catch {
+            return {"error": true};
+        }
     }
 
 
     async getMatchesStatistics() {
         var url = urlAPI + 'api/matches/statistics/';
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
-        return res.json();
+        try {
+            var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+            if (res.status !== 200) {
+                return {"error": true};
+            }
+            return res.json();
+        } catch {
+            return {"error": true};
+        }
     }
 
     async getMatchesStatistics7Days(game) {
         var url = urlAPI + 'api/matches/statistics?game=' + game;
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
-        return res.json();
+        try {
+            var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+            if (res.status !== 200) {
+                return {"error": true};
+            }
+            return res.json();
+        } catch {
+            return {"error": true};
+        }
     }
 
     async getMatchesStatisticsByGame() {
         var url = urlAPI + 'api/matches/statisticsbygame/';
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
-        return res.json();
+        try {
+            var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+            if (res.status !== 200) {
+                return {"error": true};
+            }
+            return res.json();
+        } catch {
+            return {"error": true};
+        }
     }
 
     async getRanksStatisticsByGame(name) {
         var url = urlAPI + 'api/userranks/statistics/' + name;
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
-        return res.json();
+        try {
+            var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+            if (res.status !== 200) {
+                return {"error": true};
+            }
+            return res.json();
+        } catch {
+            return {"error": true};
+        }
     }
     
     //Save avatar function

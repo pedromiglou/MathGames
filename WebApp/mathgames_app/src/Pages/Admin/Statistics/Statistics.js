@@ -1,5 +1,4 @@
 import './Statistics.css';
-import UserService from "../../../Services/user.service";
 import { React, useState, useEffect } from "react";
 
 import StatisticsGames from './StatisticsGames';
@@ -10,11 +9,6 @@ import StatisticsPlayers from './StatisticsPlayers';
 
 
 function Statistics() {
-    const [numberOfBans, setNumberOfBans] = useState([])
-    const [numberOfNewPlayers, setNumberOfNewPlayers] = useState([])
-    const [matchesLast7Days, setMatchesLast7Days] = useState([])
-    const [numberOfTotalMatches, setNumberOfTotalMatchesLast7Days] = useState(0);
-    const [matchesByGameLast7Days, setMatchesByGameLast7Days] = useState([]);
     
     const [filterOption, setFilterOption] = useState("Jogos");
     
@@ -56,41 +50,7 @@ function Statistics() {
 	}
 
     useEffect(() => {
-        async function fetchApiNumberOfBans() {
-            var bans = await UserService.getNumberOfBans();
-            setNumberOfBans(bans);
-        }
-
-        async function fetchApiNumberOfNewPlayers() {
-            var newplayers = await UserService.getNumberOfNewPlayers();
-            setNumberOfNewPlayers(newplayers);
-        }
-
-        async function fetchApiMatchesStatistics() {
-            var matches = await UserService.getMatchesStatistics();
-            setMatchesLast7Days(matches);
-        }
-
-
-        async function fetchApiMatchesStatisticsByGame() {
-            var response = await UserService.getMatchesStatisticsByGame();
-            console.log(response)
-            if (response.message !== undefined) {
-                setNumberOfTotalMatchesLast7Days(response)
-                setMatchesByGameLast7Days(response)
-            } else {
-                setNumberOfTotalMatchesLast7Days(response.countAllMatches);
-                var matches_percentage = response.matches.map(element => {
-                    return {label: element.name, y: element.matchesCount}
-                })
-                setMatchesByGameLast7Days(matches_percentage);
-            }
-        }
-
-        fetchApiNumberOfBans()
-        fetchApiMatchesStatistics()
-        fetchApiMatchesStatisticsByGame()
-        fetchApiNumberOfNewPlayers()
+        
     }, [])
 
     /*
@@ -109,77 +69,6 @@ function Statistics() {
         ]
       }
       */
-
-    const bannedPlayers7DaysGraph = {
-        animationEnabled: true,
-        //exportEnabled: true,
-        theme: "light1", //"light1", "dark1", "dark2"
-        data: [
-          {
-            type: "line",
-            dataPoints: [
-              { label: "6 days ago", y: numberOfBans[0] },
-              { label: "5 days ago", y: numberOfBans[1] },
-              { label: "4 days ago", y: numberOfBans[2] },
-              { label: "3 days ago", y: numberOfBans[3] },
-              { label: "2 days ago", y: numberOfBans[4] },
-              { label: "yesterday", y: numberOfBans[5] },
-              { label: "today", y: numberOfBans[6] }
-            ]
-          }
-        ]
-      };
-
-    const newPlayers7DaysGraph = {
-        animationEnabled: true,
-        //exportEnabled: true,
-        theme: "light1", //"light1", "dark1", "dark2"
-        data: [
-          {
-            type: "line",
-            dataPoints: [
-              { label: "6 days ago", y: numberOfNewPlayers[0] },
-              { label: "5 days ago", y: numberOfNewPlayers[1] },
-              { label: "4 days ago", y: numberOfNewPlayers[2] },
-              { label: "3 days ago", y: numberOfNewPlayers[3] },
-              { label: "2 days ago", y: numberOfNewPlayers[4] },
-              { label: "yesterday", y: numberOfNewPlayers[5] },
-              { label: "today", y: numberOfNewPlayers[6] }
-            ]
-          }
-        ]
-      };
-    
-    const matchesLast7DaysGraph = {
-        animationEnabled: true,
-        //exportEnabled: true,
-        theme: "light1", //"light1", "dark1", "dark2"
-        data: [
-            {
-            type: "line",
-            dataPoints: [
-                { label: "6 days ago", y: matchesLast7Days[0] },
-                { label: "5 days ago", y: matchesLast7Days[1] },
-                { label: "4 days ago", y: matchesLast7Days[2] },
-                { label: "3 days ago", y: matchesLast7Days[3] },
-                { label: "2 days ago", y: matchesLast7Days[4] },
-                { label: "yesterday", y: matchesLast7Days[5] },
-                { label: "today", y: matchesLast7Days[6] }
-            ]
-            }
-        ]
-    };
-
-    const matchesByGameLast7DaysGraph = {
-        animationEnabled: true,
-        theme: "light1", // "light1", "dark1", "dark2"
-        data: [{
-            type: "pie",
-            indexLabel: "{label}: {y}%",		
-            startAngle: -90,
-            dataPoints: matchesByGameLast7Days
-        }]
-    }
 
     return (
         <div className="Statistics">
@@ -240,9 +129,9 @@ function Statistics() {
 
             
             <div className="Section animation-down">
-				{filterOption === "Jogos" && <StatisticsGames numberOfTotalMatches={numberOfTotalMatches} matchesByGameLast7Days={matchesByGameLast7DaysGraph} matchesLast7DaysGraph={matchesLast7DaysGraph}/>}
+				{filterOption === "Jogos" && <StatisticsGames />}
 				{filterOption === "Torneios" && <StatisticsTournaments/>}
-				{filterOption === "Jogadores" && <StatisticsPlayers newPlayers7DaysGraph={newPlayers7DaysGraph} bannedPlayers7DaysGraph={bannedPlayers7DaysGraph}/>}
+				{filterOption === "Jogadores" && <StatisticsPlayers />}
             </div> 
             
         </div>
