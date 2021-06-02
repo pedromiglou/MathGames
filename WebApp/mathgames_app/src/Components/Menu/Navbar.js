@@ -17,7 +17,9 @@ import UserService from '../../Services/user.service';
 import {urlWeb} from './../../data/data';
 
 import Avatar from "../../Components/Avatar";
+import socket from "../../index"
 
+import { Modal, Button } from "react-bootstrap";
 
 /* Redux */
 import { useDispatch } from 'react-redux';
@@ -41,7 +43,35 @@ function Navbar() {
     const [color, setColor] = useState("#FFAF00");
     const [accessorie, setAccessorie] = useState("none");
     const [trouser, setTrouser] = useState("#808080");
+	const [linktogame2href, setLinkToGame2Href] = useState("/profile")
 
+	const [modalConfirmShow, setConfirmModalShow] = useState(false);
+
+	function ExpireModal(props) {
+        return (
+          <Modal
+            {...props}
+            size="md"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header closeButton>
+              <Modal.Title id="contained-modal-title-vcenter" style={{color: "#0056b3", fontSize: 30}}>
+                Convite expirou
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p style={{color: "#0056b3", fontSize: 20}}>O convite já não está disponível. </p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn save-btn">Ok</Button>
+            </Modal.Footer>
+          </Modal>
+        );
+      }
+
+
+	var current_user = AuthService.getCurrentUser();
 
     const notifyFriendshipSucess = () => toast.success('Pedido de amizade aceite!', {
         icon: <FaIcons.FaCheckCircle />,
@@ -77,6 +107,38 @@ function Navbar() {
 		}
 	}
 
+	async function invite_for_game(invited_player) {
+		localStorage.setItem("jogoporinvite", true)
+		localStorage.setItem("outrojogador", invited_player)
+		await UserService.send_notification_request(current_user.id, invited_player, "P");
+		document.getElementById("linktogame").click()
+		//window.location.href = "http://localhost:3000/gamePage?id=0"
+	}
+
+	function accept_game(notification, index) {
+		deleteNotification(index);
+		UserService.delete(notification.id);
+		var id_outro_jogador = notification.sender_user.sender_id
+		
+		socket.once("match_link", (msg) => {
+			if (msg["match_id"]) {
+				let new_match_id = msg['match_id'];
+				localStorage.setItem("entreijogoporinvite", true)
+				localStorage.setItem("outrojogador", id_outro_jogador)
+				var elemento = document.getElementById("linktogame2")
+				var url = "/gamePage?id=0&mid=" + new_match_id
+				setLinkToGame2Href(url)
+				elemento.click()
+				//window.location.href = "http://localhost:3000/gamePage?id=0&mid=" + new_match_id
+			} else if (msg["error"]) {
+				console.log("tou erro")
+				setConfirmModalShow(true)
+			}
+		})
+
+		socket.emit("get_match_id", {"user_id": AuthService.getCurrentUserId(), "outro_id": id_outro_jogador})
+	}
+
 	function run_logout() {
 		sessionStorage.removeItem("user");
 		window.location.assign(urlWeb)
@@ -90,13 +152,15 @@ function Navbar() {
 		// Load user friends list
         async function fetchApiFriends() {
             var response = await UserService.getFriends(current_user.id);
-            setFriends(response);
+			if ( response != null )
+            	setFriends(response);
         }
 
 		// Load user notifications
         async function fetchApiNotifications() {
             var response = await UserService.getNotifications(current_user.id);
-            setNotifications(response);
+			if ( response != null )
+				setNotifications(response);
         }
 
 		// Load Avatar
@@ -125,7 +189,6 @@ function Navbar() {
             });
         }
     }, [dispatch])
-
 	return (
 		<IconContext.Provider value={{color: 'grey'}}>
 			<div id="horizontal_nav_row" className="row sticky-top">
@@ -147,7 +210,7 @@ function Navbar() {
 								<Dropdown.ItemText><h4>Notificações</h4></Dropdown.ItemText>
 								<Dropdown.Divider />
 								{ notifications.length > 0 &&
-								<Dropdown.ItemText>{
+								<Dropdown.ItemText>
 									<div className="navbar-dropdown-row">
 										{notifications.map(function(notification, index) {
 											var current_date = new Date();
@@ -180,7 +243,7 @@ function Navbar() {
 															|| (notification.notification_type === "T" && 
 																<FaIcons.FaCheckCircle  className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															|| (notification.notification_type === "P" && 
-																<FaIcons.FaCheckCircle className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
+																<FaIcons.FaCheckCircle  onClick={ () => {accept_game(notification, index);}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															}
 															<span> </span>
 															<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {UserService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25}} color="#ff0015" />
@@ -191,7 +254,7 @@ function Navbar() {
 											);
 										})}
 									</div>
-								}</Dropdown.ItemText>
+								</Dropdown.ItemText>
 								}
 								{ notifications.length === 0 &&
 									<Dropdown.ItemText>
@@ -202,6 +265,10 @@ function Navbar() {
 								}
 							</DropdownButton>
 						</div>
+						<ExpireModal
+							show={modalConfirmShow}
+							onHide={() => setConfirmModalShow(false)}
+						/>
 						<div title="Amigos" className="col-xl-2 col-lg-2 col-md-2 col-sm-3 col-xs-3 d-flex align-items-center justify-content-center">
 							<DropdownButton	menuAlign="right" title={<FaIcons.FaUserFriends size={42}/>} id="friends-dropdown">
 								<Dropdown.ItemText><div style={{width: 230}}><h4>Amigos</h4></div></Dropdown.ItemText>
@@ -211,9 +278,9 @@ function Navbar() {
 										<ul style={{fontSize:20}}>
 										{friends.map(function(user, index) {
 											return (
-												<li key={user.id} class="list-group-item d-flex justify-content-between align-items-center" style={{border: 0, padding: 5}}>
+												<li key={user.id} className="list-group-item d-flex justify-content-between align-items-center" style={{border: 0, padding: 5}}>
 													{user.username}
-													<FaIcons.FaEnvelopeSquare className="icon_notifications" style={{fontSize: 25}} />
+													<FaIcons.FaEnvelopeSquare className="icon_notifications" style={{fontSize: 25}} onClick={() => {invite_for_game(user.id)}} />
 												</li>
 											);
 										})}
@@ -246,7 +313,7 @@ function Navbar() {
 								<div className="col-xl-5 col-lg-5 col-md-4 col-sm-6 col-xs-6">
 									<Link to="/">
 										<h2 onClick={run_logout} className="h2-login">Logout</h2>
-										<IconContext.Provider value={{color: '#007bff'}}><FiIcons.FiLogOut className="icon_notifications"  size={42} /></IconContext.Provider>
+										<IconContext.Provider  value={{color: '#007bff'}}><FiIcons.FiLogOut className="icon_notifications"  size={42} onClick={run_logout}/></IconContext.Provider>
 									</Link>
 								</div>
 							</div>
@@ -274,6 +341,16 @@ function Navbar() {
             color: '#4BB543',
             },
             }} /> */}
+
+			<div style={{display:"none", visibility:"hidden"}}>
+				<Link id="linktogame" to="/gamePage?id=0">
+				
+				</Link>
+	
+				<Link id="linktogame2" to={linktogame2href}>
+					
+				</Link>
+			</div>
 		</IconContext.Provider>
 	)
 }

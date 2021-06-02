@@ -53,6 +53,20 @@ class AuthService {
     getCurrentUser() {
         return JSON.parse(sessionStorage.getItem("user"))
     }
+
+    getCurrentUserId() {
+        let current_user = this.getCurrentUser();
+        return current_user !== null ? current_user.id : sessionStorage.getItem('user_id');
+    }
+
+    getCurrentUsername() {
+        let current_user = this.getCurrentUser();
+        return current_user !== null ? String(current_user.username) : sessionStorage.getItem('user_id');
+    }
+
+    isAuthenticated() {
+        return this.getCurrentUser() !== null;
+    }
 }
 
 export default new AuthService()
