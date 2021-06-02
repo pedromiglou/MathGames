@@ -43,7 +43,7 @@ export default class RastrosAI {
 					}
 				}
 
-				var newScore = this.minimax(validSquares, element, 11, -100, 100, false);
+				var newScore = this.minimax(validSquares, element, 10, -100, 100, false);
 				if (newScore >= score) {
 					chosen = element;
 					score = newScore;

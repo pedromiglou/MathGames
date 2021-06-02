@@ -134,7 +134,7 @@ function GamePage({navigation}) {
 
           {aiMode==="P" && <View style={styles.buttonView}>
             <TouchableHighlight style={styles.button} onPress = {() => {
-                          saveData("player", "1");
+                          saveData('starter', true);
                           navigation.navigate("Game");
                         }}>
               <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
@@ -144,7 +144,7 @@ function GamePage({navigation}) {
               </LinearGradient>
             </TouchableHighlight>
             <TouchableHighlight style={styles.button} onPress = {() => {
-                          saveData("player", "2");
+                          saveData('starter', false);
                           navigation.navigate("Game");
                         }}>
               <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
