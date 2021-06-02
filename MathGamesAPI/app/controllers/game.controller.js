@@ -74,7 +74,7 @@ exports.update = (req, res) => {
           message: "Game was updated successfully."
         });
       } else {
-        res.send({
+        res.status(500).send({
           message: `Cannot update Game with id=${id}. Maybe Game was not found or req.body is empty!`
         });
       }
@@ -99,7 +99,7 @@ exports.delete = (req, res) => {
           message: "Game was deleted successfully!"
         });
       } else {
-        res.send({
+        res.status(500).send({
           message: `Cannot delete Game with id=${id}. Maybe Game was not found!`
         });
       }

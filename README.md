@@ -10,6 +10,10 @@ Full Stack Application about virtual board games
 	Rafael Batista	  - DevOps Master
 	Ricardo Cruz	  - Product Owner
 
+# Deployed Website
+
+http://138.68.191.32/
+
 # JIRA Backlog
 
 https://pedromiglou.atlassian.net/jira/software/projects/MAT/boards/3

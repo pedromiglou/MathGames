@@ -7,53 +7,91 @@ module.exports = (sequelize, Sequelize) => {
         primaryKey: true
       },
       player1: {
-        type: Sequelize.INTEGER,
-        allowNull: false
+        type: Sequelize.INTEGER
       },
       player2: {
         type: Sequelize.INTEGER,
         validate: {
             isDiferent() {
-                if (this.player1 == this.player2) {
+                if (this.player1 == this.player2 && (this.player1 !== null && this.player2 !== null) ) {
                     throw new Error("Players are the same")
                 }
             }
         }
       },
       winner: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.CHAR(1),
         validate: {
             winnerValue() {
-                if (!(this.winner == null || this.winner == this.player1 || this.winner == this.player2)) {
+                if (!(this.winner == "1" || this.winner == "X" || this.winner == "2")) {
                     throw new Error("Winner value error")
                 }
             }
         }
       },
-      number_moves: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        validate: {
-            isNotNegative() {
-                if (this.number_moves < 0) {
-                    throw new Error("Number of moves cannot be < 0.")
-                }
-            }
-        }
-      },
       game_type: {
-        type: Sequelize.CHAR(1),
+        type: Sequelize.STRING(10),
         allowNull: false
       },
       game_id: {
         type: Sequelize.INTEGER,
         allowNull: false
-      },
-      actual_state: {
-        type: Sequelize.STRING(500)
       }
     }, {
-      timestamps: false
+      timestamps: true,
+      hooks: {
+        afterCreate: async (game_match) => {
+          let winner = game_match.winner;
+          let player1 = game_match.player1;
+          let player2 = game_match.player2;
+          if (winner !== "X") {
+            //alguem ganhou
+            if (player1 !== null && player2 !== null ) {
+              // ambos tem conta
+              let loser = winner === "1" ? player2 : player1;
+              let winner_id = winner === "1" ? player1: player2;
+              // winner recebe 100xp loser recebe 30xp
+              await sequelize.models.Users.increment('account_level', { by: 100, where: { id: winner_id}})
+              await sequelize.models.Users.increment('account_level', { by: 30, where: { id: loser}})
+            }
+            if (player1 !== null && player2 === null ) {
+              // player2 nao tem conta
+              if (winner === "1") {
+                // player 1 recebe 100xp
+                await sequelize.models.Users.increment('account_level', { by: 100, where: { id: player1}})
+              } else {
+                // player 1 recebe 30xp
+                await sequelize.models.Users.increment('account_level', { by: 30, where: { id: player1}})
+              }
+            }
+            if (player1 === null && player2 !== null ) {
+              // player1 nao tem conta
+              if (winner === "2") {
+                // player2 recebe 100xp
+                await sequelize.models.Users.increment('account_level', { by: 100, where: { id: player2}})
+              } else {
+                // player 2 recebe 30xp
+                await sequelize.models.Users.increment('account_level', { by: 30, where: { id: player2}})
+              }
+            }
+
+          } else {
+            //ficou empatado
+            if (player1 !== null && player2 !== null ) {
+              // ambos tem conta
+              // players recebem 45xp
+              await sequelize.models.Users.increment('account_level', { by: 45, where: { id: player1}})
+              await sequelize.models.Users.increment('account_level', { by: 45, where: { id: player2}})
+            }
+            if (player1 !== null && player2 === null) {
+              await sequelize.models.Users.increment('account_level', { by: 45, where: { id: player1}})
+            }
+            if (player1 === null && player2 !== null ) {
+              await sequelize.models.Users.increment('account_level', { by: 45, where: { id: player2}})
+            }
+          }
+        }
+      }
     });
     
     return GameMatch;

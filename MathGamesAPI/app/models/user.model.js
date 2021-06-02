@@ -1,5 +1,7 @@
+const bcrypt = require("bcrypt");
+
 module.exports = (sequelize, Sequelize) => {
-    const User2 = sequelize.define("Users", {
+    const User = sequelize.define("Users", {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -9,20 +11,22 @@ module.exports = (sequelize, Sequelize) => {
       username: {
         type: Sequelize.STRING(20),
         allowNull: false,
-        unique: true
+        unique: true,
+        validate: {
+          len: [3, 20]
+        }
       },
       email: {
         type: Sequelize.STRING(30),
         allowNull: false,
-        unique: true
+        unique: true,
+        validate: {
+          isEmail: true
+        }
       },
       password: {
-        type: Sequelize.STRING(30),
+        type: Sequelize.STRING(100),
         allowNull: false
-      },
-      avatar: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0
       },
       account_level: {
         type: Sequelize.INTEGER,
@@ -40,11 +44,67 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.CHAR(1),
         allowNull: false,
         defaultValue: "U"
+      },
+      avatar_color: {
+        type: Sequelize.STRING(30),
+        allowNull: false,
+        defaultValue: "#FFAF00"
+      },
+      avatar_hat: {
+        type: Sequelize.STRING(30),
+        allowNull: false,
+        defaultValue: "none"
+      },
+      avatar_shirt: {
+        type: Sequelize.STRING(30),
+        allowNull: false,
+        defaultValue: "none"
+      },
+      avatar_accessorie: {
+        type: Sequelize.STRING(30),
+        allowNull: false,
+        defaultValue: "none"
+      },
+      avatar_trouser: {
+        type: Sequelize.STRING(30),
+        allowNull: false,
+        defaultValue: "none"
+      },
+      banned: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
       }
     }, {
-      timestamps: false
+      timestamps: true,
+      hooks: {
+        beforeCreate: async (user) => {
+         if (!user.password.match(/^(?=.*\d)(?=.*[a-zA-Z]).{5,25}$/)) {
+          throw new Error("Password invalid")
+         }
+         if (user.password) {
+          const salt = await bcrypt.genSaltSync(10, 'a');
+          user.password = bcrypt.hashSync(user.password, salt);
+         }
+        },
+        beforeBulkUpdate:async (user) => {
+         if (user.attributes.password) {
+          const salt = await bcrypt.genSaltSync(10, 'a');
+          user.attributes.password = bcrypt.hashSync(user.attributes.password, salt);
+         }
+        }
+       },
+       instanceMethods: {
+        validPassword: (password) => {
+         return bcrypt.compareSync(password, this.password);
+        }
+       }
     });
     
-    return User2;
+    User.prototype.validPassword = async (password, hash) => {
+      return await bcrypt.compareSync(password, hash);
+     }
+
+    return User;
   };
 

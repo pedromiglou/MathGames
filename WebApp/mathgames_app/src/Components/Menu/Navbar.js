@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import {IconContext} from 'react-icons';
 import * as FaIcons from 'react-icons/fa';
+import * as FiIcons from "react-icons/fi";
 import { Link } from 'react-router-dom';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -12,8 +13,13 @@ import './Menu.css'
 
 /* Data and Service */
 import AuthService from '../../Services/auth.service';
-import FriendsService from '../../Services/friends.service';
-import NotificationsService from '../../Services/notifications.service';
+import UserService from '../../Services/user.service';
+import {urlWeb} from './../../data/data';
+
+import Avatar from "../../Components/Avatar";
+import socket from "../../index"
+
+import { Modal, Button } from "react-bootstrap";
 
 /* Redux */
 import { useDispatch } from 'react-redux';
@@ -31,6 +37,41 @@ function Navbar() {
 
     const [friends, setFriends] = useState([]);
     const [notifications, setNotifications] = useState([]);
+
+	const [hat, setHat] = useState("none");
+    const [shirt, setShirt] = useState("Camouflage1");
+    const [color, setColor] = useState("#FFAF00");
+    const [accessorie, setAccessorie] = useState("none");
+    const [trouser, setTrouser] = useState("#808080");
+	const [linktogame2href, setLinkToGame2Href] = useState("/profile")
+
+	const [modalConfirmShow, setConfirmModalShow] = useState(false);
+
+	function ExpireModal(props) {
+        return (
+          <Modal
+            {...props}
+            size="md"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header closeButton>
+              <Modal.Title id="contained-modal-title-vcenter" style={{color: "#0056b3", fontSize: 30}}>
+                Convite expirou
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p style={{color: "#0056b3", fontSize: 20}}>O convite já não está disponível. </p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn save-btn">Ok</Button>
+            </Modal.Footer>
+          </Modal>
+        );
+      }
+
+
+	var current_user = AuthService.getCurrentUser();
 
     const notifyFriendshipSucess = () => toast.success('Pedido de amizade aceite!', {
         icon: <FaIcons.FaCheckCircle />,
@@ -50,6 +91,59 @@ function Navbar() {
         setNotifications(newNotifications);
     }
 
+	const getLevel = (account_level) => {
+		var contador = 1;
+		if (typeof account_level !== "undefined") {
+			while (true) {
+				var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
+				var maximo = 400 * Math.pow(contador, 1.1);
+				if ( (minimo <= account_level) && (account_level < maximo)) {
+					return contador;
+				}
+				contador++;
+			}
+		} else {
+			return 0;
+		}
+	}
+
+	async function invite_for_game(invited_player) {
+		localStorage.setItem("jogoporinvite", true)
+		localStorage.setItem("outrojogador", invited_player)
+		await UserService.send_notification_request(current_user.id, invited_player, "P");
+		document.getElementById("linktogame").click()
+		//window.location.href = "http://localhost:3000/gamePage?id=0"
+	}
+
+	function accept_game(notification, index) {
+		deleteNotification(index);
+		UserService.delete(notification.id);
+		var id_outro_jogador = notification.sender_user.sender_id
+		
+		socket.once("match_link", (msg) => {
+			if (msg["match_id"]) {
+				let new_match_id = msg['match_id'];
+				localStorage.setItem("entreijogoporinvite", true)
+				localStorage.setItem("outrojogador", id_outro_jogador)
+				var elemento = document.getElementById("linktogame2")
+				var url = "/gamePage?id=0&mid=" + new_match_id
+				setLinkToGame2Href(url)
+				elemento.click()
+				//window.location.href = "http://localhost:3000/gamePage?id=0&mid=" + new_match_id
+			} else if (msg["error"]) {
+				console.log("tou erro")
+				setConfirmModalShow(true)
+			}
+		})
+
+		socket.emit("get_match_id", {"user_id": AuthService.getCurrentUserId(), "outro_id": id_outro_jogador})
+	}
+
+	function run_logout() {
+		sessionStorage.removeItem("user");
+		window.location.assign(urlWeb)
+	}
+
     // Tem de colocar no redux o tipo de user
     useEffect(() => {
 		var current_user = AuthService.getCurrentUser();
@@ -57,20 +151,34 @@ function Navbar() {
 
 		// Load user friends list
         async function fetchApiFriends() {
-            var response = await FriendsService.getFriends(current_user.id);
-            setFriends(response);
+            var response = await UserService.getFriends(current_user.id);
+			if ( response != null )
+            	setFriends(response);
         }
 
 		// Load user notifications
         async function fetchApiNotifications() {
-            var response = await NotificationsService.getNotifications(current_user.id);
-            setNotifications(response);
+            var response = await UserService.getNotifications(current_user.id);
+			if ( response != null )
+				setNotifications(response);
+        }
+
+		// Load Avatar
+		async function fetchApiUserById() {
+            var user = await UserService.getUserById(current_user.id);
+            setUser(user);
+            setHat(user.avatar_hat);
+            setShirt(user.avatar_shirt);
+            setColor(user.avatar_color);
+            setAccessorie(user.avatar_accessorie);
+            setTrouser(user.avatar_trouser);
         }
 
 		if (current_user !== null) {
             setUser_authenticated(true);
             fetchApiFriends();
             fetchApiNotifications();
+			fetchApiUserById();
             dispatch({
                 type: 'NFREEUSER'
             });
@@ -81,12 +189,11 @@ function Navbar() {
             });
         }
     }, [dispatch])
-
 	return (
 		<IconContext.Provider value={{color: 'grey'}}>
 			<div id="horizontal_nav_row" className="row sticky-top">
 
-				<div id="row-logo" className="col-lg-8 d-flex align-items-center">
+				<div id="row-logo" className="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 d-flex align-items-center">
 					<div className="nav-logo ml-5">
 						<Link to="/">
 							<img  className="logo" src={process.env.PUBLIC_URL + "/images/logo-light.png"}  alt="logo"/>
@@ -95,31 +202,31 @@ function Navbar() {
 				</div>
 
 				{user_authenticated &&
-				<div className="col-lg-4">
-					<div className="row h-100">
-						<div title="Notificações" className="col-2 d-flex align-items-center justify-content-center">
+				<div className="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8">
+					<div className="row h-100 nav-options float-right">
+						<div title="Notificações" className="col-xl-2 col-lg-2 col-md-2 col-sm-3 col-xs-3 d-flex align-items-center justify-content-center">
 							<span id="notifs-number">{ notifications.length }</span>
 							<DropdownButton	menuAlign="right" title={<FaIcons.FaBell size={42}/>} id="notifs-dropdown" className="navbar-dropdown">
 								<Dropdown.ItemText><h4>Notificações</h4></Dropdown.ItemText>
 								<Dropdown.Divider />
 								{ notifications.length > 0 &&
-								<Dropdown.ItemText>{
-									<div className="row navbar-dropdown-row">
+								<Dropdown.ItemText>
+									<div className="navbar-dropdown-row">
 										{notifications.map(function(notification, index) {
 											var current_date = new Date();
-											current_date.setTime(current_date.getTime() - new Date().getTimezoneOffset()*60*1000);
+											//current_date.setTime(current_date.getTime() - new Date().getTimezoneOffset()*60*1000);
 											current_date = current_date.getTime() / 60000;
-											var notification_date = new Date(notification.notification_date).getTime() / 60000;
+											var notification_date = new Date(notification.createdAt).getTime() / 60000;
 											var difference = current_date - notification_date;
 											return (
-												<div>
-													<div className="col-9" style={{width: 350, fontSize: 18}}>
+												<div className="row">
+													<div className="col-9" style={{fontSize: 18}}>
 														{ (notification.notification_type === "F" && 
-															<p style={{marginBottom: "0.3em"}}>{notification.sender} enviou-te um pedido de amizade.</p>)
+															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} enviou-te um pedido de amizade.</p>)
 														|| (notification.notification_type === "T" && 
-															<p style={{marginBottom: "0.3em"}}>{notification.sender} convidou-te para participares no seu torneio.</p>)
+															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} convidou-te para participares no seu torneio.</p>)
 														|| (notification.notification_type === "P" && 
-															<p style={{marginBottom: "0.3em"}}>{notification.sender} convidou-te para jogares.</p>)
+															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} convidou-te para jogares.</p>)
 														}
 														{ (difference < 60 &&
 															<p style={{fontSize: 13}}>há { Number.parseInt(difference)} minutos</p>)
@@ -129,17 +236,17 @@ function Navbar() {
 															<p style={{fontSize: 13}}>há { Number.parseInt(difference/(60*24))} dia</p>)   
 														}
 													</div>
-													<div className="col-3" style={{width: 100}} >
-														<div className="text-right text-bottom" style={{height: "30px", marginTop: "40%"}}>
+													<div className="col-3" >
+														<div className="text-right text-bottom" style={{marginTop: "20%"}}>
 															{ (notification.notification_type === "F" && 
-																<FaIcons.FaCheckCircle onClick={ () => {NotificationsService.accept_friendship(notification); notifyFriendshipSucess(); deleteNotification(index);}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
+																<FaIcons.FaCheckCircle onClick={ () => {UserService.accept_friendship(notification); notifyFriendshipSucess(); deleteNotification(index);}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															|| (notification.notification_type === "T" && 
 																<FaIcons.FaCheckCircle  className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															|| (notification.notification_type === "P" && 
-																<FaIcons.FaCheckCircle className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
+																<FaIcons.FaCheckCircle  onClick={ () => {accept_game(notification, index);}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															}
 															<span> </span>
-															<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {NotificationsService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25}} color="#ff0015" />
+															<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {UserService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25}} color="#ff0015" />
 														</div>
 														
 													</div>
@@ -147,7 +254,7 @@ function Navbar() {
 											);
 										})}
 									</div>
-								}</Dropdown.ItemText>
+								</Dropdown.ItemText>
 								}
 								{ notifications.length === 0 &&
 									<Dropdown.ItemText>
@@ -158,28 +265,26 @@ function Navbar() {
 								}
 							</DropdownButton>
 						</div>
-						<div title="Amigos" className="col-2 d-flex align-items-center justify-content-center">
+						<ExpireModal
+							show={modalConfirmShow}
+							onHide={() => setConfirmModalShow(false)}
+						/>
+						<div title="Amigos" className="col-xl-2 col-lg-2 col-md-2 col-sm-3 col-xs-3 d-flex align-items-center justify-content-center">
 							<DropdownButton	menuAlign="right" title={<FaIcons.FaUserFriends size={42}/>} id="friends-dropdown">
 								<Dropdown.ItemText><div style={{width: 230}}><h4>Amigos</h4></div></Dropdown.ItemText>
 								<Dropdown.Divider />
 								{ friends.length > 0 &&
 								<Dropdown.ItemText>{
-									<div className="row navbar-dropdown-row">
-										{friends.map(function(name, index) {
+										<ul style={{fontSize:20}}>
+										{friends.map(function(user, index) {
 											return (
-												<div class="navbar-dropdown-text">
-													<div className="col-9">
-														<h5>{name.username}</h5>
-													</div>
-													<div className="col-3">
-														<div className="text-right">
-															<FaIcons.FaEnvelopeSquare className="icon_notifications" style={{fontSize: 25}} />
-														</div>
-													</div>
-												</div>
+												<li key={user.id} className="list-group-item d-flex justify-content-between align-items-center" style={{border: 0, padding: 5}}>
+													{user.username}
+													<FaIcons.FaEnvelopeSquare className="icon_notifications" style={{fontSize: 25}} onClick={() => {invite_for_game(user.id)}} />
+												</li>
 											);
 										})}
-									</div>
+										</ul>
 								}</Dropdown.ItemText>
 								}
 								{ friends.length === 0 &&
@@ -192,20 +297,25 @@ function Navbar() {
 							</DropdownButton>
 						</div>
 
-						<div className="col-8">
-							<div className="row h-100 d-flex align-items-center mr-3">
-								<div className="col">
+						<div className="col-xl-6 col-lg-8 col-md-8 col-sm-6 col-xs-6 no-margin">
+							<div className="h-100 d-flex align-items-center ">
+								<div className="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-6">
 									<div title="Perfil" className="round_profile_logo float-right">
 										<Link to="/profile">
-											<img className="profile_logo" src={process.env.PUBLIC_URL + "/images/user-profile.png"}  alt="logo"/>
+											<Avatar navbar={true} skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser}/>
 										</Link>
 									</div>
 								</div>
-								<div className="col navbar-account-info">
+								<div className="col-xl-4 col-lg-4 col-md-4 col-sm-6 col-xs-6 navbar-account-info">
 									<h5>Nome: {user.username} </h5>
-									<h5>Nivel: {user.account_level} </h5>
+									<h5>Nivel: {getLevel(user.account_level)} </h5>
 								</div>
-								
+								<div className="col-xl-5 col-lg-5 col-md-4 col-sm-6 col-xs-6">
+									<Link to="/">
+										<h2 onClick={run_logout} className="h2-login">Logout</h2>
+										<IconContext.Provider  value={{color: '#007bff'}}><FiIcons.FiLogOut className="icon_notifications"  size={42} onClick={run_logout}/></IconContext.Provider>
+									</Link>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -216,7 +326,9 @@ function Navbar() {
 				<div className="col d-flex justify-content-end align-items-center mr-5">
 					<hr className="menu-divider-login"></hr>
 					<Link to="/login">
-						<h2 className="h2-login">Login</h2>
+						<h2 className="h2-login">Login <IconContext.Provider value={{color: '#007bff'}}><FiIcons.FiLogIn className="icon_notifications"  size={42} /></IconContext.Provider>
+						</h2>
+						
 					</Link>
 				</div>
 				}
@@ -229,6 +341,16 @@ function Navbar() {
             color: '#4BB543',
             },
             }} /> */}
+
+			<div style={{display:"none", visibility:"hidden"}}>
+				<Link id="linktogame" to="/gamePage?id=0">
+				
+				</Link>
+	
+				<Link id="linktogame2" to={linktogame2href}>
+					
+				</Link>
+			</div>
 		</IconContext.Provider>
 	)
 }
