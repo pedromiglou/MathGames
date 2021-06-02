@@ -136,6 +136,7 @@ exports.findUsersWithMostReports = (req, res) => {
   const { limit, offset } = getPagination(page, size);
 
   Report.findAndCountAll({ attributes: [[Sequelize.fn("COUNT", Sequelize.col("Reports.id")), "reportCount"]] ,
+  where: {"$receiver_user.banned$": false},
   include: [{
     model: User, as: "receiver_user", attributes: ["username", "id"]
   }],

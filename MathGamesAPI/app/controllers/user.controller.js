@@ -635,37 +635,43 @@ exports.statistics = (req, res) => {
   var dd = last.getDate();
   var mm = last.getMonth()+1;
   var yyyy = last.getFullYear();
-  var setimoDia = new Date(yyyy + '-' + mm + '-' + dd);
-  setimoDia.setTime( setimoDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
-  setimoDia = setimoDia.toISOString().slice(0, 19).replace('T', ' ');
+  var setimoDiaDate = new Date(yyyy + '-' + mm + '-' + dd); 
+  var sextoDia = new Date(yyyy + '-' + mm + '-' + dd);
+  var quintoDia = new Date(yyyy + '-' + mm + '-' + dd);
+  var quartoDia = new Date(yyyy + '-' + mm + '-' + dd);
+  var terceiroDia = new Date(yyyy + '-' + mm + '-' + dd);
+  var segundoDia = new Date(yyyy + '-' + mm + '-' + dd);
+  var primeiroDia = new Date(yyyy + '-' + mm + '-' + dd);
+  setimoDiaDate.setTime( setimoDiaDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  var setimoDia = setimoDiaDate.toISOString().slice(0, 19).replace('T', ' ');
   setimoDia = setimoDia.split(" ")[0]
 
-  var sextoDia = new Date(yyyy + '-' + mm + '-' + (dd+1));
+  sextoDia.setDate(setimoDiaDate.getDate() + 1)
   sextoDia.setTime( sextoDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
   sextoDia = sextoDia.toISOString().slice(0, 19).replace('T', ' ');
   sextoDia = sextoDia.split(" ")[0]
 
-  var quintoDia = new Date(yyyy + '-' + mm + '-' + (dd+2));
+  quintoDia.setDate(setimoDiaDate.getDate() + 2)
   quintoDia.setTime( quintoDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
   quintoDia = quintoDia.toISOString().slice(0, 19).replace('T', ' ');
   quintoDia = quintoDia.split(" ")[0]
 
-  var quartoDia = new Date(yyyy + '-' + mm + '-' + (dd+3));
+  quartoDia.setDate(setimoDiaDate.getDate() + 3)
   quartoDia.setTime( quartoDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
   quartoDia = quartoDia.toISOString().slice(0, 19).replace('T', ' ');
   quartoDia = quartoDia.split(" ")[0]
 
-  var terceiroDia = new Date(yyyy + '-' + mm + '-' + (dd+4));
+  terceiroDia.setDate(setimoDiaDate.getDate() + 4);
   terceiroDia.setTime( terceiroDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
   terceiroDia = terceiroDia.toISOString().slice(0, 19).replace('T', ' ');
   terceiroDia = terceiroDia.split(" ")[0]
 
-  var segundoDia = new Date(yyyy + '-' + mm + '-' + (dd+5));
+  segundoDia.setDate(setimoDiaDate.getDate() + 5);
   segundoDia.setTime( segundoDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
   segundoDia = segundoDia.toISOString().slice(0, 19).replace('T', ' ');
   segundoDia = segundoDia.split(" ")[0]
 
-  var primeiroDia = new Date(yyyy + '-' + mm + '-' + (dd+6));
+  primeiroDia.setDate(setimoDiaDate.getDate() + 6);
   primeiroDia.setTime( primeiroDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
   primeiroDia = primeiroDia.toISOString().slice(0, 19).replace('T', ' ');
   primeiroDia = primeiroDia.split(" ")[0]
