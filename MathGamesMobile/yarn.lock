@@ -2164,6 +2164,16 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/masked-view/-/masked-view-0.1.10.tgz#5dda643e19e587793bc2034dd9bf7398ad43d401"
   integrity sha512-rk4sWFsmtOw8oyx8SD3KSvawwaK7gRBSEIy2TAwURyGt+3TizssXP1r8nx3zY+R7v2vYYHXZ+k2/GULAT/bcaQ==
 
+"@react-native-picker/picker@1.9.11":
+  version "1.9.11"
+  resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-1.9.11.tgz#490c752417c17d687e2941659b3c0bff9cb79b83"
+  integrity sha512-E7whvvMIl9Ln1sxgug7OAEVWQ69n82iV0d2OWWp5VV52+RW3azKh1IFm4rxdW5/oByMfl7FFL0eHNelGgY4BMQ==
+
+"@react-native-picker/picker@^1.8.3":
+  version "1.16.1"
+  resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-1.16.1.tgz#cc5d05b0d651445afa519c67824d8af3e43fa10c"
+  integrity sha512-sk07ARwL0cMXwkXsqcxyprL/KiEVD0xRFXFqznTnZs1YXqwxEqz6GiGtq2vQlK64CzXDpHX8gw1QQz47abBY1Q==
+
 "@react-navigation/bottom-tabs@^5.11.11":
   version "5.11.11"
   resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-5.11.11.tgz#ad4dfee4316522d8c05b5a8ad460f597bddb9e3c"
@@ -2378,6 +2388,13 @@
   version "1.5.4"
   resolved "https://registry.yarnpkg.com/@types/q/-/q-1.5.4.tgz#15925414e0ad2cd765bfef58842f7e26a7accb24"
   integrity sha512-1HcDas8SEj4z1Wc696tH56G8OlRaH/sqZOynNNB+HF0WOeXPaxTtbYzJY2oEfiUxjSKjhCKr+MvR7dCHcEelug==
+
+"@types/react-native@~0.63.2":
+  version "0.63.52"
+  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.63.52.tgz#449beb4a413ec0f2c172cbf676a95f5b0952adf4"
+  integrity sha512-sBXvvtJaIUSXQLDh9NZitx1KHkKUdBLZy34lFKJaIXtpHIh5OEbBXeyUTFBtFwjk/RD0tneAtUqsdhheZRzAzw==
+  dependencies:
+    "@types/react" "*"
 
 "@types/react-transition-group@^4.4.1":
   version "4.4.1"
@@ -5683,13 +5700,6 @@ expo-structured-headers@~1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/expo-structured-headers/-/expo-structured-headers-1.0.1.tgz#2f3117fc9480e01aa6705493d3213060c2dcf683"
   integrity sha512-U4frE8rT5x1LqZv5Ru/9CtzY8gh0wp1MfwTu5hetPydnwxXfWchuXvKgWRjEHglFU2X/29kYFY/J1UkPvCN8xg==
-
-expo-three-orbit-controls@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/expo-three-orbit-controls/-/expo-three-orbit-controls-2.0.0.tgz#74b41a734f032c4c7696dfafc4f566357663a1a0"
-  integrity sha512-VlFAiQFpmLqIyaF5nxqRnhl8rRVAETrYJQre+IpBNXko4E84O/cUOIvTDHSUQxO+NiOYsJJ/cUTjtYvGI5d3cw==
-  dependencies:
-    react-native-web-hooks "^3.0.1"
 
 expo-three@^5.7.0:
   version "5.7.0"
@@ -10764,6 +10774,14 @@ react-native-iphone-x-helper@^1.3.0:
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.3.1.tgz#20c603e9a0e765fd6f97396638bdeb0e5a60b010"
   integrity sha512-HOf0jzRnq2/aFUcdCJ9w9JGzN3gdEg0zFE4FyYlp4jtidqU03D5X7ZegGKfT1EWteR0gPBGp9ye5T5FvSWi9Yg==
 
+react-native-picker-select@^8.0.4:
+  version "8.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-picker-select/-/react-native-picker-select-8.0.4.tgz#3f7f1f42df69b06e7d2c10338288332a6c40fd10"
+  integrity sha512-orBjPIwBkV5oipyVw263YNMI56f6Kj3p/ejabZoCYYNSG3AiLVVhC2RqsxMgDA7IayyURAW+AlV+mDJyVqLBkg==
+  dependencies:
+    "@react-native-picker/picker" "^1.8.3"
+    lodash.isequal "^4.5.0"
+
 react-native-reanimated@~2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.1.0.tgz#b9ad04aee490e1e030d0a6cdaa43a14895d9a54d"
@@ -10809,11 +10827,6 @@ react-native-unimodules@~0.13.3:
     unimodules-permissions-interface "~6.1.0"
     unimodules-sensors-interface "~6.1.0"
     unimodules-task-manager-interface "~6.1.0"
-
-react-native-web-hooks@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/react-native-web-hooks/-/react-native-web-hooks-3.0.1.tgz#d680c7638a51b573f1a3f756ba59589fcefde06f"
-  integrity sha512-k1GLtdFo7OA6DBVu0ydbLwq7Ds32oz1dJJkeeYRuxqcs5K8PQFIYxRyEpiW36Fcol+NffeziT2ITkbdIXI0etA==
 
 react-native-web@~0.13.12:
   version "0.13.18"
@@ -12661,6 +12674,11 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
+
+typescript@~4.0.0:
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.0.7.tgz#7168032c43d2a2671c95c07812f69523c79590af"
+  integrity sha512-yi7M4y74SWvYbnazbn8/bmJmX4Zlej39ZOqwG/8dut/MYoSQ119GY9ZFbbGsD4PFZYWxqik/XsP3vk3+W5H3og==
 
 ua-parser-js@^0.7.18:
   version "0.7.28"

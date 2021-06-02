@@ -10,6 +10,7 @@ import Login from './screens/Login';
 import Profile from './screens/Profile';
 import LastGames from './screens/LastGames';
 import Inventory from './screens/Inventory';
+import Tete from './components/tete';
 
 import Constants from 'expo-constants';
 import { useState, useEffect } from 'react';
@@ -99,6 +100,7 @@ function App() {
 
           <Drawer.Screen name="LastGames" component={LastGames} />
           <Drawer.Screen name="Inventory" component={Inventory} />
+          <Drawer.Screen name="wewew" component={Tete} />
 
         </Drawer.Navigator>}
       </NavigationContainer>

@@ -63,7 +63,7 @@ function Profile({ navigation }) {
 				</View>
 
 				{gamesInfo.map((x) => (
-					<View key={x.id} style={{ flexDirection: "row" }}>
+					<View key={x.id} style={{ flexDirection: "row", borderColor: "white", marginLeft: 5, marginRight: 5, borderBottomWidth: 2 }}>
 						<View style={styles.imgDiv}>
 							<Image
 								style={styles.gameImg}

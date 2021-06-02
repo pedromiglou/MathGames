@@ -1,25 +1,20 @@
 import { View as GraphicsView } from "expo-graphics";
 import ExpoTHREE, { THREE } from "expo-three";
-import React, { useState } from "react";
-import { Expo } from "expo";
+import React from "react";
 
 import { Asset } from "expo-asset";
 import { TextureLoader } from "expo-three";
 
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
-import OrbitControlsView from "expo-three-orbit-controls";
 
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 
 import {
 	View,
-	ScrollView,
 	Text,
-	Image,
-	Dimensions,
 	StyleSheet,
-	TouchableHighlight,
 } from "react-native";
 
 export default class Avatar extends React.Component {
@@ -70,11 +65,6 @@ export default class Avatar extends React.Component {
 		);
 		this.camera.position.z = 5;
 
-		this.controls = new OrbitControls(
-			this.camera,
-			this.renderer.domElement
-		);
-		this.controls.update();
 
 		this.scene.add(new THREE.AmbientLight(0x404040));
 
@@ -142,27 +132,23 @@ export default class Avatar extends React.Component {
 				hatFlag = false;
 		}
 
-		if (hatFlag) {
-			const loader = new GLTFLoader();
+		/* if (hatFlag) {
+			const loader = new OBJLoader();
 
-			const dracoLoader = new DRACOLoader();
-			dracoLoader.setDecoderPath("/examples/js/libs/draco/");
-			loader.setDRACOLoader(dracoLoader);
+			
 			console.log("loading");
 			loader.load(
-				hatAsset.uri,
-				(gltf) => {
+				hatAsset.localUri,
+				function ( obj ) {
 					// ADD MODEL TO THE SCENE
-					const root = gltf.scene;
+					console.log(obj);
+
+					const root = obj.scene;
 
 					console.log(root);
 
-					root.rotateX(rotationX1);
-					root.rotateY(rotationY1);
-					root.scale.set(scaleX1, scaleY1, scaleZ1);
-
-					root.position.set(positionX1, positionY1, positionZ1);
-					this.scene.add(root);
+					
+					this.scene.add(obj);
 
 					this.renderer.render(this.scene, this.camera);
 				},
@@ -174,7 +160,7 @@ export default class Avatar extends React.Component {
 					console.log(error);
 				}
 			);
-		}
+		} */
 
 		// ************************** //
 		// Accessories
@@ -408,7 +394,6 @@ export default class Avatar extends React.Component {
 	onRender = (delta) => {
 		/* this.cube.rotation.x += 3.5 * delta;
 		this.cube.rotation.y += 2 * delta; */
-		this.controls.update();
 		this.renderer.render(this.scene, this.camera);
 	};
 }
