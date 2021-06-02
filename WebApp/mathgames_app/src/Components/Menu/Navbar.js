@@ -19,6 +19,7 @@ import {urlWeb} from './../../data/data';
 import Avatar from "../../Components/Avatar";
 import socket from "../../index"
 
+import { Modal, Button } from "react-bootstrap";
 
 /* Redux */
 import { useDispatch } from 'react-redux';
@@ -43,6 +44,32 @@ function Navbar() {
     const [accessorie, setAccessorie] = useState("none");
     const [trouser, setTrouser] = useState("#808080");
 	const [linktogame2href, setLinkToGame2Href] = useState("/profile")
+
+	const [modalConfirmShow, setConfirmModalShow] = useState(false);
+
+	function ExpireModal(props) {
+        return (
+          <Modal
+            {...props}
+            size="md"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header closeButton>
+              <Modal.Title id="contained-modal-title-vcenter" style={{color: "#0056b3", fontSize: 30}}>
+                Convite expirou
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p style={{color: "#0056b3", fontSize: 20}}>O convite já não está disponível. </p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn save-btn">Ok</Button>
+            </Modal.Footer>
+          </Modal>
+        );
+      }
+
 
 	var current_user = AuthService.getCurrentUser();
 
@@ -105,6 +132,7 @@ function Navbar() {
 				//window.location.href = "http://localhost:3000/gamePage?id=0&mid=" + new_match_id
 			} else if (msg["error"]) {
 				console.log("tou erro")
+				setConfirmModalShow(true)
 			}
 		})
 
@@ -237,6 +265,10 @@ function Navbar() {
 								}
 							</DropdownButton>
 						</div>
+						<ExpireModal
+							show={modalConfirmShow}
+							onHide={() => setConfirmModalShow(false)}
+						/>
 						<div title="Amigos" className="col-xl-2 col-lg-2 col-md-2 col-sm-3 col-xs-3 d-flex align-items-center justify-content-center">
 							<DropdownButton	menuAlign="right" title={<FaIcons.FaUserFriends size={42}/>} id="friends-dropdown">
 								<Dropdown.ItemText><div style={{width: 230}}><h4>Amigos</h4></div></Dropdown.ItemText>
