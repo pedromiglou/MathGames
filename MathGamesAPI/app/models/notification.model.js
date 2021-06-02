@@ -25,13 +25,9 @@ module.exports = (sequelize, Sequelize) => {
       notification_type: {
           type: Sequelize.CHAR(1),
           allowNull: false
-      },
-      notification_date: {
-          type: Sequelize.DATE,
-          allowNull: false
       }
     }, {
-      timestamps: false
+      timestamps: true
     });
     return Notification;
   };

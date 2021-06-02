@@ -1,6 +1,8 @@
 const db = require("../models");
 const GameMatch = db.game_match;
+const Game = db.game;
 const Op = db.Sequelize.Op;
+const Sequelize = db.Sequelize;
 
 // Create and Save a new GameMatch
 exports.create = (req, res) => {
@@ -17,10 +19,8 @@ exports.create = (req, res) => {
     player1: req.body.player1,
     player2: req.body.player2,
     winner: req.body.winner,
-    number_moves: req.body.number_moves,
     game_type: req.body.game_type,
     game_id: req.body.game_id,
-    actual_state: req.body.actual_state
   };
 
   // Save GameMatch in the database
@@ -30,25 +30,45 @@ exports.create = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the GameMatch."
+        message: err.message || "Some error occurred while creating the GameMatch."
       });
     });
 };
 
 // Retrieve all GameMatchs from the database.
 exports.findAll = (req, res) => {
-  GameMatch.findAll()
+  const user_id = req.query.userid;
+
+  
+
+  if (user_id !== undefined && parseInt(user_id) !== parseInt(req.userId)) {
+    res.status(401).send({
+      message: "Unauthorized!"
+    });
+    return;
+  }
+
+  if (user_id === undefined && req.account_type !== "A") {
+    res.status(401).send({
+      message: "Unauthorized!"
+    });
+    return;
+  }
+
+  var whereCondition = user_id ? { [Op.or]: [{ player1: user_id}, {player2: user_id} ] } : null;
+  var limitCondition = user_id ? 5 : null;
+  var orderCondition = user_id ?  [["createdAt", 'DESC']]  : null;
+  GameMatch.findAll({ where: whereCondition, limit: limitCondition, order: orderCondition })
     .then(data => {
       res.send(data);
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving GameMatchs."
+        message: err.message || "Some error occurred while retrieving GameMatchs."
       });
     });
 };
+
 
 // Find a single GameMatch with an id
 exports.findOne = (req, res) => {
@@ -78,7 +98,7 @@ exports.update = (req, res) => {
           message: "GameMatch was updated successfully."
         });
       } else {
-        res.send({
+        res.status(500).send({
           message: `Cannot update GameMatch with id=${id}. Maybe GameMatch was not found or req.body is empty!`
         });
       }
@@ -103,7 +123,7 @@ exports.delete = (req, res) => {
           message: "GameMatch was deleted successfully!"
         });
       } else {
-        res.send({
+        res.status(500).send({
           message: `Cannot delete GameMatch with id=${id}. Maybe GameMatch was not found!`
         });
       }
@@ -126,8 +146,136 @@ exports.deleteAll = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all GameMatchs."
+        message: err.message || "Some error occurred while removing all GameMatchs."
       });
     });
 };
+
+
+
+
+
+
+// Retrieve all GameMatchs from the database.
+exports.statisticsbygame = (req, res) => {
+  var date = new Date();
+  var last = new Date(date.getTime() - (6 * 24 * 60 * 60 * 1000));
+  var dd = last.getDate();
+  var mm = last.getMonth()+1;
+  var yyyy = last.getFullYear();
+  var setimoDia = new Date(yyyy + '-' + mm + '-' + dd);
+  setimoDia.setTime( setimoDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  setimoDia = setimoDia.toISOString().slice(0, 19).replace('T', ' ');
+  setimoDia = setimoDia.split(" ")[0]
+
+  Game.findAll({
+    attributes: {include: [[Sequelize.fn("COUNT", Sequelize.col("GameMatches.id")), "matchesCount"]]},
+    and: {"$GameMatches.createdAt$": {[Op.gte]: setimoDia}},
+    include: [{
+      model: GameMatch, attributes: [],
+
+    }],
+    group: ['Games.id']
+  })
+    .then( matches => {
+      var countAllMatches = 0;
+      var countMatches = [];
+      for (let match in matches) {
+        countAllMatches += parseInt(matches[match].dataValues.matchesCount);
+        countMatches.push({id: matches[match].dataValues.id, name: matches[match].dataValues.name, matchesCount: matches[match].dataValues.matchesCount})
+      }
+      for (var i = 0; i < countMatches.length; i++) {
+        countMatches[i].matchesCount = (countMatches[i].matchesCount / countAllMatches) * 100;
+      }
+      countMatches.sort((a, b) => (a.matchesCount > b.matchesCount) ? -1 : 1);
+      res.send({matches: countMatches, countAllMatches: countAllMatches});
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving GameMatchs statisticsbygame."
+      });
+    })
+};
+
+
+
+// Retrieve statistics
+exports.statistics = (req, res) => {
+  var response = [0, 0, 0, 0, 0, 0, 0]
+  var date = new Date();
+  var last = new Date(date.getTime() - (6 * 24 * 60 * 60 * 1000));
+  var dd = last.getDate();
+  var mm = last.getMonth()+1;
+  var yyyy = last.getFullYear();
+  var setimoDiaDate = new Date(yyyy + '-' + mm + '-' + dd); 
+  var sextoDia = new Date(yyyy + '-' + mm + '-' + dd);
+  var quintoDia = new Date(yyyy + '-' + mm + '-' + dd);
+  var quartoDia = new Date(yyyy + '-' + mm + '-' + dd);
+  var terceiroDia = new Date(yyyy + '-' + mm + '-' + dd);
+  var segundoDia = new Date(yyyy + '-' + mm + '-' + dd);
+  var primeiroDia = new Date(yyyy + '-' + mm + '-' + dd);
+  setimoDiaDate.setTime( setimoDiaDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  var setimoDia = setimoDiaDate.toISOString().slice(0, 19).replace('T', ' ');
+  setimoDia = setimoDia.split(" ")[0]
+
+  sextoDia.setDate(setimoDiaDate.getDate() + 1)
+  sextoDia.setTime( sextoDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  sextoDia = sextoDia.toISOString().slice(0, 19).replace('T', ' ');
+  sextoDia = sextoDia.split(" ")[0]
+
+  quintoDia.setDate(setimoDiaDate.getDate() + 2)
+  quintoDia.setTime( quintoDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  quintoDia = quintoDia.toISOString().slice(0, 19).replace('T', ' ');
+  quintoDia = quintoDia.split(" ")[0]
+
+  quartoDia.setDate(setimoDiaDate.getDate() + 3)
+  quartoDia.setTime( quartoDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  quartoDia = quartoDia.toISOString().slice(0, 19).replace('T', ' ');
+  quartoDia = quartoDia.split(" ")[0]
+
+  terceiroDia.setDate(setimoDiaDate.getDate() + 4);
+  terceiroDia.setTime( terceiroDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  terceiroDia = terceiroDia.toISOString().slice(0, 19).replace('T', ' ');
+  terceiroDia = terceiroDia.split(" ")[0]
+
+  segundoDia.setDate(setimoDiaDate.getDate() + 5);
+  segundoDia.setTime( segundoDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  segundoDia = segundoDia.toISOString().slice(0, 19).replace('T', ' ');
+  segundoDia = segundoDia.split(" ")[0]
+
+  primeiroDia.setDate(setimoDiaDate.getDate() + 6);
+  primeiroDia.setTime( primeiroDia.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  primeiroDia = primeiroDia.toISOString().slice(0, 19).replace('T', ' ');
+  primeiroDia = primeiroDia.split(" ")[0]
+
+  var filters = { createdAt: {[Op.gte]: setimoDia} };
+  if (req.query.game !== undefined) {
+    filters = { createdAt: {[Op.gte]: setimoDia}, game_id: req.query.game };
+  }
+
+  GameMatch.findAll({where: filters})
+    .then(data => {
+      for (var element of data) {
+        if (element.createdAt.split(" ")[0] === setimoDia)
+          response[0] = response[0] + 1
+        else if (element.createdAt.split(" ")[0] === sextoDia)
+          response[1] = response[1] + 1
+        else if (element.createdAt.split(" ")[0] === quintoDia)
+          response[2] = response[2] + 1
+        else if (element.createdAt.split(" ")[0] === quartoDia)
+          response[3] = response[3] + 1
+        else if (element.createdAt.split(" ")[0] === terceiroDia)
+          response[4] = response[4] + 1
+        else if (element.createdAt.split(" ")[0] === segundoDia)
+          response[5] = response[5] + 1
+        else if (element.createdAt.split(" ")[0] === primeiroDia)
+          response[6] = response[6] + 1
+      }
+      res.send(response); 
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving GameMatchs statistics."
+      });
+    });
+}

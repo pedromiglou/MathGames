@@ -22,7 +22,7 @@
 /*Bars and Logo */
 #row-logo.row{
     margin:0;
-    padding: 8px 16px;
+    /* padding: 8px 16px; */
     width: min(50%, 400px);
     min-width: 250px;
 }
@@ -38,6 +38,19 @@
     width: 100%;
     min-width: 100px;
     height: 100%;
+}
+
+.notification-img {
+    height: 40px;
+} 
+
+.icon-adjust {
+    padding-bottom: 20px;
+}
+
+.nav-options {
+    width: 100%;
+    justify-content: flex-end;
 }
 
 /* horizontal navbar */
@@ -88,11 +101,19 @@
     font-style: normal;
     font-variant: normal;
     font-weight: 500;
+    display: inline;
+
+    padding-right: 20px;
 }
 
 .h2-login:hover {
     text-decoration: none;
 }
+
+/*to fix
+.icon_notifications:hover {
+    color: primary !important;
+}*/
 
 /*------ MENU DIVIDIR----- */
 .menu-divider{
@@ -114,7 +135,7 @@
 
 #content.row{
     margin:0;
-    height: calc(100% - 100px);
+    /* height: calc(100% - 100px); */
 }
 
 /* Vertical Menu */
@@ -123,21 +144,7 @@
     margin-left: 300px;
 }
 
-.menu-bars{
-    width: 40px;
-    height: 40px;
-    margin-left: 16px;
-    margin-top: 30px;
-    align-self: center;
-    font-size: 24px;
-    background: none;
-    position:absolute;
-    z-index: 2000;
-}
 
-.menu-bars:hover{
-    cursor: pointer;
-}
 
 .nav-menu{
     background-color: #F9F9F9;
@@ -312,37 +319,86 @@ span.icons-noname{
         width: 100%;
         min-width: 100px;
         height: 100%;
+        display: none;
     }
 
-    .menu-bars{
-        margin-left: 16px;
-        margin-top: 30px;
-        align-self: center;
-        font-size: 24px;
-        background: none;
-        position:absolute;
-        z-index: 2000;
+
+    .navbar-account-info {
+        display: none !important;
     }
+
+
+    .h2-login {
+        display: none;
+    }
+
 }
 
 /* Small devices (portrait tablets and large phones, 600px and up) */
 @media only screen and (min-width: 600px) {
+
+    .navbar-account-info {
+        display: none !important;
+    }
+
+    .h2-login {
+        display: none;
+    }
+
 }
 
 /* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (min-width: 768px) {
     .example {background: blue;}
+
+    .h2-login {
+        display: none;
+    }
+
+    .navbar-account-info {
+        display: initial !important;
+    }
+
+    .navbar-account-info h5 {
+        font-size: medium;
+    }
 } 
 
 /* Large devices (laptops/desktops, 992px and up) */
 @media only screen and (min-width: 992px) {
     .example {background: orange;}
+
+    .h2-login {
+        display: initial;
+    }
+
+    .navbar-account-info {
+        display: initial !important;
+    }
+
+    .navbar-account-info h5 {
+        font-size: large;
+    }
+
 } 
+
+
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
     .example {background: pink;}
+
+    .h2-login {
+        display: initial;
+    }
+
+    .navbar-account-info {
+        display: initial !important;
+    }
+
 }
+
+
 
 
 /* Merdas do Rafa para depois organizar */

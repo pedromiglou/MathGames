@@ -1,0 +1,199 @@
+.aboutSection{
+    padding: 2em;
+}
+
+.card-row{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    min-width: 250px;
+    gap: 4%;
+}
+
+.card-row > *{
+    flex: 1 1 20%;
+}
+.all{
+    min-width: 280px;
+    padding: 2em 0 ;
+}
+
+.profile.card{
+    height: 100%;
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    border-radius: 10%;
+}
+
+.profile.card.ricardo{
+    background-color: #DC3545;
+}
+
+.profile.card.diogo{
+    background-color: #6C757D;
+}
+
+.profile.card.rafa{
+    background-color: #FFC107;
+}
+
+.profile.card.cunha{
+    background-color: #8EA5D7;
+}
+
+.profile.card.amaral{
+    background-color: #28A745;
+}
+
+.profile.card.pedro{
+    background-color: #007BFF;
+}
+/* Professor */
+.profile.card.professor{
+    background-color: #081B30;
+}
+/* Professor */
+.body{
+    background-color: #fff;
+    height: 50%;
+    border-top-left-radius: 10%;
+    border-top-right-radius: 10%;
+    padding-bottom: 10%;
+}
+
+.personalphoto{
+    padding: 2em 0;
+}
+
+img.photoperson{
+    display: block;
+    width: 150px;
+    box-shadow: #6C757D 0px 5px 15px;
+    border-radius: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+img.photoperson.ricardo{
+    box-shadow: #DC3545 0px 5px 15px;
+}
+img.photoperson.diogo{
+    box-shadow: #6C757D 0px 5px 15px;
+}
+img.photoperson.rafa{
+    box-shadow: #FFC107 0px 5px 15px;
+}
+img.photoperson.cunha{
+    box-shadow: #8EA5D7 0px 5px 15px;
+}
+img.photoperson.amaral{
+    box-shadow: #28A745 0px 5px 15px;
+}
+img.photoperson.pedro{
+    box-shadow: #007BFF 0px 5px 15px;
+}
+/* Professor */
+img.photoperson.professor{
+    box-shadow: #081B30 0px 5px 15px;
+}
+/* Professor */
+
+.media{
+    width: 20%;
+    height: auto;
+    margin-left: 40%;
+    margin-right: 40%;
+}
+
+.circle{
+    margin-left: 5%;
+    margin-right: 5%;
+    width: 40%;
+    height: auto;
+    border-radius: 70%;
+    
+}
+
+.circle.ricardo{
+    background-color: #DC3545;
+}
+.circle.diogo{
+    background-color: #6C757D;
+}
+.circle.rafa{
+    background-color: #FFC107;
+}
+.circle.cunha{
+    background-color: #8EA5D7;
+}
+.circle.amaral{
+    background-color: #28A745;
+}
+.circle.pedro{
+    background-color: #007BFF;
+}
+
+/* Professor */
+.circle.professor{
+    background-color: #081B30;
+}
+/* Professor */
+
+section.cool_waves{
+    width: 100%;
+    height: 20%;
+    position: relative;
+    overflow: hidden;
+}
+
+section .wave{
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 75px;
+    background-image: url("./wave.png");
+    background-size: 600px 75px;
+    transform: rotate(180deg);
+}
+
+section .wave.wave1{
+    animation: animate 10s linear infinite;
+    z-index: 1000;
+    opacity: 1;
+    animation-delay: 0s;
+    bottom: 0;
+}
+
+@keyframes animate{
+    0%
+    {
+         background-position-x: 0;
+    }
+    100%
+    {
+         background-position-x: 600px;
+    } 
+}
+.wave_section{
+    height: 30%;
+    margin-bottom: 20%;
+}
+
+svg {
+    color: white;
+}
+
+.team_description {
+    text-align: center;
+    color: black;
+}
+
+.team_description h1{
+    font-size: 2em;
+}
+
+.team_description h3{
+    font-size: 1em;
+}

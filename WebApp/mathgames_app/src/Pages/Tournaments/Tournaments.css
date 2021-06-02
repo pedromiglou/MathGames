@@ -1,0 +1,144 @@
+.list-tournaments{
+	margin: 2em 5em;
+	padding: 1em 2em;
+    min-width: 330px;
+}
+
+.filters-t{
+	display: flex;
+	flex-direction: row;	
+	align-items: center;
+	justify-content: center;
+	margin: 1em 0;
+    flex-wrap: wrap;
+    gap: 5%;
+}
+
+.title-ind-t{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.filters-t h1{
+	text-align: center;
+	font-size: 2.5em;
+}
+
+.filters-t i{
+	font-size: 5em;
+}
+
+.form-tournaments{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 10%;
+	padding: 0 5em 2em 5em;
+}
+
+
+
+.form-tournaments > *{
+	flex: 1 1 45%;
+}
+
+
+.checkbox-display{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.checkbox-display > * {
+    flex: 1 1 50%;
+}
+
+.inner-checkbox{
+    display: flex;
+    gap: 5%;
+}
+
+.inner-checkbox > :first-child{
+    flex-basis: 20%;
+}
+
+.inner-checkbox > :last-child{
+    flex-basis: 75%;
+}
+
+.inner-checkbox h5{
+    font-size: 1.5em;
+}
+
+.checkbox-display input{
+    height: 1.5em;
+    font-size: 1em;
+}
+
+
+
+.shadow-white{
+	-webkit-box-shadow: 0px 0px 5px 0px white;
+	-moz-box-shadow: 0px 0px 5px 0px white;
+	box-shadow: 0px 0px 2px 0px white;
+	border-radius: 20px;
+	padding: 0;
+}
+
+.btn-search{
+	outline: none;
+	background-color: rgb(240, 240, 240);
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 2px 5px;
+	color: rgb(79, 79, 207);
+	border-radius: 15px;
+	padding: 0.5em 1em;
+	margin: 0 0 1em 0;
+}
+
+ul.list-group{
+	margin: 2em 0 1em 0;
+}
+
+.list-group-item-t{
+	background-color: transparent;
+	border: none;
+	border-bottom: 2px solid white;
+	padding: 1em;
+	font-size: 1.5em;
+	text-align: center;
+	color: rgb(238, 238, 238);
+	margin: 0 4em;
+}
+
+.list-group-item-t:nth-child(1){
+	background-color: transparent;
+	color: rgb(203, 205, 240);
+	font-weight: bold;
+	font-size: 2em;
+	padding-top: 0em;
+	margin: 0 3em;
+}
+
+.list-group-item-t:hover:not(:first-child){
+	background-color: rgb(48, 173, 231);
+    cursor: pointer;
+}
+
+.join{
+    text-align: right;
+}
+
+.join > *{
+    color:rgb(20, 236, 20);
+    cursor: pointer;
+}
+
+.no-results{
+	text-align: center;
+	padding-top: 1em;
+}

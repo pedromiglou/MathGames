@@ -1,104 +1,188 @@
-import { React, useState } from "react";
-import { Card } from "react-bootstrap";
+import { React, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { games_info } from "../data/GamesInfo";
+import UserService from "../Services/user.service";
 
 import "./GamesList.css";
 
-function GamesList() {
-	const [title, setTitle] = useState(false);
-	const titleState = () => setTitle(!title);
+const GamesList = ({filter}) => {
+
+	const [gamesToShow, setGamesToShow] = useState(games_info);
 
 	var history = useHistory();
 
 	function changeCard(e, game) {
-		var x2 = document.getElementById(game.id + "_Card");
-		x2.style.boxShadow = "10px 5px 5px grey";
+		var div_img = document.getElementById(game.id + "div-img");
+		var div_descr = document.getElementById(game.id + "div-description");
 
-		var x = document.getElementById(game.id);
-		x.style.opacity = "0.5";
-
-		game.hoover = true;
-		titleState();
+		div_img.style.display = "none";
+		div_descr.style.display = "flex";
 	}
 
 	function replaceCard(e, game) {
-		var x2 = document.getElementById(game.id + "_Card");
-		x2.style.boxShadow = "";
-
-		var x = document.getElementById(game.id);
-		x.style.opacity = "1";
-
-		game.hoover = false;
-		titleState();
+		var div_img = document.getElementById(game.id + "div-img");
+		var div_descr = document.getElementById(game.id + "div-description");
+		
+		div_img.style.display = "flex";
+		div_descr.style.display = "none";
 	}
 
 	function enterGame(value) {
-		value["hoover"] = false;
-		history.push(value["path"]);
+		if (value["toBeDone"]) {
+			alert("Jogo em desenvolvimento ! Ainda não está disponivel para jogar")
+		} else {
+			value["hoover"] = false;
+			history.push(value["path"]);
+		}
 	}
 
-	const showTitle = (game) => {
-		if (game.hoover) {
-			return (
-				<>
-					<div className="row above-img">
-						<div className="col-lg-9 col-sm-9 button_playnow">
-							{/* <button className="play-button"> Jogar! </button> */}
-							<button className="learn-more circle">
-								<span className="circle" aria-hidden="true">
-									<span className="icon arrow"></span>
-								</span>
-								<span
-									className="button-text"
-									style={{
-										color: "white",
-										marginLeft: "5px",
-										fontFamily: "Bubblegum Sans",
-									}}
-								>
-									Jogar Agora
-								</span>
-							</button>
-						</div>
-						<div className="col-lg-3 col-sm-3 game_age">
-							<p> +{game.age} </p>
-						</div>
-					</div>
-				</>
-			);
-		}
-	};
+	async function getGamesOrderByMostPlayed() {
+		console.log("im here")
+		var estatisticas = await UserService.getMatchesStatisticsByGame();
+		if (estatisticas) {
 
-	return (
+			var new_games_info = []
+			var games_not_done_yet = []
+			for (let l = 0; l < estatisticas.matches.length; l++){
+				for (let i = 0; i < Object.keys(games_info).length; i++){
+					if (estatisticas.matches[l].id === games_info[i].id) {
+						new_games_info.push(games_info[i])
+					} else if (games_info[i].toBeDone) {
+						games_not_done_yet.push(games_info[i])
+					}
+				}
+			}
+			new_games_info = new_games_info.concat(games_not_done_yet)
+			setGamesToShow(new_games_info)
+		}
+	}
+
+    useEffect(() => {
+		var filtro = filter
+		if (filtro === "MostPlayedGames") {
+			getGamesOrderByMostPlayed();
+		}
+	}, [filter]);
+
+
+    return (
 		<>
 			<div className="display-games">
-				{Object.entries(games_info).map(([key, value]) => (
-					<Card
-						key={key}
-						id={key + "_Card"}
-						className="button-fix"
-						onClick={() => enterGame(value)}
-					>
-						<div
-							onMouseEnter={(e) => changeCard(e, value)}
-							onMouseLeave={(e) => replaceCard(e, value)}
-						>
-							<img
-								src={value["img"]}
-								alt="Info"
-								className="card-img"
-								id={key}
-							/>
-							<h2 className="game-title">{value["title"]}</h2>
+				{Object.entries(gamesToShow).map(([key, value]) => (			
+						<div className={value["toBeDone"] ? "card game-dashboard-disabled" : "card game-dashboard"} key={key} id={key + "_Card"} onMouseEnter={(e) => changeCard(e, value)} onMouseLeave={(e) => replaceCard(e, value)} onClick={() => enterGame(value)} >
+							<div className="animation">
+								<div className="title-section">
+									<h3 className="title-gameDashboard">{value["title"]}</h3>
+									<h3 className="faixa-gameDashboard">+{value["age"]}</h3>
+								</div>
 
-							{showTitle(value)}
+								<hr className="hr-gameDashboard"></hr>
+
+								<div id={key + "div-img"} className="image" style={{display: "flex"}}>
+									{value["toBeDone"] ? <div className="card-img disabled"><i className="working-icon">{value["icon"]}</i></div>
+									: <img
+									src={value["img"]}
+									alt="Info"
+									className="card-img"
+									id={key}
+									/>
+									}
+									
+								</div>
+
+								<div id={key + "div-description"} className="div-game-description" style={{display: "none"}}>
+									<span></span>
+									<span></span>
+									<span></span>
+									<span></span>
+									<p className="game-descritpion">{value["description"]}</p>
+								</div>
+
+								{value["toBeDone"] ? <h4> Em desenvolvimento ...</h4>
+								: <h4> Clica para jogar !</h4>
+								}
+								
+							</div>
 						</div>
-					</Card>
 				))}
 			</div>
 		</>
 	);
 }
 
+/*
+function GamesList() {
+	var history = useHistory();
+
+	function changeCard(e, game) {
+		var div_img = document.getElementById(game.id + "div-img");
+		var div_descr = document.getElementById(game.id + "div-description");
+
+		div_img.style.display = "none";
+		div_descr.style.display = "flex";
+	}
+
+	function replaceCard(e, game) {
+		var div_img = document.getElementById(game.id + "div-img");
+		var div_descr = document.getElementById(game.id + "div-description");
+		
+		div_img.style.display = "flex";
+		div_descr.style.display = "none";
+	}
+
+	function enterGame(value) {
+		if (value["toBeDone"]) {
+			alert("Jogo em desenvolvimento ! Ainda não está disponivel para jogar")
+		} else {
+			value["hoover"] = false;
+			history.push(value["path"]);
+		}
+	}
+
+
+	return (
+		<>
+			<div className="display-games">
+				{Object.entries(games_info).map(([key, value]) => (			
+						<div className={value["toBeDone"] ? "card game-dashboard-disabled" : "card game-dashboard"} key={key} id={key + "_Card"} onMouseEnter={(e) => changeCard(e, value)} onMouseLeave={(e) => replaceCard(e, value)} onClick={() => enterGame(value)} >
+							<div className="animation">
+								<div className="title-section">
+									<h3 className="title-gameDashboard">{value["title"]}</h3>
+									<h3 className="faixa-gameDashboard">+{value["age"]}</h3>
+								</div>
+
+								<hr className="hr-gameDashboard"></hr>
+
+								<div id={key + "div-img"} className="image" style={{display: "flex"}}>
+									{value["toBeDone"] ? <div className="card-img disabled"><i className="working-icon">{value["icon"]}</i></div>
+									: <img
+									src={value["img"]}
+									alt="Info"
+									className="card-img"
+									id={key}
+									/>
+									}
+									
+								</div>
+
+								<div id={key + "div-description"} className="div-game-description" style={{display: "none"}}>
+									<span></span>
+									<span></span>
+									<span></span>
+									<span></span>
+									<p className="game-descritpion">{value["description"]}</p>
+								</div>
+
+								{value["toBeDone"] ? <h4> Em desenvolvimento ...</h4>
+								: <h4> Clica para jogar !</h4>
+								}
+								
+							</div>
+						</div>
+				))}
+			</div>
+		</>
+	);
+}
+*/
 export default GamesList;
