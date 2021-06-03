@@ -6,6 +6,7 @@ import "./Tournaments.css";
 import * as FaIcons from 'react-icons/fa';
 import * as RiIcons from 'react-icons/ri';
 import * as BsIcons from 'react-icons/bs';
+import Pagination from "@material-ui/lab/Pagination";
 
 import TournamentService from '../../Services/tournament.service';
 import {games_info} from '../../data/GamesInfo';
@@ -13,7 +14,14 @@ import {games_info} from '../../data/GamesInfo';
 
 function Tournaments() {
     const [tournaments, setTournaments] = useState([]);
+    const [tournament_inputs, setTournamentInputs] = useState({name: "", capacity: "", private: null});
 
+    const [page_tournaments, setPageTournaments] = useState(1);
+	const [count_tournaments, setCountTournaments] = useState(0);
+
+    const handlePageChangeTournaments = (event, value) => {
+		setPageTournaments(value);
+	};
 
     function submitFunction(event) {
 		event.preventDefault();
@@ -37,18 +45,16 @@ function Tournaments() {
             privacidade = null
         }
         
-        var response = await TournamentService.getTournamentsWithFilters(nome.value, capacidade.value, privacidade);
-        if (!response["message"]) {
-            setTournaments(response);
-        }
+        setTournamentInputs({name: nome.value, capacity: capacidade.value, private: privacidade})
     }
 
     const retrieveTournaments = () => {
 
         async function fetchApiTournaments() {
-			var response = await TournamentService.getTournamentsWithFilters("", "", null);
+			var response = await TournamentService.getTournamentsWithFilters(tournament_inputs.name, tournament_inputs.capacity, tournament_inputs.private, parseInt(page_tournaments)-1, 10);
             if (!response["message"]) {
-                setTournaments(response);
+                setTournaments(response.tournaments);
+                setCountTournaments(response.totalPages)
             }
         };
         fetchApiTournaments();
@@ -56,7 +62,7 @@ function Tournaments() {
 
     useEffect(
 		retrieveTournaments
-	, [])
+	, [tournament_inputs, page_tournaments])
 
 
     return (
@@ -171,7 +177,7 @@ function Tournaments() {
                             </div>
     
                             <div className="col-lg-3 col-md-3 col-sm-3">
-                                0/{tournament.max_users}
+                                {tournament.usersCount}/{tournament.max_users}
                             </div>
 
                             {tournament.private 
@@ -200,6 +206,18 @@ function Tournaments() {
                    }
 
                 </ul>
+                <div className="row justify-content-center">
+                    <Pagination
+                    className="my-3"
+                    count={count_tournaments}
+                    page={page_tournaments}
+                    siblingCount={1}
+                    boundaryCount={1}
+                    variant="outlined"
+                    shape="rounded"
+                    onChange={handlePageChangeTournaments}
+                    />
+                </div>
             </div>
 
 

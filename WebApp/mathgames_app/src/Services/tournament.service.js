@@ -2,16 +2,16 @@ import {urlAPI} from "./../data/data";
 
 class TournamentService {
 
-    async getTournamentsWithFilters(nome, capacidade, privado) {
-        var url = urlAPI + 'api/tournaments?';
+    async getTournamentsWithFilters(nome, capacidade, privado, page, pageSize) {
+        var url = urlAPI + 'api/tournaments?page=' + page + '&size=' + pageSize;
         if (privado !== null && privado !== undefined)
-            url = url + '&privado='+privado;
+            url = url + '&private='+privado;
 
         if (nome !== "")
-            url = url + '&nome='+nome;
+            url = url + '&name='+nome;
         
         if (capacidade !== "")
-            url = url + '&capacidade='+capacidade
+            url = url + '&capacity='+capacidade
 
         var res = await fetch(url);
         return res.json();
