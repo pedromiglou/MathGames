@@ -11,8 +11,21 @@
 	justify-content: center;
 	margin: 1em 0;
     flex-wrap: wrap;
-    gap: 5%;
+	gap: 2%;
 }
+
+.filters-t > :first-child{
+	flex: 1 1 10%;
+}
+
+.filters-t > :nth-child(2){
+	flex: 1 1 65%;
+}
+
+.filters-t > :nth-child(3){
+	flex: 1 1 21%;
+}
+
 
 .title-ind-t{
 	display: flex;
@@ -141,4 +154,18 @@ ul.list-group{
 .no-results{
 	text-align: center;
 	padding-top: 1em;
+}
+
+/* Gerir Torneios */
+
+#gerir{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	margin: 1em 0;
+}
+
+#gerir h1{
+	padding: 1em 0;
 }

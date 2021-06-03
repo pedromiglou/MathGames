@@ -7,7 +7,22 @@ import * as FaIcons from 'react-icons/fa';
 import * as RiIcons from 'react-icons/ri';
 import * as BsIcons from 'react-icons/bs';
 
+import { Link } from 'react-router-dom';
+
+
+import AuthService from '../../Services/auth.service';
+
 function Tournaments() {
+    // const [user, setUser] = useState("");
+
+    // useEffect(() => {
+	// 	var current_user = AuthService.getCurrentUser();
+	// 	setUser(current_user);
+
+    // }, [])
+
+    var current_user = AuthService.getCurrentUser();
+
     function submitFunction(event) {
 		event.preventDefault();
 		document.getElementById("searchButton").click();
@@ -15,23 +30,16 @@ function Tournaments() {
 
     return (
         <>
-            {/* id:
-            name:
-            max_users:
-            private:
-            password:
-            game_id:
-            winner:
-            creator */}
-
+        
             <div className="list-tournaments shadow3D animation-down">
 				
 				<div className="filters-t">
 					
-						<div className="title-ind-t">
-							<i><RiIcons.RiTrophyFill/></i>
-							<h1>Torneios</h1>
-						</div>
+                    <div className="title-ind-t">
+                        <i><RiIcons.RiTrophyFill/></i>
+                        <h1>Torneios</h1>
+                    </div>
+                        
 					
 					<div className="row">
 						<div className="col-12 col-md-12 col-lg-12">
@@ -86,10 +94,21 @@ function Tournaments() {
 								
 								
 								<button id="searchButton" className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
+                                <hr></hr>
 							</form>
-							
+                            
 						</div>
 					</div>
+
+                    {current_user !== null && current_user["account_type"] === "T" &&
+                    <div id="gerir" className="shadow-white">
+                        <h1>Gerir Torneios</h1>
+                        <Link to="createTournament" className="btn btn-lg btn-search">
+                            Criar Novo Torneio <FaIcons.FaPlus/>
+                        </Link>
+                        <button id="myTButton" className="btn btn-lg btn-search" type="button">Ver os meus torneios <FaIcons.FaSearch/></button>
+                    </div>
+                    }
 				</div>
                 
                 <hr></hr>
