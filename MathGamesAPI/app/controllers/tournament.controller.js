@@ -32,6 +32,20 @@ exports.create = (req, res) => {
     return;
   }
 
+  if (parseInt(req.body.creator) !== parseInt(req.userId) ) {
+    res.status(401).send({
+      message: "Unauthorized!"
+    });
+    return;
+  }
+
+  if (req.body.private === true && req.body.password === "") {
+    res.status(400).send({
+      message: "Private tournaments must have a password."
+    });
+    return;
+  }
+
   // Create a Tournament
   const tournament = {
     name: req.body.name,
@@ -39,7 +53,6 @@ exports.create = (req, res) => {
     private: req.body.private,
     password: req.body.password,
     game_id: req.body.game_id,
-    winner: req.body.winner,
     creator: req.body.creator
   };
 

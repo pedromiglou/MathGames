@@ -1,9 +1,11 @@
+const { authJwt, verifySignUp } = require("../middleware");
+
 module.exports = app => {
     const tournaments = require("../controllers/tournament.controller.js");
     var router = require("express").Router();
   
     // Create a new tournament
-    router.post("/", tournaments.create);
+    router.post("/", [authJwt.verifyToken, authJwt.isTournamentManager], tournaments.create);
   
     // Retrieve all tournaments
     router.get("/", tournaments.findAll);

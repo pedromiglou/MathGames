@@ -38,12 +38,23 @@ isAdmin = (req, res, next) => {
     });
 };
 
+isTournamentManager = (req, res, next) => {
+    User.findByPk(req.userId).then(user => {
+        if (user.account_type == "T") {
+            next();
+            return;
+        }
+
+        res.status(403).send({
+            message: "Require Tournament Manager Role!"
+        });
+        return;
+    });
+};
+
 const authJwt = {
     verifyToken: verifyToken,
     isAdmin: isAdmin,
-    /*
-    isModerator: isModerator,
-    isModeratorOrAdmin: isModeratorOrAdmin
-    */
+    isTournamentManager
 };
 module.exports = authJwt;
