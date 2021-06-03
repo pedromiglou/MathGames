@@ -23,32 +23,7 @@ function LastGames({ navigation }) {
 				colors={["#78c9ff", "#6699f8", "#5379f7", "#5867f7", "#8a54ee"]}
 				start={[0, 0]}
 				end={[1, 1]}
-			>
-                <View style={{ flexDirection: "row" }}>
-                    <View style={{ flex: 1 }} >
-                        <TouchableHighlight
-                            onPress={() => navigation.navigate("Games")}
-                            style={styles.button}
-                        >
-                            <Text style={styles.buttonText}>Inventario</Text>
-                        </TouchableHighlight>
-
-                    </View>
-                    <View style={{ flex: 1, marginLeft: 1 }} >
-
-                        <TouchableHighlight
-                            onPress={() => navigation.navigate("Profile")}
-                            style={styles.button}
-                        >
-                            <Text style={styles.buttonText}>Perfil</Text>
-                        </TouchableHighlight>
-                    </View>
-                </View>
-                
-				<View>
-					<Text style={styles.pageTitle}>Ultimos Jogos</Text>
-				</View>
-
+			>    
                 <View >
                     <View style={{ flexDirection: "row" }}>
                         <View style={ styles.dataCol } > 
