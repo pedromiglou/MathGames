@@ -10,6 +10,9 @@ module.exports = app => {
     // Retrieve all reports
     router.get("/", [authJwt.verifyToken, authJwt.isAdmin], reports.findAll);
 
+    // Retrieve top 10 users with most reports
+    router.get("/top", [authJwt.verifyToken, authJwt.isAdmin], reports.findUsersWithMostReports);
+
     // Retrieve all reports received by a userid
     router.get("/:id", [authJwt.verifyToken, authJwt.isAdmin], reports.findByReceiverId);
   

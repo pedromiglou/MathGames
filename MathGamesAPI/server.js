@@ -482,12 +482,12 @@ function create_game(match_id, game_id, user1, user2, game_type) {
 
   current_games[match_id]['timers'][user1].start();
 
+  current_games[match_id]['state']['current_player'] = user1
   if (game_id === 0) {
     current_games[match_id]['state']['blocked_pos'] = new Set()
     current_games[match_id]['state']['current_pos'] = 18
     current_games[match_id]['state']['valid_squares'] = new Set([10, 11, 12, 17, 19, 24, 25, 26])
   } else if (game_id === 1) {
-    current_games[match_id]['state']['current_player'] = user1
     current_games[match_id]['state']['player_0_valid_squares'] = new Set(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63"])
     current_games[match_id]['state']['player_1_valid_squares'] = new Set(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63"])
     current_games[match_id]['state']['player_0_first_move'] = true
@@ -545,6 +545,13 @@ function valid_move(user_id, match_id, new_pos) {
 }
 
 function validate_rastros_move(user_id, match_id, new_pos) {
+  if (current_games[match_id]['state']['current_player'] !== user_id) {
+    return false
+  }
+
+  //Alternar entre player1 e player2 no current_player
+  current_games[match_id]['state']['current_player'] = (current_games[match_id]['state']['current_player'] === current_games[match_id]['state']['player1'] ? current_games[match_id]['state']['player2'] : current_games[match_id]['state']['player1'])
+
   var current_pos = parseInt(new_pos)
 
   var valid_squares = current_games[match_id]['state']['valid_squares']
@@ -612,14 +619,10 @@ function validate_rastros_move(user_id, match_id, new_pos) {
 }
 
 function validate_gatoscaes_move(user_id, match_id, new_pos) {
-  console.log("Passei aqui1")
-  console.log(current_games[match_id]['state']['player_0_valid_squares'].has(new_pos))
-  console.log(user_id)
-  console.log(current_games[match_id]['state']['current_player'] === user_id)
+
   if ( !( (current_games[match_id]['state']['player_0_valid_squares'].has(new_pos) && current_games[match_id]['state']['current_player'] === user_id) 
       || (current_games[match_id]['state']['player_1_valid_squares'].has(new_pos) && current_games[match_id]['state']['current_player'] === user_id) ) )
       return false
-  console.log("Passei aqui")
 
   if (current_games[match_id]['state']['player_0_first_move'] && current_games[match_id]['state']['player1'] === user_id)
     current_games[match_id]['state']['player_0_first_move'] = false
@@ -710,18 +713,18 @@ async function finish_game(match_id, endMode) {
     player2_final_result = "draw"
   }
 
-  if (player_1_account_player === true || player_2_account_player === true) {
-    if (!player_1_account_player) {
-      gameMatch["player1"] = null
-    }
-    if (!player_2_account_player) {
-      gameMatch["player2"] = null
-    }
+  if (!player_1_account_player) {
+    gameMatch["player1"] = null
+  }
+  if (!player_2_account_player) {
+    gameMatch["player2"] = null
+  }
 
-    // Save GameMatch in the database
-    var res = await GameMatch.create(gameMatch)
+  // Save GameMatch in the database
+  var res = await GameMatch.create(gameMatch)
 
     console.log(current_games)
+  if (player_1_account_player === true || player_2_account_player === true) {
 
     if (game_type === "online") {
       var jogo = null;

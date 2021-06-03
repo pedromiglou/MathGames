@@ -17,7 +17,7 @@ export const sidebarData_group1 = [
     {
         id: 1,
         title: 'Torneio',
-        path: '/tournament',
+        path: '/tournaments',
         icon: <RiIcons.RiTrophyFill/>,
         cName: 'nav-text',
     },
@@ -41,7 +41,7 @@ export const sidebarData_group2 = [
     {
         id: 4,
         title: 'Quem somos',
-        path: '/aboutus',
+        path: '/about',
         icon: <BsIcons.BsQuestionCircle/>,
         cName: 'nav-text',
     }
