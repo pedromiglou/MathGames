@@ -26,8 +26,6 @@ import { Card } from "react-bootstrap";
 
 /* Redux */
 import { useDispatch } from 'react-redux';
-import { GameOverModal } from '../GameOverModal';
-
 
 /* ChooseGameModalFriends */
 import { games_info } from "../../data/GamesInfo";
@@ -149,8 +147,8 @@ function Navbar() {
 		console.log(document.getElementById("confirm-b").disabled)
 		const cards =  []
 		for (var [key,value] of Object.entries(games_info)) {
-			if (!value["toBeDone"]){
-
+			if (!value["toBeDone"] && key !== -1){
+				
 				var card = document.getElementById("card-" + value["title"]);
 				cards.push(
 					{ key: value["title"],
