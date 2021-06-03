@@ -143,24 +143,25 @@ class UserService {
         return;
     }
 
-    make_friend_request(friend1, friend2) {
-        let friends= {
-            sender: friend1,
-            receiver: friend2,
-            notification_type: "F"
+    async send_notification_request(sender, receiver, not_type) {
+        let request= {
+            sender: sender,
+            receiver: receiver,
+            notification_type: not_type
         }
 
         var url = urlAPI + 'api/notifications/';
         
-        fetch(url, {
+        await fetch(url, {
             method:'POST',
             headers:{'Content-type':'application/json',
                      'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
-            body: JSON.stringify(friends)
+            body: JSON.stringify(request)
         });
 
         return;        
     }
+
 
 
     async remove_friend(friend1, friend2) {

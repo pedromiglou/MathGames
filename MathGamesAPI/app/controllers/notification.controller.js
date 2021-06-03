@@ -27,35 +27,17 @@ exports.create = (req, res) => {
     notification_type: req.body.notification_type
   };
 
-  if (notification.notification_type === "F") {
-    Notification.findOne({where: {
-      sender: notification.sender,
-      receiver: notification.receiver,
-      notification_type: notification.notification_type
-    }}).then(response => {
-      if (response !== null) {
-        res.status(405).send({
-          message: "Friend Request already made."
-        });
-      } else {
-        Notification.create(notification)
-        .then(data => {
-          res.send(data);
-        })
-        .catch(err => {
-          res.status(500).send({
-            message: err.message || "Some error occurred while creating the Notification."
-          });
-        });
-      }
-    }).catch(err => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while searching for Notification Duplication."
+  Notification.findOne({where: {
+    sender: notification.sender,
+    receiver: notification.receiver,
+    notification_type: notification.notification_type
+  }}).then(response => {
+    if (response !== null) {
+      res.status(405).send({
+        message: "Friend Request already made."
       });
-    })
-  } else {
-    // Save Notification in the database
-    Notification.create(notification)
+    } else {
+      Notification.create(notification)
       .then(data => {
         res.send(data);
       })
@@ -64,7 +46,13 @@ exports.create = (req, res) => {
           message: err.message || "Some error occurred while creating the Notification."
         });
       });
-  }
+    }
+  }).catch(err => {
+    res.status(500).send({
+      message: err.message || "Some error occurred while searching for Notification Duplication."
+    });
+  })
+
 };
 
 // Retrieve all Notifications from the database.
@@ -107,6 +95,7 @@ exports.findByUserId = (req, res) => {
 // Delete a Notification with the specified two user ids
 exports.delete = (req, res) => {
   const id = req.params.id;
+
 
   Notification.findOne({where: {id: id}}).then(notif => {
     if (notif === null) {

@@ -248,6 +248,7 @@ synchronize()
 var current_games = {};
 var match_queue = {0: [], 1: []};
 var users_info = {}
+var active_friend_link = {}
 var active_friend_invites = {}
 
 
@@ -257,15 +258,15 @@ io.on("connection", (socket) => {
   console.log("id: ", socket.id);
 
   //
-  // FRIEND GAME BY LINK SECTION
+  // FRIEND GAME BY INVITE SECTION
   // 
 
-  //User sends user_id and wants to play with a friend through a link
   socket.on("generate_invite", (msg) => {
     let user_id = msg["user_id"]
+    let outro_id = msg["outro_id"]
 
     // If the user still has an active link, return null match_id
-    if ( Object.values(active_friend_invites).includes(user_id) ) {
+    if ( Object.keys(active_friend_invites).includes(user_id) ) {
       io.to(socket.id).emit("invite_link", {"match_id": null});
       return;
     }
@@ -273,12 +274,71 @@ io.on("connection", (socket) => {
     users_info[user_id] = socket.id;
 
     let new_match_id = uuid.v4();
-    active_friend_invites[new_match_id] = user_id;
+    active_friend_invites[user_id] = {"outro_id": outro_id, "match_id": new_match_id};
+
+    io.to(socket.id).emit("invite_link", {"match_id": new_match_id});
+    // After 2 minutes, the invites expires
+    setTimeout(() => { delete active_friend_invites[user_id]; }, 120000);
+    console.log(active_friend_invites)
+  })
+
+  // user that accepts friend invite needs match_id. 
+  socket.on("get_match_id", (msg) => {
+    if (msg["user_id"] !== null) {
+      var user_id = msg["user_id"]
+      var outro_id = msg["outro_id"]
+
+      users_info[user_id] = socket.id
+
+      if ( Object.keys(active_friend_invites).includes(String(outro_id)) && active_friend_invites[outro_id]["outro_id"] === String(user_id)) {
+        io.to( users_info[String(user_id)] ).emit("match_link", {"match_id": active_friend_invites[outro_id]["match_id"]})
+      } else {
+        io.to( users_info[String(user_id)] ).emit("match_link", {"error": "invite expired"})
+      }
+    }
+  })
+
+  socket.on("entered_invite", (msg) => {
+    console.log("User conected through link.")
+    if (msg["user_id"] !== null) {
+      var match_id = msg["match_id"]
+      var user_id = msg["user_id"]
+      var outro_id = msg["outro_id"]
+      var game_id = parseInt(msg["game_id"])
+      users_info[user_id] = socket.id
+
+      if ( Object.keys(active_friend_invites).includes(String(outro_id)) && active_friend_invites[outro_id]["outro_id"] === String(user_id)) {
+        console.log("Vou criar e enviar!")
+        create_game(match_id, game_id, user_id, outro_id, "amigo")
+        io.to( users_info[outro_id] ).emit("friend_joined", {"match_id": match_id, "player1": user_id, "player2": outro_id})
+      }
+    }
+  })
+
+
+  //
+  // FRIEND GAME BY LINK SECTION
+  //
+
+  //User sends user_id and wants to play with a friend through a link
+  socket.on("generate_link", (msg) => {
+    let user_id = msg["user_id"]
+
+    // If the user still has an active link, return null match_id
+    if ( Object.values(active_friend_link).includes(user_id) ) {
+      io.to(socket.id).emit("invite_link", {"match_id": null});
+      return;
+    }
+
+    users_info[user_id] = socket.id;
+
+    let new_match_id = uuid.v4();
+    active_friend_link[new_match_id] = user_id;
 
     io.to(socket.id).emit("invite_link", {"match_id": new_match_id});
     // After 2 minutes, the links expires
-    setTimeout(() => { delete active_friend_invites[new_match_id]; }, 120000);
-    console.log(active_friend_invites)
+    setTimeout(() => { delete active_friend_link[new_match_id]; }, 120000);
+    console.log(active_friend_link)
   })
 
   socket.on("entered_link", (msg) => {
@@ -289,10 +349,10 @@ io.on("connection", (socket) => {
       var game_id = parseInt(msg["game_id"])
       users_info[user_id] = socket.id
 
-      if ( Object.keys(active_friend_invites).includes(match_id) ) {
+      if ( Object.keys(active_friend_link).includes(match_id) ) {
         console.log("Vou criar e enviar!")
-        create_game(match_id, game_id, user_id, active_friend_invites[match_id], "amigo")
-        io.to( users_info[active_friend_invites[match_id]] ).emit("friend_joined", {"match_id": match_id, "player1": user_id, "player2": active_friend_invites[match_id]})
+        create_game(match_id, game_id, user_id, active_friend_link[match_id], "amigo")
+        io.to( users_info[active_friend_link[match_id]] ).emit("friend_joined", {"match_id": match_id, "player1": user_id, "player2": active_friend_link[match_id]})
       }
     }
   })
@@ -343,11 +403,15 @@ io.on("connection", (socket) => {
     
 
 
-
+    console.log("vou verify")
     if ( Object.keys(current_games).includes(match_id) )
       if ( Object.keys(current_games[match_id]['users'] ).includes(user_id))
         if ( valid_move(user_id, match_id, new_pos) ) {
+          console.log("tou dentro de tudo")
+
           let opponent = current_games[match_id]['users'][user_id][0]
+          console.log(opponent)
+          console.log(users_info[opponent])
           io.to( users_info[opponent] ).emit("move_piece", new_pos);
 
           // Pause user's timer and restart opponent's
@@ -408,13 +472,13 @@ function create_game(match_id, game_id, user1, user2, game_type) {
                                               current_games[match_id]['state']['isFinished'] = true;
                                               current_games[match_id]['state']['winner'] = "2";
                                               finish_game(match_id, "timeout");
-                                            }, 10000);
+                                            }, 15000);
   current_games[match_id]['timers'][user2] = new Timer(function() {
                                               console.log("It's done")
                                               current_games[match_id]['state']['isFinished'] = true;
                                               current_games[match_id]['state']['winner'] = "1";
                                               finish_game(match_id, "timeout");
-                                            }, 10000);
+                                            }, 15000);
 
   current_games[match_id]['timers'][user1].start();
 
@@ -430,6 +494,8 @@ function create_game(match_id, game_id, user1, user2, game_type) {
     current_games[match_id]['state']['player_1_first_move'] = true
   }
   
+  console.log("acabei criar jogo")
+  console.log(current_games)
   initiate_game(match_id)
   
 }
@@ -698,7 +764,7 @@ async function finish_game(match_id, endMode) {
   io.to(users_info[player2]).emit("match_end", {"game_id": game_id, "match_id": match_id, "match_result": player2_final_result, "end_mode": endMode, "extra": current_games[match_id]['state']['extra']});
 
   delete current_games[match_id];
-  delete active_friend_invites[match_id];
+  delete active_friend_link[match_id];
 
 }
 
