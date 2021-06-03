@@ -38,7 +38,30 @@ exports.create = (req, res) => {
 
 // Retrieve all Tournaments from the database.
 exports.findAll = (req, res) => {
-  Tournament.findAll()
+  var nome = req.query.nome
+  var capacidade = req.query.capacidade
+  var privado= req.query.privado
+
+  var condition1 = false
+  if (nome) {
+    condition1 = true
+  }
+
+  var condition2 = false
+  if (capacidade) {
+    condition2 = true
+  }
+
+
+  var condition3 = false
+  var privadoFinal
+  if (privado) {
+      condition3 = true
+      privadoFinal = (privado === "true" ? true : false)
+  }
+  //condition3 ? {where: {private: privadoFinal}} : {}
+  //{where: (condition2 ? {max_users: capacidade} : null) (condition3 ? {private: privadoFinal} : null) }
+  Tournament.findAll( condition3 ? {where: {private: privadoFinal}} : {} )
     .then(data => {
       res.send(data);
     })
