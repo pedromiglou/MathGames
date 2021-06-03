@@ -263,7 +263,7 @@ function GamePage() {
 		socket.off("match_found");
 
 		if (gameMode === "amigo") {
-			socket.emit("generate_link", {"user_id": AuthService.getCurrentUserId()})
+			socket.emit("generate_invite", {"user_id": AuthService.getCurrentUserId()})
 
 			socket.once("invite_link", (msg) => {
 				let new_match_id = msg['match_id'];

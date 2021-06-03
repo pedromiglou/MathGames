@@ -46,16 +46,19 @@ function Game()  {
 
     }
 
+    function triggerFinishGame(gameOverMessage) {
+        activeGameRef.current.getGame().scene.getScene("RastrosScene").finish_game(gameOverMessage);
+    }
+
     return (
         <div className="container-fluid">
-            <button className="btn btn-info" onClick={() => {activeGameRef.current.getGame().scene.getScene("RastrosScene").finish_game({game_id: 0, match_id: current_match.current['match_id'], match_result: "ai_win", ai_difficulty: "easy"})}}>Get Game</button>
             <div className="row">
                 <div className="col-3 mt-4">
                     <div className="row h-75 d-flex justify-content-center">
                         <div className="col">
                             <div className="row d-flex justify-content-center">
                                 {/* <Countdown ref={timerApi2} date={Date.now() + 10000} renderer={countdownRenderer} intervalDelay={10} precision={3} autoStart={false}></Countdown> */}
-                                <GameTimer ref={gameTimer2Ref} totalGameTime={10000} player="player2" gameId={game_id} currentMatch={current_match.current} finishMatchMethod={processGameOver} autoStart={false}></GameTimer>
+                                {game_mode!=="ai" && <GameTimer ref={gameTimer2Ref} totalGameTime={10000} player="player2" gameId={game_id} gameMode={game_mode} currentMatch={current_match.current} finishMatchMethod={triggerFinishGame} autoStart={false}></GameTimer>}
                                 <h5>Player 2</h5>
                             </div>
                             <div className="row d-flex justify-content-center">
@@ -67,7 +70,7 @@ function Game()  {
                         <div className="col">
                             <div className="row d-flex justify-content-center">
                                 {/* <Countdown ref={timerApi1} date={Date.now() + 10000} renderer={countdownRenderer} intervalDelay={10} precision={3}></Countdown> */}
-                                <GameTimer ref={gameTimer1Ref} totalGameTime={10000} player="player1" gameId={game_id} currentMatch={current_match.current} finishMatchMethod={processGameOver} autoStart={true}></GameTimer>
+                                {game_mode!=="ai" && <GameTimer ref={gameTimer1Ref} totalGameTime={10000} player="player1" gameId={game_id} gameMode={game_mode} currentMatch={current_match.current} finishMatchMethod={triggerFinishGame} autoStart={true}></GameTimer>}
                                 <h5>Player 1</h5>
                             </div>
                                 <div className="row d-flex justify-content-center">
