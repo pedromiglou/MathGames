@@ -1,11 +1,13 @@
 import * as React from 'react';
 import {useState} from 'react';
-import {ScrollView} from 'react-native';
+import {ScrollView, Dimensions, StyleSheet} from 'react-native';
 import RastrosEngine from './../games/rastros/RastrosEngine';
 import { LinearGradient } from 'expo-linear-gradient';
 import {readData, saveData} from './../utilities/AsyncStorage';
 import Loading from './../components/Loading';
 import socket from './../utilities/Socket';
+
+const win = Dimensions.get('window');
 
 function Game({navigation}) {
     //wait until everything is ready
@@ -37,8 +39,8 @@ function Game({navigation}) {
     });
 
     return (ready===-1) ? <Loading /> :
-        <ScrollView style={{flex: 1}}>
-            <LinearGradient colors={['#78c9ff', '#6699f8', '#5379f7', '#5867f7', '#8a54ee']} start={[0,0]} end={[1,1]}>
+        <ScrollView contentContainerStyle={styles.scrollView}>
+            <LinearGradient colors={['#78c9ff', '#6699f8', '#5379f7', '#5867f7', '#8a54ee']} start={[0,0]} end={[1,1]} style={styles.linearGradient}>
                 <RastrosEngine></RastrosEngine>
             </LinearGradient>
         </ScrollView>
@@ -46,3 +48,13 @@ function Game({navigation}) {
 }
 
 export default Game;
+
+const styles = StyleSheet.create({
+    scrollView: {
+        flexGrow: 1,
+        flex:1
+    },
+    linearGradient: {
+        minHeight: win.height
+    }
+});

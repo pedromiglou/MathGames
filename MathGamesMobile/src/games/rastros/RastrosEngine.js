@@ -32,7 +32,7 @@ function RastrosEngine(props) {
         return () => {mounted=false}
       }, []);
     
-    
+    const gameLoop = new GameLoop();
 
     return (
         <View style={styles.container}>
@@ -41,7 +41,7 @@ function RastrosEngine(props) {
             <GameEngine
                 ref={(ref)=>{this.engine=ref}}
                 style={{width: boardSize, height: boardSize, flex: null}}
-                systems={[ GameLoop ]}
+                systems={[ gameLoop.loop ]}
                 entities={entities}
             />
             <Text style={styles.title}>Player1</Text>
@@ -56,25 +56,7 @@ const styles = StyleSheet.create({
     container: {
         margin: 20,
         flex: 1,
-        justifyContent: 'center',
         alignItems: 'center'
-    },
-    controls: {
-        width: 300,
-        height: 300,
-        flexDirection: 'column',
-    },
-    controlRow: {
-        height: 100,
-        width: 300,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row'
-    },
-    control: {
-        width: 100,
-        height: 100,
-        backgroundColor: 'blue'
     },
     title: {
         fontSize: 22,

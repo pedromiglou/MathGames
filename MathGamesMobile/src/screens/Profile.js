@@ -15,12 +15,6 @@ import { gamesInfo } from "./../data/GamesInfo";
 
 const win = Dimensions.get("window");
 
-const gameModess = [
-	{ key: 1, name: "Competitivo" },
-	{ key: 2, name: "No mesmo Computador" },
-	{ key: 3, name: "Gerar link de convite" },
-	{ key: 4, name: "Contra o Computador" },
-];
 
 function Profile({ navigation }) {
 	return (
@@ -36,7 +30,7 @@ function Profile({ navigation }) {
                             onPress={() => navigation.navigate("Inventory")}
                             style={styles.button}
                         >
-                            <Text style={styles.buttonText}>Inventario</Text>
+                            <Text style={styles.buttonText}>Inventário</Text>
                         </TouchableHighlight>
 
                     </View>
@@ -45,7 +39,7 @@ function Profile({ navigation }) {
                             onPress={() => navigation.navigate("LastGames")}
                             style={styles.button}
                         >
-                            <Text style={styles.buttonText}>Ultimos Jogos</Text>
+                            <Text style={styles.buttonText}>Últimos Jogos</Text>
                         </TouchableHighlight>
                     </View>
                 </View>
@@ -63,7 +57,7 @@ function Profile({ navigation }) {
 				</View>
 
 				{gamesInfo.map((x) => (
-					<View key={x.id} style={{ flexDirection: "row" }}>
+					<View key={x.id} style={{ flexDirection: "row", borderColor: "white", marginLeft: 5, marginRight: 5, borderBottomWidth: 2 }}>
 						<View style={styles.imgDiv}>
 							<Image
 								style={styles.gameImg}

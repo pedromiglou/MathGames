@@ -48,6 +48,27 @@ function Games() {
   )
 }
 
+const StackProfile = createStackNavigator();
+
+function ProfileNav() {
+
+  return (
+    <StackProfile.Navigator screenOptions={{headerStyle: {backgroundColor: '#78c9ff'}}}>
+      <StackProfile.Screen name="Profile" options={{headerTitle: () => (<Text style={styles.header}>Perfil</Text>)}} component={Profile} />
+      <StackProfile.Screen name="Inventory" options={{
+        headerTitle: () => (<Text style={styles.headerWithArrow}>Inventário</Text>),
+        headerTintColor: "white",
+        headerTitleAlign: "center"
+      }} component={Inventory} />
+      <StackProfile.Screen name="LastGames" options={{
+        headerTitle: () => (<Text style={styles.headerWithArrow}>Últimos jogos</Text>),
+        headerTintColor: "white",
+        headerTitleAlign: "center"
+      }} component={LastGames} />
+    </StackProfile.Navigator>
+  )
+}
+
 const Drawer = createDrawerNavigator();
 
 function App() {
@@ -85,15 +106,11 @@ function App() {
         <Drawer.Navigator>
           <Drawer.Screen name="Welcome" component={Welcome} />
           <Drawer.Screen name="Games" component={Games} />
-          <Drawer.Screen name="Tournaments" component={Loading} />
-          <Drawer.Screen name="Rankings" component={Loading} />
-          <Drawer.Screen name="Settings" component={Loading} />
-          <Drawer.Screen name="Profile" component={Profile} />
-          <Drawer.Screen name="About us" component={Loading} />
-
-          <Drawer.Screen name="LastGames" component={LastGames} />
-          <Drawer.Screen name="Inventory" component={Inventory} />
-
+          <Drawer.Screen name="Tournaments" component={Welcome} />
+          <Drawer.Screen name="Rankings" component={Welcome} />
+          <Drawer.Screen name="Settings" component={Welcome} />
+          <Drawer.Screen name="Profile" component={ProfileNav} />
+          <Drawer.Screen name="About us" component={Welcome} />
         </Drawer.Navigator>}
       </NavigationContainer>
     );

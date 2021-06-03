@@ -1,5 +1,5 @@
 export default class RastrosAI {
-	constructor(){
+	constructor(goal, otherGoal){
 		this.AI_blocked_squares = [
 			[false,false,false,false,false,false,false],
 			[false,false,false,false,false,false,false],
@@ -9,6 +9,8 @@ export default class RastrosAI {
 			[false,false,false,false,false,false,false],
 			[false,false,false,false,false,false,false]
 		];
+		this.goal = goal;
+		this.otherGoal = otherGoal;
 	}
 
 	//make a play using the AI
@@ -117,12 +119,12 @@ export default class RastrosAI {
 
 	//heuristic
 	ended(piece, validSquares) {
-		if (piece[0] === 0 && piece[1] === 6) {
+		if (piece[0] === this.goal[0] && piece[1] === this.goal[1]) {
 			return 99;
-		} else if ((piece[0] === 6 && piece[1] === 0) || validSquares.length === 0) {
+		} else if ((piece[0] === this.otherGoal[0] && piece[1] === this.otherGoal[1]) || validSquares.length === 0) {
 			return -99;
 		} else {
-			return 98 - Math.pow(piece[0]-0, 2) - Math.pow(piece[1] - 6, 2);
+			return 98 - Math.pow(piece[0]-this.goal[0], 2) - Math.pow(piece[1] - this.goal[1], 2);
 		}
 	}
 }
