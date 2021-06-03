@@ -291,9 +291,10 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
+
   User.findByPk(id)
     .then(data => {
-      const { password, ...userWithoutPassword } = data.dataValues;
+      const { password, email, createdAt, updatedAt, ...userWithoutPassword } = data.dataValues;
       res.send(userWithoutPassword);
     })
     .catch(err => {
@@ -302,6 +303,38 @@ exports.findOne = (req, res) => {
       });
     });
 };
+
+
+// Find a single User by his username
+exports.findByName = (req, res) => {
+  const name = req.params.name;
+
+
+
+  User.findOne( {where: {username: name}})
+    .then(data => {
+
+      UserRanks.findByPk(data.dataValues.id)
+        .then(ranks => {
+
+          const { password, email, createdAt, updatedAt, banned, id, account_type, ...userWithoutPassword } = data.dataValues;
+          const { user_id, ...ranksWithoutUserId} = ranks.dataValues;
+          userWithoutPassword["ranks"] = ranksWithoutUserId
+          res.send(userWithoutPassword);
+        })
+        .catch(err => {
+          res.status(500).send({
+            message: "Error retrieving User with name=" + name
+          });
+      });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving User with name=" + name
+      });
+    });
+};
+
 
 // Update a User by the id in the request
 exports.update = async (req, res) => {
