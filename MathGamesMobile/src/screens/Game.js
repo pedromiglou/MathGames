@@ -18,20 +18,20 @@ function Game({navigation}) {
         game_id = JSON.parse(game).id;
         readData('gameMode').then(mode=>{
             gameMode = mode.slice(1,-1);
-            //se nao for online pode prosseguir
-            if (gameMode!=="Competitivo") {
-                setReady(game_id);
-            } else { //se for fazer as primeiras comunicacoes com o servidor
+            //se for fazer as primeiras comunicacoes com o servidor
+            if (gameMode==="Competitivo") {
                 readData('user_id').then(id=>{
                     user_id = id.slice(1,-1);
                     socket.emit("user_id", {"user_id": user_id, "game_id": String(game_id)});
                     socket.on("match_found", (msg) => {
                         saveData('match_id', msg['match_id']);
-                        saveData('starter', msg['starter']);
-                        saveData('opponent', msg['opponent']);
+                        saveData('player1', msg['player1']);
+                        saveData('player2', msg['player2']);
                         setReady(game_id);
                     });
                 });
+            } else {
+                setReady(game_id);
             }
         });
     });

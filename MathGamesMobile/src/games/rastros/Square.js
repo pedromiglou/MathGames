@@ -15,19 +15,19 @@ function Square(props) {
 
     var source;
     if (x===6 && y===0) {
-        if (props.valid) {
+        if (props.valid&&!props.blocked) {
             source = require("./../../../public/game_assets/rastros/valid_p2.png");
         } else {
             source = require("./../../../public/game_assets/rastros/p2.png");
         }
     } else if (x===0 && y===6) {
-        if (props.valid) {
+        if (props.valid&&!props.blocked) {
             source = require("./../../../public/game_assets/rastros/valid_p1.png");
         } else {
             source = require("./../../../public/game_assets/rastros/p1.png");
         }
     } else {
-        if (props.valid) {
+        if (props.valid&&!props.blocked) {
             source = require("./../../../public/game_assets/rastros/valid_square.png");
         } else {
             source = require("./../../../public/game_assets/rastros/square.png");

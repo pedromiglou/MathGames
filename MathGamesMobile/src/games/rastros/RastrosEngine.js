@@ -1,10 +1,12 @@
 import * as React from 'react';
+import {useState, useEffect} from 'react';
 import {StyleSheet, View, Text} from 'react-native';
 import { GameEngine } from 'react-native-game-engine';
 import Constants from './Constants';
 import Square from './Square';
 import Piece from './Piece';
 import {GameLoop} from './GameLoop';
+import {readData} from './../../utilities/AsyncStorage';
 
 function RastrosEngine(props) {
     const boardSize = Constants.GRID_SIZE * Constants.CELL_SIZE;
@@ -15,20 +17,35 @@ function RastrosEngine(props) {
         }
     }
     entities = entities.map(X=>{
-        return {position: X, size: Constants.CELL_SIZE, valid: false, renderer: <Square></Square>};
+        return {position: X, size: Constants.CELL_SIZE, valid: false, blocked:false, renderer: <Square></Square>};
     });
-    entities.push({position: [4,2], size: Constants.CELL_SIZE, renderer: <Piece></Piece>})
+    entities[30].blocked = true;
+    entities.push({position: [4,2], size: Constants.CELL_SIZE, renderer: <Piece></Piece>});
+
+    const [player1, setPlayer1] = useState("player1");
+    const [player2, setPlayer2] = useState("player2");
+    useEffect(() => {
+        let mounted = true;
+        readData("player1").then(p1=>{setPlayer1(p1.slice(1,-1))});
+        readData("player2").then(p2=>{setPlayer2(p2.slice(1,-1))});
+        this.engine.dispatch({type: "createSockets"});
+        return () => {mounted=false}
+      }, []);
+    
+    
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Player1</Text>
+            <Text style={styles.title}>Player2</Text>
+            <Text style={styles.title}>{player2}</Text>
             <GameEngine
                 ref={(ref)=>{this.engine=ref}}
                 style={{width: boardSize, height: boardSize, flex: null}}
                 systems={[ GameLoop ]}
                 entities={entities}
             />
-            <Text style={styles.title}>Player2</Text>
+            <Text style={styles.title}>Player1</Text>
+            <Text style={styles.title}>{player1}</Text>
         </View>
     );
 }

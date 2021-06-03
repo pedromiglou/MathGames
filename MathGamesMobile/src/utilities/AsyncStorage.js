@@ -4,7 +4,7 @@ const readData = async (key) => {
     try {
         return await AsyncStorage.getItem(key);
     } catch (e) {
-        console.log('Failed to fetch the data from storage')
+        console.log('Failed to fetch ' + key + ' from storage')
     }
 }
 
@@ -12,7 +12,8 @@ const saveData = async (key, value) => {
     try {
         await AsyncStorage.setItem(key, JSON.stringify(value));
     } catch (e) {
-        console.log('Failed to save the data to the storage')
+        console.log('Failed to save ' + key + ' to the storage');
+        console.log(e);
     }
 }
 

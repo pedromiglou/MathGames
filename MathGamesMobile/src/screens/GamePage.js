@@ -134,8 +134,11 @@ function GamePage({navigation}) {
 
           {aiMode==="P" && <View style={styles.buttonView}>
             <TouchableHighlight style={styles.button} onPress = {() => {
-                          saveData('starter', true);
-                          navigation.navigate("Game");
+                          readData('user_id').then(id=>{
+                            saveData('player1', id.slice(1,-1));
+                            saveData('player2', "AI")
+                            navigation.navigate("Game");
+                          })
                         }}>
               <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
                 <View style={styles.buttonView}>
@@ -144,8 +147,11 @@ function GamePage({navigation}) {
               </LinearGradient>
             </TouchableHighlight>
             <TouchableHighlight style={styles.button} onPress = {() => {
-                          saveData('starter', false);
-                          navigation.navigate("Game");
+                          readData('user_id').then(id=>{
+                            saveData('player1', "AI")
+                            saveData('player2', id.slice(1,-1));
+                            navigation.navigate("Game");
+                          })
                         }}>
               <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
                 <View style={styles.buttonView}>
@@ -157,6 +163,8 @@ function GamePage({navigation}) {
 
           <TouchableHighlight style={styles.button} onPress = {() => {
                         saveData("gameMode", "No mesmo Computador");
+                        saveData("player1", "player1");
+                        saveData("player2", "player2");
                         navigation.navigate("Game");
                       }}>
             <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
