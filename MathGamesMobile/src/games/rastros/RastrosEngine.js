@@ -31,8 +31,6 @@ function RastrosEngine(props) {
         this.engine.dispatch({type: "createSockets"});
         return () => {mounted=false}
       }, []);
-    
-    const gameLoop = new GameLoop();
 
     return (
         <View style={styles.container}>
@@ -41,7 +39,7 @@ function RastrosEngine(props) {
             <GameEngine
                 ref={(ref)=>{this.engine=ref}}
                 style={{width: boardSize, height: boardSize, flex: null}}
-                systems={[ gameLoop.loop ]}
+                systems={[ GameLoop ]}
                 entities={entities}
             />
             <Text style={styles.title}>Player1</Text>
