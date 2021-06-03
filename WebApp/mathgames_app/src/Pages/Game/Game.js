@@ -1,15 +1,22 @@
 import React, { useRef } from "react";
 import { GameOverModal } from '../../Components/GameOverModal';
 import { useHistory } from "react-router-dom";
-import "./Game.css"
+import "./Game.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import socket from "../../index";
 import { RastrosEngine } from "../../Components/Engines/RastrosEngine";
 import { GatosCaesEngine } from "../../Components/Engines/GatosCaesEngine";
-
+import { GameTimer } from '../../Components/GameTimer';
 
 function Game()  {
+    // Clear listeners to make sure there are no repeated events
+    socket.off("match_end");
+
     let current_match = useRef(null);
-    const childRef = useRef();
+    const gameOverModalRef = useRef();
+    const gameTimer1Ref = useRef();
+    const gameTimer2Ref = useRef();
+    const activeGameRef = useRef();
 
     let history = useHistory()
     var params = history.location.state
@@ -21,16 +28,34 @@ function Game()  {
     current_match.current = params.match;
 
     function processGameOver(msg) {
-        childRef.current.processGameOver(msg, game_id)
+        gameOverModalRef.current.processGameOver(msg);
+
+        gameTimer1Ref.current.pause();
+        gameTimer2Ref.current.pause();
+
+    }
+
+    function triggerTimerSwitch(playerThatMoved) {
+        if ( playerThatMoved===1 ) {
+            gameTimer1Ref.current.pause();
+            gameTimer2Ref.current.start();
+        } else if ( playerThatMoved===2 ) {
+            gameTimer2Ref.current.pause();
+            gameTimer1Ref.current.start();
+        }
+
     }
 
     return (
         <div className="container-fluid">
+            <button className="btn btn-info" onClick={() => {activeGameRef.current.getGame().scene.getScene("RastrosScene").finish_game({game_id: 0, match_id: current_match.current['match_id'], match_result: "ai_win", ai_difficulty: "easy"})}}>Get Game</button>
             <div className="row">
                 <div className="col-3 mt-4">
                     <div className="row h-75 d-flex justify-content-center">
                         <div className="col">
                             <div className="row d-flex justify-content-center">
+                                {/* <Countdown ref={timerApi2} date={Date.now() + 10000} renderer={countdownRenderer} intervalDelay={10} precision={3} autoStart={false}></Countdown> */}
+                                <GameTimer ref={gameTimer2Ref} totalGameTime={10000} player="player2" gameId={game_id} currentMatch={current_match.current} finishMatchMethod={processGameOver} autoStart={false}></GameTimer>
                                 <h5>Player 2</h5>
                             </div>
                             <div className="row d-flex justify-content-center">
@@ -41,10 +66,12 @@ function Game()  {
                     <div className="row h-25 d-flex justify-content-center">
                         <div className="col">
                             <div className="row d-flex justify-content-center">
-                            <h5>Player 1</h5>
+                                {/* <Countdown ref={timerApi1} date={Date.now() + 10000} renderer={countdownRenderer} intervalDelay={10} precision={3}></Countdown> */}
+                                <GameTimer ref={gameTimer1Ref} totalGameTime={10000} player="player1" gameId={game_id} currentMatch={current_match.current} finishMatchMethod={processGameOver} autoStart={true}></GameTimer>
+                                <h5>Player 1</h5>
                             </div>
-                            <div className="row d-flex justify-content-center">
-                            <h5 className="name-text">{current_match.current['player1']}</h5>
+                                <div className="row d-flex justify-content-center">
+                                <h5 className="name-text">{current_match.current['player1']}</h5>
                             </div>
                         </div>
                     </div>
@@ -52,7 +79,7 @@ function Game()  {
                 <div className="col-9">
                     {game_id===0 &&
                         <div id="my_div_game" className="container-canvas" style={{width: '1100px', height: '577px'}}>
-                            <RastrosEngine process_game_over={processGameOver} arg_game_mode={game_mode} arg_ai_diff={ai_diff} curr_match={current_match.current}></RastrosEngine>
+                            <RastrosEngine ref={activeGameRef} trigger_timer_switch={triggerTimerSwitch} process_game_over={processGameOver} arg_game_mode={game_mode} arg_ai_diff={ai_diff} curr_match={current_match.current}></RastrosEngine>
                         </div>
                     }
                     {game_id===1 &&
@@ -62,7 +89,7 @@ function Game()  {
                     }
                 </div>
             </div>
-            <GameOverModal ref={childRef}></GameOverModal>
+            <GameOverModal ref={gameOverModalRef}></GameOverModal>
         </div>
     );
 }

@@ -69,11 +69,3 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
-.smiley-happy:after {
-    content: "\1F604";
-}
-
-.smiley-sad:after {
-    content: "\1F61E";
-}

@@ -358,7 +358,9 @@ io.on("connection", (socket) => {
             current_games[match_id]['timers'][user_id].pause();
             current_games[match_id]['timers'][opponent].pause();
 
-            finish_game(match_id, "valid_move")
+            let endMode = current_games[match_id]['state']['extra'];
+
+            finish_game(match_id, endMode)
           
           }
         
@@ -692,8 +694,8 @@ async function finish_game(match_id, endMode) {
     }
   }
 
-  io.to(users_info[player1]).emit("match_end", {"match_id": match_id, "match_result": player1_final_result, "end_mode": endMode, "extra": current_games[match_id]['state']['extra']});
-  io.to(users_info[player2]).emit("match_end", {"match_id": match_id, "match_result": player2_final_result, "end_mode": endMode, "extra": current_games[match_id]['state']['extra']});
+  io.to(users_info[player1]).emit("match_end", {"game_id": game_id, "match_id": match_id, "match_result": player1_final_result, "end_mode": endMode, "extra": current_games[match_id]['state']['extra']});
+  io.to(users_info[player2]).emit("match_end", {"game_id": game_id, "match_id": match_id, "match_result": player2_final_result, "end_mode": endMode, "extra": current_games[match_id]['state']['extra']});
 
   delete current_games[match_id];
   delete active_friend_invites[match_id];
