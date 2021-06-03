@@ -12,7 +12,14 @@ import TournamentService from '../../Services/tournament.service';
 import {games_info} from '../../data/GamesInfo';
 
 
+import { Link } from 'react-router-dom';
+
+
+import AuthService from '../../Services/auth.service';
+
 function Tournaments() {
+    var current_user = AuthService.getCurrentUser();
+    
     const [tournaments, setTournaments] = useState([]);
     const [tournament_inputs, setTournamentInputs] = useState({name: "", capacity: "", private: null});
 
@@ -67,23 +74,16 @@ function Tournaments() {
 
     return (
         <>
-            {/* id:
-            name:
-            max_users:
-            private:
-            password:
-            game_id:
-            winner:
-            creator */}
-
+        
             <div className="list-tournaments shadow3D animation-down">
 				
 				<div className="filters-t">
 					
-						<div className="title-ind-t">
-							<i><RiIcons.RiTrophyFill/></i>
-							<h1>Torneios</h1>
-						</div>
+                    <div className="title-ind-t">
+                        <i><RiIcons.RiTrophyFill/></i>
+                        <h1>Torneios</h1>
+                    </div>
+                        
 					
 					<div className="row">
 						<div className="col-12 col-md-12 col-lg-12">
@@ -139,9 +139,19 @@ function Tournaments() {
 								
 								<button id="searchButton" className="btn btn-lg btn-search" type="button" onClick={filtrar}>Procurar <FaIcons.FaSearch/></button>
 							</form>
-							
+                            
 						</div>
 					</div>
+
+                    {current_user !== null && current_user["account_type"] === "T" &&
+                    <div id="gerir" className="shadow-white">
+                        <h1>Gerir Torneios</h1>
+                        <Link to="createTournament" className="btn btn-lg btn-search">
+                            Criar Novo Torneio <FaIcons.FaPlus/>
+                        </Link>
+                        <button id="myTButton" className="btn btn-lg btn-search" type="button">Ver os meus torneios <FaIcons.FaSearch/></button>
+                    </div>
+                    }
 				</div>
                 
                 <hr></hr>

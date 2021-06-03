@@ -172,7 +172,7 @@ function Login() {
                 
             <div className="forms-container-login">
                 <div id="signin_id" className={"signin"}>
-                    <form action="#" className="sign-in-form">
+                    <form action="#" className="sign-in-form login-form">
                         <h2 className="title">Iniciar Sessao</h2>
                         <div className="input-field">
                             <i className="fas fa-user"></i>
@@ -192,7 +192,7 @@ function Login() {
                 </div>
 
                 <div id="signup_id" className="signup">
-                    <form action="#" className="sign-in-form">
+                    <form action="#" className="sign-in-form login-form">
                         <h2 className="title">Registar</h2>
                         <div className="input-field">
                             <i className="fas fa-user"></i>
