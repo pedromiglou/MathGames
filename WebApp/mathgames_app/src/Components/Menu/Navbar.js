@@ -51,7 +51,9 @@ function Navbar() {
     const [color, setColor] = useState("#FFAF00");
     const [accessorie, setAccessorie] = useState("none");
     const [trouser, setTrouser] = useState("#808080");
-	const [linktogame2href, setLinkToGame2Href] = useState("/profile")
+
+	const [linktogamehref, setLinkToGameHref] = useState("")
+	const [linktogame2href, setLinkToGame2Href] = useState("")
 
 	const [modalConfirmShow, setConfirmModalShow] = useState(false);
 
@@ -79,7 +81,7 @@ function Navbar() {
               <p style={{color: "#0056b3", fontSize: 20}}>O convite já não está disponível. </p>
             </Modal.Body>
             <Modal.Footer>
-              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn save-btn">Ok</Button>
+              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Ok</Button>
             </Modal.Footer>
           </Modal>
         );
@@ -212,11 +214,13 @@ function Navbar() {
 	}
 
 	async function invite_for_game(invited_player) {
-		console.log(choosenGame);
 		localStorage.setItem("jogoporinvite", true)
 		localStorage.setItem("outrojogador", invited_player)
 		await UserService.send_notification_request(current_user.id, invited_player, "P");
-		document.getElementById("linktogame").click()
+		var elemento = document.getElementById("linktogame")
+		var url = "/gamePage?id=" + choosenGame
+		setLinkToGameHref(url)
+		elemento.click()
 		//window.location.href = "http://localhost:3000/gamePage?id=0"
 		
 	}
@@ -229,10 +233,12 @@ function Navbar() {
 		socket.once("match_link", (msg) => {
 			if (msg["match_id"]) {
 				let new_match_id = msg['match_id'];
+				let game_id = msg['game_id']
+
 				localStorage.setItem("entreijogoporinvite", true)
 				localStorage.setItem("outrojogador", id_outro_jogador)
 				var elemento = document.getElementById("linktogame2")
-				var url = "/gamePage?id=0&mid=" + new_match_id
+				var url = "/gamePage?id="+game_id+"&mid=" + new_match_id
 				setLinkToGame2Href(url)
 				elemento.click()
 				//window.location.href = "http://localhost:3000/gamePage?id=0&mid=" + new_match_id
@@ -373,6 +379,7 @@ function Navbar() {
 						</div>
 						<ExpireModal
 							show={modalConfirmShow}
+							onHide={() => {setConfirmModalShow(false);}}
 						/>
 						<div title="Amigos" className="col-xl-2 col-lg-2 col-md-2 col-sm-3 col-xs-3 d-flex align-items-center justify-content-center">
 							<DropdownButton	menuAlign="right" title={<FaIcons.FaUserFriends size={42}/>} id="friends-dropdown">
@@ -455,7 +462,7 @@ function Navbar() {
             }} /> */}
 
 			<div style={{display:"none", visibility:"hidden"}}>
-				<Link id="linktogame" to="/gamePage?id=0">
+				<Link id="linktogame" to={linktogamehref}>
 				
 				</Link>
 	

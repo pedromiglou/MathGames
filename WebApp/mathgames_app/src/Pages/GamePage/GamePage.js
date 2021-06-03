@@ -57,7 +57,7 @@ function GamePage() {
 		id_outro_jogador = localStorage.getItem("outrojogador")
 		localStorage.removeItem("outrojogador")
 
-		socket.emit("generate_invite", {"user_id": AuthService.getCurrentUserId(), "outro_id": id_outro_jogador})
+		socket.emit("generate_invite", {"user_id": AuthService.getCurrentUserId(), "outro_id": id_outro_jogador, "game_id": game_id})
 
 		socket.once("invite_link", (msg) => {
 			let new_match_id = msg['match_id'];
