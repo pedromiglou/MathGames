@@ -7,9 +7,16 @@ import { games_info } from '../../data/GamesInfo';
 import { Card } from "react-bootstrap";
 import {Link} from 'react-router-dom';
 
+import TournamentService from '../../Services/tournament.service';
+import AuthService from '../../Services/auth.service';
+
 function Create() {
-    var choosenGame = -1;
-    const [tournament_fields, setTournamentFields] = useState({nome: "", privado: "", password:"", capacidade: "", jogo_id: choosenGame});
+    const [choosenGame, setChoosenGame] = useState(-1);
+    //const [tournament_fields, setTournamentFields] = useState({nome: "", privado: "", password:"", capacidade: "", jogo_id: choosenGame});
+
+    const [error, setError] = useState(false);
+    const [gameError, setGameError] = useState(false);
+    const [sucesso, setSucesso] = useState("");
 
     function changeGame(game){
 		const cards =  []
@@ -40,9 +47,10 @@ function Create() {
 		} 
 	}
 
-    function submitFunction(event) {
+    async function submitFunction(event) {
 		event.preventDefault();
-		document.getElementById("confirmButton").click();
+		//document.getElementById("confirmButton").click();
+        await create_tournament();
 	}
 
     function showInputPassword(){
@@ -63,8 +71,50 @@ function Create() {
         p_label.classList.add("hidden");
     }
 
+    async function create_tournament() {
+        var name = document.getElementById('filter_username').value;
+        var max_users = document.getElementById('capacidade').value;
+        var privado;
+        var password;
+        if (document.getElementById("publico").checked) {
+            privado = false;
+            password = null;
+        } else if (document.getElementById("privado").checked) {
+            privado = true;
+            password = document.getElementById("password").value;
+        }
+        var game_id = choosenGame;
+        if (game_id === -1) {
+            setGameError(true);
+        } else {
+            setGameError(false);
+            var creator = AuthService.getCurrentUser().id;
+            var res = await TournamentService.createTournament(name, max_users, privado, password, game_id, creator);
+            if (res.error) {
+                setError(true);
+                setSucesso(false);
+            } else {
+                setError(false);
+                setSucesso(true);
+            }
+        }
+	}
+
     return (
         <>
+        {error === true 
+            ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+            Ocorreu um erro ao criar o torneio. Verifique os campos. 
+            </div> : null}
+        {sucesso === true 
+            ? <div className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+            Torneio criado com sucesso.
+            </div> : null}
+        {gameError === true 
+            ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+            Erro. Escolha o jogo do torneio.
+            </div> : null}
+
         <div className="all-create">
             <form onSubmit={submitFunction}>
                 <div className="CreateTSection shadow-white">
@@ -73,19 +123,19 @@ function Create() {
                         <div className="name-section-T">
                             <h2 className="label-form">Nome Torneio</h2>
                             
-                            <input className="form-control form-control-lg" id="filter_username" type="search" placeholder="Ex: Torneio dos Fantásticos"/>
+                            <input required className="form-control form-control-lg" id="filter_username" type="search" placeholder="Ex: Torneio dos Fantásticos"/>
                         </div>
                     <div className="pc-section">
                         <div className="privacy-section-T">
                             <h2 className="label-form">Privacidade</h2>
                             
                             <div className="inner-radio">
-                                <input onClick={() => hideInputPassword()} className="form-control form-control-lg radio-b" id="publico" type="radio" name="privacidade"/>
+                                <input required onClick={() => hideInputPassword()} className="form-control form-control-lg radio-b" id="publico" type="radio" name="privacidade"/>
                                 <label for="publico">Público</label>
                             </div>
                             
                             <div className="inner-radio">
-                                <input onClick={() => showInputPassword()} className="form-control form-control-lg radio-b" id="privado" type="radio" name="privacidade"/>
+                                <input onClick={() => showInputPassword()} onChange={() => {document.getElementById("password").required = document.getElementById("privado").checked ;}} className="form-control form-control-lg radio-b" id="privado" type="radio" name="privacidade"/>
                                 <label for="privado">Privado</label>
                             </div>
                             <label for="password" id="password_label" className="hidden">Password</label>
@@ -94,7 +144,7 @@ function Create() {
 
                         <div className="users-section">
                             <h2 className="label-form">Número Utilizadores</h2>
-                            <select className="form-control form-control-lg" name="capacidade" id="capacidade">
+                            <select required className="form-control form-control-lg" name="capacidade" id="capacidade">
                                 <option value="" disabled selected>Selecione uma opção</option>
                                 <option value="4">4</option>
                                 <option value="8">8</option>
@@ -112,7 +162,7 @@ function Create() {
                             
                             {Object.entries(games_info).map(([key, value]) => (		
                                 <div className={value["toBeDone"] ? "not-display" : "col-lg-6 centered set-padding"} key={key} id={key + "_Card"}>
-                                    <Card id={"card-" + value["title"]} className="game-card" onClick={() => {choosenGame = value["id"];changeGame(value["title"])}}>
+                                    <Card id={"card-" + value["title"]} className="game-card" onClick={() => {setChoosenGame(value["id"]);changeGame(value["title"])}}>
                                         <div>
                                         
                                             <img src={value["img"]}
@@ -133,7 +183,7 @@ function Create() {
                     
                     
                     <div className="row buttons">
-                        <button id="confirmButton" onClick={() => setTournamentFields()} className="btn btn-lg btn-success" type="button">Confirmar</button>
+                        <button id="confirmButton" className="btn btn-lg btn-success" type="submit">Confirmar</button>
                         <Link to="/tournaments" className="btn btn-lg btn-danger">
                             Cancelar
                         </Link>
@@ -144,8 +194,7 @@ function Create() {
             </form>
             
         </div>
-            
-            
+         
         </>
     );
 }
