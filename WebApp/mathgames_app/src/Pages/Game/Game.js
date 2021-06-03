@@ -7,6 +7,7 @@ import socket from "../../index";
 import { RastrosEngine } from "../../Components/Engines/RastrosEngine";
 import { GatosCaesEngine } from "../../Components/Engines/GatosCaesEngine";
 import { GameTimer } from '../../Components/GameTimer';
+import PlayerCard from "../../Components/PlayerCard/PlayerCard";
 
 function Game()  {
     // Clear listeners to make sure there are no repeated events
@@ -14,8 +15,8 @@ function Game()  {
 
     let current_match = useRef(null);
     const gameOverModalRef = useRef();
-    const gameTimer1Ref = useRef();
-    const gameTimer2Ref = useRef();
+    // const gameTimer1Ref = useRef();
+    // const gameTimer2Ref = useRef();
     const activeGameRef = useRef();
 
     let history = useHistory()
@@ -30,19 +31,19 @@ function Game()  {
     function processGameOver(msg) {
         gameOverModalRef.current.processGameOver(msg);
 
-        gameTimer1Ref.current.pause();
-        gameTimer2Ref.current.pause();
+        // gameTimer1Ref.current.pause();
+        // gameTimer2Ref.current.pause();
 
     }
 
     function triggerTimerSwitch(playerThatMoved) {
-        if ( playerThatMoved===1 ) {
-            gameTimer1Ref.current.pause();
-            gameTimer2Ref.current.start();
-        } else if ( playerThatMoved===2 ) {
-            gameTimer2Ref.current.pause();
-            gameTimer1Ref.current.start();
-        }
+        // if ( playerThatMoved===1 ) {
+        //     gameTimer1Ref.current.pause();
+        //     gameTimer2Ref.current.start();
+        // } else if ( playerThatMoved===2 ) {
+        //     gameTimer2Ref.current.pause();
+        //     gameTimer1Ref.current.start();
+        // }
 
     }
 
@@ -57,9 +58,9 @@ function Game()  {
                     <div className="row h-75 d-flex justify-content-center">
                         <div className="col">
                             <div className="row d-flex justify-content-center">
-                                {/* <Countdown ref={timerApi2} date={Date.now() + 10000} renderer={countdownRenderer} intervalDelay={10} precision={3} autoStart={false}></Countdown> */}
-                                {game_mode!=="ai" && <GameTimer ref={gameTimer2Ref} totalGameTime={10000} player="player2" gameId={game_id} gameMode={game_mode} currentMatch={current_match.current} finishMatchMethod={triggerFinishGame} autoStart={false}></GameTimer>}
+                                {/* {game_mode!=="ai" && <GameTimer ref={gameTimer2Ref} totalGameTime={10000} player="player2" gameId={game_id} gameMode={game_mode} currentMatch={current_match.current} finishMatchMethod={triggerFinishGame} autoStart={false}></GameTimer>} */}
                                 <h5>Player 2</h5>
+                                <PlayerCard></PlayerCard>
                             </div>
                             <div className="row d-flex justify-content-center">
                                 <h5 className="name-text">{current_match.current['player2']}</h5>
@@ -69,9 +70,9 @@ function Game()  {
                     <div className="row h-25 d-flex justify-content-center">
                         <div className="col">
                             <div className="row d-flex justify-content-center">
-                                {/* <Countdown ref={timerApi1} date={Date.now() + 10000} renderer={countdownRenderer} intervalDelay={10} precision={3}></Countdown> */}
-                                {game_mode!=="ai" && <GameTimer ref={gameTimer1Ref} totalGameTime={10000} player="player1" gameId={game_id} gameMode={game_mode} currentMatch={current_match.current} finishMatchMethod={triggerFinishGame} autoStart={true}></GameTimer>}
+                                {/* {game_mode!=="ai" && <GameTimer ref={gameTimer1Ref} totalGameTime={10000} player="player1" gameId={game_id} gameMode={game_mode} currentMatch={current_match.current} finishMatchMethod={triggerFinishGame} autoStart={true}></GameTimer>} */}
                                 <h5>Player 1</h5>
+                                <PlayerCard></PlayerCard>
                             </div>
                                 <div className="row d-flex justify-content-center">
                                 <h5 className="name-text">{current_match.current['player1']}</h5>

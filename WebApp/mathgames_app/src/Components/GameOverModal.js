@@ -26,11 +26,14 @@ export const GameOverModal = forwardRef((props, ref) => {
         
         if ( result === "offline_finish" ) {
             let winner = endGameMessage["winner"];
-            return {game_id: gameId, result: result, winner: winner, message: EndGameStatements["win"][gameId][endMode]}
+            if ( endMode === "timeout" || endMode === "invalid_move" )
+                return {game_id: gameId, result: result, winner: winner, message: EndGameStatements["win"][endMode]};
+            
+            return {game_id: gameId, result: result, winner: winner, message: EndGameStatements["win"][gameId][endMode]};
         }
         if ( result === "ai_win" || result === "ai_loss" ) {
             let aiDifficulty = endGameMessage["ai_difficulty"];
-            return {game_id: gameId, result: result, ai_difficulty: aiDifficulty}
+            return {game_id: gameId, result: result, ai_difficulty: aiDifficulty};
         }
 
         if ( endMode === "timeout" || endMode === "invalid_move" )
