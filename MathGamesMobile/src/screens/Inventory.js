@@ -94,7 +94,7 @@ class Inventory extends React.Component {
 		super(props);
 		this.state = {
 			uniqueValue: 1,
-			hatNameState: "WicthHat",
+			hatNameState: "MagicianHat",
 			shirtNameState: "Camouflage1",
 			accessorieNameState: "AviatorGlasses",
 			trouserNameState: "TrouserJeans",
@@ -302,13 +302,18 @@ const pickerSelectStyles = StyleSheet.create({
 	},
 	inputAndroid: {
 		fontSize: 16,
+		fontWeight: "bold",
+		paddingVertical: 12,
 		paddingHorizontal: 10,
-		paddingVertical: 8,
-		borderWidth: 0.5,
-		borderColor: "purple",
-		borderRadius: 8,
-		color: "black",
+		borderWidth: 2,
+		borderColor: "white",
+		borderRadius: 5,
+		color: "white",
 		paddingRight: 30, // to ensure the text is never behind the icon
+		//width: 50,
+		marginTop: 10,
+		marginRight: 20,
+		marginLeft: 20,
 	},
 });
 

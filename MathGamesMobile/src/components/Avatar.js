@@ -5,7 +5,6 @@ import {
 	AmbientLight,
 	BoxBufferGeometry,
 	Fog,
-	GridHelper,
 	Mesh,
 	MeshStandardMaterial,
 	PerspectiveCamera,
@@ -17,11 +16,8 @@ import {
 import ExpoTHREE from "expo-three";
 
 import { Asset } from "expo-asset";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
-
-import { Group, ObjectLoader } from "three";
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 
 import * as THREE from "three";
 
@@ -101,7 +97,7 @@ export default function Avatar(props) {
 						break;
 				}
 
-				switch (props.accessorieName) {
+				 switch (props.accessorieName) {
 					case "AviatorGlasses":
 						const AviatorGlasses =
 							await loadModelsAsync_AviatorGlasses();
@@ -119,9 +115,9 @@ export default function Avatar(props) {
 					
 					default:
 						/* const SteamPunkGlasses = await loadModelsAsync_SteamPunkGlasses();
-						scene.add(SteamPunkGlasses); */
+						scene.add(SteamPunkGlasses);  */
 						break;
-				}
+				} 
 
 				const avatarMaterial = new THREE.MeshLambertMaterial({
 					color: 0x00ff00,
@@ -221,7 +217,7 @@ export default function Avatar(props) {
 
 				if ( !shirtFlag ) {
 					// This texture will be immediately ready but it'll load asynchronously
-					const texture = new TextureLoader().load(shirtAsset.localUri);
+					const texture = new TextureLoader().load(shirtAsset.uri);
 
 					const bodyMaterial = new THREE.MeshLambertMaterial({
 						color: 0xffffff,
@@ -287,7 +283,7 @@ export default function Avatar(props) {
 
 
 				if (trouserFlag) {
-					const texture = new TextureLoader().load(trouserAsset.localUri);
+					const texture = new TextureLoader().load(trouserAsset.uri);
 
 					const trouserMaterial = new THREE.MeshLambertMaterial({
 						color: 0xffffff,
@@ -395,18 +391,22 @@ const loadModelsAsync_CowboyHat = async () => {
 
 const loadModelsAsync_MagicianHat = async () => {
 	/// Get all the files in the mesh
-	const model = {
-		"TopHat.obj": require("../../public/avatar_assets/hats/magicianHat/TopHat.obj"), //Working
-		"TopHat.mtl": require("../../public/avatar_assets/hats/magicianHat/TopHat.mtl"), //Working
-		//"aviatorGlasses.obj": require("../../public/avatar_assets/accessories/aviatorGlasses/aviatorGlasses.obj"),	//Working
+	console.log("ola")
+
+	 const model = {
+		"TopHat.obj": require("../../public/avatar_assets/hats/magicianHat/TopHat.obj"),
+		"TopHat.mtl": require("../../public/avatar_assets/hats/magicianHat/TopHat.mtl"),
 	};
 
-	/// Load model!
-	const mesh = await ExpoTHREE.loadAsync(
-		[model["TopHat.obj"], model["TopHat.mtl"]],
-		null,
-		(name) => model[name]
-	);
+	const asset = Asset.fromModule(model['TopHat.obj']);
+	await asset.downloadAsync();
+
+	const materialAsset = Asset.fromModule(model['TopHat.mtl']);
+	await materialAsset.downloadAsync();
+
+ 
+	const objectLoader = new OBJLoader();
+	const mesh = await objectLoader.loadAsync(asset.uri);
 
 	var material = new THREE.MeshBasicMaterial({
 		color: 0xffffff,
@@ -418,6 +418,7 @@ const loadModelsAsync_MagicianHat = async () => {
 	material.map = texture;
 	mesh.children[0].material = material;
 
+
 	/// Update size and position
 	ExpoTHREE.utils.scaleLongestSideToSize(mesh, 1.5);
 	ExpoTHREE.utils.alignMesh(mesh, { y: 1 });
@@ -427,8 +428,6 @@ const loadModelsAsync_MagicianHat = async () => {
 	/// Add the mesh to the scene
 	//const { x: xFromScreen, y: yFromScreen, z: zFromScreen } = camera.getWorldPosition()
 	mesh.position.set(0, 1.9, 1);
-	//scene.add(mesh);
-	//this.mesh = mesh;
 
 	return mesh;
 };
@@ -439,12 +438,12 @@ const loadModelsAsync_UshankaHat = async () => {
 		"UshankaHat.obj": require("../../public/avatar_assets/hats/ushankaHat/51cf9fb389244132a6b5bd6b5a33cd8c.obj"), //Working
 	};
 
+	const asset = Asset.fromModule(model['UshankaHat.obj']);
+	await asset.downloadAsync();
+
 	/// Load model!
-	const mesh = await ExpoTHREE.loadAsync(
-		[model["UshankaHat.obj"]],
-		null,
-		(name) => model[name]
-	);
+	const objectLoader = new OBJLoader();
+	const mesh = await objectLoader.loadAsync(asset.uri);
 
 	var material = new THREE.MeshBasicMaterial({
 		color: 0xffffff,
@@ -459,14 +458,8 @@ const loadModelsAsync_UshankaHat = async () => {
 	/// Update size and position
 	ExpoTHREE.utils.scaleLongestSideToSize(mesh, 1.7);
 	ExpoTHREE.utils.alignMesh(mesh, { y: 1 });
-	/// Smooth mesh
-	// ExpoTHREE.utils.computeMeshNormals(mesh)
 
-	/// Add the mesh to the scene
-	//const { x: xFromScreen, y: yFromScreen, z: zFromScreen } = camera.getWorldPosition()
 	mesh.position.set(0, 1.8, 0);
-	//scene.add(mesh);
-	//this.mesh = mesh;
 
 	return mesh;
 };
@@ -478,11 +471,12 @@ const loadModelsAsync_WitchHat = async () => {
 	};
 
 	/// Load model!
-	const mesh = await ExpoTHREE.loadAsync(
-		[model["WitchHat.obj"]],
-		null,
-		(name) => model[name]
-	);
+	const asset = Asset.fromModule(model['WitchHat.obj']);
+	await asset.downloadAsync();
+
+	/// Load model!
+	const objectLoader = new OBJLoader();
+	const mesh = await objectLoader.loadAsync(asset.uri);
 
 	var material = new THREE.MeshBasicMaterial({
 		color: 0xffffff,
@@ -520,24 +514,17 @@ const loadModelsAsync_AviatorGlasses = async () => {
 		"AviatorGlasses.obj": require("../../public/avatar_assets/accessories/aviatorGlasses/aviatorGlasses.obj"),
 	};
 
-	/// Load model!
-	const mesh = await ExpoTHREE.loadAsync(
-		[model["AviatorGlasses.obj"]],
-		null,
-		(name) => model[name]
-	);
+	const asset = Asset.fromModule(model['AviatorGlasses.obj']);
+	await asset.downloadAsync();
+
+	const objectLoader = new OBJLoader();
+	const mesh = await objectLoader.loadAsync(asset.uri);
 
 	/// Update size and position
 	ExpoTHREE.utils.scaleLongestSideToSize(mesh, 1.3);
 	ExpoTHREE.utils.alignMesh(mesh, { y: 1 });
-	/// Smooth mesh
-	// ExpoTHREE.utils.computeMeshNormals(mesh)
 
-	/// Add the mesh to the scene
-	//const { x: xFromScreen, y: yFromScreen, z: zFromScreen } = camera.getWorldPosition()
 	mesh.position.set(0, 1.6, 1);
-	//scene.add(mesh);
-	//this.mesh = mesh;
 
 	return mesh;
 };
@@ -548,12 +535,11 @@ const loadModelsAsync_SunGlasses = async () => {
 		"SunGlasses.obj": require("../../public/avatar_assets/accessories/sunGlasses/sunGlasses.obj"),
 	};
 
-	/// Load model!
-	const mesh = await ExpoTHREE.loadAsync(
-		[model["SunGlasses.obj"]],
-		null,
-		(name) => model[name]
-	);
+	const asset = Asset.fromModule(model['SunGlasses.obj']);
+	await asset.downloadAsync();
+
+	const objectLoader = new OBJLoader();
+	const mesh = await objectLoader.loadAsync(asset.uri);
 
 	var material = new THREE.MeshBasicMaterial({
 		color: 0xffffff,
@@ -570,15 +556,8 @@ const loadModelsAsync_SunGlasses = async () => {
 	/// Update size and position
 	ExpoTHREE.utils.scaleLongestSideToSize(mesh, 1.2);
 	ExpoTHREE.utils.alignMesh(mesh, { y: 1 });
-	/// Smooth mesh
-	// ExpoTHREE.utils.computeMeshNormals(mesh)
 
-	/// Add the mesh to the scene
-	//const { x: xFromScreen, y: yFromScreen, z: zFromScreen } = camera.getWorldPosition()
-	//mesh.scale.set(1, 1, 1);
 	mesh.position.set(0, 1.6, 1);
-	//scene.add(mesh);
-	//this.mesh = mesh;
 
 	return mesh;
 };
@@ -591,38 +570,30 @@ const loadModelsAsync_PixelGlasses = async () => {
 
 	};
 
-	/// Load model!
-	const mesh = await ExpoTHREE.loadAsync(
-		[model["PixelGlasses.obj"], model["PixelGlasses.mtl"]],
-		null,
-		(name) => model[name]
-	);
+	const asset = Asset.fromModule(model['PixelGlasses.obj']);
+	await asset.downloadAsync();
 
-	/* var material = new THREE.MeshBasicMaterial({
-		color: 0xffffff,
-	});
-	const texture = new TextureLoader().load(
-		require("../../public/avatar_assets/accessories/sunGlasses/textures/Glasses1_baseColor.jpg")
-	);
+	const materialAsset = Asset.fromModule(model['PixelGlasses.mtl']);
+	await materialAsset.downloadAsync();
 
-	material.map = texture;
-	mesh.children[0].material = material;
-	mesh.children[1].material = material;
-	mesh.children[2].material = material; */
+ 
+	const objectLoader = new OBJLoader();
+	const materialLoader = new MTLLoader();
+
+	materialLoader.setResourcePath('/assets/r2/');
+	const material = await materialLoader.loadAsync(materialAsset.uri);
+	material.preload();
+	objectLoader.setMaterials(material);
+
+	const mesh = await objectLoader.loadAsync(asset.uri);
+
 
 	/// Update size and position
 	ExpoTHREE.utils.scaleLongestSideToSize(mesh, 1);
 	ExpoTHREE.utils.alignMesh(mesh, { y: 1 });
-	/// Smooth mesh
-	// ExpoTHREE.utils.computeMeshNormals(mesh)
 
-	/// Add the mesh to the scene
-	//const { x: xFromScreen, y: yFromScreen, z: zFromScreen } = camera.getWorldPosition()
-	//mesh.scale.set(1, 1, 1);
 	mesh.rotateY(Math.PI)
 	mesh.position.set(0.5, 1.6, 1);
-	//scene.add(mesh);
-	//this.mesh = mesh;
 
 	return mesh;
 };
