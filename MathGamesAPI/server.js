@@ -470,17 +470,18 @@ function create_game(match_id, game_id, user1, user2, game_type) {
                                               current_games[match_id]['state']['isFinished'] = true;
                                               current_games[match_id]['state']['winner'] = "2";
                                               finish_game(match_id, "timeout");
-                                            }, 5000);
+                                            }, 15000);
   current_games[match_id]['timers'][user2] = new Timer(function() {
                                               console.log("It's done")
                                               current_games[match_id]['state']['isFinished'] = true;
                                               current_games[match_id]['state']['winner'] = "1";
                                               finish_game(match_id, "timeout");
-                                            }, 5000);
+                                            }, 15000);
 
   current_games[match_id]['timers'][user1].start();
 
   if (game_id === 0) {
+    current_games[match_id]['state']['current_player'] = user1
     current_games[match_id]['state']['blocked_pos'] = new Set()
     current_games[match_id]['state']['current_pos'] = 18
     current_games[match_id]['state']['valid_squares'] = new Set([10, 11, 12, 17, 19, 24, 25, 26])
@@ -543,6 +544,13 @@ function valid_move(user_id, match_id, new_pos) {
 }
 
 function validate_rastros_move(user_id, match_id, new_pos) {
+  if (current_games[match_id]['state']['current_player'] !== user_id) {
+    return false
+  }
+
+  //Alternar entre player1 e player2 no current_player
+  current_games[match_id]['state']['current_player'] = (current_games[match_id]['state']['current_player'] === current_games[match_id]['state']['player1'] ? current_games[match_id]['state']['player2'] : current_games[match_id]['state']['player1'])
+
   var current_pos = parseInt(new_pos)
 
   var valid_squares = current_games[match_id]['state']['valid_squares']
@@ -610,14 +618,10 @@ function validate_rastros_move(user_id, match_id, new_pos) {
 }
 
 function validate_gatoscaes_move(user_id, match_id, new_pos) {
-  console.log("Passei aqui1")
-  console.log(current_games[match_id]['state']['player_0_valid_squares'].has(new_pos))
-  console.log(user_id)
-  console.log(current_games[match_id]['state']['current_player'] === user_id)
+
   if ( !( (current_games[match_id]['state']['player_0_valid_squares'].has(new_pos) && current_games[match_id]['state']['current_player'] === user_id) 
       || (current_games[match_id]['state']['player_1_valid_squares'].has(new_pos) && current_games[match_id]['state']['current_player'] === user_id) ) )
       return false
-  console.log("Passei aqui")
 
   if (current_games[match_id]['state']['player_0_first_move'] && current_games[match_id]['state']['player1'] === user_id)
     current_games[match_id]['state']['player_0_first_move'] = false
