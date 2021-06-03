@@ -8,6 +8,7 @@ import "./GamePage.css";
 import { games_info } from "../../data/GamesInfo";
 import socket from "../../index"
 import AuthService from '../../Services/auth.service';
+import userService from '../../Services/user.service';
 
 import * as RiIcons from "react-icons/ri";
 import * as FaIcons from "react-icons/fa";
@@ -139,32 +140,7 @@ function GamePage() {
 			userRankValue = user.userRanksData.gatos_e_caes
 		}
 
-		if (userRankValue <= 25)
-			userRank = 0
-		else if (userRankValue <= 75)
-			userRank = 1
-		else if (userRankValue <= 175)
-			userRank = 2
-		else if (userRankValue <= 275)
-			userRank = 3
-		else if (userRankValue <= 400)
-			userRank = 4
-		else if (userRankValue <= 550)
-			userRank = 5
-		else if (userRankValue <= 700)
-			userRank = 6
-		else if (userRankValue <= 850)
-			userRank = 7
-		else if (userRankValue <= 1050)
-			userRank = 8
-		else if (userRankValue <= 1250)
-			userRank = 9
-		else if (userRankValue <= 1450)
-			userRank = 10
-		else if (userRankValue <= 1700)
-			userRank = 11
-		else
-			userRank = 12
+		userRank = userService.convert_user_rank(userRankValue);
 	}
 
 

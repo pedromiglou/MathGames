@@ -10,9 +10,25 @@
 
 .avatar {
     border-right: 2px solid black;
+    min-width: 120px;
 }
+
+.main-card-body {
+    min-width: 200px;
+}
+
+.card-username {
+    border-bottom: 1px dotted navy;
+}
+
 .level-text {
     font-size: 40px;
 }
 
+.name-text {
+    max-width: 15ch;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
