@@ -1,5 +1,5 @@
 export default class RastrosAI {
-	constructor(goal, otherGoal){
+	constructor(goal, otherGoal, dif){
 		this.AI_blocked_squares = [
 			[false,false,false,false,false,false,false],
 			[false,false,false,false,false,false,false],
@@ -11,14 +11,21 @@ export default class RastrosAI {
 		];
 		this.goal = goal;
 		this.otherGoal = otherGoal;
+		if (dif==="easy") {
+			this.dif = 0.2;
+		} else if (dif==="medium") {
+			this.dif = 0.5;
+		} else if (dif==="hard") {
+			this.dif===0.8;
+		}
 	}
 
 	//make a play using the AI
-	randomPlay(ai_diff, valid_squares, piece) {
+	randomPlay(valid_squares, piece) {
 		var piece_x = piece[0];
 		var piece_y = piece[1];
 
-		if (Math.random()>ai_diff) {         
+		if (Math.random()>this.dif) {         
 			if ((Math.pow(0-piece_y, 2) + Math.pow(6-piece_x,2)<=8) ||
 				(Math.pow(6-piece_y, 2) + Math.pow(0-piece_x,2)<=8)) {
 					chosen = valid_squares.reduce((accumulator, current) => {
