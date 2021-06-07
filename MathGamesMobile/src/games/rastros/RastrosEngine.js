@@ -9,10 +9,11 @@ import {GameLoop} from './GameLoop';
 import {readData} from './../../utilities/AsyncStorage';
 
 function RastrosEngine() {
-    const boardSize = Constants.GRID_SIZE * Constants.CELL_SIZE;
+    const boardHeight = (Constants.GRID_SIZE+2) * Constants.CELL_SIZE;
+    const boardWidth = Constants.GRID_SIZE * Constants.CELL_SIZE;
     var entities = [];
     for (let x = 0; x<7; x++) {
-        for (let y=0; y<7; y++) {
+        for (let y=1; y<8; y++) {
             entities.push([x, y]);
         }
     }
@@ -21,7 +22,7 @@ function RastrosEngine() {
         return {position: X, size: Constants.CELL_SIZE, valid: false, blocked:false, renderer: <Square></Square>};
     });
     entities[30].blocked = true;
-    entities.push({position: [4,2], size: Constants.CELL_SIZE, renderer: <Piece></Piece>});
+    entities.push({position: [4,3], size: Constants.CELL_SIZE, renderer: <Piece></Piece>});
 
     const [player1, setPlayer1] = useState("player1");
     const [player2, setPlayer2] = useState("player2");
@@ -63,16 +64,12 @@ function RastrosEngine() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Player2</Text>
-            <Text style={styles.title}>{player2}</Text>
             <GameEngine
                 ref={(ref)=>{this.engine=ref}}
-                style={{width: boardSize, height: boardSize, flex: null}}
+                style={{width: boardWidth, height: boardHeight, flex: null}}
                 systems={[ GameLoop ]}
                 entities={entities}
             />
-            <Text style={styles.title}>Player1</Text>
-            <Text style={styles.title}>{player1}</Text>
         </View>
     );
 }
@@ -81,15 +78,7 @@ export default RastrosEngine;
 
 const styles = StyleSheet.create({
     container: {
-        margin: 20,
-        flex: 1,
-        alignItems: 'center'
-    },
-    title: {
-        fontSize: 22,
-        margin: 5,
-        textAlign:'center',
-        color: "white",
-        fontFamily: 'BubblegumSans',
-    },
+        alignItems: 'center',
+        margin: Constants.CELL_SIZE/3
+    }
 });

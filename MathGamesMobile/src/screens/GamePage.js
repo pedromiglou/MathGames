@@ -163,8 +163,8 @@ function GamePage({navigation}) {
 
           <TouchableHighlight style={styles.button} onPress = {() => {
                         saveData("gameMode", "No mesmo Computador");
-                        saveData("player1", "player1");
-                        saveData("player2", "player2");
+                        saveData("player1", "Miglou");
+                        saveData("player2", "Rafiky");
                         navigation.navigate("Game");
                       }}>
             <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>

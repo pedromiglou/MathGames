@@ -5,6 +5,7 @@ import { Audio } from 'expo-av';
 import RastrosAI from './RastrosAI';
 import socket from './../../utilities/Socket';
 import GameModal from './Modal';
+import GameText from "./GameText";
 
 let ai = null;
 
@@ -19,6 +20,10 @@ async function playSound() {
 const GameLoop = (entities, {touches, events, dispatch }) => {
   //initialize game
   events.filter(e => e.type === "init").forEach(e => {
+    entities.push({position: [0, 0], size: Constants.CELL_SIZE, text: "Jogador 2: "+e.player2, renderer: <GameText></GameText>});
+    entities.push({position: [0, 8], size: Constants.CELL_SIZE, text: "Jogador 1: "+e.player1, renderer: <GameText></GameText>});
+    entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+e.player1, renderer: <GameText></GameText>});
+
     //configure socket
     socket.on("move_piece", new_pos=>{
       dispatch({type: "comp", pos: new_pos});
@@ -60,56 +65,86 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
   events.filter(e => e.type !== "data").forEach(e => {
     //eventos AI
     if (e.type === "ai") {
+      //remover o texto em baixo
+      var oldEntity = entities.pop();
+      
       entities.push({position: piece.position, size: Constants.CELL_SIZE, renderer: <Blocked></Blocked>});
       var valid_squares = [];
-      for (var y = piece.position[1]-1; y<=piece.position[1]+1; y++) {
+      for (var y = piece.position[1]-2; y<=piece.position[1]; y++) {
         for (var x = piece.position[0]-1; x<=piece.position[0]+1; x++) {
           if (y>=0 && y<=6 && x>=0 && x<=6 && !ai.AI_blocked_squares[y][x]) {
             valid_squares.push([y,x]);
           }
         }
       }
-      piece.position = ai.randomPlay(valid_squares, piece.position);
-      entities[piece.position[0]*7+piece.position[1]].blocked=true;
+      var newPos = ai.randomPlay(valid_squares, piece.position);
+      piece.position = [newPos[0], newPos[1]+1];
+      entities[piece.position[0]*7+piece.position[1]-1].blocked=true;
       myTurn=true;
       playSound();
 
+      //atualizar o texto em baixo
+      if (oldEntity.text.slice(11, oldEntity.text.length)===player1) {
+        entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+player2, renderer: <GameText></GameText>});
+      } else {
+        entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+player1, renderer: <GameText></GameText>});
+      }
+
     //jogada do adversario online
     } else if (e.type === "comp") {
+      //remover o texto em baixo
+      var oldEntity = entities.pop();
       let new_pos = e.pos;
       entities.push({position: piece.position, size: Constants.CELL_SIZE, renderer: <Blocked></Blocked>})
-      piece.position = [new_pos%7, Math.floor(new_pos/7)];
-      entities[piece.position[0]*7+piece.position[1]].blocked=true;
+      piece.position = [new_pos%7, Math.floor(new_pos/7)+1];
+      entities[piece.position[0]*7+piece.position[1]-1].blocked=true;
       myTurn=true;
       playSound();
+
+      //atualizar o texto em baixo
+      if (oldEntity.text.slice(11, oldEntity.text.length)===player1) {
+        entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+player2, renderer: <GameText></GameText>});
+      } else {
+        entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+player1, renderer: <GameText></GameText>});
+      }
     
     //jogada do jogador
     } else if (e.type === "move") {
+      
       let x = e.x;
       let y = e.y;
-      if (entities[x*7+y].valid && !entities[x*7+y].blocked) {
+      if (entities[x*7+y-1].valid && !entities[x*7+y-1].blocked) {
+        //remover o texto em baixo
+        var oldEntity = entities.pop();
+        
         //clean green squares
         for (var j = piece.position[1]-1; j<=piece.position[1]+1; j++) {
           for (var i = piece.position[0]-1; i<=piece.position[0]+1; i++) {
-            if (j>=0 && j<=6 && i>=0 && i<=6) {
-              entities[i*7+j].valid = false;
+            if (j>=1 && j<=7 && i>=0 && i<=6) {
+              entities[i*7+j-1].valid = false;
             }
           }
         }
 
         entities.push({position: piece.position, size: Constants.CELL_SIZE, renderer: <Blocked></Blocked>});
         piece.position = [x, y];
-        entities[x*7+y].blocked = true;
+        entities[x*7+y-1].blocked = true;
 
         if (gameMode==="Contra o Computador") {
-          ai.AI_blocked_squares[y][x] = true;
+          ai.AI_blocked_squares[y-1][x] = true;
           dispatch({type: "ai"});
           myTurn=false;
         } else if (gameMode==="Competitivo") {
-          socket.emit("move", y*7+x, user_id, match_id);
+          socket.emit("move", (y-1)*7+x, user_id, match_id);
           myTurn=false;
         }
         playSound();
+        //atualizar o texto em baixo
+        if (oldEntity.text.slice(11, oldEntity.text.length)===player1) {
+          entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+player2, renderer: <GameText></GameText>});
+        } else {
+          entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+player1, renderer: <GameText></GameText>});
+        }
       }
     }
   });
@@ -118,8 +153,8 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
     //calculate green squares
     for (var y = piece.position[1]-1; y<=piece.position[1]+1; y++) {
       for (var x = piece.position[0]-1; x<=piece.position[0]+1; x++) {
-        if (y>=0 && y<=6 && x>=0 && x<=6) {
-          entities[x*7+y].valid = true;
+        if (y>=1 && y<=7 && x>=0 && x<=6) {
+          entities[x*7+y-1].valid = true;
         }
       }
     }
@@ -132,11 +167,11 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
     });
   }
 
-  if (piece.position[0]===0 && piece.position[1]===6) {
+  if (piece.position[0]===0 && piece.position[1]===7) {
     //player 1 won
     gameEnded=true;
     //entities.push({visible:true, text: "Player 1 won", renderer: <GameModal></GameModal>});
-  } else if (piece.position[0]===6 && piece.position[1]===0) {
+  } else if (piece.position[0]===6 && piece.position[1]===1) {
     //player 2 won
     gameEnded=true;
     //entities.push({visible:true, text: "Player 2 won", renderer: <GameModal></GameModal>});
