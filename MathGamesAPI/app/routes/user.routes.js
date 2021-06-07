@@ -25,6 +25,9 @@ module.exports = app => {
     // Retrieve all Administrator Users with Admin permissions
     router.get("/admin", [authJwt.verifyToken, authJwt.isAdmin], users.findAllAdmin);
 
+    // Retrieve all Users
+    router.get("/username/:name", users.findByName);
+
     // Retrieve a single User with id
     router.get("/:id", users.findOne);
   

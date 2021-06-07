@@ -1,6 +1,26 @@
 const db = require("../models");
 const Tournament = db.tournament;
+const TournamentUsers = db.tournament_users;
+const Sequelize = db.Sequelize;
+const sequelize = db.sequelize;
 const Op = db.Sequelize.Op;
+
+const getPagination = (page, size) => {
+  const limit = size ? +size : 3;
+  const offset = page ? page * limit : 0;
+
+  return { limit, offset };
+};
+
+const getPagingData = (data, page, limit) => {
+  const { count: totalItems, rows: tournaments } = data;
+  const currentPage = page ? +page : 0;
+  const totalPages = Math.ceil(totalItems / limit);
+
+  return { totalItems, tournaments, totalPages, currentPage };
+};
+
+
 
 // Create and Save a new Tournament
 exports.create = (req, res) => {
@@ -12,6 +32,20 @@ exports.create = (req, res) => {
     return;
   }
 
+  if (parseInt(req.body.creator) !== parseInt(req.userId) ) {
+    res.status(401).send({
+      message: "Unauthorized!"
+    });
+    return;
+  }
+
+  if (req.body.private === true && req.body.password === "") {
+    res.status(400).send({
+      message: "Private tournaments must have a password."
+    });
+    return;
+  }
+
   // Create a Tournament
   const tournament = {
     name: req.body.name,
@@ -19,7 +53,6 @@ exports.create = (req, res) => {
     private: req.body.private,
     password: req.body.password,
     game_id: req.body.game_id,
-    winner: req.body.winner,
     creator: req.body.creator
   };
 
@@ -38,9 +71,60 @@ exports.create = (req, res) => {
 
 // Retrieve all Tournaments from the database.
 exports.findAll = (req, res) => {
-  Tournament.findAll()
+  const { page, size } = req.query;
+
+  const name = !req.query.name ? "": req.query.name+"%";
+
+  const capacity = !req.query.capacity ? "%": req.query.capacity;
+
+  var condition;
+  if (req.query.private === "true") {
+    condition = {private: true};
+  } else if (req.query.private === "false") {
+    condition = {private: false};
+  } else {
+    condition = {[Op.or]: [{private: true}, {private: false}] }
+  }
+  condition["name"] = { [Op.like]: `%${name}` };
+  condition["max_users"] = { [Op.like]: `${capacity}` }
+
+  const { limit, offset } = getPagination(page, size);
+  Tournament.findAndCountAll({
+                      where: condition,
+                      limit, 
+                      offset})
     .then(data => {
-      res.send(data);
+      if (data.length !== 0) {
+        var tournament_ids = data.rows.map(element => {
+          return element.id;
+        });
+      }
+
+      TournamentUsers.findAll({where: {tournament_id: tournament_ids}}).then( tournament_users => {
+        for (var tournament in data.rows) {
+          let contador = 0;
+          var indices = []
+          for (var user in tournament_users ) {
+            if (tournament_users[user].tournament_id === data.rows[tournament].id) {
+              contador++;
+              indices.push(user)
+            }
+          }
+          for (var x = indices.length - 1; x >= 0; x--) {
+            tournament_users.splice(indices[x], 1);
+          }
+          indices = [];
+          data.rows[tournament].dataValues["usersCount"] = contador;
+        }
+        const response = getPagingData(data, page, limit);
+        res.send(response);
+      }).catch(err => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while retrieving Tournaments Users."
+        });
+      })
+      
     })
     .catch(err => {
       res.status(500).send({
