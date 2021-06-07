@@ -18,10 +18,12 @@ export default class RastrosAI {
 		} else if (dif==="hard") {
 			this.dif===0.8;
 		}
+		this.turnCount=0;
 	}
 
 	//make a play using the AI
 	randomPlay(valid_squares, piece) {
+		this.turnCount++;
 		var piece_x = piece[0];
 		var piece_y = piece[1];
 
@@ -52,7 +54,7 @@ export default class RastrosAI {
 					}
 				}
 
-				var newScore = this.minimax(validSquares, element, 10, -100, 100, false);
+				var newScore = this.minimax(validSquares, element, 8 + Math.floor(this.turnCount/2), -100, 100, false);
 				if (newScore >= score) {
 					chosen = element;
 					score = newScore;

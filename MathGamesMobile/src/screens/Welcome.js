@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   image: {
-      flex: 0.75,
+      flex: 0.60,
       alignSelf: 'stretch',
       width: win.width,
       height: win.width*558/668-20,
