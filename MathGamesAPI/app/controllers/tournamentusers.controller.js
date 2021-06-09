@@ -67,6 +67,15 @@ exports.findUsersByTournament = (req, res) => {
 exports.findTournamentsByUser = (req, res) => {
   const id = req.params.id;
 
+  if (parseInt(id) !== parseInt(req.userId) ) {
+    if (req.account_type !== "A") {
+      res.status(401).send({
+        message: "Unauthorized!"
+      });
+      return;
+    }
+  }
+
   TournamentUser.findAll({where: {user_id: id} })
     .then(data => {
       res.send(data);
@@ -108,11 +117,16 @@ exports.update = (req, res) => {
 
 // Delete a TournamentUser with the specified id in the request
 exports.delete = (req, res) => {
-  console.log("im here")
   const tournament_id = req.params.tournamentId;
   const user_id = req.params.userId;
-  console.log(tournament_id)
-  console.log(user_id)
+
+  if (parseInt(user_id) !== parseInt(req.userId) ) {
+    res.status(401).send({
+      message: "Unauthorized!"
+    });
+    return;
+  }
+
   TournamentUser.destroy({
     where: { tournament_id: tournament_id, user_id: user_id }
   })
@@ -123,13 +137,13 @@ exports.delete = (req, res) => {
         });
       } else {
         res.status(500).send({
-          message: `Cannot delete TournamentUser with id=${id}. Maybe TournamentUser was not found!`
+          message: `Cannot delete TournamentUser with user id=${user_id} and tournament id=${tournament_id}. Maybe TournamentUser was not found!`
         });
       }
     })
     .catch(err => {
       res.status(500).send({
-        message: "Could not delete TournamentUser with id=" + id
+        message: "Could not delete TournamentUser with user id="+user_id+" and tournament id="+ tournament_id
       });
     });
 };

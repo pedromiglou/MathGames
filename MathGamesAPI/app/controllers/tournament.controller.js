@@ -53,7 +53,8 @@ exports.create = (req, res) => {
     private: req.body.private,
     password: req.body.password,
     game_id: req.body.game_id,
-    creator: req.body.creator
+    creator: req.body.creator,
+    status: "PREPARING"
   };
 
   // Save Tournament in the database
@@ -92,6 +93,20 @@ exports.entrarTorneio = (req, res) => {
 
   Tournament.findByPk(torneioId)
     .then(data => {
+      if (data.dataValues.status !== "PREPARING") {
+        res.status(500).send({
+          message: "The Tournament as started already."
+        });
+        return
+      }
+
+      if (parseInt(data.dataValues.creator) === parseInt(playerId)) {
+        res.status(500).send({
+          message: "The creator cannot join their tournaments."
+        });
+        return
+      }
+
       if (data.dataValues.private) {
         var password = req.body.password
 
@@ -231,50 +246,84 @@ exports.findOne = (req, res) => {
 exports.update = (req, res) => {
   const id = req.params.id;
 
-  Tournament.update(req.body, {
-    where: { id: id }
-  })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Tournament was updated successfully."
+  Tournament.findByPk(id).then(tournament => {
+    if (parseInt(tournament.dataValues.creator) !== parseInt(req.userId)) {
+      if (req.account_type !== "A") {
+        res.status(401).send({
+          message: "Unauthorized!"
         });
-      } else {
-        res.send({
-          message: `Cannot update Tournament with id=${id}. Maybe Tournament was not found or req.body is empty!`
-        });
+        return;
       }
+    }
+
+    Tournament.update(req.body, {
+      where: { id: id }
     })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error updating Tournament with id=" + id
+      .then(num => {
+        if (num == 1) {
+          res.send({
+            message: "Tournament was updated successfully."
+          });
+        } else {
+          res.send({
+            message: `Cannot update Tournament with id=${id}. Maybe Tournament was not found or req.body is empty!`
+          });
+        }
+      })
+      .catch(err => {
+        res.status(500).send({
+          message: "Error updating Tournament with id=" + id
+        });
       });
+
+  }).catch(err => {
+    res.status(500).send({
+      message: "Tournament not found."
     });
+    return;
+  })
 };
 
 // Delete a Tournament with the specified id in the request
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  Tournament.destroy({
-    where: { id: id }
-  })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Tournament was deleted successfully!"
+  Tournament.findByPk(id).then(tournament => {
+    if (parseInt(tournament.dataValues.creator) !== parseInt(req.userId)) {
+      if (req.account_type !== "A") {
+        res.status(401).send({
+          message: "Unauthorized!"
         });
-      } else {
-        res.send({
-          message: `Cannot delete Tournament with id=${id}. Maybe Tournament was not found!`
-        });
+        return;
       }
+    }
+
+    Tournament.destroy({
+      where: { id: id }
     })
-    .catch(err => {
-      res.status(500).send({
-        message: "Could not delete Tournament with id=" + id
+      .then(num => {
+        if (num == 1) {
+          res.send({
+            message: "Tournament was deleted successfully!"
+          });
+        } else {
+          res.send({
+            message: `Cannot delete Tournament with id=${id}. Maybe Tournament was not found!`
+          });
+        }
+      })
+      .catch(err => {
+        res.status(500).send({
+          message: "Could not delete Tournament with id=" + id
+        });
       });
+
+  }).catch(err => {
+    res.status(500).send({
+      message: "Tournament not found."
     });
+    return;
+  })
 };
 
 // Delete all Tournaments from the database.

@@ -13,13 +13,19 @@ class TournamentService {
         if (capacidade !== "")
             url = url + '&capacity='+capacidade
 
-        var res = await fetch(url);
+        var res = await fetch(url, {
+            method:'GET',
+            headers:{'Content-type':'application/json',
+            'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         return res.json();
     }
 
     async getTournamentsByUser(user_id) {
         var url = urlAPI + 'api/tournamentusers/findbyuser/'+ user_id;
-        var res = await fetch(url);
+        var res = await fetch(url, {
+            method:'GET',
+            headers:{'Content-type':'application/json',
+            'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         return res.json();
     }
 

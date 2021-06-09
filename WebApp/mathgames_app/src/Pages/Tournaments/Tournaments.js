@@ -194,7 +194,7 @@ function Tournaments() {
 
     useEffect(
 		retrieveTournaments
-	, [tournament_inputs, page_tournaments])
+	, [tournament_inputs, page_tournaments, current_user.id])
 
 
     return (
@@ -347,16 +347,24 @@ function Tournaments() {
                             
                             <div title="Entrar" className="col-lg-1 col-md-1 col-sm-1 join">
 
-                            {userTournaments.length === 0  &&
-                                 <FaIcons.FaArrowAltCircleRight onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setEntrarTorneioModal(true); }}/>
-                            }
+                            {tournament.status === "PREPARING" && 
+                                <>
+                                {tournament.creator !== current_user.id &&
+                                    <>
+                                    {userTournaments.length === 0  &&
+                                        <FaIcons.FaArrowAltCircleRight onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setEntrarTorneioModal(true); }}/>
+                                    }
 
-                            {userTournaments.length !== 0  && userTournaments.some(e => e.tournament_id === tournament.id) &&
-                                <FaIcons.FaArrowAltCircleLeft  onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setSairTorneioModal(true); }}/>
-                            }
+                                    {userTournaments.length !== 0  && userTournaments.some(e => e.tournament_id === tournament.id) &&
+                                        <FaIcons.FaArrowAltCircleLeft  onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setSairTorneioModal(true); }}/>
+                                    }
 
-                            {userTournaments.length !== 0  && !(userTournaments.some(e => e.tournament_id === tournament.id)) &&
-                                 <FaIcons.FaArrowAltCircleRight onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setEntrarTorneioModal(true); }}/>
+                                    {userTournaments.length !== 0  && !(userTournaments.some(e => e.tournament_id === tournament.id)) &&
+                                        <FaIcons.FaArrowAltCircleRight onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setEntrarTorneioModal(true); }}/>
+                                    }
+                                    </>
+                                }
+                                </>
                             }
                             </div>    
                         </li>
