@@ -46,8 +46,8 @@ exports.findAll = (req, res) => {
     });
 };
 
-// Find a single TournamentUser with an id
-exports.findByTournament = (req, res) => {
+// Find users that belong to a tournament
+exports.findUsersByTournament = (req, res) => {
   const id = req.params.id;
 
   TournamentUser.findAll({where: {tournament_id: id} })
@@ -60,6 +60,25 @@ exports.findByTournament = (req, res) => {
       });
     });
 };
+
+
+
+// Find a tournaments that a User is in
+exports.findTournamentsByUser = (req, res) => {
+  const id = req.params.id;
+
+  TournamentUser.findAll({where: {user_id: id} })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving TournamentUser with user id=" + id
+      });
+    });
+};
+
+
 
 // Update a TournamentUser by the id in the request
 exports.update = (req, res) => {
@@ -89,19 +108,21 @@ exports.update = (req, res) => {
 
 // Delete a TournamentUser with the specified id in the request
 exports.delete = (req, res) => {
+  console.log("im here")
   const tournament_id = req.params.tournamentId;
   const user_id = req.params.userId;
-
+  console.log(tournament_id)
+  console.log(user_id)
   TournamentUser.destroy({
     where: { tournament_id: tournament_id, user_id: user_id }
   })
     .then(num => {
       if (num == 1) {
-        res.send({
+        res.status(200).send({
           message: "TournamentUser was deleted successfully!"
         });
       } else {
-        res.send({
+        res.status(500).send({
           message: `Cannot delete TournamentUser with id=${id}. Maybe TournamentUser was not found!`
         });
       }

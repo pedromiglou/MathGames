@@ -17,6 +17,13 @@ class TournamentService {
         return res.json();
     }
 
+    async getTournamentsByUser(user_id) {
+        var url = urlAPI + 'api/tournamentusers/findbyuser/'+ user_id;
+        var res = await fetch(url);
+        return res.json();
+    }
+
+
     async createTournament(name, max_users, privado, password, game_id, creator) {
         var url = urlAPI + 'api/tournaments';
         var tournament = {
@@ -37,6 +44,44 @@ class TournamentService {
             return {error: true}
         }
         return {error: false};
+    }
+
+    async jointTournament(tournamentId, playerId, password) {
+        var url = urlAPI + 'api/tournaments/join';
+
+        const request = {
+            torneio: tournamentId,
+            player: playerId,
+            password: password
+        };
+
+        var res = await fetch(url, {
+            method:'POST',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
+            body: JSON.stringify(request)
+        });
+        if (res.status !== 200) {
+            return {error: true}
+        }
+        return {error: false};
+
+    }
+
+
+    async leaveTournament(tournamentId, playerId) {
+        var url = urlAPI + 'api/tournamentusers/'+tournamentId + '/' + playerId;
+
+        var res = await fetch(url, {
+            method:'DELETE',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
+        });
+        if (res.status !== 200) {
+            return {error: true}
+        }
+        return {error: false};
+
     }
 
 }

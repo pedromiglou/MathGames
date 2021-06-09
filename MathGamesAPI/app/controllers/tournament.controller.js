@@ -69,6 +69,84 @@ exports.create = (req, res) => {
     });
 };
 
+
+// Entrar num torneio
+exports.entrarTorneio = (req, res) => {
+  // Validate request
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!"
+    });
+    return;
+  }
+
+  if (parseInt(req.body.player) !== parseInt(req.userId) ) {
+    res.status(401).send({
+      message: "Unauthorized!"
+    });
+    return;
+  }
+
+  var torneioId = req.body.torneio
+  var playerId = req.body.player
+
+  Tournament.findByPk(torneioId)
+    .then(data => {
+      if (data.dataValues.private) {
+        var password = req.body.password
+
+        if (data.dataValues.password !== password) {
+          res.status(500).send({
+            message: "Wrong password!"
+          });
+          return
+        }      
+      }
+      TournamentUsers.findAll({where: {tournament_id: data.dataValues.id}}).then(tournament_users => {
+
+          if (tournament_users.length < data.dataValues.max_users) {
+            var tournamentuser = {
+              user_id: playerId,
+              tournament_id: torneioId,
+              eliminated: false
+            }
+            // Save TournamentUser in the database
+            TournamentUsers.create(tournamentuser)
+              .then(tournament_user => {
+                res.status(200).send({
+                  message: "User joined the tournament with sucess!"
+                });
+              })
+              .catch(err => {
+                res.status(500).send({
+                  message:
+                    err.message || "Some error occurred while creating the TournamentUser."
+                });
+              });
+          } else {
+            res.status(500).send({
+              message: "Tournament is full!"
+            });
+          }
+      }).catch(err => {
+        res.status(500).send({
+          message: "An error occurred on the server. Operation was not concluded!"
+        });
+      });
+
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "An error occurred on the server. Operation was not concluded!"
+      });
+    });
+};
+
+
+
+
+
+
 // Retrieve all Tournaments from the database.
 exports.findAll = (req, res) => {
   const { page, size } = req.query;

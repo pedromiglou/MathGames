@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import { useHistory } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Create.css";
@@ -16,7 +17,10 @@ function Create() {
 
     const [error, setError] = useState(false);
     const [gameError, setGameError] = useState(false);
+    const [fieldsError, setFieldsError] = useState(false);
     const [sucesso, setSucesso] = useState("");
+
+	let history = useHistory()
 
     function changeGame(game){
 		const cards =  []
@@ -47,12 +51,6 @@ function Create() {
 		} 
 	}
 
-    async function submitFunction(event) {
-		event.preventDefault();
-		//document.getElementById("confirmButton").click();
-        await create_tournament();
-	}
-
     function showInputPassword(){
         let p_input = document.getElementById("password");
         let p_label = document.getElementById("password_label");
@@ -71,9 +69,14 @@ function Create() {
         p_label.classList.add("hidden");
     }
 
-    async function create_tournament() {
+    async function createTournament() {
+        setGameError(false)
+        setError(false)
+        setFieldsError(false)
         var name = document.getElementById('filter_username').value;
+        if (name === "") {setFieldsError(true); return}
         var max_users = document.getElementById('capacidade').value;
+        if (max_users === "") {setFieldsError(true); return}
         var privado;
         var password;
         if (document.getElementById("publico").checked) {
@@ -82,6 +85,10 @@ function Create() {
         } else if (document.getElementById("privado").checked) {
             privado = true;
             password = document.getElementById("password").value;
+            if (password === "") {setFieldsError(true); return}
+        } else {
+            setFieldsError(true); 
+            return
         }
         var game_id = choosenGame;
         if (game_id === -1) {
@@ -96,6 +103,9 @@ function Create() {
             } else {
                 setError(false);
                 setSucesso(true);
+                history.push({
+                    pathname: "/tournaments"
+                })
             }
         }
 	}
@@ -114,9 +124,13 @@ function Create() {
             ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
             Erro. Escolha o jogo do torneio.
             </div> : null}
+        {fieldsError === true 
+            ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+            Deve preencher todos os campos para criar o torneio. 
+            </div> : null}
 
         <div className="all-create">
-            <form onSubmit={submitFunction}>
+            <form>
                 <div className="CreateTSection shadow-white">
                         
                         <h1>Criar Torneio</h1>
@@ -183,7 +197,7 @@ function Create() {
                     
                     
                     <div className="row buttons">
-                        <button id="confirmButton" className="btn btn-lg btn-success" type="submit">Confirmar</button>
+                        <button id="confirmButton" className="btn btn-lg btn-success" type="button" onClick={createTournament}>Confirmar</button>
                         <Link to="/tournaments" className="btn btn-lg btn-danger">
                             Cancelar
                         </Link>

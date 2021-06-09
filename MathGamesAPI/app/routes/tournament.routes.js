@@ -1,4 +1,4 @@
-const { authJwt, verifySignUp } = require("../middleware");
+const { authJwt} = require("../middleware");
 
 module.exports = app => {
     const tournaments = require("../controllers/tournament.controller.js");
@@ -6,6 +6,9 @@ module.exports = app => {
   
     // Create a new tournament
     router.post("/", [authJwt.verifyToken, authJwt.isTournamentManager], tournaments.create);
+
+    // Create a new tournament
+    router.post("/join", [authJwt.verifyToken], tournaments.entrarTorneio);
   
     // Retrieve all tournaments
     router.get("/", tournaments.findAll);
