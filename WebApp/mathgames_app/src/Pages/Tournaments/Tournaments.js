@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Tournaments.css";
@@ -19,6 +20,13 @@ import AuthService from '../../Services/auth.service';
 
 function Tournaments() {
     var current_user = AuthService.getCurrentUser();
+	let history = useHistory()
+
+    if (current_user === null || current_user === undefined) {
+        history.push({
+            pathname: "/",
+        })
+    }
     
     const [tournaments, setTournaments] = useState([]);
     const [tournament_inputs, setTournamentInputs] = useState({name: "", capacity: "", private: null});
