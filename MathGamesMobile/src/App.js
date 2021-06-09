@@ -83,10 +83,14 @@ function App() {
     BubblegumSans: require('./../public/fonts/BubblegumSans-Regular.ttf'),
   });
   const [login, setLogin] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [username, setUsername] = useState("");
 
   readData('user_id').then(id=>{
     if (id===null) {
       saveData('user_id', uuidv4());
+    } else {
+      setUsername(id.slice(1, -1));
     }
   })
 
@@ -106,24 +110,33 @@ function App() {
               source={require('./../public/images/logo-light.png')}
             />
           
-          <TouchableOpacity onPress = {() => setLogin(!login)}>
-            <Image
-                style={styles.loginImage}
-                resizeMode = {'contain'}
-                source={require('./../public/images/Login.png')}
-              />
-          </TouchableOpacity>
+          {loggedIn ?
+            <TouchableOpacity style={styles.loginImage} onPress={()=>navigationRef.current.dispatch(DrawerActions.jumpTo('Profile'))}>
+              <Text style={styles.username} numberOfLines={1}>{username}</Text>
+            </TouchableOpacity>
+            :
+            <TouchableOpacity onPress = {() => setLogin(!login)}>
+              <Image
+                  style={styles.loginImage}
+                  resizeMode = {'contain'}
+                  source={require('./../public/images/Login.png')}
+                />
+            </TouchableOpacity>
+          }
         </View>
-        {login ? <Login /> :
-        <Drawer.Navigator>
-          <Drawer.Screen name="Welcome" component={Welcome} />
-          <Drawer.Screen name="Games" component={Games} />
-          <Drawer.Screen name="Tournaments" component={Welcome} />
-          <Drawer.Screen name="Rankings" component={Welcome} />
-          <Drawer.Screen name="Settings" component={Welcome} />
-          <Drawer.Screen name="Profile" component={ProfileNav} />
-          <Drawer.Screen name="About us" component={Welcome} />
-        </Drawer.Navigator>}
+        {login ?
+          <Login return={setLogin} login={setLoggedIn}/>
+          :
+          <Drawer.Navigator>
+            <Drawer.Screen name="Welcome" component={Welcome} />
+            <Drawer.Screen name="Games" component={Games} />
+            {loggedIn && <Drawer.Screen name="Tournaments" component={Welcome} />}
+            <Drawer.Screen name="Rankings" component={Welcome} />
+            <Drawer.Screen name="Settings" component={Welcome} />
+            {loggedIn && <Drawer.Screen name="Profile" component={ProfileNav} />}
+            <Drawer.Screen name="About us" component={Welcome} />
+          </Drawer.Navigator>
+        }
       </NavigationContainer>
     );
   }
@@ -169,5 +182,11 @@ const styles = StyleSheet.create({
     fontFamily: 'BubblegumSans',
     fontSize: 30,
     textAlign: "center"
+  },
+  username: {
+    color: "#78c9ff",
+    fontFamily: 'BubblegumSans',
+    fontSize: 22,
+    textAlign: "center",
   },
 });
