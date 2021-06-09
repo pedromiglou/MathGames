@@ -1,9 +1,11 @@
 import React from 'react';
 import { Modal, StyleSheet, Text, TouchableHighlight, View, Dimensions } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const win = Dimensions.get('window');
 
 function GameModal(props) {
+  const navigation = useNavigation();
   return (
     <Modal animationType="slide" transparent={true} visible={props.visible}>
         <View style={styles.centeredView}>
@@ -14,7 +16,7 @@ function GameModal(props) {
                 <TouchableHighlight
                     style={ styles.button }
                     onPress={() => {
-                    
+                      navigation.goBack();
                     }}>
                     <Text style={styles.buttonText}>Voltar à página do jogo</Text>
                 </TouchableHighlight>

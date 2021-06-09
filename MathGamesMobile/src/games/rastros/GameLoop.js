@@ -58,7 +58,7 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
   });
 
   let piece = entities[49];
-  if (gameEnded) {
+  if (gameEnded||gameEnded===undefined) {
     return entities;
   }
 
@@ -116,7 +116,7 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
       if (entities[x*7+y-1].valid && !entities[x*7+y-1].blocked) {
         //remover o texto em baixo
         var oldEntity = entities.pop();
-        
+
         //clean green squares
         for (var j = piece.position[1]-1; j<=piece.position[1]+1; j++) {
           for (var i = piece.position[0]-1; i<=piece.position[0]+1; i++) {
@@ -170,11 +170,21 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
   if (piece.position[0]===0 && piece.position[1]===7) {
     //player 1 won
     gameEnded=true;
-    //entities.push({visible:true, text: "Player 1 won", renderer: <GameModal></GameModal>});
+    entities.push({visible:true, text: "Player 1 won", renderer: <GameModal></GameModal>});
   } else if (piece.position[0]===6 && piece.position[1]===1) {
     //player 2 won
     gameEnded=true;
-    //entities.push({visible:true, text: "Player 2 won", renderer: <GameModal></GameModal>});
+    entities.push({visible:true, text: "Player 2 won", renderer: <GameModal></GameModal>});
+  } else {
+    gameEnded=true;
+    for (var j = piece.position[1]-1; j<=piece.position[1]+1; j++) {
+      for (var i = piece.position[0]-1; i<=piece.position[0]+1; i++) {
+        if (j>=1 && j<=7 && i>=0 && i<=6) {
+          if (!entities[i*7+j-1].blocked) gameEnded=false;
+        }
+      }
+    }
+    if (gameEnded) entities.push({visible:true, text: "No more plays left", renderer: <GameModal></GameModal>});
   }
 
   if (player1===undefined) return entities;

@@ -10,8 +10,8 @@ import Login from './screens/Login';
 import Profile from './screens/Profile';
 import LastGames from './screens/LastGames';
 import Inventory from './screens/Inventory';
-import Loading from './components/Loading';
 
+import { Feather } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { useState, useEffect } from 'react';
 import { useFonts } from 'expo-font';
@@ -19,6 +19,13 @@ import {readData, saveData} from './utilities/AsyncStorage';
 import Game from './screens/Game';
 /* Uuid */
 import { v4 as uuidv4 } from 'uuid';
+
+import { DrawerActions } from '@react-navigation/native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+export const navigationRef = React.createRef();
+export function openDrawer(routeName, params) {
+  navigationRef.current.dispatch(DrawerActions.toggleDrawer());
+}
 
 const win = Dimensions.get('window');
 
@@ -82,25 +89,30 @@ function App() {
       saveData('user_id', uuidv4());
     }
   })
-  
+
   if (!loaded) {
     return <Text>Loading...</Text>;
   } else {
     return (
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <View style={styles.topView}>
+          <TouchableOpacity onPress = {() => login ? setLogin(false) : openDrawer()}>
+            <Feather name="menu" size={28} color="grey" style={styles.topIcon}/>
+          </TouchableOpacity>
+
           <Image
               style={styles.logoImage}
               resizeMode = {'contain'}
               source={require('./../public/images/logo-light.png')}
             />
-          <TouchableHighlight onPress = {() => setLogin(!login)}>
+          
+          <TouchableOpacity onPress = {() => setLogin(!login)}>
             <Image
                 style={styles.loginImage}
                 resizeMode = {'contain'}
                 source={require('./../public/images/Login.png')}
               />
-          </TouchableHighlight>
+          </TouchableOpacity>
         </View>
         {login ? <Login /> :
         <Drawer.Navigator>
@@ -123,6 +135,8 @@ export default App;
 const styles = StyleSheet.create({
   topView: {
     flex:0.13,
+    display: "flex",
+    justifyContent: "center",
     flexDirection: "row",
     alignItems: "center",
     borderBottomColor: 'black',
@@ -130,16 +144,18 @@ const styles = StyleSheet.create({
     margin:0,
     padding: 5
   },
+  topIcon: {
+    marginTop: Constants.statusBarHeight,
+    marginLeft: 10
+  },
   logoImage: {
-      flex: 1,
-      width: win.width/4*3,
-      height: win.width*360/1463/4*3,
+      width: win.width/5*3,
+      height: win.width*360/1463/5*3,
       marginTop: Constants.statusBarHeight
   },
   loginImage: {
-    flex: 1,
-    width: win.width/4,
-    height: win.width*360/1463/4,
+    width: win.width/3,
+    height: win.width*360/1463/3,
     marginTop: Constants.statusBarHeight
   },
   header: {

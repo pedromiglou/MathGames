@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useState, useEffect} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import { GameEngine } from 'react-native-game-engine';
 import Constants from './Constants';
 import Square from './Square';
@@ -9,7 +9,7 @@ import {GameLoop} from './GameLoop';
 import {readData} from './../../utilities/AsyncStorage';
 
 function RastrosEngine() {
-    const boardHeight = (Constants.GRID_SIZE+2) * Constants.CELL_SIZE;
+    const boardHeight = (Constants.GRID_SIZE+3) * Constants.CELL_SIZE;
     const boardWidth = Constants.GRID_SIZE * Constants.CELL_SIZE;
     var entities = [];
     for (let x = 0; x<7; x++) {
