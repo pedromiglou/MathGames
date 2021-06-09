@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   image: {
-      flex: 0.75,
+      flex: 0.60,
       alignSelf: 'stretch',
       width: win.width,
       height: win.width*558/668-20,
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     paddingTop:10,
     paddingBottom:10,
     backgroundColor:'#3a4e60',
-    borderRadius:30
+    borderRadius:30,
   },
   buttonText: {
     color:'#fff',

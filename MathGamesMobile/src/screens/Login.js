@@ -20,11 +20,12 @@ function Login() {
                     onChangeText={onChangeUsername}
                     value={username}
                     placeholder="Nome de Utilizador"
-                />
+                />                      
                 <TextInput
                     style={styles.input}
                     onChangeText={onChangePassword}
                     value={password}
+                    secureTextEntry={true}
                     placeholder="Palavra-chave"
                 />
                 <TouchableHighlight
