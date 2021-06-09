@@ -111,6 +111,7 @@
 	border-radius: 15px;
 	padding: 0.5em 1em;
 	margin: 0 0 1em 0;
+	
 }
 
 ul.list-group{
@@ -156,6 +157,13 @@ ul.list-group{
 	padding-top: 1em;
 }
 
+.form-center{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
 /* Gerir Torneios */
 
 #gerir{
@@ -169,3 +177,4 @@ ul.list-group{
 #gerir h1{
 	padding: 1em 0;
 }
+
