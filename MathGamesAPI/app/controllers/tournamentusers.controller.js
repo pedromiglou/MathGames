@@ -1,4 +1,5 @@
 const db = require("../models");
+const Tournament = db.tournament;
 const TournamentUser = db.tournament_users;
 const Op = db.Sequelize.Op;
 
@@ -127,25 +128,40 @@ exports.delete = (req, res) => {
     return;
   }
 
-  TournamentUser.destroy({
-    where: { tournament_id: tournament_id, user_id: user_id }
-  })
-    .then(num => {
-      if (num == 1) {
-        res.status(200).send({
-          message: "TournamentUser was deleted successfully!"
-        });
-      } else {
+  Tournament.findByPk(tournament_id)
+    .then(data => {
+      if (data.dataValues.status !== "PREPARING") {
         res.status(500).send({
-          message: `Cannot delete TournamentUser with user id=${user_id} and tournament id=${tournament_id}. Maybe TournamentUser was not found!`
+          message: "Can't leave tournament because tournament as already started."
         });
+        return
       }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Could not delete TournamentUser with user id="+user_id+" and tournament id="+ tournament_id
+
+      TournamentUser.destroy({
+        where: { tournament_id: tournament_id, user_id: user_id }
+      })
+      .then(num => {
+        if (num == 1) {
+          res.status(200).send({
+            message: "TournamentUser was deleted successfully!"
+          });
+        } else {
+          res.status(500).send({
+            message: `Cannot delete TournamentUser with user id=${user_id} and tournament id=${tournament_id}. Maybe TournamentUser was not found!`
+          });
+        }
+      })
+      .catch(err => {
+        res.status(500).send({
+          message: "Could not delete TournamentUser with user id="+user_id+" and tournament id="+ tournament_id
+        });
       });
+  })
+  .catch(err => {
+    res.status(500).send({
+      message: "An error occurred on the server. Operation was not concluded!"
     });
+  });
 };
 
 // Delete all TournamentUseres from the database.
