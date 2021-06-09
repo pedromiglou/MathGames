@@ -1,0 +1,45 @@
+.tournaments-container{
+    padding: 2em;
+}
+
+.tournamentPage_section{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.tournamentPage_section h1{
+    text-align: center;
+}
+
+.tournamentPage_section > *{
+    flex: 1 1 50%;
+}
+
+.tournament-game{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-info{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.game-info > *{
+    flex: 1 1 50%;
+}
+
+.brackets{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2em;
+}

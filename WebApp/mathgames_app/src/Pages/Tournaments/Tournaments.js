@@ -12,7 +12,7 @@ import TournamentService from '../../Services/tournament.service';
 import {games_info} from '../../data/GamesInfo';
 
 
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 
 import AuthService from '../../Services/auth.service';
@@ -20,6 +20,7 @@ import AuthService from '../../Services/auth.service';
 function Tournaments() {
     var current_user = AuthService.getCurrentUser();
     
+    const history = useHistory();
     const [tournaments, setTournaments] = useState([]);
     const [tournament_inputs, setTournamentInputs] = useState({name: "", capacity: "", private: null});
 
@@ -70,6 +71,10 @@ function Tournaments() {
     useEffect(
 		retrieveTournaments
 	, [tournament_inputs, page_tournaments])
+
+    function goToTournament(id){
+        history.push("/tournament", {tournament_id: id});
+    }
 
 
     return (
@@ -178,7 +183,7 @@ function Tournaments() {
                 
                    {tournaments.map(function(tournament, index) {
                        return(
-						 <li key={tournament.id} className="list-group-item-t d-flex justify-content-between align-items-center row">
+						 <li key={tournament.id} onClick={() => goToTournament(tournament.id)} className="list-group-item-t d-flex justify-content-between align-items-center row">
                             <div className="col-lg-3 col-md-3 col-sm-3">
                                 {tournament.name}
                             </div>    
