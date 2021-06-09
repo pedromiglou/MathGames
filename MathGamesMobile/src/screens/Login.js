@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { Text, StyleSheet, ScrollView, TextInput, TouchableHighlight, Dimensions } from 'react-native';
+import { Text, StyleSheet, ScrollView, TextInput, TouchableHighlight, Dimensions, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import AuthService from "./../services/auth.service";
 
 const win = Dimensions.get('window');
 
-function Login() {
+function Login(props) {
     const [login, setLogin] = React.useState(true);
     const [username, onChangeUsername] = React.useState("");
     const [email, onChangeEmail] = React.useState("");
@@ -28,7 +29,7 @@ function Login() {
                     secureTextEntry={true}
                     placeholder="Palavra-chave"
                 />
-                <TouchableHighlight
+                <TouchableHighlight onPress={()=>AuthService.login(username, password).then(res =>{if (res) props.login(true); props.return(false);})}
                     style={styles.button}>
                     <Text style={styles.buttonText}>Entrar</Text>
                 </TouchableHighlight>
@@ -59,9 +60,10 @@ function Login() {
                     style={styles.input}
                     onChangeText={onChangePassword}
                     value={password}
+                    secureTextEntry={true}
                     placeholder="Palavra-chave"
                 />
-                <TouchableHighlight
+                <TouchableHighlight onPress={()=>AuthService.register(username, email, password).then(res =>{if (res) setLogin(true)})}
                     style={styles.button}>
                     <Text style={styles.buttonText}>Criar Conta</Text>
                 </TouchableHighlight>
