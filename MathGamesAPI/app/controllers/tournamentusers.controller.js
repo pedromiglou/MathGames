@@ -1,4 +1,5 @@
 const db = require("../models");
+const Tournament = db.tournament;
 const TournamentUser = db.tournament_users;
 const Op = db.Sequelize.Op;
 
@@ -46,8 +47,8 @@ exports.findAll = (req, res) => {
     });
 };
 
-// Find a single TournamentUser with an id
-exports.findByTournament = (req, res) => {
+// Find users that belong to a tournament
+exports.findUsersByTournament = (req, res) => {
   const id = req.params.id;
 
   TournamentUser.findAll({where: {tournament_id: id} })
@@ -60,6 +61,34 @@ exports.findByTournament = (req, res) => {
       });
     });
 };
+
+
+
+// Find a tournaments that a User is in
+exports.findTournamentsByUser = (req, res) => {
+  const id = req.params.id;
+
+  if (parseInt(id) !== parseInt(req.userId) ) {
+    if (req.account_type !== "A") {
+      res.status(401).send({
+        message: "Unauthorized!"
+      });
+      return;
+    }
+  }
+
+  TournamentUser.findAll({where: {user_id: id} })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving TournamentUser with user id=" + id
+      });
+    });
+};
+
+
 
 // Update a TournamentUser by the id in the request
 exports.update = (req, res) => {
@@ -92,25 +121,47 @@ exports.delete = (req, res) => {
   const tournament_id = req.params.tournamentId;
   const user_id = req.params.userId;
 
-  TournamentUser.destroy({
-    where: { tournament_id: tournament_id, user_id: user_id }
-  })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "TournamentUser was deleted successfully!"
-        });
-      } else {
-        res.send({
-          message: `Cannot delete TournamentUser with id=${id}. Maybe TournamentUser was not found!`
-        });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Could not delete TournamentUser with id=" + id
-      });
+  if (parseInt(user_id) !== parseInt(req.userId) ) {
+    res.status(401).send({
+      message: "Unauthorized!"
     });
+    return;
+  }
+
+  Tournament.findByPk(tournament_id)
+    .then(data => {
+      if (data.dataValues.status !== "PREPARING") {
+        res.status(500).send({
+          message: "Can't leave tournament because tournament as already started."
+        });
+        return
+      }
+
+      TournamentUser.destroy({
+        where: { tournament_id: tournament_id, user_id: user_id }
+      })
+      .then(num => {
+        if (num == 1) {
+          res.status(200).send({
+            message: "TournamentUser was deleted successfully!"
+          });
+        } else {
+          res.status(500).send({
+            message: `Cannot delete TournamentUser with user id=${user_id} and tournament id=${tournament_id}. Maybe TournamentUser was not found!`
+          });
+        }
+      })
+      .catch(err => {
+        res.status(500).send({
+          message: "Could not delete TournamentUser with user id="+user_id+" and tournament id="+ tournament_id
+        });
+      });
+  })
+  .catch(err => {
+    res.status(500).send({
+      message: "An error occurred on the server. Operation was not concluded!"
+    });
+  });
 };
 
 // Delete all TournamentUseres from the database.

@@ -9,9 +9,6 @@ Install the needed dependencies.
 ## npm start
 Run the node server in development mode.
 
-## npm run-script start-prod
-Run the node server in production mode.
-
 # Known Problems
 
 Se der erro "Access denied for user 'root'@'172.17.0.1' (using password: YES)"
