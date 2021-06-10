@@ -3,6 +3,7 @@ import React , {useEffect , useState} from "react";
 import {useLocation, useHistory} from 'react-router-dom';
 
 import * as IoIcons from 'react-icons/io5';
+import * as MdIcons from 'react-icons/md';
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./TournamentPage.css";
@@ -144,8 +145,19 @@ function TournamentPage() {
         );
       }
 
+    function make_fields_editable(){
+        var tournament_details = document.getElementById("tournament-details");
+        var buttons = document.getElementById("action-buttons");
+        tournament_details.readOnly = false;
+        buttons.style.display = "flex";
+    }
 
-
+    function make_fields_not_editable(){
+        var tournament_details = document.getElementById("tournament-details");
+        var buttons = document.getElementById("action-buttons");
+        tournament_details.readOnly = true;
+        buttons.style.display = "none";
+    }
 
     if (!readyToDisplay) {
         return(
@@ -249,11 +261,17 @@ function TournamentPage() {
 
                     <div className="brackets_section">
                         <div className="tournament-rules">
-                            <h1>Descrição do Torneio:</h1>
-                            <h3>Bla</h3>
-                            <h3>Bla</h3>
-                            <h3>Bla</h3>
-                            <h3>Bla</h3>
+                            <div className="details-edit">
+                                <h1>Descrição do Torneio</h1>
+                                <MdIcons.MdModeEdit size={35} id="edit-icon" className="edit-icon" title="edit" onClick={() => make_fields_editable()}/>
+                            </div>
+                            <div className="description-t" >
+                                <input type="text" className="description-input" id="tournament-details" readOnly placeholder="blabla"></input>
+                            </div>
+                            <div className="action-buttons" id="action-buttons" style={{display:"none"}}>
+                                <button onClick={() => make_fields_not_editable()}>confirmar</button>
+                                <button onClick={() => make_fields_not_editable()}>Cancelar</button>
+                            </div>
                         </div>
                         <h1>Jogo</h1>
                         
