@@ -418,7 +418,7 @@ function GamePage() {
 									aria-valuemax="100"
 									style={{ width: game_info["dificulty"]+"%" }}
 								>
-									<span>fácil</span>
+									<span>{game_info["dificulty_label"]}</span>
 								</div>
 							</div>
 							<h4>Idade: +{ game_info["age"] } </h4>

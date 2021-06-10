@@ -1,6 +1,7 @@
 const db = require("../models");
 const Tournament = db.tournament;
 const TournamentUser = db.tournament_users;
+const User = db.user;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new TournamentUser
@@ -52,8 +53,21 @@ exports.findUsersByTournament = (req, res) => {
   const id = req.params.id;
 
   TournamentUser.findAll({where: {tournament_id: id} })
-    .then(data => {
-      res.send(data);
+    .then(async (data) =>  {
+      var finalArray = []
+      for (let player of data) {
+        await User.findByPk(player.dataValues.user_id).then(user => {
+
+          const { avatar_accessorie, avatar_color, avatar_hat, avatar_shirt, avatar_trouser, banned, createdAt, email, password, updatedAt, ...newUser } = user.dataValues;
+
+          finalArray.push(newUser)
+        }).catch(err => {
+          res.status(500).send({
+            message: "Error retrieving TournamentUser with tournament id=" + id
+          });
+        })
+      }
+      res.send(finalArray);
     })
     .catch(err => {
       res.status(500).send({
@@ -120,16 +134,18 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const tournament_id = req.params.tournamentId;
   const user_id = req.params.userId;
-
-  if (parseInt(user_id) !== parseInt(req.userId) ) {
-    res.status(401).send({
-      message: "Unauthorized!"
-    });
-    return;
-  }
-
   Tournament.findByPk(tournament_id)
     .then(data => {
+
+
+      if ( (parseInt(user_id) !== parseInt(req.userId)) && (req.account_type !== "A") && (parseInt(req.userId) !== data.dataValues.creator)) {
+        res.status(401).send({
+          message: "Unauthorized!"
+        });
+        return;
+      }
+    
+      console.log("passei aut")
       if (data.dataValues.status !== "PREPARING") {
         res.status(500).send({
           message: "Can't leave tournament because tournament as already started."

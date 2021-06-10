@@ -74,7 +74,7 @@ function App() {
                             <Route exact path='/about' component={withRouter(AboutUs)}/>
                             <Route exact path='/tournaments' component={withRouter(Tournaments)}/>
                             <Route exact path='/createTournament' component={withRouter(CreateTournament)}/>
-                            <Route exact path='/tournament' component={withRouter(TournamentPage)}/>
+                            <Route path='/tournament' component={withRouter(TournamentPage)}/>
                             <Route exact path='/bracket' component={withRouter(AboutUs)}/>
                         </Switch>
                     </div>

@@ -233,7 +233,8 @@ exports.findOne = (req, res) => {
 
   Tournament.findByPk(id)
     .then(data => {
-      res.send(data);
+      const { password, ...tournamentWithoutPassword } = data.dataValues;
+      res.send(tournamentWithoutPassword);
     })
     .catch(err => {
       res.status(500).send({

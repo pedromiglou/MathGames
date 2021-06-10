@@ -2,6 +2,16 @@ import {urlAPI} from "./../data/data";
 
 class TournamentService {
 
+    async getTournamentById(tournament_id) {
+        var url = urlAPI + 'api/tournaments/' + tournament_id;
+        var res = await fetch(url, {
+            method:'GET',
+            headers:{'Content-type':'application/json',
+            'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+
+
     async getTournamentsWithFilters(nome, capacidade, privado, page, pageSize) {
         var url = urlAPI + 'api/tournaments?page=' + page + '&size=' + pageSize;
         if (privado !== null && privado !== undefined)
@@ -22,6 +32,15 @@ class TournamentService {
 
     async getTournamentsByUser(user_id) {
         var url = urlAPI + 'api/tournamentusers/findbyuser/'+ user_id;
+        var res = await fetch(url, {
+            method:'GET',
+            headers:{'Content-type':'application/json',
+            'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+
+    async getPlayersByTournament(tournament_id) {
+        var url = urlAPI + 'api/tournamentusers/findbytournament/'+ tournament_id;
         var res = await fetch(url, {
             method:'GET',
             headers:{'Content-type':'application/json',

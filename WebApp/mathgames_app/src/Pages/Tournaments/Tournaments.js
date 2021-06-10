@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useHistory, Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+//import { Link } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Tournaments.css";
@@ -178,7 +179,8 @@ function Tournaments() {
 
         async function fetchApiUserTournaments() {
             var response = await TournamentService.getTournamentsByUser(current_user.id)
-            setUserTournaments(response)
+            if (!response["message"]) 
+                setUserTournaments(response)
         }
 
         async function fetchApiTournaments() {
@@ -197,7 +199,9 @@ function Tournaments() {
 	, [tournament_inputs, page_tournaments, current_user.id])
 
     function goToTournament(id){
-        history.push("/tournament", {tournament_id: id});
+        history.push({
+            pathname: "/tournament?id="+id, 
+        })
     }
 
 
@@ -285,9 +289,9 @@ function Tournaments() {
                     {current_user !== null && current_user["account_type"] === "T" &&
                     <div id="gerir" className="shadow-white">
                         <h1>Gerir Torneios</h1>
-                        <Link to="createTournament" className="btn btn-lg btn-search">
+                        {/*<Link to="createTournament" className="btn btn-lg btn-search">
                             Criar Novo Torneio <FaIcons.FaPlus/>
-                        </Link>
+                        </Link>*/}
                         <button id="myTButton" className="btn btn-lg btn-search" type="button">Ver os meus torneios <FaIcons.FaSearch/></button>
                     </div>
                     }
@@ -325,25 +329,25 @@ function Tournaments() {
                 
                     tournaments.map(function(tournament, index) {
                        return(
-						 <li key={tournament.id} onClick={() => goToTournament(tournament.id)} className="list-group-item-t d-flex justify-content-between align-items-center row">
-                            <div className="col-lg-3 col-md-3 col-sm-3">
+						 <li key={tournament.id} className="list-group-item-t d-flex justify-content-between align-items-center row">
+                            <div className="col-lg-3 col-md-3 col-sm-3" onClick={() => goToTournament(tournament.id)}>
                                 {tournament.name}
                             </div>    
-                            <div className="col-lg-3 col-md-3 col-sm-3">
+                            <div className="col-lg-3 col-md-3 col-sm-3" onClick={() => goToTournament(tournament.id)}>
                                 {games_info[tournament.game_id].title}
                             </div>
     
-                            <div className="col-lg-3 col-md-3 col-sm-3">
+                            <div className="col-lg-3 col-md-3 col-sm-3" onClick={() => goToTournament(tournament.id)}>
                                 {tournament.usersCount}/{tournament.max_users}
                             </div>
 
                             {tournament.private 
                             ?
-                             <div title="Privado" className="col-lg-2 col-md-2 col-sm-2">
+                             <div title="Privado" className="col-lg-2 col-md-2 col-sm-2" onClick={() => goToTournament(tournament.id)}>
                              <BsIcons.BsFillLockFill/>
                             </div>
                             : 
-                            <div title="Público" className="col-lg-2 col-md-2 col-sm-2">
+                            <div title="Público" className="col-lg-2 col-md-2 col-sm-2" onClick={() => goToTournament(tournament.id)}>
                             <BsIcons.BsFillUnlockFill/>
                             </div>
                             }
