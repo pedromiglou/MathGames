@@ -11,6 +11,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING(70),
         allowNull: false
       },
+      description: {
+        type: Sequelize.STRING(500),
+        allowNull: true
+      },
       max_users: {
         type: Sequelize.INTEGER,
         allowNull: false,

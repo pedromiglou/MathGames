@@ -11,9 +11,25 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
         primaryKey: true
       },
-      phase: {
+      roundNo: {
         type: Sequelize.INTEGER,
         allowNull: false
+      },
+      bye: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false
+      },
+      lastGame1: {
+        type: Sequelize.INTEGER,
+        allowNull: true
+      },
+      lastGame2: {
+        type: Sequelize.INTEGER,
+        allowNull: true
+      },
+      nextGame: {
+        type: Sequelize.INTEGER,
+        allowNull: true
       }
     }, {
       timestamps: false
