@@ -1,5 +1,6 @@
 import './Statistics.css';
 import { React, useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 
 import StatisticsGames from './StatisticsGames';
 import StatisticsTournaments from './StatisticsTournaments';
@@ -7,10 +8,20 @@ import StatisticsPlayers from './StatisticsPlayers';
 // import { FaThumbsDown } from 'react-icons/fa';
 // import { RGBAFormat, RGBA_ASTC_4x4_Format } from 'three';
 
+import AuthService from '../../../Services/auth.service';
 
 function Statistics() {
     
+  
     const [filterOption, setFilterOption] = useState("Jogos");
+    var current_user = AuthService.getCurrentUser();
+    let history = useHistory()
+
+    if (current_user === null || current_user === undefined || current_user.account_type !== "A") {
+        history.push({
+            pathname: "/",
+        })
+    }
     
     function changeToJogos() {
 		setFilterOption("Jogos");

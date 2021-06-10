@@ -15,7 +15,8 @@ exports.create = (req, res) => {
   // Create a TournamentMatch
   const tournamentMatch = {
     match_id: req.body.match_id,
-    tournament_id: req.body.tournament_id
+    tournament_id: req.body.tournament_id,
+    phase: req.body.phase
   };
 
   // Save TournamentMatch in the database

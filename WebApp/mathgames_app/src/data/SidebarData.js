@@ -6,7 +6,7 @@ import * as RiIcons from 'react-icons/ri';
 import * as GiIcons from 'react-icons/gi';
 import * as ImIcons from 'react-icons/im';
 
-export const sidebarData_group1 = [
+export const sidebarData_group_nouser = [
     {
         id: 0,
         title: 'Jogos',
@@ -16,16 +16,34 @@ export const sidebarData_group1 = [
     },
     {
         id: 1,
-        title: 'Torneio',
-        path: '/tournaments',
-        icon: <RiIcons.RiTrophyFill/>,
+        title: 'Classificações',
+        path: '/podium',
+        icon: <GiIcons.GiPodium/>,
+        cName: 'nav-text',
+    }
+]
+
+
+export const sidebarData_group_user = [
+    {
+        id: 0,
+        title: 'Jogos',
+        path: '/gamesDashboard',
+        icon: <CgIcons.CgGames/>,
+        cName: 'nav-text',
+    },
+    {
+        id: 1,
+        title: 'Classificações',
+        path: '/podium',
+        icon: <GiIcons.GiPodium/>,
         cName: 'nav-text',
     },
     {
         id: 2,
-        title: 'Classificações',
-        path: '/podium',
-        icon: <GiIcons.GiPodium/>,
+        title: 'Torneio',
+        path: '/tournaments',
+        icon: <RiIcons.RiTrophyFill/>,
         cName: 'nav-text',
     }
 ]

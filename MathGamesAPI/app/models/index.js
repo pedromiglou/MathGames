@@ -53,6 +53,7 @@ db.tournament_matches.belongsTo(db.game_match, {through: "game_match", foreignKe
 db.tournament_matches.belongsTo(db.tournament, {through: "tournament", foreignKey: 'tournament_id', as: 'tournament'})
 db.tournament_users.belongsTo(db.user, {through: "users", foreignKey: 'user_id', as: 'user'})
 db.tournament_users.belongsTo(db.tournament, {through: "tournament", foreignKey: 'tournament_id', as: 'tournament'})
+db.tournament.hasMany(db.tournament_users, {foreignKey: 'tournament_id'})
 db.user_ranks.belongsTo(db.user, {through: "users", foreignKey: 'user_id', as: 'user'})
 db.notifications.belongsTo(db.user, {through: "users", foreignKey: 'sender', as: 'sender_user'})
 db.notifications.belongsTo(db.user, {through: "users", foreignKey: 'receiver', as: 'receiver_user'})

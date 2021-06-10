@@ -21,7 +21,6 @@ import { addMatch } from '../../store/modules/matches/actions';
 
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
 function GamePage() {
-
 	var user = AuthService.getCurrentUser();
 	const dispatch = useDispatch();
 
@@ -56,11 +55,10 @@ function GamePage() {
 	var id_outro_jogador;
 	if (localStorage.getItem("jogoporinvite")) {
 		localStorage.removeItem("jogoporinvite")
-
 		id_outro_jogador = localStorage.getItem("outrojogador")
 		localStorage.removeItem("outrojogador")
 
-		socket.emit("generate_invite", {"user_id": AuthService.getCurrentUserId(), "outro_id": id_outro_jogador})
+		socket.emit("generate_invite", {"user_id": AuthService.getCurrentUserId(), "outro_id": id_outro_jogador, "game_id": game_id})
 
 		socket.once("invite_link", (msg) => {
 			let new_match_id = msg['match_id'];

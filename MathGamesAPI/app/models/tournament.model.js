@@ -8,7 +8,7 @@ module.exports = (sequelize, Sequelize) => {
         primaryKey: true
       },
       name: {
-        type: Sequelize.STRING(30),
+        type: Sequelize.STRING(70),
         allowNull: false
       },
       max_users: {
@@ -38,6 +38,10 @@ module.exports = (sequelize, Sequelize) => {
       },
       creator: {
         type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      status: {
+        type: Sequelize.STRING(30),
         allowNull: false
       }
     }, {

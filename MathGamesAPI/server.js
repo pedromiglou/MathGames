@@ -264,6 +264,7 @@ io.on("connection", (socket) => {
   socket.on("generate_invite", (msg) => {
     let user_id = msg["user_id"]
     let outro_id = msg["outro_id"]
+    let game_id = parseInt(msg["game_id"])
 
     // If the user still has an active link, return null match_id
     if ( Object.keys(active_friend_invites).includes(user_id) ) {
@@ -274,12 +275,11 @@ io.on("connection", (socket) => {
     users_info[user_id] = socket.id;
 
     let new_match_id = uuid.v4();
-    active_friend_invites[user_id] = {"outro_id": outro_id, "match_id": new_match_id};
+    active_friend_invites[user_id] = {"outro_id": outro_id, "match_id": new_match_id, "game_id": game_id};
 
     io.to(socket.id).emit("invite_link", {"match_id": new_match_id});
     // After 2 minutes, the invites expires
     setTimeout(() => { delete active_friend_invites[user_id]; }, 120000);
-    console.log(active_friend_invites)
   })
 
   // user that accepts friend invite needs match_id. 
@@ -291,7 +291,7 @@ io.on("connection", (socket) => {
       users_info[user_id] = socket.id
 
       if ( Object.keys(active_friend_invites).includes(String(outro_id)) && active_friend_invites[outro_id]["outro_id"] === String(user_id)) {
-        io.to( users_info[String(user_id)] ).emit("match_link", {"match_id": active_friend_invites[outro_id]["match_id"]})
+        io.to( users_info[String(user_id)] ).emit("match_link", {"match_id": active_friend_invites[outro_id]["match_id"], "game_id": active_friend_invites[outro_id]["game_id"]})
       } else {
         io.to( users_info[String(user_id)] ).emit("match_link", {"error": "invite expired"})
       }
