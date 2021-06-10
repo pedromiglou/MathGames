@@ -24,7 +24,8 @@ function Bracket() {
         let bracket_container = document.getElementById("bracket-container");
 
         let ndivs = capacidade/2;
-        let collumn = 1
+        // let collumn = 1
+        let counter = 1
 
         while(true){
 
@@ -32,21 +33,38 @@ function Bracket() {
                 let collumn_bracket = document.createElement("div");
                 bracket_container.appendChild(collumn_bracket);
                 let game_bracket = document.createElement("div");
-                game_bracket.id = "c"+collumn+"_1";
+                // game_bracket.id = "c"+collumn+"_1";
+                game_bracket.id = counter;
                 game_bracket.className = "bracket-game";
                 collumn_bracket.appendChild(game_bracket);
+                for (let i=0; i<2; i++){
+                    let input_bracket = document.createElement("input");
+                    input_bracket.type = "text";
+                    input_bracket.className = "input_bracket"
+                    game_bracket.appendChild(input_bracket);
+                }
+                counter++;
                 break;
             } else {
                 let collumn_bracket = document.createElement("div");
                 bracket_container.appendChild(collumn_bracket);
                 for (let i=0; i<ndivs; i++){
                     let game_bracket = document.createElement("div");
-                    game_bracket.id = "c"+collumn+"_"+i;;
+                    // game_bracket.id = "c"+collumn+"_"+i;
+                    game_bracket.id = counter;
                     game_bracket.className = "bracket-game";
                     collumn_bracket.appendChild(game_bracket);
+                    for (let i=0; i<2; i++){
+                        let input_bracket = document.createElement("input");
+                        input_bracket.type = "text";
+                        input_bracket.className = "input_bracket"
+                        game_bracket.appendChild(input_bracket);
+                    }
+                    counter++;
+
                 }
                 ndivs = ndivs/2;    
-                collumn++;
+                // collumn++;
             }
         }        
     },[])
