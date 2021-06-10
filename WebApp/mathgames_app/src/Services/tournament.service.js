@@ -71,6 +71,41 @@ class TournamentService {
         return {error: false};
     }
 
+    async initializeTournament(tournamentId) {
+        var url = urlAPI + 'api/tournaments/initialize'
+
+        var tournament = {
+            tournament_id: tournamentId
+        }
+
+        var res = await fetch(url, {
+            method:'POST',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
+            body: JSON.stringify(tournament)
+        });
+        if (res.status !== 200) {
+            return {error: true}
+        }
+        return {error: false};
+
+    }
+
+    async removeTournament(tournamentId) {
+        var url = urlAPI + 'api/tournaments/'+tournamentId
+
+        var res = await fetch(url, {
+            method:'DELETE',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
+        });
+        if (res.status !== 200) {
+            return {error: true}
+        }
+        return {error: false};
+
+    }
+
     async jointTournament(tournamentId, playerId, password) {
         var url = urlAPI + 'api/tournaments/join';
 

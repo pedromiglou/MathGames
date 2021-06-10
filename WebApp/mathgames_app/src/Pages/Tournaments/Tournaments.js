@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-//import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Tournaments.css";
@@ -289,9 +289,9 @@ function Tournaments() {
                     {current_user !== null && current_user["account_type"] === "T" &&
                     <div id="gerir" className="shadow-white">
                         <h1>Gerir Torneios</h1>
-                        {/*<Link to="createTournament" className="btn btn-lg btn-search">
+                        <Link to="createTournament" className="btn btn-lg btn-search">
                             Criar Novo Torneio <FaIcons.FaPlus/>
-                        </Link>*/}
+                        </Link>
                         <button id="myTButton" className="btn btn-lg btn-search" type="button">Ver os meus torneios <FaIcons.FaSearch/></button>
                     </div>
                     }

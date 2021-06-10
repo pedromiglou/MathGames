@@ -28,6 +28,10 @@ function TournamentPage() {
     const [jogadorSelecionado, setJogadorSelecionado] = useState({id: null, name: null})
     const [removingPlayerModal, setRemovingPlayerModal] = useState(false);
     const [erroRemovingPlayer, setErroRemovingPlayer] = useState(false)
+    const [erroRemovingTournament, setErroRemovingTournament] = useState(false)
+    const [erroTournamentNotFull, setErroTournamentNotFull] = useState(false)
+    const [erroStartingTournament, setErroStartingTournament] = useState(false)
+
 
 
     const url = new URLSearchParams(window.location.search);
@@ -44,7 +48,6 @@ function TournamentPage() {
 
         async function fetchApiTournamentPlayers() {
             var response = await TournamentService.getPlayersByTournament(tournament_id)
-            console.log(response)
             if (!response["message"]) 
                 setPlayers(response)
         }
@@ -63,6 +66,33 @@ function TournamentPage() {
         var response = await TournamentService.leaveTournament(tournament_id, playerId)
         if (response.error) {
             setErroRemovingPlayer(true)
+        } else {
+            retrieveInformation()
+        }
+    }
+
+    async function removeTournament() {
+        setErroRemovingTournament(false)
+        var response = await TournamentService.removeTournament(tournament_id)
+        if (response.error) {
+            setErroRemovingTournament(true)
+        } else {
+            history.push({
+                "pathname": "/tournaments"
+            })
+        }
+    }
+
+    async function initializeTournament() {
+        setErroTournamentNotFull(false)
+        setErroStartingTournament(false)
+        if (tournament.max_users !== players.length) {
+            setErroTournamentNotFull(true)
+            return
+        }
+        var response = await TournamentService.initializeTournament(tournament_id)
+        if (response.error) {
+            setErroStartingTournament(true)
         } else {
             retrieveInformation()
         }
@@ -138,10 +168,26 @@ function TournamentPage() {
                     Occoreu um erro ao tentar remover o jogador. Operação não foi concluída.
                 </div> : null}
 
+            {erroRemovingTournament === true 
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                    Occoreu um erro ao tentar remover o torneio. Operação não foi concluída.
+                </div> : null}
+
+            {erroTournamentNotFull === true 
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                    O Torneio precisa de estar cheio para ser iniciado. Aguarde que mais utilizadores se juntem!
+                </div> : null}
+
+            {erroStartingTournament === true 
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                    Occoreu um erro ao tentar iniciar o torneio. Operação não foi concluída.
+                </div> : null}
+
             <div className="tournaments-container">
                 <div className="tournamentPage_section">
                     <div className="participants_section">
                         <h1>{tournament.name}</h1>
+                        <h2>Status: {tournament.status}</h2>
                         <h2>Participantes: {players.length}/{tournament.max_users}</h2>
                         <ul className="list-group">
                             <li className="list-group-item-t d-flex justify-content-between align-items-center row">
@@ -259,10 +305,10 @@ function TournamentPage() {
                             </div>
                         </div>
                         
-                        {tournament.creator === current_user.id &&
+                        {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
                         <>
-                            <button>Eliminar Torneio</button>
-                            <button>Iniciar Torneio</button>
+                            <button onClick={() => removeTournament()}>Eliminar Torneio</button>
+                            <button onClick={() => initializeTournament()}>Iniciar Torneio</button>
                         </>
                         }
                         

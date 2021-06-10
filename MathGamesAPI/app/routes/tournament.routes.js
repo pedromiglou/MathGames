@@ -7,8 +7,11 @@ module.exports = app => {
     // Create a new tournament
     router.post("/", [authJwt.verifyToken, authJwt.isTournamentManager], tournaments.create);
 
-    // Create a new tournament
-    router.post("/join", [authJwt.verifyToken], tournaments.entrarTorneio);
+    // Join a tournament
+    router.post("/join", [authJwt.verifyToken], tournaments.join);
+
+    // Initialize tournament
+    router.post("/initialize", [authJwt.verifyToken], tournaments.initialize);
   
     // Retrieve all tournaments
     router.get("/", [authJwt.verifyToken], tournaments.findAll);
