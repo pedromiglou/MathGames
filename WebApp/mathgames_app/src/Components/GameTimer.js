@@ -10,7 +10,7 @@ export const GameTimer = forwardRef(({totalGameTime, player, gameId, gameMode, c
             var timer = document.getElementById(player + "-countdown");
             timer.style.opacity = 0.5;
         }
-    }, [])
+    }, [player, autoStart])
 
     useImperativeHandle(ref, () => ({
 
