@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef } from "react";
 import {
 	View,
 	ScrollView,
@@ -13,17 +13,24 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 
 import Avatar from "../components/Avatar";
-import RNPickerSelect from "react-native-picker-select";
+//import RNPickerSelect from "react-native-picker-select";
 
 import { hatItems } from "../data/hatItems";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { shirtItems } from "../data/shirtItems";
 import { accessorieItems } from "../data/accessorieItems";
 import { trouserItems } from "../data/trouserItems";
+import { avatarColors } from "../data/avatarColors";
+
+import { Picker } from "@react-native-picker/picker";
 
 const win = Dimensions.get("window");
 
 class Inventory extends React.Component {
+	componentDidUpdate() {
+		console.log("updatin");
+	}
+
 	forceRemount = () => {
 		this.setState({ uniqueValue: this.state.uniqueValue + 1 });
 	};
@@ -69,6 +76,16 @@ class Inventory extends React.Component {
 		}
 	};
 
+	changeAvatarColor = (skinColor) => {
+		console.log("Changing skinColor ...");
+		if (skinColor !== undefined) {
+			console.log("changed skinColor to " + skinColor);
+			this.setState({ skinColorState: skinColor });
+			this.forceRemount();
+		}
+	};
+
+	/*
 	showItem = (option) => {
 		switch (option) {
 			case "chapeus":
@@ -89,6 +106,17 @@ class Inventory extends React.Component {
 				break;
 		}
 	};
+	*/
+
+	/*
+	open = () => {
+		this.pickerRef.current.focus();
+	}
+
+	close = () => {
+		this.pickerRef.current.blur();
+	}
+	*/
 
 	constructor(props) {
 		super(props);
@@ -98,19 +126,16 @@ class Inventory extends React.Component {
 			shirtNameState: "Camouflage1",
 			accessorieNameState: "AviatorGlasses",
 			trouserNameState: "TrouserJeans",
+			skinColorState: "#7B241C",
 			option: "none",
+			selectedLanguage: "java",
 		};
+		//this.pickerRef = useRef();
 	}
 
 	render() {
-		const placeholder = {
-			label: "Clica para escolheres ...",
-			value: null,
-			color: "grey",
-		};
-
 		return (
-			<ScrollView contentContainerStyle={styles.scrollView}>
+			<ScrollView style={styles.scrollView}>
 				<LinearGradient
 					colors={[
 						"#78c9ff",
@@ -123,13 +148,6 @@ class Inventory extends React.Component {
 					end={[1, 1]}
 					style={{ height: win.height, width: win.width }}
 				>
-					
-					{/* <Button
-						onPress={() => this.refreshh()}
-						title="Learn More"
-						color="#841584"
-					/> */}
-
 					<SafeAreaView
 						style={styles.container}
 						key={this.state.uniqueValue}
@@ -139,9 +157,33 @@ class Inventory extends React.Component {
 							shirtName={this.state.shirtNameState}
 							accessorieName={this.state.accessorieNameState}
 							trouserName={this.state.trouserNameState}
+							skinColor={this.state.skinColorState}
 						/>
 					</SafeAreaView>
 
+					<Picker
+						//ref={this.pickerRef}
+						selectedValue={this.state.selectedLanguage}
+						onValueChange={
+							(itemValue, itemIndex) =>
+								this.setState({
+									selectedLanguage: itemValue,
+									option: itemValue,
+								})
+							//(value) => this.showItem(value)
+						}
+						style={styles.picker}
+						itemStyle={styles.pickerItem}
+					>
+						<Picker.Item label="Escolhe uma opcao" value="none" />
+						<Picker.Item label="Chapeus" value="chapeus" />
+						<Picker.Item label="Camisolas" value="camisolas" />
+						<Picker.Item label="Acessorios" value="acessorios" />
+						<Picker.Item label="Calcas" value="calcas" />
+						<Picker.Item label="Cor de Pele" value="color" />
+					</Picker>
+
+					{/*
 					<RNPickerSelect
 						onValueChange={(value) => this.showItem(value)}
 						items={[
@@ -153,6 +195,7 @@ class Inventory extends React.Component {
 						style={pickerSelectStyles}
 						placeholder={placeholder}
 					/>
+					*/}
 
 					{this.state.option === "chapeus" && (
 						<View style={styles.imgsContainer}>
@@ -170,6 +213,30 @@ class Inventory extends React.Component {
 									</View>
 								</TouchableOpacity>
 							))}
+							<View>
+								<TouchableHighlight
+									onPress={() =>
+										navigation.navigate("Profile")
+									}
+									style={styles.buttonDownL}
+								>
+									<Text style={styles.buttonText}>
+										Guardar
+									</Text>
+								</TouchableHighlight>
+							</View>
+							<View>
+								<TouchableHighlight
+									onPress={() =>
+										navigation.navigate("LastGames")
+									}
+									style={styles.buttonDownR}
+								>
+									<Text style={styles.buttonText}>
+										Cancelar
+									</Text>
+								</TouchableHighlight>
+							</View>
 						</View>
 					)}
 
@@ -189,6 +256,30 @@ class Inventory extends React.Component {
 									</View>
 								</TouchableOpacity>
 							))}
+							<View>
+								<TouchableHighlight
+									onPress={() =>
+										navigation.navigate("Profile")
+									}
+									style={styles.buttonDownL}
+								>
+									<Text style={styles.buttonText}>
+										Guardar
+									</Text>
+								</TouchableHighlight>
+							</View>
+							<View>
+								<TouchableHighlight
+									onPress={() =>
+										navigation.navigate("LastGames")
+									}
+									style={styles.buttonDownR}
+								>
+									<Text style={styles.buttonText}>
+										Cancelar
+									</Text>
+								</TouchableHighlight>
+							</View>
 						</View>
 					)}
 
@@ -210,6 +301,30 @@ class Inventory extends React.Component {
 									</View>
 								</TouchableOpacity>
 							))}
+							<View>
+								<TouchableHighlight
+									onPress={() =>
+										navigation.navigate("Profile")
+									}
+									style={styles.buttonDownL}
+								>
+									<Text style={styles.buttonText}>
+										Guardar
+									</Text>
+								</TouchableHighlight>
+							</View>
+							<View>
+								<TouchableHighlight
+									onPress={() =>
+										navigation.navigate("LastGames")
+									}
+									style={styles.buttonDownR}
+								>
+									<Text style={styles.buttonText}>
+										Cancelar
+									</Text>
+								</TouchableHighlight>
+							</View>
 						</View>
 					)}
 
@@ -223,13 +338,18 @@ class Inventory extends React.Component {
 												this.changeTrousers(x.color)
 											}
 											key={x.id}
-											style={{backgroundColor: x.color, height: 70, width: 70, margin: 10}}
+											style={{
+												backgroundColor: x.color,
+												height: 70,
+												width: 70,
+												margin: 10,
+											}}
 										>
-											<View >
+											<View>
 												<Text> </Text>
 											</View>
 										</TouchableOpacity>
-									)
+									);
 								} else {
 									return (
 										<TouchableOpacity
@@ -249,32 +369,89 @@ class Inventory extends React.Component {
 									);
 								}
 							})}
+							<View>
+								<TouchableHighlight
+									onPress={() =>
+										navigation.navigate("Profile")
+									}
+									style={styles.buttonDownL}
+								>
+									<Text style={styles.buttonText}>
+										Guardar
+									</Text>
+								</TouchableHighlight>
+							</View>
+							<View>
+								<TouchableHighlight
+									onPress={() =>
+										navigation.navigate("LastGames")
+									}
+									style={styles.buttonDownR}
+								>
+									<Text style={styles.buttonText}>
+										Cancelar
+									</Text>
+								</TouchableHighlight>
+							</View>
 						</View>
 					)}
 
-					<View
-						style={{
-							flexDirection: "row",
-							paddingBottom: 40,
-						}}
-					>
-						<View>
-							<TouchableHighlight
-								onPress={() => navigation.navigate("Profile")}
-								style={styles.buttonDownL}
+					{this.state.option === "color" && (
+						<View style={styles.imgsContainer}>
+							{avatarColors.map((x) => {
+								return (
+									<TouchableOpacity
+										onPress={() =>
+											this.changeAvatarColor(x.color)
+										}
+										key={x.id}
+										style={{
+											backgroundColor: x.color,
+											height: 70,
+											width: 70,
+											margin: 10,
+										}}
+									>
+										<View>
+											<Text> </Text>
+										</View>
+									</TouchableOpacity>
+								);
+							})}
+							<View
+								style={{
+									flexDirection: "row",
+									justifyContent: "center",
+									alignItems: "center",
+								}}
 							>
-								<Text style={styles.buttonText}>Guardar</Text>
-							</TouchableHighlight>
+								<View>
+									<TouchableHighlight
+										onPress={() =>
+											navigation.navigate("Profile")
+										}
+										style={styles.buttonDownL}
+									>
+										<Text style={styles.buttonText}>
+											Guardar
+										</Text>
+									</TouchableHighlight>
+								</View>
+								<View>
+									<TouchableHighlight
+										onPress={() =>
+											navigation.navigate("LastGames")
+										}
+										style={styles.buttonDownR}
+									>
+										<Text style={styles.buttonText}>
+											Cancelar
+										</Text>
+									</TouchableHighlight>
+								</View>
+							</View>
 						</View>
-						<View>
-							<TouchableHighlight
-								onPress={() => navigation.navigate("LastGames")}
-								style={styles.buttonDownR}
-							>
-								<Text style={styles.buttonText}>Cancelar</Text>
-							</TouchableHighlight>
-						</View>
-					</View>
+					)}
 				</LinearGradient>
 			</ScrollView>
 		);
@@ -283,75 +460,52 @@ class Inventory extends React.Component {
 
 export default Inventory;
 
-
-const pickerSelectStyles = StyleSheet.create({
-	inputIOS: {
-		fontSize: 16,
-		fontWeight: "bold",
-		fontFamily: "BubblegumSans",
-		paddingVertical: 12,
-		paddingHorizontal: 10,
-		borderWidth: 2,
-		borderColor: "white",
-		borderRadius: 5,
-		color: "white",
-		paddingRight: 30, // to ensure the text is never behind the icon
-		//width: 50,
-		marginTop: 10,
-		marginRight: 20,
-		marginLeft: 20,
-		marginBottom: 10
-	},
-	inputAndroid: {
-		fontSize: 16,
-		fontWeight: "bold",
-		fontFamily: "BubblegumSans",
-		paddingVertical: 12,
-		paddingHorizontal: 10,
-		borderWidth: 2,
-		borderColor: "white",
-		borderRadius: 5,
-		color: "white",
-		paddingRight: 30, // to ensure the text is never behind the icon
-		//width: 50,
-		marginTop: 10,
-		marginRight: 20,
-		marginLeft: 20,
-		marginBottom: 10
-	},
-});
-
 const styles = StyleSheet.create({
+	picker: {
+		// flex: 1,
+		width: "80%",
+		height: 140,
+		color: "white",
+		marginLeft: "10%",
+	},
+
+	pickerItem: {
+		height: 136,
+		color: "white",
+		borderColor: "white",
+	},
+
 	buttonDownL: {
-		paddingTop: 10,
-		paddingBottom: 10,
+		paddingTop: 3,
+		paddingBottom: 1,
 		backgroundColor: "green",
 		width: win.width / 3,
 		marginLeft: win.width / 10,
 	},
 
 	buttonDownR: {
-		paddingTop: 10,
-		paddingBottom: 10,
+		paddingTop: 3,
+		paddingBottom: 1,
 		backgroundColor: "red",
 		width: win.width / 3,
 		marginLeft: win.width / 10,
 	},
 
+	/*
 	picker: {
 		flex: 1,
 		backgroundColor: "red",
 		color: "white",
 		textAlign: "center",
 		justifyContent: "center",
-	},
+	},*/
 
 	imgView: {
 		//flex: 1,
 		//alignItems:  "center",
 		margin: 10,
 		width: win.height * 0.1,
-		height: win.height * 0.1, 
+		height: win.height * 0.1,
 	},
 
 	imgsContainer: {
@@ -362,16 +516,19 @@ const styles = StyleSheet.create({
 	},
 
 	scrollView: {
-		flexGrow: 1,
+		//flexGrow: 1,
 		flex: 1,
-		height: win.height
+		//height: win.height,
+		display: "flex",
+		flexDirection: "column",
+		//gap: 30
 	},
 
 	itemImg: {
 		flex: 1,
 		width: win.height * 0.1,
 		height: win.height * 0.1,
-		alignSelf: 'stretch'
+		alignSelf: "stretch",
 	},
 
 	pageTitle: {

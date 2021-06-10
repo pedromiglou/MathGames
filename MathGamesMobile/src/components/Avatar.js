@@ -26,13 +26,15 @@ export default function Avatar(props) {
 
 	React.useEffect(() => {
 		// Clear the animation loop when the component unmounts
+		console.log("olaaaaaaaaaaaaa")
 		return () => clearTimeout(timeout);
 	}, []);
+
 
 	return (
 		<GLView
 			style={{ alignItems: "stretch", width: "100%", height: "100%", justifyContent: "center", textAlign: "center",}}
-			onContextCreate={async (gl: ExpoWebGLRenderingContext) => {
+			onContextCreate={async (gl: ExpoWebGLRenderingContext, alpha: true) => {
 				const {
 					drawingBufferWidth: width,
 					drawingBufferHeight: height,
@@ -40,9 +42,9 @@ export default function Avatar(props) {
 				const sceneColor = 0x78c9ff;
 
 				// Create a WebGLRenderer without a DOM element
-				const renderer = new Renderer({ gl });
+				const renderer = new Renderer({ gl, alpha: true });
 				renderer.setSize(width, height);
-				renderer.setClearColor(sceneColor);
+				renderer.setClearColor(0x000000, 0);
 
 				const camera = new PerspectiveCamera(
 					70,
@@ -55,6 +57,8 @@ export default function Avatar(props) {
 				const scene = new Scene();
 				scene.fog = new Fog(sceneColor, 1, 10000);
 				//scene.add(new GridHelper(10, 10));
+
+				scene.background = null;
 
 				const ambientLight = new AmbientLight(0x101010);
 				scene.add(ambientLight);
@@ -118,9 +122,10 @@ export default function Avatar(props) {
 						scene.add(SteamPunkGlasses);  */
 						break;
 				} 
+				
 
 				const avatarMaterial = new THREE.MeshLambertMaterial({
-					color: 0x00ff00,
+					color: props.skinColor,
 				});
 
 
@@ -391,7 +396,6 @@ const loadModelsAsync_CowboyHat = async () => {
 
 const loadModelsAsync_MagicianHat = async () => {
 	/// Get all the files in the mesh
-	console.log("ola")
 
 	 const model = {
 		"TopHat.obj": require("../../public/avatar_assets/hats/magicianHat/TopHat.obj"),
