@@ -1,0 +1,17 @@
+.bracket-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.bracket-container > * {
+    flex: 1 1 20%;
+}
+
+.bracket-game{
+    width: 100px;
+    height: 30px;
+    background-color: white;
+    margin: 5px;
+}
