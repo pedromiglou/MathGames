@@ -24,7 +24,6 @@ function TournamentPage() {
     const [readyToDisplay, setReadyToDisplay] = useState(false)
     const [tournament, setTournament] = useState( {id: null, private: null, name: null, creator: null, max_users:null, winner: null, game_id: null, status: null})
     const [players, setPlayers] = useState([]);
-    const [tournament_initialized, setTournament_Initialized] = useState(false);
 
     const [jogadorSelecionado, setJogadorSelecionado] = useState({id: null, name: null})
     const [removingPlayerModal, setRemovingPlayerModal] = useState(false);
@@ -32,8 +31,7 @@ function TournamentPage() {
     const [erroRemovingTournament, setErroRemovingTournament] = useState(false)
     const [erroTournamentNotFull, setErroTournamentNotFull] = useState(false)
     const [erroStartingTournament, setErroStartingTournament] = useState(false)
-
-
+    const [erroChangingDescription, setErroChangingDescription] = useState(false)
 
     const url = new URLSearchParams(window.location.search);
 	let tournament_id = url.get("id");
@@ -43,8 +41,6 @@ function TournamentPage() {
         
         async function fetchApiTournament() {
             var response = await TournamentService.getTournamentById(tournament_id)
-            console.log("tournament_info")
-            console.log(tournament)
             if (!response["message"])
                 setTournament(response)
         }
@@ -66,6 +62,10 @@ function TournamentPage() {
 
     async function removePlayer(playerId) {
         setErroRemovingPlayer(false)
+        setErroRemovingTournament(false)
+        setErroTournamentNotFull(false)
+        setErroStartingTournament(false)
+        setErroChangingDescription(false)
         var response = await TournamentService.leaveTournament(tournament_id, playerId)
         if (response.error) {
             setErroRemovingPlayer(true)
@@ -75,7 +75,11 @@ function TournamentPage() {
     }
 
     async function removeTournament() {
+        setErroRemovingPlayer(false)
         setErroRemovingTournament(false)
+        setErroTournamentNotFull(false)
+        setErroStartingTournament(false)
+        setErroChangingDescription(false)
         var response = await TournamentService.removeTournament(tournament_id)
         if (response.error) {
             setErroRemovingTournament(true)
@@ -87,17 +91,39 @@ function TournamentPage() {
     }
 
     async function initializeTournament() {
+        setErroRemovingPlayer(false)
+        setErroRemovingTournament(false)
         setErroTournamentNotFull(false)
         setErroStartingTournament(false)
+        setErroChangingDescription(false)
         if (tournament.max_users !== players.length) {
             setErroTournamentNotFull(true)
             return
         }
         var response = await TournamentService.initializeTournament(tournament_id)
-        console.log("agora")
-        console.log(response)
         if (response.error) {
             setErroStartingTournament(true)
+        } else {
+            retrieveInformation()
+        }
+    }
+
+
+    async function changeDescription() {
+        setErroRemovingPlayer(false)
+        setErroRemovingTournament(false)
+        setErroTournamentNotFull(false)
+        setErroStartingTournament(false)
+        setErroChangingDescription(false)
+        var description = document.getElementById("tournament-details")
+        if (description.value === "") {
+            description =  description.placeholder
+        } else {
+            description =  description.value
+        }
+        var response = await TournamentService.changeDescription(tournament_id, description)
+        if (response.error) {
+            setErroChangingDescription(true)
         } else {
             retrieveInformation()
         }
@@ -199,6 +225,11 @@ function TournamentPage() {
                     Occoreu um erro ao tentar iniciar o torneio. Operação não foi concluída.
                 </div> : null}
 
+            {erroChangingDescription === true 
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                    Occoreu um erro ao tentar alterar a descrição do torneio. Operação não foi concluída.
+                </div> : null}
+
             <div className="tournaments-container">
                 <div className="tournamentPage_section">
                     <div className="participants_section">
@@ -237,11 +268,12 @@ function TournamentPage() {
                                             Rank
                                     </div>
 
-                                        {tournament.creator === current_user.id && 
                                         <div className="col-lg-2 col-md-2 col-sm-2">
+                                        {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
                                             <IoIcons.IoBan onClick={() => {setJogadorSelecionado({id: player.id, name: player.username}); setRemovingPlayerModal(true)}}/>
-                                        </div>
                                         }                
+
+                                        </div>
                                     </li>
                             )})}
 
@@ -267,14 +299,21 @@ function TournamentPage() {
                         <div className="tournament-rules">
                             <div className="details-edit">
                                 <h1>Descrição do Torneio</h1>
-                                <MdIcons.MdModeEdit size={35} id="edit-icon" className="edit-icon" title="edit" onClick={() => make_fields_editable()}/>
+                                {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
+                                    <MdIcons.MdModeEdit size={35} id="edit-icon" className="edit-icon" title="edit" onClick={() => make_fields_editable()}/>
+                                }
                             </div>
                             <div className="description-t" >
-                                <input type="text" className="description-input" id="tournament-details" readOnly placeholder="blabla"></input>
+                                <input type="text" className="description-input" id="tournament-details" readOnly placeholder={tournament.description}></input>
                             </div>
                             <div className="action-buttons" id="action-buttons" style={{display:"none"}}>
-                                <button onClick={() => make_fields_not_editable()}>confirmar</button>
-                                <button onClick={() => make_fields_not_editable()}>Cancelar</button>
+                                {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
+                                    <>
+                                    <button onClick={() => {make_fields_not_editable(); changeDescription() } }>Confirmar</button>
+                                    <button onClick={() => make_fields_not_editable()}>Cancelar</button>
+                                    </>
+                                }
+
                             </div>
                         </div>
                         <h1>Jogo</h1>
@@ -318,12 +357,7 @@ function TournamentPage() {
                         <div className="tournament-bracket">
                             <h1>Brackets</h1>
                             <div className="brackets">
-                                {tournament_initialized && 
-                                    <button onClick={() =>   history.push("/bracket")}>See Bracket</button>
-                                }
-                                {!tournament_initialized && 
-                                    <button onClick={() =>  setTournament_Initialized(true)}>Initialize tournament</button>
-                                }
+                                <button onClick={() =>   history.push("/bracket")}>See Bracket</button>
                             </div>
                         </div>
                         

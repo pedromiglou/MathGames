@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Tournaments.css";
@@ -14,6 +13,7 @@ import {games_info} from '../../data/GamesInfo';
 
 import { Modal, Button } from "react-bootstrap";
 
+import {urlWeb} from "./../../data/data";
 
 import AuthService from '../../Services/auth.service';
 import TournamentService from '../../Services/tournament.service';
@@ -23,9 +23,7 @@ function Tournaments() {
 	let history = useHistory()
 
     if (current_user === null || current_user === undefined) {
-        history.push({
-            pathname: "/",
-        })
+        window.location.assign(urlWeb);
     }
         
     const [userTournaments, setUserTournaments] = useState([])
@@ -199,9 +197,7 @@ function Tournaments() {
 	, [tournament_inputs, page_tournaments, current_user.id])
 
     function goToTournament(id){
-        history.push({
-            pathname: "/tournament?id="+id, 
-        })
+        history.push("/tournament?id="+id)
     }
 
 

@@ -205,8 +205,6 @@ exports.initialize = (req, res) => {
           }
 
           var bracket = doBracket(torneio.dataValues.max_users, array_players_id)
-          console.log("------- BRACKET --------")
-          console.log(bracket)
           var match_id_translation = {}
 
           for (let game of bracket) {
@@ -228,9 +226,6 @@ exports.initialize = (req, res) => {
               });
             });
           }
-
-          console.log("------- Dicionario --------")
-          console.log(match_id_translation)
 
           for (let game of bracket) {
             // Create a TournamentMatch

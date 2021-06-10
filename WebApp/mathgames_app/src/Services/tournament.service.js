@@ -71,6 +71,24 @@ class TournamentService {
         return {error: false};
     }
 
+    async changeDescription(tournament_id, description) {
+        var url = urlAPI + 'api/tournaments/' + tournament_id;
+        var tournament = {
+            description: description
+        }
+        
+        var res = await fetch(url, {
+            method:'PUT',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
+            body: JSON.stringify(tournament)
+        });
+        if (res.status !== 200) {
+            return {error: true}
+        }
+        return {error: false};
+    }
+
     async initializeTournament(tournamentId) {
         var url = urlAPI + 'api/tournaments/initialize'
 
