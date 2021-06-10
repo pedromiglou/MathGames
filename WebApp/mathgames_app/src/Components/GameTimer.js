@@ -1,17 +1,29 @@
-import { forwardRef, useRef, useImperativeHandle } from 'react';
+import { forwardRef, useRef, useImperativeHandle, useEffect } from 'react';
+import './GameTimer.css';
 import Countdown from 'react-countdown';
 
 export const GameTimer = forwardRef(({totalGameTime, player, gameId, gameMode, currentMatch, finishMatchMethod, autoStart}, ref) => {
     const timerApi = useRef();
 
+    useEffect(() => {
+        if (!autoStart) {
+            var timer = document.getElementById(player + "-countdown");
+            timer.style.opacity = 0.5;
+        }
+    }, [])
+
     useImperativeHandle(ref, () => ({
 
         pause() {
             timerApi.current.pause();
+            var timer = document.getElementById(player + "-countdown");
+            timer.style.opacity = 0.5;
         },
 
         start() {
             timerApi.current.start();
+            var timer = document.getElementById(player + "-countdown");
+            timer.style.opacity = 1;
         }
 
     }));
@@ -31,7 +43,7 @@ export const GameTimer = forwardRef(({totalGameTime, player, gameId, gameMode, c
     };
 
     return (
-        <div>
+        <div className="game-timer">
             {(gameMode==="online" || gameMode==="amigo") && <Countdown ref={timerApi} date={Date.now() + totalGameTime} renderer={countdownRenderer} intervalDelay={0} precision={3} autoStart={autoStart}></Countdown>}
             {gameMode==="offline" && <Countdown ref={timerApi} onComplete={() => {finishMatchMethod( {game_id: gameId, match_id: currentMatch['match_id'], match_result: "offline_finish", end_mode: "timeout", winner: currentMatch[getWinner()]} )}} date={Date.now() + totalGameTime} renderer={countdownRenderer} intervalDelay={0} precision={3} autoStart={autoStart}></Countdown>}
         </div>
