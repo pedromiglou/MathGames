@@ -75,8 +75,13 @@ function App() {
                             <Route exact path='/about' component={withRouter(AboutUs)}/>
                             <Route exact path='/tournaments' component={withRouter(Tournaments)}/>
                             <Route exact path='/createTournament' component={withRouter(CreateTournament)}/>
+<<<<<<< HEAD
                             <Route exact path='/tournament' component={withRouter(TournamentPage)}/>
                             <Route exact path='/bracket' component={withRouter(Bracket)}/>
+=======
+                            <Route path='/tournament' component={withRouter(TournamentPage)}/>
+                            <Route exact path='/bracket' component={withRouter(AboutUs)}/>
+>>>>>>> 995a16c9ff239a83182140c07b06805ef663cefb
                         </Switch>
                     </div>
 

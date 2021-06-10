@@ -10,6 +10,26 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
         allowNull: false,
         primaryKey: true
+      },
+      roundNo: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      bye: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false
+      },
+      lastGame1: {
+        type: Sequelize.INTEGER,
+        allowNull: true
+      },
+      lastGame2: {
+        type: Sequelize.INTEGER,
+        allowNull: true
+      },
+      nextGame: {
+        type: Sequelize.INTEGER,
+        allowNull: true
       }
     }, {
       timestamps: false

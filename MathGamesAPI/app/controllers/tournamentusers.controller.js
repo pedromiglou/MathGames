@@ -1,5 +1,7 @@
 const db = require("../models");
+const Tournament = db.tournament;
 const TournamentUser = db.tournament_users;
+const User = db.user;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new TournamentUser
@@ -46,13 +48,26 @@ exports.findAll = (req, res) => {
     });
 };
 
-// Find a single TournamentUser with an id
-exports.findByTournament = (req, res) => {
+// Find users that belong to a tournament
+exports.findUsersByTournament = (req, res) => {
   const id = req.params.id;
 
   TournamentUser.findAll({where: {tournament_id: id} })
-    .then(data => {
-      res.send(data);
+    .then(async (data) =>  {
+      var finalArray = []
+      for (let player of data) {
+        await User.findByPk(player.dataValues.user_id).then(user => {
+
+          const { avatar_accessorie, avatar_color, avatar_hat, avatar_shirt, avatar_trouser, banned, createdAt, email, password, updatedAt, ...newUser } = user.dataValues;
+
+          finalArray.push(newUser)
+        }).catch(err => {
+          res.status(500).send({
+            message: "Error retrieving TournamentUser with tournament id=" + id
+          });
+        })
+      }
+      res.send(finalArray);
     })
     .catch(err => {
       res.status(500).send({
@@ -60,6 +75,34 @@ exports.findByTournament = (req, res) => {
       });
     });
 };
+
+
+
+// Find a tournaments that a User is in
+exports.findTournamentsByUser = (req, res) => {
+  const id = req.params.id;
+
+  if (parseInt(id) !== parseInt(req.userId) ) {
+    if (req.account_type !== "A") {
+      res.status(401).send({
+        message: "Unauthorized!"
+      });
+      return;
+    }
+  }
+
+  TournamentUser.findAll({where: {user_id: id} })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving TournamentUser with user id=" + id
+      });
+    });
+};
+
+
 
 // Update a TournamentUser by the id in the request
 exports.update = (req, res) => {
@@ -91,26 +134,50 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const tournament_id = req.params.tournamentId;
   const user_id = req.params.userId;
+  Tournament.findByPk(tournament_id)
+    .then(data => {
 
-  TournamentUser.destroy({
-    where: { tournament_id: tournament_id, user_id: user_id }
-  })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "TournamentUser was deleted successfully!"
+
+      if ( (parseInt(user_id) !== parseInt(req.userId)) && (req.account_type !== "A") && (parseInt(req.userId) !== data.dataValues.creator)) {
+        res.status(401).send({
+          message: "Unauthorized!"
         });
-      } else {
-        res.send({
-          message: `Cannot delete TournamentUser with id=${id}. Maybe TournamentUser was not found!`
-        });
+        return;
       }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Could not delete TournamentUser with id=" + id
+    
+      console.log("passei aut")
+      if (data.dataValues.status !== "PREPARING") {
+        res.status(500).send({
+          message: "Can't leave tournament because tournament as already started."
+        });
+        return
+      }
+
+      TournamentUser.destroy({
+        where: { tournament_id: tournament_id, user_id: user_id }
+      })
+      .then(num => {
+        if (num == 1) {
+          res.status(200).send({
+            message: "TournamentUser was deleted successfully!"
+          });
+        } else {
+          res.status(500).send({
+            message: `Cannot delete TournamentUser with user id=${user_id} and tournament id=${tournament_id}. Maybe TournamentUser was not found!`
+          });
+        }
+      })
+      .catch(err => {
+        res.status(500).send({
+          message: "Could not delete TournamentUser with user id="+user_id+" and tournament id="+ tournament_id
+        });
       });
+  })
+  .catch(err => {
+    res.status(500).send({
+      message: "An error occurred on the server. Operation was not concluded!"
     });
+  });
 };
 
 // Delete all TournamentUseres from the database.
