@@ -288,6 +288,7 @@ const pickerSelectStyles = StyleSheet.create({
 	inputIOS: {
 		fontSize: 16,
 		fontWeight: "bold",
+		fontFamily: "BubblegumSans",
 		paddingVertical: 12,
 		paddingHorizontal: 10,
 		borderWidth: 2,
@@ -299,10 +300,12 @@ const pickerSelectStyles = StyleSheet.create({
 		marginTop: 10,
 		marginRight: 20,
 		marginLeft: 20,
+		marginBottom: 10
 	},
 	inputAndroid: {
 		fontSize: 16,
 		fontWeight: "bold",
+		fontFamily: "BubblegumSans",
 		paddingVertical: 12,
 		paddingHorizontal: 10,
 		borderWidth: 2,
@@ -314,6 +317,7 @@ const pickerSelectStyles = StyleSheet.create({
 		marginTop: 10,
 		marginRight: 20,
 		marginLeft: 20,
+		marginBottom: 10
 	},
 });
 
