@@ -256,6 +256,10 @@ exports.initialize = (req, res) => {
 
           Tournament.update( {status: "STARTED"}, {
             where: { id: torneio.dataValues.id }
+          }).then(sucesso => {
+            res.status(200).send(
+              {message: "Tournament started with sucess!"}
+            )
           }).catch(err => {
             res.status(500).send({
               message: "An error occurred on the server. Operation was not concluded!"

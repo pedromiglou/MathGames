@@ -42,6 +42,8 @@ function TournamentPage() {
         
         async function fetchApiTournament() {
             var response = await TournamentService.getTournamentById(tournament_id)
+            console.log("tournament_info")
+            console.log(tournament)
             if (!response["message"])
                 setTournament(response)
         }
@@ -91,6 +93,8 @@ function TournamentPage() {
             return
         }
         var response = await TournamentService.initializeTournament(tournament_id)
+        console.log("agora")
+        console.log(response)
         if (response.error) {
             setErroStartingTournament(true)
         } else {
