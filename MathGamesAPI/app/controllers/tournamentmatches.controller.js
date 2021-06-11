@@ -48,7 +48,7 @@ exports.findAll = (req, res) => {
 };
 
 // Find a single TournamentMatch with an id
-exports.findByTournament = (req, res) => {
+exports.findMatchesByTournament = (req, res) => {
   const id = req.params.id;
 
   TournamentMatch.findAll({where: {tournament_id: id} })

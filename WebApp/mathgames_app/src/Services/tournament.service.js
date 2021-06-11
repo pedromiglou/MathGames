@@ -48,6 +48,15 @@ class TournamentService {
         return res.json();
     }
 
+    async getMatchesByTournament(tournament_id) {
+        var url = urlAPI + 'api/tournamentmatches/findbytournament/'+ tournament_id;
+        var res = await fetch(url, {
+            method:'GET',
+            headers:{'Content-type':'application/json',
+            'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+
 
     async createTournament(name, max_users, privado, password, game_id, creator) {
         var url = urlAPI + 'api/tournaments';

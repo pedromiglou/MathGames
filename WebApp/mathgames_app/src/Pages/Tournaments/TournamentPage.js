@@ -35,7 +35,6 @@ function TournamentPage() {
 
     const url = new URLSearchParams(window.location.search);
 	let tournament_id = url.get("id");
-
     
     const retrieveInformation = async () => {
         
@@ -304,7 +303,7 @@ function TournamentPage() {
                                 }
                             </div>
                             <div className="description-t" >
-                                <input type="text" className="description-input" id="tournament-details" readOnly placeholder={tournament.description}></input>
+                                <textarea  className="description-input" id="tournament-details" readOnly placeholder={tournament.description}></textarea>
                             </div>
                             <div className="action-buttons" id="action-buttons" style={{display:"none"}}>
                                 {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
@@ -357,7 +356,7 @@ function TournamentPage() {
                         <div className="tournament-bracket">
                             <h1>Brackets</h1>
                             <div className="brackets">
-                                <button onClick={() =>   history.push("/bracket")}>See Bracket</button>
+                                <button onClick={() =>   history.push("/bracket?id="+tournament_id)}>See Bracket</button>
                             </div>
                         </div>
                         

@@ -6,6 +6,19 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
         primaryKey: true
       },
+      player1: {
+        type: Sequelize.INTEGER
+      },
+      player2: {
+        type: Sequelize.INTEGER,
+        validate: {
+            isDiferent() {
+                if (this.player1 == this.player2 && (this.player1 !== null && this.player2 !== null) ) {
+                    throw new Error("Players are the same")
+                }
+            }
+        }
+      },
       tournament_id: {
         type: Sequelize.INTEGER,
         allowNull: false,

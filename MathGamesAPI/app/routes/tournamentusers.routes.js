@@ -7,7 +7,7 @@ module.exports = app => {
     // Retrieve all tournamentUsers
     router.get("/", [authJwt.verifyToken, authJwt.isAdmin], tournamentUsers.findAll);
   
-    // Retrieve a all users of a tournament with the tournament id
+    // Retrieve all users of a tournament with the tournament id
     router.get("/findbytournament/:id", [authJwt.verifyToken], tournamentUsers.findUsersByTournament);
 
     // Retrieve a all users of a tournament with the tournament id

@@ -236,7 +236,9 @@ exports.initialize = (req, res) => {
               bye: game.bye,
               lastGame1: match_id_translation[game.lastGames1],
               lastGame2: match_id_translation[game.lastGames2],
-              nextGame: match_id_translation[game.nextGame]
+              nextGame: match_id_translation[game.nextGame],
+              player1: game.player1,
+              player2: game.player2
             };
 
             // Save TournamentMatch in the database
@@ -490,8 +492,10 @@ function doBracket(base, players) {
 
   var knownBrackets = [2,4,8,16,32,64] // brackets with "perfect" proportions (full fields, no byes)
   //bracketCount = 0;
+  console.log(players)
+  shuffleArray(players)
+  console.log(players)
 
-  
   var closest 		= knownBrackets.filter(function (k) { return k>=base; }  ),
   byes 			= closest-base;
   
@@ -541,3 +545,14 @@ function doBracket(base, players) {
 
 function bracketFilter (b) { return b.nextGame == i; }
 function bracketMap (b) { return {game:b.matchNo,teams:b.teamnames} }
+
+
+/* Randomize array */
+function shuffleArray(array) {
+  for (var i = array.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+  }
+}

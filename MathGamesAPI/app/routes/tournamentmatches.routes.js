@@ -1,3 +1,5 @@
+const { authJwt} = require("../middleware");
+
 module.exports = app => {
     const tournamentmatches = require("../controllers/tournamentmatches.controller.js");
     var router = require("express").Router();
@@ -7,9 +9,9 @@ module.exports = app => {
   
     // Retrieve all tournamentmatches
     router.get("/", tournamentmatches.findAll);
-  
-    // Retrieve a all matches of a tournament with the tournament id
-    router.get("/:id", tournamentmatches.findByTournament);
+
+    // Retrieve all matches of a tournament with the tournament id
+    router.get("/findbytournament/:id", [authJwt.verifyToken], tournamentmatches.findMatchesByTournament);
   
     // Update a tournamentMatch with matchId
     router.put("/:id", tournamentmatches.update);
