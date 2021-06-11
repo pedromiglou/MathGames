@@ -18,32 +18,33 @@ const win = Dimensions.get("window");
 
 function Profile({ navigation }) {
 	return (
-		<ScrollView style={{ flex: 1 }}>
-			<LinearGradient
-				colors={["#78c9ff", "#6699f8", "#5379f7", "#5867f7", "#8a54ee"]}
-				start={[0, 0]}
-				end={[1, 1]}
-			>
-                <View style={{ flexDirection: "row" }}>
-                    <View style={{ flex: 1 }} >
-                        <TouchableHighlight
-                            onPress={() => navigation.navigate("Inventory")}
-                            style={styles.button}
-                        >
-                            <Text style={styles.buttonText}>Inventário</Text>
-                        </TouchableHighlight>
+		<View>
+			<View style={{position:"absolute", x: 0, y:0}}>
+				<LinearGradient colors={['#78c9ff', '#6699f8', '#5379f7', '#5867f7', '#8a54ee']} start={[0,0]} end={[1,1]}>
+					<View style={{minHeight: win.height, minWidth: win.width}}></View>
+				</LinearGradient>
+			</View>
+			<ScrollView>
+				<View style={{ flexDirection: "row" }}>
+					<View style={{ flex: 1 }} >
+						<TouchableHighlight
+							onPress={() => navigation.navigate("Inventory")}
+							style={styles.button}
+						>
+							<Text style={styles.buttonText}>Inventário</Text>
+						</TouchableHighlight>
 
-                    </View>
-                    <View style={{ flex: 1 }} >
-                        <TouchableHighlight
-                            onPress={() => navigation.navigate("LastGames")}
-                            style={styles.button}
-                        >
-                            <Text style={styles.buttonText}>Últimos Jogos</Text>
-                        </TouchableHighlight>
-                    </View>
-                </View>
-                
+					</View>
+					<View style={{ flex: 1 }} >
+						<TouchableHighlight
+							onPress={() => navigation.navigate("LastGames")}
+							style={styles.button}
+						>
+							<Text style={styles.buttonText}>Últimos Jogos</Text>
+						</TouchableHighlight>
+					</View>
+				</View>
+				
 				<View>
 					<Text style={styles.playerName}>Nome</Text>
 				</View>
@@ -79,8 +80,8 @@ function Profile({ navigation }) {
 						</View>
 					</View>
 				))}
-			</LinearGradient>
-		</ScrollView>
+			</ScrollView>
+		</View>
 	);
 }
 

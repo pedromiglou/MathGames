@@ -3,27 +3,24 @@ import {
 	View,
 	ScrollView,
 	Text,
-	Image,
 	Dimensions,
 	StyleSheet,
-	TouchableHighlight,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-
-import profileImage from "../../public/images/user-profile.png";
-import { gamesInfo } from "./../data/GamesInfo";
 
 const win = Dimensions.get("window");
 
 
 function LastGames({ navigation }) {
 	return (
-		<ScrollView style={{ flex: 1, height: "100%" }}>
-			<LinearGradient
-				colors={["#78c9ff", "#6699f8", "#5379f7", "#5867f7", "#8a54ee"]}
-				start={[0, 0]}
-				end={[1, 1]}
-			>    
+        <View>
+            <View style={{position:"absolute", x: 0, y:0}}>
+                <LinearGradient colors={['#78c9ff', '#6699f8', '#5379f7', '#5867f7', '#8a54ee']} start={[0,0]} end={[1,1]}>
+                    <View style={{minHeight: win.height, minWidth: win.width}}></View>
+                </LinearGradient>
+            </View>
+        
+		    <ScrollView> 
                 <View >
                     <View style={{ flexDirection: "row" }}>
                         <View style={ styles.dataCol } > 
@@ -72,24 +69,15 @@ function LastGames({ navigation }) {
                             <Text style={ styles.winText }>Detalhes</Text>
                         </View>
                     </View>
-
-
-                    <View style={ styles.fill }>
-
-                    </View>
                 </View>
-
-			</LinearGradient>
-		</ScrollView>
+		    </ScrollView>
+        </View>
 	);
 }
 
 export default LastGames;
 
 const styles = StyleSheet.create({
-    fill: {
-        height: 500,
-    },
     winText: {
         fontSize: 20,
 		fontFamily: "BubblegumSans",

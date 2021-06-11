@@ -52,7 +52,8 @@ function GatosCaesEngine() {
                                     player1: p1,
                                     player2: p2,
                                     user_id: user_id,
-                                    turn: "gatos"
+                                    turn: "gatos",
+                                    turnCount: 0
                                 });
                                 setPlayer1(p1);
                                 setPlayer2(p2);

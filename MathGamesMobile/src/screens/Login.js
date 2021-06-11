@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, StyleSheet, ScrollView, TextInput, TouchableHighlight, Dimensions, Alert } from 'react-native';
+import { Text, StyleSheet, ScrollView, TextInput, TouchableHighlight, Dimensions} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AuthService from "./../services/auth.service";
 
