@@ -310,7 +310,7 @@ io.on("connection", (socket) => {
       if ( Object.keys(active_friend_invites).includes(String(outro_id)) && active_friend_invites[outro_id]["outro_id"] === String(user_id)) {
         console.log("Vou criar e enviar!")
         create_game(match_id, game_id, user_id, outro_id, "amigo")
-        io.to( users_info[outro_id] ).emit("friend_joined", {"match_id": match_id, "player1": user_id, "player2": outro_id})
+        //io.to( users_info[outro_id] ).emit("friend_joined", {"match_id": match_id, "player1": user_id, "player2": outro_id})
       }
     }
   })
@@ -338,11 +338,12 @@ io.on("connection", (socket) => {
     io.to(socket.id).emit("invite_link", {"match_id": new_match_id});
     // After 2 minutes, the links expires
     setTimeout(() => { delete active_friend_link[new_match_id]; }, 120000);
-    console.log(active_friend_link)
+    console.log("Active friend link:", active_friend_link)
   })
 
   socket.on("entered_link", (msg) => {
     console.log("User conected through link.")
+
     if (msg["user_id"] !== null) {
       var match_id = msg["match_id"]
       var user_id = msg["user_id"]
@@ -392,23 +393,20 @@ io.on("connection", (socket) => {
   socket.on("move", (new_pos, user_id, match_id) => {
     user_id = String(user_id);
     match_id = String(match_id);
-
-    console.log(match_id)
-    console.log(current_games)
-    console.log(current_games[match_id])
-
+    console.log("--------------------------------------")
+    console.log("Games: ", current_games)
     console.log("New pos: ", new_pos)
-    console.log("Valid squares: ", current_games[match_id]['state']['valid_squares'])
-    //console.log("Is valid:", valid_move(user_id, match_id, new_pos) )
+    console.log("User id: ", user_id)
+    console.log("Match id: ", match_id)
+    console.log("-")
+    console.log("Checks:")
+    console.log(Object.keys(current_games).includes(match_id))
+    console.log(Object.keys(current_games[match_id]['users'] ).includes(user_id))
+    console.log("--------------------------------------")
     
-
-
-    console.log("vou verify")
     if ( Object.keys(current_games).includes(match_id) )
       if ( Object.keys(current_games[match_id]['users'] ).includes(user_id))
         if ( valid_move(user_id, match_id, new_pos) ) {
-          console.log("tou dentro de tudo")
-
           let opponent = current_games[match_id]['users'][user_id][0]
           console.log(opponent)
           console.log(users_info[opponent])
@@ -422,7 +420,9 @@ io.on("connection", (socket) => {
             current_games[match_id]['timers'][user_id].pause();
             current_games[match_id]['timers'][opponent].pause();
 
-            finish_game(match_id, "valid_move")
+            let endMode = current_games[match_id]['state']['extra'];
+
+            finish_game(match_id, endMode)
           
           }
         
@@ -447,6 +447,8 @@ io.on("connection", (socket) => {
 
 
 function create_game(match_id, game_id, user1, user2, game_type) {
+  user1 = String(user1);
+  user2 = String(user2);
 
   if (match_id === null)
     match_id = Object.keys(current_games).length;
@@ -491,16 +493,13 @@ function create_game(match_id, game_id, user1, user2, game_type) {
     current_games[match_id]['state']['player_0_first_move'] = true
     current_games[match_id]['state']['player_1_first_move'] = true
   }
-  
-  console.log("acabei criar jogo")
-  console.log(current_games)
+
   initiate_game(match_id)
   
 }
 
 function initiate_game(match_id) {
   console.log("Initiating.")
-  console.log(current_games);
   let user1 = current_games[match_id]['state']['player1'];
   let user2 = current_games[match_id]['state']['player2'];
 
@@ -515,14 +514,14 @@ function initiate_game(match_id) {
     if (u1 === null )
       username1 = user1;
     else {
-      username1 = u1.username
+      username1 = u1.dataValues.username
       current_games[match_id]['users'][user1] = [ current_games[match_id]['users'][user1][0], true ]
     }
 
     if (u2 === null)
       username2 = user2
     else {
-      username2 = u2.username
+      username2 = u2.dataValues.username
       current_games[match_id]['users'][user2] = [ current_games[match_id]['users'][user2][0], true ]
     }
 
@@ -543,6 +542,7 @@ function valid_move(user_id, match_id, new_pos) {
 }
 
 function validate_rastros_move(user_id, match_id, new_pos) {
+
   if (current_games[match_id]['state']['current_player'] !== user_id) {
     return false
   }
@@ -559,8 +559,6 @@ function validate_rastros_move(user_id, match_id, new_pos) {
 
   if ( valid_squares.has(current_pos) ) {
     valid_squares.clear()
-
-    console.log(valid_squares)
 
     valid_squares.add(current_pos-6);
     valid_squares.add(current_pos-7);
@@ -617,11 +615,13 @@ function validate_rastros_move(user_id, match_id, new_pos) {
 }
 
 function validate_gatoscaes_move(user_id, match_id, new_pos) {
-
+  
+  console.log("Entered validation.")
   if ( !( (current_games[match_id]['state']['player_0_valid_squares'].has(new_pos) && current_games[match_id]['state']['current_player'] === user_id) 
       || (current_games[match_id]['state']['player_1_valid_squares'].has(new_pos) && current_games[match_id]['state']['current_player'] === user_id) ) )
       return false
-
+  console.log("Validation passed.")
+  
   if (current_games[match_id]['state']['player_0_first_move'] && current_games[match_id]['state']['player1'] === user_id)
     current_games[match_id]['state']['player_0_first_move'] = false
   if (current_games[match_id]['state']['player_1_first_move'] && current_games[match_id]['state']['player2'] === user_id)
@@ -721,7 +721,6 @@ async function finish_game(match_id, endMode) {
   // Save GameMatch in the database
   var res = await GameMatch.create(gameMatch)
 
-    console.log(current_games)
   if (player_1_account_player === true || player_2_account_player === true) {
 
     if (game_type === "online") {
@@ -761,8 +760,8 @@ async function finish_game(match_id, endMode) {
     }
   }
 
-  io.to(users_info[player1]).emit("match_end", {"match_id": match_id, "match_result": player1_final_result, "end_mode": endMode, "extra": current_games[match_id]['state']['extra']});
-  io.to(users_info[player2]).emit("match_end", {"match_id": match_id, "match_result": player2_final_result, "end_mode": endMode, "extra": current_games[match_id]['state']['extra']});
+  io.to(users_info[player1]).emit("match_end", {"game_id": game_id, "match_id": match_id, "match_result": player1_final_result, "end_mode": endMode, "extra": current_games[match_id]['state']['extra']});
+  io.to(users_info[player2]).emit("match_end", {"game_id": game_id, "match_id": match_id, "match_result": player2_final_result, "end_mode": endMode, "extra": current_games[match_id]['state']['extra']});
 
   delete current_games[match_id];
   delete active_friend_link[match_id];

@@ -1,0 +1,45 @@
+.rules-tooltip > .tooltip-inner {
+    max-width: 20vw;
+}
+
+.rules-tooltip {
+    white-space:pre-wrap;
+    
+}
+
+.rule-button {
+    background-color: transparent;
+    padding: 0;
+}
+
+.btn-primary:hover {
+    color: transparent;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.btn-primary {
+    color: transparent;
+    background-color: transparent;
+    border-color: transparent;
+    height: 42px;
+    width: 42px;
+    border-radius: 70%;
+}
+
+.btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show > .btn-primary.dropdown-toggle {
+    color: transparent;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.btn-primary:not(:disabled):not(.disabled).active:focus, .btn-primary:not(:disabled):not(.disabled):active:focus, .show > .btn-primary.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0;
+}
+
+.btn-primary.focus, .btn-primary:focus {
+    color: transparent;
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: 0 0 0 0;
+}

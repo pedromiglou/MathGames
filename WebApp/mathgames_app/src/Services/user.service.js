@@ -8,6 +8,14 @@ class UserService {
         return res.json();
     }
 
+    async getUserByUsername(username) {
+        var url = urlAPI + 'api/users/username/' + username;
+        var res = await fetch(url);
+        if (res.status !== 200) 
+            return null;
+        return res.json();
+    }
+
     async getUserRanksById(userId) {
         var url = urlAPI + 'api/userranks/' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
@@ -320,6 +328,35 @@ class UserService {
         });
 
         return;  
+    }
+
+    convert_user_rank(accountRank) {
+        if (accountRank <= 25)
+			return 0
+		else if (accountRank <= 75)
+			return 1
+		else if (accountRank <= 175)
+			return 2
+		else if (accountRank <= 275)
+			return 3
+		else if (accountRank <= 400)
+			return 4
+		else if (accountRank <= 550)
+			return 5
+		else if (accountRank <= 700)
+			return 6
+		else if (accountRank <= 850)
+			return 7
+		else if (accountRank <= 1050)
+			return 8
+		else if (accountRank <= 1250)
+			return 9
+		else if (accountRank <= 1450)
+			return 10
+		else if (accountRank <= 1700)
+			return 11
+		else
+			return 12
     }
  
 }
