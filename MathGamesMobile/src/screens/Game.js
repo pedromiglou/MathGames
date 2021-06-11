@@ -2,6 +2,7 @@ import * as React from 'react';
 import {useState} from 'react';
 import {ScrollView, Dimensions, StyleSheet} from 'react-native';
 import RastrosEngine from './../games/rastros/RastrosEngine';
+import GatosCaesEngine from './../games/gatoscaes/GatosCaesEngine';
 import { LinearGradient } from 'expo-linear-gradient';
 import {readData, saveData} from './../utilities/AsyncStorage';
 import Loading from './../components/Loading';
@@ -38,10 +39,19 @@ function Game({navigation}) {
         });
     });
 
-    return (ready===-1) ? <Loading /> :
+    return (ready===-1) ?
+        <Loading />
+        :
+        (ready===0) ?
         <ScrollView contentContainerStyle={styles.scrollView}>
             <LinearGradient colors={['#78c9ff', '#6699f8', '#5379f7', '#5867f7', '#8a54ee']} start={[0,0]} end={[1,1]} style={styles.linearGradient}>
                 <RastrosEngine></RastrosEngine>
+            </LinearGradient>
+        </ScrollView>
+        :
+        <ScrollView contentContainerStyle={styles.scrollView}>
+            <LinearGradient colors={['#78c9ff', '#6699f8', '#5379f7', '#5867f7', '#8a54ee']} start={[0,0]} end={[1,1]} style={styles.linearGradient}>
+                <GatosCaesEngine></GatosCaesEngine>
             </LinearGradient>
         </ScrollView>
     ;
