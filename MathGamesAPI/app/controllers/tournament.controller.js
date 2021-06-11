@@ -1,8 +1,9 @@
 const db = require("../models");
 const Tournament = db.tournament;
 const TournamentUsers = db.tournament_users;
+const TournamentMatch = db.tournament_matches;
+const GameMatch = db.game_match;
 const Sequelize = db.Sequelize;
-const sequelize = db.sequelize;
 const Op = db.Sequelize.Op;
 
 const getPagination = (page, size) => {
@@ -72,7 +73,7 @@ exports.create = (req, res) => {
 
 
 // Entrar num torneio
-exports.entrarTorneio = (req, res) => {
+exports.join = (req, res) => {
   // Validate request
   if (!req.body) {
     res.status(400).send({
@@ -143,6 +144,126 @@ exports.entrarTorneio = (req, res) => {
               message: "Tournament is full!"
             });
           }
+      }).catch(err => {
+        res.status(500).send({
+          message: "An error occurred on the server. Operation was not concluded!"
+        });
+      });
+
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "An error occurred on the server. Operation was not concluded!"
+      });
+    });
+};
+
+
+
+
+
+// Initialize tournamnet
+exports.initialize = (req, res) => {
+  // Validate request
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!"
+    });
+    return;
+  }
+
+  var torneioId = req.body.tournament_id
+
+  Tournament.findByPk(torneioId)
+    .then(torneio => {
+      if (torneio.dataValues.status !== "PREPARING") {
+        res.status(500).send({
+          message: "The Tournament as started already."
+        });
+        return
+      }
+
+      if ( (parseInt(torneio.dataValues.creator) !== parseInt(req.userId))  && (req.account_type !== "A")) {
+        res.status(500).send({
+          message: "The tournament should be started by the creator or an admin."
+        });
+        return
+      }
+
+      TournamentUsers.findAll({where: {tournament_id: torneio.dataValues.id}}).then(async (tournament_users) => {
+
+          if (tournament_users.length !== torneio.dataValues.max_users) {
+            res.status(500).send({
+              message: "The tournament need to be full to start."
+            });
+            return
+          }
+          
+          var array_players_id = []
+          for (let player of tournament_users) {
+            array_players_id.push(player.dataValues.user_id)
+          }
+
+          var bracket = doBracket(torneio.dataValues.max_users, array_players_id)
+          var match_id_translation = {}
+
+          for (let game of bracket) {
+            // Create a GameMatch
+            const gameMatch = {
+              player1: game.player1,
+              player2: game.player2,
+              winner: null,
+              game_type: "online",
+              game_id: torneio.dataValues.game_id,
+            };
+
+            // Save GameMatch in the database
+            await GameMatch.create(gameMatch).then(game_match => {
+              match_id_translation[game.matchNo] = game_match.dataValues.id
+            }).catch(err => {
+              res.status(500).send({
+                message: "An error occurred on the server. Operation was not concluded!"
+              });
+            });
+          }
+
+          for (let game of bracket) {
+            // Create a TournamentMatch
+            const tournamentMatch = {
+              match_id: match_id_translation[game.matchNo],
+              tournament_id: torneio.dataValues.id,
+              roundNo: game.roundNo,
+              bye: game.bye,
+              lastGame1: match_id_translation[game.lastGames1],
+              lastGame2: match_id_translation[game.lastGames2],
+              nextGame: match_id_translation[game.nextGame],
+              player1: game.player1,
+              player2: game.player2
+            };
+
+            // Save TournamentMatch in the database
+            TournamentMatch.create(tournamentMatch)
+              .catch(err => {
+                res.status(500).send({
+                  message: "An error occurred on the server. Operation was not concluded!"
+                });
+              });
+          }
+          
+
+          Tournament.update( {status: "STARTED"}, {
+            where: { id: torneio.dataValues.id }
+          }).then(sucesso => {
+            res.status(200).send(
+              {message: "Tournament started with sucess!"}
+            )
+          }).catch(err => {
+            res.status(500).send({
+              message: "An error occurred on the server. Operation was not concluded!"
+            });
+          });
+
+
       }).catch(err => {
         res.status(500).send({
           message: "An error occurred on the server. Operation was not concluded!"
@@ -233,7 +354,8 @@ exports.findOne = (req, res) => {
 
   Tournament.findByPk(id)
     .then(data => {
-      res.send(data);
+      const { password, ...tournamentWithoutPassword } = data.dataValues;
+      res.send(tournamentWithoutPassword);
     })
     .catch(err => {
       res.status(500).send({
@@ -298,6 +420,20 @@ exports.delete = (req, res) => {
       }
     }
 
+    TournamentUsers.destroy({ where: {tournament_id: id}, truncate: false})
+      .catch(err => {
+        res.status(500).send({
+          message: "Could not delete Tournament with id=" + id
+        });
+      });
+
+    TournamentMatch.destroy({ where: {tournament_id: id}, truncate: false})
+      .catch(err => {
+        res.status(500).send({
+          message: "Could not delete Tournament with id=" + id
+        });
+      });
+
     Tournament.destroy({
       where: { id: id }
     })
@@ -342,3 +478,81 @@ exports.deleteAll = (req, res) => {
       });
     });
 };
+
+
+
+
+//////
+//
+// Funçóes EXTRA
+//
+//////
+
+function doBracket(base, players) {
+
+  var knownBrackets = [2,4,8,16,32,64] // brackets with "perfect" proportions (full fields, no byes)
+  //bracketCount = 0;
+  console.log(players)
+  shuffleArray(players)
+  console.log(players)
+
+  var closest 		= knownBrackets.filter(function (k) { return k>=base; }  ),
+  byes 			= closest-base;
+  
+  if(byes>0)	base = closest;
+
+  var brackets 	= [],
+  round 		= 1,
+  baseT 		= base/2,
+  baseC 		= base/2,
+  teamMark	= 0,
+  nextInc		= base/2;
+  
+  for(i=1;i<=(base-1);i++) {
+    var	baseR = i/baseT,
+      isBye = false;
+
+    if(byes>0 && (i%2!=0 || byes>=(baseT-i))) {
+      isBye = true;
+      byes--;
+    }
+
+    var filtrado = brackets.filter(bracketFilter)
+    var last = filtrado.map(bracketMap)
+
+    brackets.push({
+      matchNo:	i,
+      roundNo:	round,
+      lastGames1:	round==1 ? null : last[0].game,
+      lastGames2:	round==1 ? null : last[1].game,
+      nextGame:	nextInc+i>base-1?null:nextInc+i,
+      player1: round==1 ? players[teamMark] : null,
+      player2: round==1 ? players[teamMark+1] : null,
+      bye:		isBye
+    });
+    teamMark+=2;
+    if(i%2!=0)	nextInc--;
+    while(baseR>=1) {
+      round++;
+      baseC/= 2;
+      baseT = baseT + baseC;
+      baseR = i/baseT;
+    }
+  }
+
+  return(brackets);
+};
+
+function bracketFilter (b) { return b.nextGame == i; }
+function bracketMap (b) { return {game:b.matchNo,teams:b.teamnames} }
+
+
+/* Randomize array */
+function shuffleArray(array) {
+  for (var i = array.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+  }
+}

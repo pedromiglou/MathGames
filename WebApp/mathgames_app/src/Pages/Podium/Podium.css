@@ -117,3 +117,10 @@ ul.list-group{
 	text-align: center;
 	padding-top: 1em;
 }
+
+.form-center{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
