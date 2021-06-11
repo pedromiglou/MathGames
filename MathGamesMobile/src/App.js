@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, View, Image, StyleSheet, Dimensions, TouchableHighlight } from 'react-native';
+import { Text, View, Image, StyleSheet, Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -10,6 +10,7 @@ import Login from './screens/Login';
 import Profile from './screens/Profile';
 import LastGames from './screens/LastGames';
 import Inventory from './screens/Inventory';
+import Friends from './screens/Friends';
 
 import { Feather } from '@expo/vector-icons';
 import Constants from 'expo-constants';
@@ -40,8 +41,8 @@ function Games() {
   }, [currentGame]);
   return (
     <Stack.Navigator screenOptions={{headerStyle: {backgroundColor: '#78c9ff'}}}>
-      <Stack.Screen name="ChooseGame" options={{headerTitle: () => (<Text style={styles.header}>Jogos</Text>)}} component={ChooseGame} />
-      <Stack.Screen name="GamePage" options={{
+      <Stack.Screen name="Jogos" options={{headerTitle: () => (<Text style={styles.header}>Jogos</Text>)}} component={ChooseGame} />
+      <Stack.Screen name="Jogo" options={{
         headerTitle: () => (<Text style={styles.headerWithArrow}>{currentGame.title}</Text>),
         headerTintColor: "white",
         headerTitleAlign: "center"
@@ -61,7 +62,7 @@ function ProfileNav() {
 
   return (
     <StackProfile.Navigator screenOptions={{headerStyle: {backgroundColor: '#78c9ff'}}}>
-      <StackProfile.Screen name="Profile" options={{headerTitle: () => (<Text style={styles.header}>Perfil</Text>)}} component={Profile} />
+      <StackProfile.Screen name="Perfil" options={{headerTitle: () => (<Text style={styles.header}>Perfil</Text>)}} component={Profile} />
       <StackProfile.Screen name="Inventory" options={{
         headerTitle: () => (<Text style={styles.headerWithArrow}>Inventário</Text>),
         headerTintColor: "white",
@@ -128,13 +129,22 @@ function App() {
           <Login return={setLogin} login={setLoggedIn}/>
           :
           <Drawer.Navigator>
-            <Drawer.Screen name="Welcome" component={Welcome} />
-            <Drawer.Screen name="Games" component={Games} />
-            {loggedIn && <Drawer.Screen name="Tournaments" component={Welcome} />}
-            <Drawer.Screen name="Rankings" component={Welcome} />
-            <Drawer.Screen name="Settings" component={Welcome} />
-            {loggedIn && <Drawer.Screen name="Profile" component={ProfileNav} />}
-            <Drawer.Screen name="About us" component={Welcome} />
+            <Drawer.Screen name="Bem-vindo" component={Welcome} options={{
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Bem-vindo</Text>)}}/>
+            <Drawer.Screen name="Jogos" component={Games} options={{
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Jogos</Text>)}}/>
+            {loggedIn && <Drawer.Screen name="Tournaments" component={Welcome} options={{
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Torneios</Text>)}}/>}
+            <Drawer.Screen name="Classificações" component={Welcome} options={{
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Classificações</Text>)}}/>
+            <Drawer.Screen name="Definições" component={Welcome} options={{
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Definições</Text>)}}/>
+            {loggedIn && <Drawer.Screen name="Profile" component={ProfileNav} options={{
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Perfil</Text>)}}/>}
+            {loggedIn && <Drawer.Screen name="Amigos" component={Friends} options={{
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Amigos</Text>)}}/>}
+            <Drawer.Screen name="Sobre Nós" component={Welcome} options={{
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Sobre nós</Text>)}}/>
           </Drawer.Navigator>
         }
       </NavigationContainer>

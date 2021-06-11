@@ -216,7 +216,7 @@ class Inventory extends React.Component {
 							<View>
 								<TouchableHighlight
 									onPress={() =>
-										navigation.navigate("Profile")
+										navigation.navigate("Perfil")
 									}
 									style={styles.buttonDownL}
 								>
@@ -228,7 +228,7 @@ class Inventory extends React.Component {
 							<View>
 								<TouchableHighlight
 									onPress={() =>
-										navigation.navigate("LastGames")
+										navigation.navigate("Perfil")
 									}
 									style={styles.buttonDownR}
 								>
@@ -259,7 +259,7 @@ class Inventory extends React.Component {
 							<View>
 								<TouchableHighlight
 									onPress={() =>
-										navigation.navigate("Profile")
+										navigation.navigate("Perfil")
 									}
 									style={styles.buttonDownL}
 								>
@@ -271,7 +271,7 @@ class Inventory extends React.Component {
 							<View>
 								<TouchableHighlight
 									onPress={() =>
-										navigation.navigate("LastGames")
+										navigation.navigate("Perfil")
 									}
 									style={styles.buttonDownR}
 								>
@@ -304,7 +304,7 @@ class Inventory extends React.Component {
 							<View>
 								<TouchableHighlight
 									onPress={() =>
-										navigation.navigate("Profile")
+										navigation.navigate("Perfil")
 									}
 									style={styles.buttonDownL}
 								>
@@ -316,7 +316,7 @@ class Inventory extends React.Component {
 							<View>
 								<TouchableHighlight
 									onPress={() =>
-										navigation.navigate("LastGames")
+										navigation.navigate("Perfil")
 									}
 									style={styles.buttonDownR}
 								>
@@ -372,7 +372,7 @@ class Inventory extends React.Component {
 							<View>
 								<TouchableHighlight
 									onPress={() =>
-										navigation.navigate("Profile")
+										navigation.navigate("Perfil")
 									}
 									style={styles.buttonDownL}
 								>
@@ -384,7 +384,7 @@ class Inventory extends React.Component {
 							<View>
 								<TouchableHighlight
 									onPress={() =>
-										navigation.navigate("LastGames")
+										navigation.navigate("Perfil")
 									}
 									style={styles.buttonDownR}
 								>
@@ -428,7 +428,7 @@ class Inventory extends React.Component {
 								<View>
 									<TouchableHighlight
 										onPress={() =>
-											navigation.navigate("Profile")
+											navigation.navigate("Perfil")
 										}
 										style={styles.buttonDownL}
 									>
@@ -440,7 +440,7 @@ class Inventory extends React.Component {
 								<View>
 									<TouchableHighlight
 										onPress={() =>
-											navigation.navigate("LastGames")
+											navigation.navigate("Perfil")
 										}
 										style={styles.buttonDownR}
 									>

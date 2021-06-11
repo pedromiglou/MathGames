@@ -1,10 +1,22 @@
 import * as React from 'react';
+import {useState, useEffect} from 'react';
 import {ScrollView, Text, Image, Dimensions, StyleSheet, TouchableHighlight, View} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import UserService from "./../services/user.service";
 
 const win = Dimensions.get('window');
 
 function Welcome({ navigation }) {
+    const [friends, setFriends] = useState(["A", "B"]);
+    useEffect(() => {
+        let mounted = true;
+        UserService.getFriends().then(res=>{
+            setFriends(res);
+            console.log(res[0].username);
+        });
+        return () => {mounted=false}
+      }, [friends]);
+    
     return (
       <View>
         <View style={{position:"absolute", x: 0, y:0}}>
@@ -13,6 +25,9 @@ function Welcome({ navigation }) {
           </LinearGradient>
         </View>
         <ScrollView>
+            {friends.map(friend => {
+                <Text style={styles.title}>{friend.username}</Text>
+            })}
             <Text style={styles.title}>Bem-vindo ao MathGames!</Text>
 
             <Image

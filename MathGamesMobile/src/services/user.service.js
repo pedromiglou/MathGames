@@ -1,7 +1,9 @@
-/*import {urlAPI} from "./../data/data";
+import {urlAPI} from "./../data/data";
+import {readData, saveData} from "./../utilities/AsyncStorage";
 
 class UserService {
 
+    /*
     async getUserById(userId) {
         var url = urlAPI + 'api/users/' + userId;
         var res = await fetch(url);
@@ -12,17 +14,21 @@ class UserService {
         var url = urlAPI + 'api/userranks/' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         return res.json();
-    }
+    }*/
 
 
-    async getFriends(userId) {
-        var url = urlAPI + 'api/friends/' + userId;
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+    async getFriends() {
+        var user = JSON.parse(JSON.parse(await readData("user")));
+        var url = urlAPI + 'api/friends/' + user.id;
+        var token = user.token; 
+
+        var res = await fetch(url, {headers: {'x-access-token': token}});
         if (res.status !== 200) 
             return { error: true };
         return res.json();
     }
 
+    /*
     async getNotifications(userId) {
         var url = urlAPI + 'api/notifications/' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
@@ -320,9 +326,8 @@ class UserService {
         });
 
         return;  
-    }
+    }*/
  
 }
 
 export default new UserService();
-*/

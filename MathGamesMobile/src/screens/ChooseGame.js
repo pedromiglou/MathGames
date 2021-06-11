@@ -18,7 +18,7 @@ function ChooseGame({ navigation }) {
         {gamesInfo.map(X => 
           <TouchableHighlight style={styles.gameTile} key={X.id} onPress = {() => {
                 saveData("game", X);
-                navigation.navigate('GamePage');
+                navigation.navigate('Jogo');
               }
             }>
             <View>
