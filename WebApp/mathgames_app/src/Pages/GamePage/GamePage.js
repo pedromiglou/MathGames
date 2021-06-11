@@ -19,6 +19,8 @@ import { ranks_info } from '../../data/ranksInfo';
 import { useDispatch } from 'react-redux';
 import { addMatch } from '../../store/modules/matches/actions';
 
+import { RulesTooltip } from '../../Components/RulesTooltip';
+
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
 function GamePage() {
 	var user = AuthService.getCurrentUser();
@@ -331,8 +333,6 @@ function GamePage() {
 
 	}, [name1,name2]);
 
-
-
 	if ( gerarLinkMode ) {
 		return (
 			<div className="col-lg-12 link-geral-position">
@@ -368,7 +368,14 @@ function GamePage() {
 				<div className="container choose-game-mode-container">
 				<div className="row">
 					<div className="col-lg-4 game-details orange left">
-						<h1 className="game-Name"> {game_info["title"]} </h1>
+						<div className="row">
+							<div className="col-10">
+								<h1 className="game-Name"> {game_info["title"]} </h1>
+							</div>
+							<div className="col-2 d-flex justify-content-end">
+								<RulesTooltip rules={game_info['rules']} website={game_info['website']}></RulesTooltip>
+							</div>
+						</div> 
 						<div className="image">
 							<img
 							src={game_info["img"]}

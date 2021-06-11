@@ -11,8 +11,12 @@ export const games_info =
             description: "Jogadores partilham as peças e efetuam uma corrida com uma “bola”, na tentativa de marcar um “auto-golo” ou de encurralar o adversário.",
             age: 6,
             toBeDone: false,
-            dificulty: 20
-            
+            dificulty: 20,
+            rules:  "- Cada jogador, alternadamente, desloca a peça branca para um quadrado vazio adjacente.\n" +
+                    "- A casa onde se encontrava a peça branca recebe uma peça negra. As casas que recebem peças negras não podem ser ocupadas pela peça branca.\n" +
+                    "- O jogo começa com a peça branca na casa e5.", 
+            website: "http://ludicum.org/jogos/abstr/rastros/ludus-jogos-rastros.pdf/view"
+
         },
     
         1: {
@@ -24,7 +28,12 @@ export const games_info =
             description: "Jogo de estratégia que tem como objetivo colocar por último uma peça no tabuleiro, deixando o adversário sem mais opções de jogada.",
             age: 6,
             toBeDone: false,
-            dificulty: 40
+            dificulty: 40,
+            rules:  "- Cada jogador, alternadamente, coloca uma peça sua numa casa vazia.\n" +
+                    "- Começam os Gatos. O primeiro gato deve ser colocado na zona central (indicada com cruzes) e o primeiro cão deve ser colocado fora da zona central.\n" +
+                    "- Quando colocam um novo bicho de estimação no tabuleiro, os jogadores não podem colocar um gato ao lado de um cão (na horizontal ou na vertical) nem um cão ao lado de um gato.\n" +
+                    "- Ganha o jogador que realizar a última jogada.", 
+            website: "http://ludicum.org/jogos/abstr/gatos-caes/ludus-jogos-gatoscaes.pdf/view" 
         },
     
         2: {

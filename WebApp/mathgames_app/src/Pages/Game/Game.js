@@ -32,8 +32,10 @@ function Game()  {
     function processGameOver(msg) {
         gameOverModalRef.current.processGameOver(msg);
 
-        gameTimer1Ref.current.pause();
-        gameTimer2Ref.current.pause();
+        if (game_mode!=="ai") {
+            gameTimer1Ref.current.pause();
+            gameTimer2Ref.current.pause();
+        }
 
     }
 
@@ -49,7 +51,12 @@ function Game()  {
     }
 
     function triggerFinishGame(gameOverMessage) {
-        activeGameRef.current.getGame().scene.getScene("RastrosScene").finish_game(gameOverMessage);
+        const sceneNames = {0: "RastrosScene", 1: "GatosCaesScene"};
+        
+        let game = activeGameRef.current.getGame();
+        let scene = game.scene.getScene(sceneNames[game_id]);
+        
+        scene.finish_game(gameOverMessage);
     }
 
     function getCurrentPlayerCard() {
@@ -138,7 +145,7 @@ function Game()  {
                 }
                 {game_id===1 &&
                     <div id="my_div_game" className="container-canvas" style={{width: '1200px', height: '624px'}}>
-                        <GatosCaesEngine process_game_over={processGameOver} arg_game_mode={game_mode} arg_ai_diff={ai_diff} curr_match={current_match.current}></GatosCaesEngine>
+                        <GatosCaesEngine ref={activeGameRef} trigger_timer_switch={triggerTimerSwitch} process_game_over={processGameOver} arg_game_mode={game_mode} arg_ai_diff={ai_diff} curr_match={current_match.current}></GatosCaesEngine>
                     </div>
                 }
             </div>

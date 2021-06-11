@@ -38,8 +38,6 @@ export const RastrosEngine = forwardRef(({trigger_timer_switch, process_game_ove
             scene: [newScene]
         }
         gameInstance.current = new Phaser.Game(config);
-        console.log(1)
-        // newScene.finish_game({game_id: 0, match_id: current_match['match_id'], match_result: "ai_win", ai_difficulty: "easy"})
     }, [trigger_timer_switch, process_game_over, arg_game_mode, arg_ai_diff, curr_match]);
 
     useImperativeHandle(ref, () => ({
@@ -104,7 +102,6 @@ class RastrosScene extends Phaser.Scene {
             this.player.add(1);
 
         if ( game_mode === "online" || game_mode === "amigo" ) {
-            console.log("tou criar listeners")
             if ( AuthService.getCurrentUsername() === current_match['player1'] )
                 this.player.add(1);
             else
@@ -253,8 +250,8 @@ class RastrosScene extends Phaser.Scene {
                 return;
             }
         }
-        
-        triggerTimerSwitch(this.current_player);
+        if (game_mode!=="ai")
+            triggerTimerSwitch(this.current_player);
         this.current_player = this.current_player===1 ? 2 : 1
         this.current_player_text.setText("Jogador " + this.current_player);
 
@@ -273,7 +270,6 @@ class RastrosScene extends Phaser.Scene {
         atualizarUserInfo();
     }
 }
-
 
 async function atualizarUserInfo() {
     if (!AuthService.isAuthenticated())

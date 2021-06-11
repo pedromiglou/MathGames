@@ -1,20 +1,22 @@
-import  React, { useEffect } from "react";
+import  React, { useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import Phaser from "phaser";
 import socket from "../../index"
 import AuthService from '../../Services/auth.service';
 import UserService from '../../Services/user.service';
 import GatosCaesAI from "../AI/GatosCaesAI";
 
-var game_mode, ai_diff, auth_user, current_match, processGameOver;
+var game_mode, ai_diff, auth_user, current_match, processGameOver, triggerTimerSwitch;
 
-export const GatosCaesEngine = ({process_game_over, arg_game_mode, arg_ai_diff, curr_match}) => {
+export const GatosCaesEngine = forwardRef(({trigger_timer_switch, process_game_over, arg_game_mode, arg_ai_diff, curr_match}, ref) => {
+    var gameInstance = useRef();
+
     useEffect(() => {
         // Clear listeners to make sure there are no repeated events
-        socket.off("match_end");
         socket.off("move_piece");
 
         current_match = curr_match;
         processGameOver = process_game_over;
+        triggerTimerSwitch = trigger_timer_switch;
         game_mode = arg_game_mode;
         auth_user = AuthService.getCurrentUser();
 
@@ -25,20 +27,28 @@ export const GatosCaesEngine = ({process_game_over, arg_game_mode, arg_ai_diff, 
         else
             ai_diff = 0.8
 
+        let newScene = new GatosCaesScene();
         const config = {
             parent: document.getElementById("my_div_game"),
             transparent: true,
-            type: Phaser.WEBGL,
+            type: Phaser.AUTO,
             scale: {
                 mode: Phaser.Scale.RESIZE
             },
-            scene: [GatosCaesScene]
+            scene: [newScene]
         }
-        new Phaser.Game(config);
-    }, [process_game_over, arg_game_mode, arg_ai_diff, curr_match]);
-    
+        gameInstance.current = new Phaser.Game(config);
+    }, [trigger_timer_switch, process_game_over, arg_game_mode, arg_ai_diff, curr_match]);
+
+    useImperativeHandle(ref, () => ({
+
+        getGame() {
+            return gameInstance.current;
+        }
+    }));
+
     return (<></>);
-}
+});
 
 class GatosCaesScene extends Phaser.Scene {
 	constructor() {
@@ -84,11 +94,11 @@ class GatosCaesScene extends Phaser.Scene {
             this.player.add(0);
 
         if ( game_mode === "online" || game_mode === "amigo" ) {
-            if ( sessionStorage.getItem("starter") === "false" )
-                this.player.add(1);
-            else
+            if ( AuthService.getCurrentUsername() === current_match['player1'] )
                 this.player.add(0);
-            
+            else
+                this.player.add(1);
+
             socket.on("move_piece", (new_pos) => {
                 console.log("Received move: ", new_pos);
                 this.move(this.squares_group.getChildren()[new_pos]);
@@ -98,7 +108,6 @@ class GatosCaesScene extends Phaser.Scene {
                 console.log("Game Over Received")
                 if (this.game_over === false)
                     this.finish_game(msg)
-                atualizarUserInfo();
             })
         }
 
@@ -119,8 +128,6 @@ class GatosCaesScene extends Phaser.Scene {
             }
         }
 
-        if (this.player.size===1)
-            this.add.text(624+60, 30, "És o jogador " + (this.player.values().next().value+1), {font: "40px Impact", color: "Orange"});
         this.add.text(624+40, 120, "É a vez do jogador:", {font: "40px Impact", color: "Orange"});
         this.current_player_text = this.add.text(624+95, 180, "Jogador " + this.current_player, {font: "40px Impact", color: "Orange"});
     }
@@ -161,6 +168,7 @@ class GatosCaesScene extends Phaser.Scene {
 
         var adjacents = new Set([current_pos-1, current_pos+1, current_pos-8, current_pos+8]);
 
+        // Remove out of borders positions
         if ( [0,1,2,3,4,5,6,7].includes(current_pos) )
             adjacents.delete(current_pos-8);
 
@@ -188,12 +196,21 @@ class GatosCaesScene extends Phaser.Scene {
         // Check for win conditions
         if ( game_mode === "offline" || game_mode === "ai" ) {
             let winner = "";
+            let endMode = "";
 
-            if ( this.valid_squares[1 - this.current_player].size === 0 )
+            if ( this.valid_squares[1 - this.current_player].size === 0 ) {
                 winner = "player" + String(1+this.current_player);
+                endMode = "no_moves";
+            }
 
             if ( winner !== "" ) {
-                this.finish_game( {match_id: current_match['match_id'], match_result: winner, end_mode: "valid_move"} );
+                if ( game_mode === "ai" ) {
+                    let ai_result = winner === current_match["player1"] ? "ai_win" : "ai_loss";
+                    let aiDifficulty = ai_diff === 0.2 ? "fácil" : ai_diff === 0.5 ? "média" : "difícil";
+                    this.finish_game( {game_id: 1, match_id: current_match['match_id'], match_result: ai_result, ai_difficulty: aiDifficulty} );
+                    return;
+                }
+                this.finish_game( {game_id: 1, match_id: current_match['match_id'], match_result: "offline_finish", end_mode: endMode, winner: winner} );
                 return;
             }
         }
@@ -205,7 +222,8 @@ class GatosCaesScene extends Phaser.Scene {
                 this.gcAI.aiPieces[tmpPieceCoords[0]][tmpPieceCoords[1]] = true;
         }
 
-        // Update player text
+        if (game_mode!=="ai")
+            triggerTimerSwitch(this.current_player+1);
         this.current_player = 1 - this.current_player;
         this.current_player_text.setText("Jogador " + (this.current_player+1));
     }
@@ -215,12 +233,20 @@ class GatosCaesScene extends Phaser.Scene {
             return;
 
         this.game_over = true;
+        this.valid_squares[0].clear();
+        this.valid_squares[1].clear();
+        this.player.clear();
+        this.squares_group.getChildren().forEach(x => x.disableInteractive());
 
         processGameOver(end_message);
+        atualizarUserInfo();
     }
 }
 
 async function atualizarUserInfo() {
+    if (!AuthService.isAuthenticated())
+        return;
+
     var response = await UserService.getUserById(auth_user.id)
     var newResponse = await UserService.getUserRanksById(auth_user.id)
     response["token"] = JSON.parse(sessionStorage.getItem("user"))["token"]
@@ -228,9 +254,6 @@ async function atualizarUserInfo() {
     sessionStorage.setItem("user", JSON.stringify(response));
 }
 
-
-
 function set_diff(a, b) {
-    var c = new Set( [...a].filter(x => !b.has(x)) )
-    return c
+    return new Set( [...a].filter(x => !b.has(x)) )
 }

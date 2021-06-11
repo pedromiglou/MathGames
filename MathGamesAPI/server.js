@@ -393,21 +393,20 @@ io.on("connection", (socket) => {
   socket.on("move", (new_pos, user_id, match_id) => {
     user_id = String(user_id);
     match_id = String(match_id);
-
-    console.log(match_id)
-    console.log(current_games)
-    console.log(current_games[match_id])
-
+    console.log("--------------------------------------")
+    console.log("Games: ", current_games)
     console.log("New pos: ", new_pos)
-    console.log("Valid squares: ", current_games[match_id]['state']['valid_squares'])
-
+    console.log("User id: ", user_id)
+    console.log("Match id: ", match_id)
+    console.log("-")
+    console.log("Checks:")
     console.log(Object.keys(current_games).includes(match_id))
     console.log(Object.keys(current_games[match_id]['users'] ).includes(user_id))
+    console.log("--------------------------------------")
+    
     if ( Object.keys(current_games).includes(match_id) )
       if ( Object.keys(current_games[match_id]['users'] ).includes(user_id))
         if ( valid_move(user_id, match_id, new_pos) ) {
-          console.log("tou dentro de tudo")
-
           let opponent = current_games[match_id]['users'][user_id][0]
           console.log(opponent)
           console.log(users_info[opponent])
@@ -616,11 +615,13 @@ function validate_rastros_move(user_id, match_id, new_pos) {
 }
 
 function validate_gatoscaes_move(user_id, match_id, new_pos) {
-
+  
+  console.log("Entered validation.")
   if ( !( (current_games[match_id]['state']['player_0_valid_squares'].has(new_pos) && current_games[match_id]['state']['current_player'] === user_id) 
       || (current_games[match_id]['state']['player_1_valid_squares'].has(new_pos) && current_games[match_id]['state']['current_player'] === user_id) ) )
       return false
-
+  console.log("Validation passed.")
+  
   if (current_games[match_id]['state']['player_0_first_move'] && current_games[match_id]['state']['player1'] === user_id)
     current_games[match_id]['state']['player_0_first_move'] = false
   if (current_games[match_id]['state']['player_1_first_move'] && current_games[match_id]['state']['player2'] === user_id)

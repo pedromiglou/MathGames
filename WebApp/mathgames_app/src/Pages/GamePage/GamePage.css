@@ -37,7 +37,24 @@
 
 /* game details */
 .game-Name {
-    font-size: 4rem;
+    font-size: 3.5rem;
+}
+
+.title-rule {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.rules-tooltip > .tooltip-inner {
+    max-width: 20vw;
+}
+
+.rules-tooltip {
+    white-space:pre-wrap;
+    max-width: 20vw;
 }
 
 .game-image{
