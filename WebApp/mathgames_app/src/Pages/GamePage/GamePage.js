@@ -8,6 +8,7 @@ import "./GamePage.css";
 import { games_info } from "../../data/GamesInfo";
 import socket from "../../index"
 import AuthService from '../../Services/auth.service';
+import userService from '../../Services/user.service';
 
 import * as RiIcons from "react-icons/ri";
 import * as FaIcons from "react-icons/fa";
@@ -17,6 +18,8 @@ import { ranks_info } from '../../data/ranksInfo';
 
 import { useDispatch } from 'react-redux';
 import { addMatch } from '../../store/modules/matches/actions';
+
+import { RulesTooltip } from '../../Components/RulesTooltip';
 
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
 function GamePage() {
@@ -137,32 +140,7 @@ function GamePage() {
 			userRankValue = user.userRanksData.gatos_e_caes
 		}
 
-		if (userRankValue <= 25)
-			userRank = 0
-		else if (userRankValue <= 75)
-			userRank = 1
-		else if (userRankValue <= 175)
-			userRank = 2
-		else if (userRankValue <= 275)
-			userRank = 3
-		else if (userRankValue <= 400)
-			userRank = 4
-		else if (userRankValue <= 550)
-			userRank = 5
-		else if (userRankValue <= 700)
-			userRank = 6
-		else if (userRankValue <= 850)
-			userRank = 7
-		else if (userRankValue <= 1050)
-			userRank = 8
-		else if (userRankValue <= 1250)
-			userRank = 9
-		else if (userRankValue <= 1450)
-			userRank = 10
-		else if (userRankValue <= 1700)
-			userRank = 11
-		else
-			userRank = 12
+		userRank = userService.convert_user_rank(userRankValue);
 	}
 
 
@@ -275,7 +253,7 @@ function GamePage() {
 				setGerarLinkMode(true);
 			})
 
-			socket.once("friend_joined", (msg) => {
+			socket.once("match_found", (msg) => {
 				console.log("Friend just joined!");
 				var match = { match_id: msg['match_id'], player1: msg['player1'], player2: msg['player2'] };
 				dispatch( addMatch(match) );
@@ -355,8 +333,6 @@ function GamePage() {
 
 	}, [name1,name2]);
 
-
-
 	if ( gerarLinkMode ) {
 		return (
 			<div className="col-lg-12 link-geral-position">
@@ -392,11 +368,18 @@ function GamePage() {
 				<div className="container choose-game-mode-container">
 				<div className="row">
 					<div className="col-lg-4 game-details orange left">
-						<h1 className="game-Name"> {game_info["title"]} </h1>
+						<div className="row">
+							<div className="col-10">
+								<h1 className="game-Name"> {game_info["title"]} </h1>
+							</div>
+							<div className="col-2 d-flex justify-content-end">
+								<RulesTooltip rules={game_info['rules']} website={game_info['website']}></RulesTooltip>
+							</div>
+						</div> 
 						<div className="image">
 							<img
 							src={game_info["img"]}
-							alt="Info"
+							alt="Imagem de Jogo"
 							className="game-image"
 							/>	
 						</div>
@@ -450,7 +433,7 @@ function GamePage() {
 												process.env.PUBLIC_URL +
 												ranks_info[userRank-1].image
 											}
-											alt="Info"
+											alt="Rank"
 											className="a-n-rank-img"
 										/>
 
@@ -470,7 +453,7 @@ function GamePage() {
 												process.env.PUBLIC_URL +
 												ranks_info[userRank].image
 											}
-											alt="Info"
+											alt="Rank Anterior"
 											className="rank-img"
 										/>
 										<h4>{ranks_info[userRank].name}</h4>
@@ -491,7 +474,7 @@ function GamePage() {
 												process.env.PUBLIC_URL +
 												ranks_info[userRank+1].image
 											}
-											alt="Info"
+											alt="Rank Seguinte"
 											className="a-n-rank-img"
 										/>
 										<h4>{ranks_info[userRank+1].name}</h4>
