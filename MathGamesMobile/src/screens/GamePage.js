@@ -75,7 +75,7 @@ function GamePage({navigation}) {
           <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
             <View style={styles.buttonView}>
               <MaterialCommunityIcons name="sword-cross" size={22} color="black" style={styles.icon}/>
-              <Text style={styles.modeName}>Competitivo</Text>
+              <Text style={styles.modeName}> Competitivo</Text>
             </View>
           </LinearGradient>
         </TouchableHighlight>
@@ -89,7 +89,7 @@ function GamePage({navigation}) {
           <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
             <View style={styles.buttonView}>
               <FontAwesome5 name="robot" size={22} color="black" style={styles.icon} />
-              <Text style={styles.modeName}>Contra o Computador</Text>
+              <Text style={styles.modeName}>Contra o Telemóvel</Text>
             </View>
           </LinearGradient>
         </TouchableHighlight>
@@ -165,7 +165,7 @@ function GamePage({navigation}) {
           <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
             <View style={styles.buttonView}>
               <Ionicons name="md-people-sharp" size={22} color="black" style={styles.icon} />
-              <Text style={styles.modeName}>No mesmo Computador</Text>
+              <Text style={styles.modeName}> No mesmo Telemóvel</Text>
             </View>
           </LinearGradient>
         </TouchableHighlight>
@@ -200,7 +200,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#CCFFFF",
     borderWidth: 2,
     borderColor: "white",
-    marginBottom: 20
   },
   buttonView: {
     flexDirection: "row",

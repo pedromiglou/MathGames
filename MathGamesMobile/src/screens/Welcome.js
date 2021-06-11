@@ -43,16 +43,15 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   image: {
-      flex: 0.60,
       alignSelf: 'stretch',
       width: win.width,
-      height: win.width*558/668-20,
+      height: win.width*500/800,
       padding: 10,
       margin: 0
   },
   text: {
     fontSize: 20,
-    padding: 20,
+    padding: 10,
     textAlign:'center',
     fontFamily: 'BubblegumSans',
     color: 'white'
@@ -61,8 +60,8 @@ const styles = StyleSheet.create({
     marginRight:40,
     marginLeft:40,
     marginTop:10,
-    paddingTop:10,
-    paddingBottom:10,
+    paddingTop:15,
+    paddingBottom:15,
     backgroundColor:'#3a4e60',
     borderRadius:30,
   },
