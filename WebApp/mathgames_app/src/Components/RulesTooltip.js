@@ -9,29 +9,25 @@ export const RulesTooltip = ({rules, website}) => {
     const target = useRef(null);
   
     return (
-      <>
-        <Button ref={target} onClick={() => setShow(!show)} className="rule-button align-self-center">
-            <FaIcons.FaQuestionCircle size={42}/>
-        </Button>
-        <Overlay target={target.current} show={show} placement="bottom">
-          {({ placement, arrowProps, show: _show, popper, ...props }) => (
-            <div 
-                {...props} 
-                style={{backgroundColor: 'black', padding: '2px 10px', color: 'white', borderRadius: 10, ...props.style, maxWidth: '20vw'}}
-                className="rules-tooltip"
-            >
+        <>
+            <Button ref={target} onClick={() => setShow(!show)} className="rule-button align-self-center">
+                <FaIcons.FaQuestionCircle size={42}/>
+            </Button>
+            <Overlay target={target.current} show={show} placement="bottom">
+            {({ placement, arrowProps, show: _show, popper, ...props }) => (
+                <div
+                    {...props} 
+                    style={{backgroundColor: 'black', padding: '2px 10px', color: 'white', borderRadius: 10, ...props.style, maxWidth: '20vw'}}
+                    className="rules-tooltip"
+                >
                 <p className="text-left">
                     <b>Regras:</b>
                     <br/>
                     <p style={{paddingLeft: '5px'}}>{rules}</p>
-                    <br/>
-                    <b>Mais informação:</b>
-                    <br/>
-                    <p style={{paddingLeft: '5px'}}><a href={website} target="blank">{website}</a></p>
-			    </p>
-            </div>
-          )}
-        </Overlay>
-      </>
+                </p>
+                </div>
+            )}
+            </Overlay>
+        </>
     );
 }

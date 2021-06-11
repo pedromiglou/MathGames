@@ -12,11 +12,10 @@ export const games_info =
             age: 6,
             toBeDone: false,
             dificulty: 20,
-            rules:  "- Cada jogador, alternadamente, desloca a peça branca para um quadrado vazio adjacente.\n" +
-                    "- A casa onde se encontrava a peça branca recebe uma peça negra. As casas que recebem peças negras não podem ser ocupadas pela peça branca.\n" +
-                    "- O jogo começa com a peça branca na casa e5.", 
-            website: "http://ludicum.org/jogos/abstr/rastros/ludus-jogos-rastros.pdf/view"
-
+            
+            rules:  "- Cada jogador deloca a peça de forma alternada para um dos quadrados adjacentes que não esteja bloqueado.\n" +
+                    "- A posição onde estava a peça é boqueada, sendo que a peça branca não se pode deslocar para posições bloqueadas.\n" +
+                    "- O jogo começa com a peça na posição e5.",
         },
     
         1: {
@@ -29,11 +28,11 @@ export const games_info =
             age: 6,
             toBeDone: false,
             dificulty: 40,
-            rules:  "- Cada jogador, alternadamente, coloca uma peça sua numa casa vazia.\n" +
-                    "- Começam os Gatos. O primeiro gato deve ser colocado na zona central (indicada com cruzes) e o primeiro cão deve ser colocado fora da zona central.\n" +
-                    "- Quando colocam um novo bicho de estimação no tabuleiro, os jogadores não podem colocar um gato ao lado de um cão (na horizontal ou na vertical) nem um cão ao lado de um gato.\n" +
-                    "- Ganha o jogador que realizar a última jogada.", 
-            website: "http://ludicum.org/jogos/abstr/gatos-caes/ludus-jogos-gatoscaes.pdf/view" 
+            rules:  "- O jogador 1 corresponde aos gatos, o jogador 2 corresponde aos cães.\n" +
+                    "- Cada jogador coloca, de forma alternada, uma peça numa casa vazia.\n" +
+                    "- Começam os Gatos e o primeiro gato deve ser colocado em uma das quatro posições centrais do tabuleiro (indicada com cruzes). O primeiro cão deve ser colocado fora dessas quatro posições.\n" +
+                    "- Os jogadores não podem colocar um gato ao lado de um cão, nem um cão ao lado de um gato (na horizontal ou na vertical).\n" +
+                    "- O primeiro jogador a ficar sem posições onde colocar uma nova peça, perde o jogo.", 
         },
     
         2: {

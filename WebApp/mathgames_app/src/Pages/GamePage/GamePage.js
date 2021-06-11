@@ -379,7 +379,7 @@ function GamePage() {
 						<div className="image">
 							<img
 							src={game_info["img"]}
-							alt="Info"
+							alt="Imagem de Jogo"
 							className="game-image"
 							/>	
 						</div>
@@ -433,7 +433,7 @@ function GamePage() {
 												process.env.PUBLIC_URL +
 												ranks_info[userRank-1].image
 											}
-											alt="Info"
+											alt="Rank"
 											className="a-n-rank-img"
 										/>
 
@@ -453,7 +453,7 @@ function GamePage() {
 												process.env.PUBLIC_URL +
 												ranks_info[userRank].image
 											}
-											alt="Info"
+											alt="Rank Anterior"
 											className="rank-img"
 										/>
 										<h4>{ranks_info[userRank].name}</h4>
@@ -474,7 +474,7 @@ function GamePage() {
 												process.env.PUBLIC_URL +
 												ranks_info[userRank+1].image
 											}
-											alt="Info"
+											alt="Rank Seguinte"
 											className="a-n-rank-img"
 										/>
 										<h4>{ranks_info[userRank+1].name}</h4>
