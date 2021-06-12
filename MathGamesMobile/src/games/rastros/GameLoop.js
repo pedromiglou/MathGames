@@ -17,12 +17,58 @@ async function playSound() {
   await sound.playAsync();
 }
 
+function makePlay(entities, storage, piece, newPos) {
+  //remover o texto em baixo
+  var oldEntity = entities.pop();
+  
+  //block previous piece position
+  entities.push({position: piece.position, size: Constants.CELL_SIZE, renderer: <Blocked></Blocked>});
+
+  //move piece to new position
+  piece.position = [newPos[0], newPos[1]+1];
+  entities[piece.position[0]*7+piece.position[1]].blocked=true;
+
+  //switch timers
+  storage.turn = storage.turn===1 ? 2 : 1;
+  entities[51].turn = storage.turn;
+  entities[52].turn = storage.turn;
+
+  playSound();
+
+  //myTurn says if the player/players can touch the screen
+  storage.myTurn= !storage.myTurn || storage.gameMode === "No mesmo Computador";
+
+  //atualizar o texto em baixo
+  if (oldEntity.text.slice(11, oldEntity.text.length)===storage.player1) {
+    entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+storage.player2,
+      renderer: <GameText></GameText>});
+  } else {
+    entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+storage.player1,
+      renderer: <GameText></GameText>});
+  }
+}
+
 const GameLoop = (entities, {touches, events, dispatch }) => {
+  //if not initialized return
+  if (entities===undefined || entities[0].turn===null) return entities;
+
+  //speed up game by ignoring loops without events or touches
+  if (events.length===0 && touches.length===0) return entities;
+
+  //get storage
+  let storage = entities[0];
+
+  //if game ended return
+  if (storage.gameEnded) return entities;
+
   //initialize game
   events.filter(e => e.type === "init").forEach(e => {
-    entities.push({position: [0, 0], size: Constants.CELL_SIZE, text: "Jogador 2: "+e.player2, renderer: <GameText></GameText>});
-    entities.push({position: [0, 8], size: Constants.CELL_SIZE, text: "Jogador 1: "+e.player1, renderer: <GameText></GameText>});
-    entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+e.player1, renderer: <GameText></GameText>});
+    entities.push({position: [0, 0], size: Constants.CELL_SIZE, text: "Jogador 2: "+storage.player2,
+      turn: storage.turn, dispatch: dispatch, renderer: <GameText></GameText>});
+    entities.push({position: [0, 8], size: Constants.CELL_SIZE, text: "Jogador 1: "+storage.player1,
+      turn: storage.turn, dispatch: dispatch, renderer: <GameText></GameText>});
+    entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+storage.player1,
+      turn: storage.turn, dispatch: dispatch, renderer: <GameText></GameText>});
 
     //configure socket
     socket.on("move_piece", new_pos=>{
@@ -30,45 +76,24 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
     });
 
     //create the AI and make it play if not our turn
-    if (e.gameMode==="Contra o Computador") {
-      if (e.myTurn) {
-        ai = new RastrosAI([0,6], [6,0], e.dif);
+    if (storage.gameMode==="Contra o Computador") {
+      if (storage.myTurn) {
+        ai = new RastrosAI([0,6], [6,0], storage.dif);
       } else {
-        ai = new RastrosAI([6,0], [0,6], e.dif);
+        ai = new RastrosAI([6,0], [0,6], storage.dif);
         dispatch({type: "ai"});
       }
     }
 
-    //send the data
-    e.type="data";
-    dispatch(e);
-    return entities;
   });
 
-  //get the data
-  var myTurn, gameEnded, gameMode, match_id, player1, player2, user_id;
-  events.filter(e => e.type === "data").forEach(e => {
-    myTurn = e.myTurn;
-    gameEnded = e.gameEnded;
-    gameMode = e.gameMode;
-    match_id = e.match_id;
-    player1 = e.player1;
-    player2 = e.player2;
-    user_id = e.user_id;
-  });
+  //get piece
+  let piece = entities[50];
 
-  let piece = entities[49];
-  if (gameEnded||gameEnded===undefined) {
-    return entities;
-  }
-
-  events.filter(e => e.type !== "data").forEach(e => {
-    //eventos AI
+  events.forEach(e => {
+    var newPos;
+    //jogada do AI
     if (e.type === "ai") {
-      //remover o texto em baixo
-      var oldEntity = entities.pop();
-      
-      entities.push({position: piece.position, size: Constants.CELL_SIZE, renderer: <Blocked></Blocked>});
       var valid_squares = [];
       for (var y = piece.position[1]-2; y<=piece.position[1]; y++) {
         for (var x = piece.position[0]-1; x<=piece.position[0]+1; x++) {
@@ -77,84 +102,58 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
           }
         }
       }
-      var newPos = ai.randomPlay(valid_squares, piece.position);
-      piece.position = [newPos[0], newPos[1]+1];
-      entities[piece.position[0]*7+piece.position[1]-1].blocked=true;
-      myTurn=true;
-      playSound();
+      newPos = ai.randomPlay(valid_squares, piece.position);
 
-      //atualizar o texto em baixo
-      if (oldEntity.text.slice(11, oldEntity.text.length)===player1) {
-        entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+player2, renderer: <GameText></GameText>});
-      } else {
-        entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+player1, renderer: <GameText></GameText>});
-      }
+      makePlay(entities, storage, piece, newPos);
 
     //jogada do adversario online
     } else if (e.type === "comp") {
-      //remover o texto em baixo
-      var oldEntity = entities.pop();
-      let new_pos = e.pos;
-      entities.push({position: piece.position, size: Constants.CELL_SIZE, renderer: <Blocked></Blocked>})
-      piece.position = [new_pos%7, Math.floor(new_pos/7)+1];
-      entities[piece.position[0]*7+piece.position[1]-1].blocked=true;
-      myTurn=true;
-      playSound();
+      newPos = e.pos;
+      newPos = [newPos%7, Math.floor(newPos/7)]
 
-      //atualizar o texto em baixo
-      if (oldEntity.text.slice(11, oldEntity.text.length)===player1) {
-        entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+player2, renderer: <GameText></GameText>});
-      } else {
-        entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+player1, renderer: <GameText></GameText>});
-      }
+      makePlay(entities, storage, piece, newPos);
     
     //jogada do jogador
     } else if (e.type === "move") {
-      
-      let x = e.x;
-      let y = e.y;
-      if (entities[x*7+y-1].valid && !entities[x*7+y-1].blocked) {
-        //remover o texto em baixo
-        var oldEntity = entities.pop();
-
-        //clean green squares
-        for (var j = piece.position[1]-1; j<=piece.position[1]+1; j++) {
-          for (var i = piece.position[0]-1; i<=piece.position[0]+1; i++) {
-            if (j>=1 && j<=7 && i>=0 && i<=6) {
-              entities[i*7+j-1].valid = false;
-            }
+      //clean green squares
+      for (var x = piece.position[0]-1; x<=piece.position[0]+1; x++) {
+        for (var y = piece.position[1]-2; y<=piece.position[1]; y++) {
+          if (x>=0 && x<=6 && y>=0 && y<=6) {
+            entities[x*7+y+1].valid = false;
           }
         }
-
-        entities.push({position: piece.position, size: Constants.CELL_SIZE, renderer: <Blocked></Blocked>});
-        piece.position = [x, y];
-        entities[x*7+y-1].blocked = true;
-
-        if (gameMode==="Contra o Computador") {
-          ai.AI_blocked_squares[y-1][x] = true;
-          dispatch({type: "ai"});
-          myTurn=false;
-        } else if (gameMode==="Competitivo") {
-          socket.emit("move", (y-1)*7+x, user_id, match_id);
-          myTurn=false;
-        }
-        playSound();
-        //atualizar o texto em baixo
-        if (oldEntity.text.slice(11, oldEntity.text.length)===player1) {
-          entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+player2, renderer: <GameText></GameText>});
-        } else {
-          entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+player1, renderer: <GameText></GameText>});
-        }
       }
+
+      newPos = [e.x, e.y];
+
+      makePlay(entities, storage, piece, newPos);
+
+      if (gameMode==="Contra o Computador") {
+        ai.AI_blocked_squares[e.y][e.x] = true;
+        dispatch({type: "ai"});
+        storage.myTurn=false;
+      } else if (gameMode==="Competitivo") {
+        socket.emit("move", e.y*7+e.x, storage.user_id, storage.match_id);
+        storage.myTurn=false;
+      }
+    } else if (e.type === "gameEnded") {
+      storage.gameEnded=true;
+      if (e.turn===1) {
+        entities.push({visible:true, text: "Time Ended. "+storage.player2+ " won!", renderer: <GameModal></GameModal>});
+      } else {
+        entities.push({visible:true, text: "Time Ended. "+storage.player1+ " won!", renderer: <GameModal></GameModal>});
+      }
+      
+      return entities;
     }
   });
 
-  if (myTurn) {
+  if (storage.myTurn) {
     //calculate green squares
-    for (var y = piece.position[1]-1; y<=piece.position[1]+1; y++) {
-      for (var x = piece.position[0]-1; x<=piece.position[0]+1; x++) {
-        if (y>=1 && y<=7 && x>=0 && x<=6) {
-          entities[x*7+y-1].valid = true;
+    for (var x = piece.position[0]-1; x<=piece.position[0]+1; x++) {
+      for (var y = piece.position[1]-2; y<=piece.position[1]; y++) {
+        if (x>=0 && x<=6 && y>=0 && y<=6) {
+          entities[x*7+y+1].valid = true;
         }
       }
     }
@@ -162,42 +161,37 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
     //when the player performs a play dispatch an event
     touches.filter(t => t.type === "press").forEach(t => {
       let x = Math.floor(t.event.locationX/Constants.CELL_SIZE);
-      let y = Math.floor(t.event.locationY/Constants.CELL_SIZE);
-      dispatch({type: "move", x: x, y: y});
+      let y = Math.floor(t.event.locationY/Constants.CELL_SIZE)-1;
+      if (x>=0 && x<=6 && y>=0 && y<=6) {
+        if (entities[x*7+y+1].valid && !entities[x*7+y+1].blocked) {
+          dispatch({type: "move", x: x, y: y});
+        }
+      }
     });
   }
 
   if (piece.position[0]===0 && piece.position[1]===7) {
     //player 1 won
-    gameEnded=true;
+    storage.gameEnded=true;
     entities.push({visible:true, text: "Player 1 won", renderer: <GameModal></GameModal>});
   } else if (piece.position[0]===6 && piece.position[1]===1) {
     //player 2 won
-    gameEnded=true;
+    storage.gameEnded=true;
     entities.push({visible:true, text: "Player 2 won", renderer: <GameModal></GameModal>});
   } else {
-    gameEnded=true;
-    for (var j = piece.position[1]-1; j<=piece.position[1]+1; j++) {
+    storage.gameEnded=true;
+    for (var j = piece.position[1]-2; j<=piece.position[1]; j++) {
       for (var i = piece.position[0]-1; i<=piece.position[0]+1; i++) {
-        if (j>=1 && j<=7 && i>=0 && i<=6) {
-          if (!entities[i*7+j-1].blocked) gameEnded=false;
+        if (j>=0 && j<=6 && i>=0 && i<=6) {
+          if (!entities[i*7+j+1].blocked) {
+            storage.gameEnded=false;
+            return entities;
+          }
         }
       }
     }
-    if (gameEnded) entities.push({visible:true, text: "No more plays left", renderer: <GameModal></GameModal>});
+    if (storage.gameEnded) entities.push({visible:true, text: "No more plays left", renderer: <GameModal></GameModal>});
   }
-
-  if (player1===undefined) return entities;
-  dispatch({
-    type: "data",
-    myTurn: myTurn,
-    gameEnded: gameEnded,
-    gameMode: gameMode,
-    match_id: match_id,
-    player1: player1,
-    player2: player2,
-    user_id: user_id
-  });
 
   return entities;
 }

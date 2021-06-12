@@ -7,21 +7,29 @@ import Square from './Square';
 import Piece from './Piece';
 import {GameLoop} from './GameLoop';
 import {readData} from './../../utilities/AsyncStorage';
+import Storage from "./Storage";
 
 function RastrosEngine() {
     const boardHeight = (Constants.GRID_SIZE+3) * Constants.CELL_SIZE;
     const boardWidth = Constants.GRID_SIZE * Constants.CELL_SIZE;
+
     var entities = [];
+    entities.push({myTurn: null, gameEnded: null, gameMode: null, dif: null, match_id: null,
+        player1: null, player2: null, user_id: null, turn: null, renderer: <Storage></Storage>})
+
+    //add the tiles
+    var squares = [];
     for (let x = 0; x<7; x++) {
-        for (let y=1; y<8; y++) {
-            entities.push([x, y]);
+        for (let y=0; y<7; y++) {
+            squares.push([x, y+1]);
         }
     }
+    squares.forEach(square => {
+        entities.push({position: square, size: Constants.CELL_SIZE, valid: false, blocked:false,
+            renderer: <Square></Square>});
+    })
 
-    entities = entities.map(X=>{
-        return {position: X, size: Constants.CELL_SIZE, valid: false, blocked:false, renderer: <Square></Square>};
-    });
-    entities[30].blocked = true;
+    entities[31].blocked = true;
     entities.push({position: [4,3], size: Constants.CELL_SIZE, renderer: <Piece></Piece>});
 
     const [player1, setPlayer1] = useState("player1");
@@ -40,17 +48,16 @@ function RastrosEngine() {
                             p2=p2.slice(1,-1);
                             readData('user_id').then(X=>{
                                 user_id=X.slice(1,-1);
-                                this.engine.dispatch({
-                                    type: "init",
-                                    myTurn: user_id===p1 || gameMode==="No mesmo Computador",
-                                    gameEnded: false,
-                                    gameMode: gameMode,
-                                    dif: dif,
-                                    match_id: match_id,
-                                    player1: p1,
-                                    player2: p2,
-                                    user_id: user_id
-                                });
+                                entities[0].myTurn = user_id===p1 || gameMode==="No mesmo Computador";
+                                entities[0].gameEnded = false;
+                                entities[0].gameMode = gameMode;
+                                entities[0].dif = dif;
+                                entities[0].match_id = match_id;
+                                entities[0].player1 = p1;
+                                entities[0].player2 = p2;
+                                entities[0].user_id = user_id;
+                                entities[0].turn = 1;
+                                this.engine.dispatch({type: "init"});
                                 setPlayer1(p1);
                                 setPlayer2(p2);
                             });

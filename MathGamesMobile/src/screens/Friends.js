@@ -1,21 +1,24 @@
 import * as React from 'react';
 import {useState, useEffect} from 'react';
-import {ScrollView, Text, Image, Dimensions, StyleSheet, TouchableHighlight, View} from 'react-native';
+import {ScrollView, Text, Dimensions, StyleSheet, View} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import UserService from "./../services/user.service";
+import { FontAwesome } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Feather } from '@expo/vector-icons';
 
 const win = Dimensions.get('window');
 
-function Welcome({ navigation }) {
-    const [friends, setFriends] = useState(["A", "B"]);
+function Friends({ navigation }) {
+    const [friends, setFriends] = useState([]);
     useEffect(() => {
         let mounted = true;
         UserService.getFriends().then(res=>{
             setFriends(res);
-            console.log(res[0].username);
+            console.log(res[0].id);
         });
         return () => {mounted=false}
-      }, [friends]);
+      }, []);
     
     return (
       <View>
@@ -25,29 +28,25 @@ function Welcome({ navigation }) {
           </LinearGradient>
         </View>
         <ScrollView>
-            {friends.map(friend => {
-                <Text style={styles.title}>{friend.username}</Text>
-            })}
-            <Text style={styles.title}>Bem-vindo ao MathGames!</Text>
-
-            <Image
-                  style={styles.image}
-                  resizeMode = {'contain'}
-                  source={require('./../../public/images/header_img.png')}/>
-
-            <Text style={styles.text}>Sejam muito bem-vindos à plataforma MathGames. Aqui podem encontrar vários jogos matemáticos para jogarem e se divertirem. Podem jogar competitivamente, criar torneios, jogar com amigos entre outras coisas. Esperemos que se divirtam!</Text>
-            
-            <TouchableHighlight
-              onPress={() => navigation.navigate('Jogos')}
-              style={styles.button}>
-              <Text style={styles.buttonText}>Jogar Agora</Text>
-            </TouchableHighlight>
+            <Text style={styles.title}>Amigos</Text>
+            {friends.map(friend => (
+              <View key={friend.id} style={{flexDirection: "row", width: win.width}}>
+                <Text style={styles.item} >{friend.username}</Text>
+                <TouchableOpacity style={styles.button} onPress={()=>{}} >
+                  <FontAwesome name="envelope-o" size={30} color="white" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={()=>{}}>
+                  <Feather name="user-minus" size={30} color="white" />
+                </TouchableOpacity>
+                
+              </View>
+            ))}
         </ScrollView>
       </View>
     );
   }
 
-export default Welcome;
+export default Friends;
 
 const styles = StyleSheet.create({
   title: {
@@ -57,33 +56,16 @@ const styles = StyleSheet.create({
     fontFamily: 'BubblegumSans',
     color: 'white'
   },
-  image: {
-      alignSelf: 'stretch',
-      width: win.width,
-      height: win.width*500/800,
-      padding: 10,
-      margin: 0
-  },
-  text: {
-    fontSize: 20,
+  item: {
+    fontSize: 30,
     padding: 10,
-    textAlign:'center',
+    textAlign: 'left',
     fontFamily: 'BubblegumSans',
     color: 'white'
   },
   button: {
-    marginRight:40,
-    marginLeft:40,
+    marginLeft:10,
     marginTop:10,
-    paddingTop:15,
-    paddingBottom:15,
-    backgroundColor:'#3a4e60',
-    borderRadius:30,
+    borderRadius:30
   },
-  buttonText: {
-    color:'#fff',
-    textAlign:'center',
-    fontFamily: 'BubblegumSans',
-    fontSize: 24
-  }
 });
