@@ -1,0 +1,32 @@
+
+.emoji {
+    padding-left: 5px;
+}
+
+.smiley-happy:after {
+    content: "\1F604";
+}
+
+.smiley-sad:after {
+    content: "\1F61E";
+}
+
+.clap:after {
+    content: "\1F44F"
+}
+
+.robot:after {
+    content: "\1F916"
+}
+
+.result-body {
+    color: #0056b3;
+    font-size: 20px;
+    
+}
+	
+.result-header {
+    text-decoration: underline;
+    font-size: 25px;
+    padding-right: 5px;
+}

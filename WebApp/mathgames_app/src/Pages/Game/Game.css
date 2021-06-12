@@ -1,3 +1,21 @@
+
+.global{
+    display:flex;
+    flex-direction:row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items:center;
+    gap:5%;
+}
+
+.global > :first-child{
+    flex: 1 1 20%;
+}
+
+.global > :last-child{
+    flex: 1 1 75%;
+}
+
 .link-geral-position{
     display: flex;
     justify-content: center;
@@ -70,10 +88,5 @@
     text-overflow: ellipsis;
 }
 
-.smiley-happy:after {
-    content: "\1F604";
-}
 
-.smiley-sad:after {
-    content: "\1F61E";
-}
+

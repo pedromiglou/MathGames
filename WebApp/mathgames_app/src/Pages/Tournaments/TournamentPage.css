@@ -1,0 +1,84 @@
+.tournaments-container{
+    padding: 2em;
+}
+
+.tournamentPage_section{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.tournamentPage_section h1{
+    text-align: center;
+}
+
+.tournamentPage_section > *{
+    flex: 1 1 50%;
+}
+
+.tournament-game{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-info{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.game-info > *{
+    flex: 1 1 50%;
+}
+
+.brackets{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2em;
+}
+
+.details-edit{
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 1em;
+}
+
+.details-edit .edit-icon{
+    padding: 0.3em;
+}
+
+.edit-icon:hover{
+    color: rgb(255, 175, 2);
+    cursor: pointer;
+    background-color: rgb(245, 245, 245);
+    border-radius: 50%;
+}
+
+.tournament-rules{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.description-t{
+    border: 3px solid red;
+    word-wrap: break-word;
+    height: 100%;
+    max-height: 200px;
+    width: 450px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.description-input{
+    width: 100%;
+}

@@ -13,6 +13,7 @@ import {games_info} from '../../data/GamesInfo';
 
 import { Modal, Button } from "react-bootstrap";
 
+import {urlWeb} from "./../../data/data";
 
 import AuthService from '../../Services/auth.service';
 import TournamentService from '../../Services/tournament.service';
@@ -22,11 +23,9 @@ function Tournaments() {
 	let history = useHistory()
 
     if (current_user === null || current_user === undefined) {
-        history.push({
-            pathname: "/",
-        })
+        window.location.assign(urlWeb);
     }
-    
+        
     const [userTournaments, setUserTournaments] = useState([])
     const [tournaments, setTournaments] = useState([]);
     const [tournament_inputs, setTournamentInputs] = useState({name: "", capacity: "", private: null});
@@ -178,7 +177,8 @@ function Tournaments() {
 
         async function fetchApiUserTournaments() {
             var response = await TournamentService.getTournamentsByUser(current_user.id)
-            setUserTournaments(response)
+            if (!response["message"]) 
+                setUserTournaments(response)
         }
 
         async function fetchApiTournaments() {
@@ -195,6 +195,10 @@ function Tournaments() {
     useEffect(
 		retrieveTournaments
 	, [tournament_inputs, page_tournaments, current_user.id])
+
+    function goToTournament(id){
+        history.push("/tournament?id="+id)
+    }
 
 
     return (
@@ -222,7 +226,7 @@ function Tournaments() {
 					
 					<div className="row">
 						<div className="col-12 col-md-12 col-lg-12">
-							<form className="shadow-white" onSubmit={submitFunction}>
+							<form className="shadow-white form-center" onSubmit={submitFunction}>
 								<div className="form-tournaments">
 									<div className="name-section">
 										<h2>Nome Torneio</h2>
@@ -321,26 +325,25 @@ function Tournaments() {
                 
                     tournaments.map(function(tournament, index) {
                        return(
-                        
 						 <li key={tournament.id} className="list-group-item-t d-flex justify-content-between align-items-center row">
-                            <div className="col-lg-3 col-md-3 col-sm-3">
+                            <div className="col-lg-3 col-md-3 col-sm-3" onClick={() => goToTournament(tournament.id)}>
                                 {tournament.name}
                             </div>    
-                            <div className="col-lg-3 col-md-3 col-sm-3">
+                            <div className="col-lg-3 col-md-3 col-sm-3" onClick={() => goToTournament(tournament.id)}>
                                 {games_info[tournament.game_id].title}
                             </div>
     
-                            <div className="col-lg-3 col-md-3 col-sm-3">
+                            <div className="col-lg-3 col-md-3 col-sm-3" onClick={() => goToTournament(tournament.id)}>
                                 {tournament.usersCount}/{tournament.max_users}
                             </div>
 
                             {tournament.private 
                             ?
-                             <div title="Privado" className="col-lg-2 col-md-2 col-sm-2">
+                             <div title="Privado" className="col-lg-2 col-md-2 col-sm-2" onClick={() => goToTournament(tournament.id)}>
                              <BsIcons.BsFillLockFill/>
                             </div>
                             : 
-                            <div title="Público" className="col-lg-2 col-md-2 col-sm-2">
+                            <div title="Público" className="col-lg-2 col-md-2 col-sm-2" onClick={() => goToTournament(tournament.id)}>
                             <BsIcons.BsFillUnlockFill/>
                             </div>
                             }

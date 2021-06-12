@@ -384,7 +384,7 @@ function Podium() {
 					}
 					<div className="row">
 						<div className="col-12 col-md-12 col-lg-12">
-							<form className="shadow-white" onSubmit={submitFunction}>
+							<form className="shadow-white form-center" onSubmit={submitFunction}>
 								<div className="form-players">
 									<div className="name-section">
 										<h2>Nome</h2>

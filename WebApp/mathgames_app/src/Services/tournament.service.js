@@ -2,6 +2,16 @@ import {urlAPI} from "./../data/data";
 
 class TournamentService {
 
+    async getTournamentById(tournament_id) {
+        var url = urlAPI + 'api/tournaments/' + tournament_id;
+        var res = await fetch(url, {
+            method:'GET',
+            headers:{'Content-type':'application/json',
+            'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+
+
     async getTournamentsWithFilters(nome, capacidade, privado, page, pageSize) {
         var url = urlAPI + 'api/tournaments?page=' + page + '&size=' + pageSize;
         if (privado !== null && privado !== undefined)
@@ -22,6 +32,24 @@ class TournamentService {
 
     async getTournamentsByUser(user_id) {
         var url = urlAPI + 'api/tournamentusers/findbyuser/'+ user_id;
+        var res = await fetch(url, {
+            method:'GET',
+            headers:{'Content-type':'application/json',
+            'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+
+    async getPlayersByTournament(tournament_id) {
+        var url = urlAPI + 'api/tournamentusers/findbytournament/'+ tournament_id;
+        var res = await fetch(url, {
+            method:'GET',
+            headers:{'Content-type':'application/json',
+            'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
+
+    async getMatchesByTournament(tournament_id) {
+        var url = urlAPI + 'api/tournamentmatches/findbytournament/'+ tournament_id;
         var res = await fetch(url, {
             method:'GET',
             headers:{'Content-type':'application/json',
@@ -50,6 +78,59 @@ class TournamentService {
             return {error: true}
         }
         return {error: false};
+    }
+
+    async changeDescription(tournament_id, description) {
+        var url = urlAPI + 'api/tournaments/' + tournament_id;
+        var tournament = {
+            description: description
+        }
+        
+        var res = await fetch(url, {
+            method:'PUT',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
+            body: JSON.stringify(tournament)
+        });
+        if (res.status !== 200) {
+            return {error: true}
+        }
+        return {error: false};
+    }
+
+    async initializeTournament(tournamentId) {
+        var url = urlAPI + 'api/tournaments/initialize'
+
+        var tournament = {
+            tournament_id: tournamentId
+        }
+
+        var res = await fetch(url, {
+            method:'POST',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
+            body: JSON.stringify(tournament)
+        });
+        if (res.status !== 200) {
+            return {error: true}
+        }
+        return {error: false};
+
+    }
+
+    async removeTournament(tournamentId) {
+        var url = urlAPI + 'api/tournaments/'+tournamentId
+
+        var res = await fetch(url, {
+            method:'DELETE',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
+        });
+        if (res.status !== 200) {
+            return {error: true}
+        }
+        return {error: false};
+
     }
 
     async jointTournament(tournamentId, playerId, password) {
