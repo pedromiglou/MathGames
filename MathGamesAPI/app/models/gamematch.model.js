@@ -97,7 +97,9 @@ module.exports = (sequelize, Sequelize) => {
           let winner = game_match.winner;
           let player1 = game_match.player1;
           let player2 = game_match.player2;
-          if (winner === null) return
+
+
+          if (winner === null || winner === undefined) return
 
           if (winner !== "X") {
             //alguem ganhou

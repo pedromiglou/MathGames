@@ -118,6 +118,26 @@ class TournamentService {
 
     }
 
+    async initializeNextRound(tournamentId) {
+        var url = urlAPI + 'api/tournaments/initializeround'
+
+        var tournament = {
+            tournament_id: tournamentId
+        }
+
+        var res = await fetch(url, {
+            method:'POST',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
+            body: JSON.stringify(tournament)
+        });
+        if (res.status !== 200) {
+            return {error: true}
+        }
+        return {error: false};
+
+    }
+
     async removeTournament(tournamentId) {
         var url = urlAPI + 'api/tournaments/'+tournamentId
 

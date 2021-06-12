@@ -12,6 +12,8 @@ module.exports = app => {
 
     // Initialize tournament
     router.post("/initialize", [authJwt.verifyToken], tournaments.initialize);
+
+    router.post("/initializeround", [authJwt.verifyToken], tournaments.initializeround);
   
     // Retrieve all tournaments
     router.get("/", [authJwt.verifyToken], tournaments.findAll);

@@ -23,6 +23,9 @@ import { RulesTooltip } from '../../Components/RulesTooltip';
 
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
 function GamePage() {
+	// Clear listeners
+	socket.off("match_found");
+
 	var user = AuthService.getCurrentUser();
 	const dispatch = useDispatch();
 
@@ -50,12 +53,14 @@ function GamePage() {
 	let game_id = url.get("id");
 	const game_info = games_info[game_id];
 	var friend_match = useRef(null);
-	let new_match_id = url.get("mid")
+	let new_match_id = url.get("mid");
+	let tournament_id = url.get("tid");
 
 	let history = useHistory()
 
 	var id_outro_jogador;
 	if (localStorage.getItem("jogoporinvite")) {
+		//Código executado pelo jogador que convida outro por amizade para jogar
 		localStorage.removeItem("jogoporinvite")
 		id_outro_jogador = localStorage.getItem("outrojogador")
 		localStorage.removeItem("outrojogador")
@@ -90,6 +95,7 @@ function GamePage() {
 		
 	} 
 	else if (localStorage.getItem("entreijogoporinvite")) {
+		//Código executado pelo jogador que aceita o convite de jogo por amizade
 		localStorage.removeItem("entreijogoporinvite")
 
 		id_outro_jogador = localStorage.getItem("outrojogador")
@@ -112,7 +118,28 @@ function GamePage() {
 
 		socket.emit("entered_invite", {"user_id": AuthService.getCurrentUserId(), "outro_id": id_outro_jogador, "match_id": new_match_id, "game_id": game_id})
 		
+	} else if (tournament_id !== null) {
+		
+		//Tournament section
+		socket.once("match_found", (msg) => {
+			var match = { match_id: msg['match_id'], player1: msg['player1'], player2: msg['player2'] };
+			dispatch( addMatch(match) );
+			history.push({
+				pathname: "/game/?g="+game_id, 
+				state: {
+					game_id: game_id,
+					game_mode: "online",
+					ai_diff: AIdiff,
+					match: match
+				} 
+			})
+		})
+
+		socket.emit("tournament_enteredmatch", {"user_id": AuthService.getCurrentUserId(), "match_id": new_match_id, "tournament_id": tournament_id})
+
 	} else if ( new_match_id !== null ) {
+
+		//Código executado pelo jogador que entra por link no jogo
 		socket.once("match_found", (msg) => {
 			console.log("Joined a game through link!");
 			var match = { match_id: msg['match_id'], player1: msg['player1'], player2: msg['player2'] };
@@ -129,7 +156,7 @@ function GamePage() {
 		})
 
 		socket.emit("entered_link", {"user_id": AuthService.getCurrentUserId(), "match_id": new_match_id, "game_id": game_id})
-	}
+	} 
 
 	var userRank = 0
 	var userRankValue = 0;

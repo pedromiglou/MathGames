@@ -1,12 +1,13 @@
 import React , {useEffect , useState} from "react";
 
-import {useLocation, useHistory} from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 
 import * as IoIcons from 'react-icons/io5';
 import * as MdIcons from 'react-icons/md';
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./TournamentPage.css";
+import socket from "../../index"
 
 import { games_info } from "../../data/GamesInfo";
 
@@ -32,6 +33,9 @@ function TournamentPage() {
     const [erroTournamentNotFull, setErroTournamentNotFull] = useState(false)
     const [erroStartingTournament, setErroStartingTournament] = useState(false)
     const [erroChangingDescription, setErroChangingDescription] = useState(false)
+    const [erroInitializeRound, setErroInitializeRound] = useState(false)
+    const [erroCheckIn, setErroCheckIn] = useState(false)
+    const [initializeRoundSuccess, setInitializeRoundSuccess] = useState(false)
 
     const url = new URLSearchParams(window.location.search);
 	let tournament_id = url.get("id");
@@ -65,6 +69,9 @@ function TournamentPage() {
         setErroTournamentNotFull(false)
         setErroStartingTournament(false)
         setErroChangingDescription(false)
+        setErroInitializeRound(false)
+        setErroCheckIn(false)
+        setInitializeRoundSuccess(false)
         var response = await TournamentService.leaveTournament(tournament_id, playerId)
         if (response.error) {
             setErroRemovingPlayer(true)
@@ -79,6 +86,9 @@ function TournamentPage() {
         setErroTournamentNotFull(false)
         setErroStartingTournament(false)
         setErroChangingDescription(false)
+        setErroInitializeRound(false)
+        setErroCheckIn(false)
+        setInitializeRoundSuccess(false)
         var response = await TournamentService.removeTournament(tournament_id)
         if (response.error) {
             setErroRemovingTournament(true)
@@ -95,6 +105,9 @@ function TournamentPage() {
         setErroTournamentNotFull(false)
         setErroStartingTournament(false)
         setErroChangingDescription(false)
+        setErroInitializeRound(false)
+        setErroCheckIn(false)
+        setInitializeRoundSuccess(false)
         if (tournament.max_users !== players.length) {
             setErroTournamentNotFull(true)
             return
@@ -107,6 +120,34 @@ function TournamentPage() {
         }
     }
 
+    async function initializeNextRound() {
+        setErroRemovingPlayer(false)
+        setErroRemovingTournament(false)
+        setErroTournamentNotFull(false)
+        setErroStartingTournament(false)
+        setErroChangingDescription(false)
+        setErroInitializeRound(false)
+        setErroCheckIn(false)
+        setInitializeRoundSuccess(false)
+        socket.off("round_start");
+
+        var response = await TournamentService.initializeNextRound(tournament_id)
+        if (response.error) {
+            setErroInitializeRound(true)
+        } else {
+            socket.emit("tournament_newround", {"user_id": AuthService.getCurrentUserId(), "tournament_id": tournament_id})
+
+            socket.once("round_start", (msg) => {
+                let erro = msg['erro'];
+                if ( erro ) {
+                    setErroInitializeRound(true)
+                } else {
+                    setInitializeRoundSuccess(true)
+                }
+            })
+        }
+    }
+
 
     async function changeDescription() {
         setErroRemovingPlayer(false)
@@ -114,6 +155,9 @@ function TournamentPage() {
         setErroTournamentNotFull(false)
         setErroStartingTournament(false)
         setErroChangingDescription(false)
+        setErroInitializeRound(false)
+        setErroCheckIn(false)
+        setInitializeRoundSuccess(false)
         var description = document.getElementById("tournament-details")
         if (description.value === "") {
             description =  description.placeholder
@@ -128,6 +172,30 @@ function TournamentPage() {
         }
     }
 
+
+    function checkInForGame() {
+        setErroRemovingPlayer(false)
+        setErroRemovingTournament(false)
+        setErroTournamentNotFull(false)
+        setErroStartingTournament(false)
+        setErroChangingDescription(false)
+        setErroInitializeRound(false)
+        setErroCheckIn(false)
+        setInitializeRoundSuccess(false)
+        socket.off("check_in");
+
+        socket.emit("tournament_checkin", {"user_id": AuthService.getCurrentUserId(), "tournament_id": tournament_id})
+
+        socket.once("check_in", (msg) => {
+            let erro = msg['erro'];
+            if ( erro ) {
+                setErroCheckIn(true)
+            } else {
+                let match_id = msg['match_id']
+                history.push("/gamePage?id="+tournament.game_id+"&tid="+tournament.id+"&mid="+match_id)
+            }
+        })
+    }
     
     //Used to get players level taking account_level (elo)
     const getPlayerLevel = (account_level) => {
@@ -200,7 +268,7 @@ function TournamentPage() {
             </>
         )
     }
-
+    console.log(players)
     return(
         <>
 
@@ -227,6 +295,21 @@ function TournamentPage() {
             {erroChangingDescription === true 
                 ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
                     Occoreu um erro ao tentar alterar a descrição do torneio. Operação não foi concluída.
+                </div> : null}
+            
+            {erroInitializeRound === true 
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                    Occoreu um erro ao tentar iniciar a fase seguinte do torneio. Operação não foi concluída.
+                </div> : null}
+
+            {erroCheckIn === true 
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                    Check In não foi efetuado com sucesso. Tente mais tarde.
+                </div> : null}
+            
+            {initializeRoundSuccess === true 
+                ? <div className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                    Round iniciado com sucesso!
                 </div> : null}
 
             <div className="tournaments-container">
@@ -365,6 +448,18 @@ function TournamentPage() {
                             <button onClick={() => removeTournament()}>Eliminar Torneio</button>
                             <button onClick={() => initializeTournament()}>Iniciar Torneio</button>
                         </>
+                        }
+
+                        {tournament.creator === current_user.id && tournament.status === "STARTED" &&
+                            <>
+                            <button onClick={() => initializeNextRound()}>Iniciar Fase Seguinte</button>
+                            </>
+                        }
+
+                        {players.some(e => (e.id === current_user.id && e.eliminated === false)) && tournament.status === "STARTED" &&
+                            <>
+                            <button onClick={() => checkInForGame()}>Check In</button>
+                            </>
                         }
                         
                     </div>
