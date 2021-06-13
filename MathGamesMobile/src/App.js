@@ -133,16 +133,16 @@ function App() {
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Bem-vindo</Text>)}}/>
             <Drawer.Screen name="Jogos" component={Games} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Jogos</Text>)}}/>
-            {loggedIn && <Drawer.Screen name="Tournaments" component={Welcome} options={{
-                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Torneios</Text>)}}/>}
             <Drawer.Screen name="Classificações" component={Welcome} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Classificações</Text>)}}/>
-            <Drawer.Screen name="Definições" component={Welcome} options={{
-                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Definições</Text>)}}/>
             {loggedIn && <Drawer.Screen name="Profile" component={ProfileNav} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Perfil</Text>)}}/>}
             {loggedIn && <Drawer.Screen name="Amigos" component={Friends} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Amigos</Text>)}}/>}
+            {loggedIn && <Drawer.Screen name="Notificações" component={Welcome} options={{
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Notificações</Text>)}}/>}
+            <Drawer.Screen name="Definições" component={Welcome} options={{
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Definições</Text>)}}/>
             <Drawer.Screen name="Sobre Nós" component={Welcome} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Sobre nós</Text>)}}/>
           </Drawer.Navigator>

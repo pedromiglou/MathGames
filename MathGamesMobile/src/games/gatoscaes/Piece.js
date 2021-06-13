@@ -11,7 +11,7 @@ function Piece(props) {
     }
 
     var source;
-    if (props.type === "gatos") {
+    if (props.type === 1) {
         source = require("./../../../public/game_assets/gatos_caes/cat.png");
     } else {
         source = require("./../../../public/game_assets/gatos_caes/dog.png");

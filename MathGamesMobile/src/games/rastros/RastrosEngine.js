@@ -15,7 +15,7 @@ function RastrosEngine() {
 
     var entities = [];
     entities.push({myTurn: null, gameEnded: null, gameMode: null, dif: null, match_id: null,
-        player1: null, player2: null, user_id: null, turn: null, renderer: <Storage></Storage>})
+        player1: null, player2: null, user_id: null, turn: null, renderer: <Storage></Storage>});
 
     //add the tiles
     var squares = [];

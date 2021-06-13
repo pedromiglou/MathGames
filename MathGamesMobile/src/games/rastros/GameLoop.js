@@ -64,15 +64,19 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
   //initialize game
   events.filter(e => e.type === "init").forEach(e => {
     entities.push({position: [0, 0], size: Constants.CELL_SIZE, text: "Jogador 2: "+storage.player2,
-      turn: storage.turn, dispatch: dispatch, renderer: <GameText></GameText>});
+      turn: storage.turn, dispatch: dispatch, gameMode: storage.gameMode, renderer: <GameText></GameText>});
     entities.push({position: [0, 8], size: Constants.CELL_SIZE, text: "Jogador 1: "+storage.player1,
-      turn: storage.turn, dispatch: dispatch, renderer: <GameText></GameText>});
+      turn: storage.turn, dispatch: dispatch, gameMode: storage.gameMode, renderer: <GameText></GameText>});
     entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+storage.player1,
       turn: storage.turn, dispatch: dispatch, renderer: <GameText></GameText>});
 
     //configure socket
     socket.on("move_piece", new_pos=>{
       dispatch({type: "comp", pos: new_pos});
+    });
+    socket.on("match_end", (msg) => {
+      storage.gameEnded=true;
+      entities.push({visible:true, text: "Game ended by the server", renderer: <GameModal></GameModal>});
     });
 
     //create the AI and make it play if not our turn
@@ -138,10 +142,12 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
       }
     } else if (e.type === "gameEnded") {
       storage.gameEnded=true;
-      if (e.turn===1) {
-        entities.push({visible:true, text: "Time Ended. "+storage.player2+ " won!", renderer: <GameModal></GameModal>});
-      } else {
-        entities.push({visible:true, text: "Time Ended. "+storage.player1+ " won!", renderer: <GameModal></GameModal>});
+      if (storage.gameMode !== "Competitivo") {
+        if (e.turn===1) {
+          entities.push({visible:true, text: "Time Ended. "+storage.player2+ " won!", renderer: <GameModal></GameModal>});
+        } else {
+          entities.push({visible:true, text: "Time Ended. "+storage.player1+ " won!", renderer: <GameModal></GameModal>});
+        }
       }
       
       return entities;

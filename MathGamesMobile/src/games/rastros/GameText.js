@@ -33,7 +33,7 @@ function GameText(props) {
                 textAlign:'center',
                 color: "white",
                 fontFamily: 'BubblegumSans',
-                marginLeft: 70
+                marginLeft: props.gameMode !== "Contra o Computador" ? 70 : 10
             },
         });
         
@@ -59,7 +59,7 @@ function GameText(props) {
                 textAlign:'center',
                 color: "white",
                 fontFamily: 'BubblegumSans',
-                marginLeft: 70
+                marginLeft: props.gameMode !== "Contra o Computador" ? 70 : 10
             },
         });
     } else {
@@ -89,9 +89,9 @@ function GameText(props) {
 
     return (
         <View style={styles.row}>
-            {player>0 && <CountDown
+            {player>0 && props.gameMode !== "Contra o Computador" && <CountDown
                 style={{alignSelf: "flex-start", width: 70, position: "absolute"}}
-                until={3}
+                until={300}
                 onFinish={() => {props.dispatch({type: "gameEnded", turn: props.turn})}}
                 size={15}
                 timeToShow={["M","S"]}
