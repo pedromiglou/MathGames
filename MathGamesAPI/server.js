@@ -270,8 +270,8 @@ var active_tournaments = {}
     },
     rooms: {
       idRoom: {players_in: [idJogadores checkados],
-               match_id: match_id
-            }
+               started: boolean
+              }
     }
   },
   idTorneio2: {}
@@ -467,7 +467,6 @@ io.on("connection", (socket) => {
 
   //Tournament creator says that he wants to start a new round
   socket.on("tournament_newround", async (msg) => {
-    
     var user_id = msg["user_id"];
     var tournament_id = parseInt(msg["tournament_id"]);
 
@@ -480,7 +479,6 @@ io.on("connection", (socket) => {
       io.to( socket.id ).emit("round_start", {"erro": true});
       return
     }
-
     active_tournaments[torneio.id] = {}
     active_tournaments[torneio.id]["torneio_info"] = torneio
     active_tournaments[torneio.id]["players"] = {}
@@ -493,7 +491,7 @@ io.on("connection", (socket) => {
         let new_match_id = String(newmatch.dataValues.match_id)
         active_tournaments[torneio.id]["players"][newmatch.dataValues.player1] = new_match_id
         active_tournaments[torneio.id]["players"][newmatch.dataValues.player2] = new_match_id
-        active_tournaments[torneio.id]["rooms"][new_match_id] = [] 
+        active_tournaments[torneio.id]["rooms"][new_match_id] = {"players_in": [], "started": false, "player1": newmatch.dataValues.player1, "player2": newmatch.dataValues.player2} 
       }
     }).catch(err => {
       io.to( socket.id ).emit("round_start", {"erro": true});
@@ -538,15 +536,18 @@ io.on("connection", (socket) => {
     if ( Object.keys(active_tournaments).includes(tournament_id) ) {
       if ( Object.keys(active_tournaments[tournament_id]["players"]).includes(String(user_id)) ) {
         var match_id = active_tournaments[tournament_id]["players"][String(user_id)]
-        if (!active_tournaments[tournament_id]["rooms"][match_id].includes(user_id) ) {
-          active_tournaments[tournament_id]["rooms"][match_id].push(user_id)
+        if (active_tournaments[tournament_id]["rooms"][match_id]["started"] === false) {
+          if (!active_tournaments[tournament_id]["rooms"][match_id]["players_in"].includes(user_id) ) {
+            active_tournaments[tournament_id]["rooms"][match_id]["players_in"].push(user_id)
+          }
+          io.to( socket.id ).emit("check_in", {"erro": false, "match_id": match_id});
         }
-        io.to( socket.id ).emit("check_in", {"erro": false, "match_id": match_id});
+        io.to( socket.id ).emit("check_in", {"erro": true, "message": "Game has already started"});
       } else {
-        io.to( socket.id ).emit("check_in", {"erro": true});
+        io.to( socket.id ).emit("check_in", {"erro": true, "message": "You are not participating in this tournament"});
       }
     } else {
-      io.to( socket.id ).emit("check_in", {"erro": true});
+      io.to( socket.id ).emit("check_in", {"erro": true, "message": "Tournament is not active"});
     }
 
   });
@@ -566,18 +567,16 @@ io.on("connection", (socket) => {
         //Verify this user is on the tournament
         if ( Object.keys(active_tournaments[tournament_id]["players"]).includes(String(user_id)) ) {
           //Verify this user is already checked-in
-          if ( active_tournaments[tournament_id]["rooms"][match_id].includes(user_id) ) {
+          if ( active_tournaments[tournament_id]["rooms"][match_id]["players_in"].includes(user_id) ) {
             //Verify both users have already entered game
-            if ( Object.keys(active_tournaments[tournament_id]["rooms"][match_id]).length === 2 ) {
-              var other_player = null
-              if ( active_tournaments[tournament_id]["rooms"][match_id][0] === user_id) 
-                other_player = active_tournaments[tournament_id]["rooms"][match_id][1]
-              else 
-                other_player = active_tournaments[tournament_id]["rooms"][match_id][0]
-              create_game(match_id, active_tournaments[tournament_id]["torneio_info"]["game_id"], user_id, other_player, "online", tournament_id)
+            if ( Object.keys(active_tournaments[tournament_id]["rooms"][match_id]["players_in"]).length === 2 ) {              
+              var player1 = active_tournaments[tournament_id]["rooms"][match_id]["player1"]
+              var player2 = active_tournaments[tournament_id]["rooms"][match_id]["player2"]
+              active_tournaments[tournament_id]["rooms"][match_id]["started"] = true
+              create_game(match_id, active_tournaments[tournament_id]["torneio_info"]["game_id"], player1, player2, "online", tournament_id)
             }
           } else {
-            active_tournaments[tournament_id]["rooms"][match_id].push(user_id)
+            active_tournaments[tournament_id]["rooms"][match_id]["players_in"].push(user_id)
           }
         } else {
           io.to( socket.id ).emit("match_found", {"erro": true})
@@ -830,14 +829,7 @@ async function finish_game(match_id, endMode) {
   var game_id = current_games[match_id]['game_id']
   var game_type = current_games[match_id]['game_type']
 
-  // Create a GameMatch 
-  var gameMatch = {
-    player1: parseInt(player1),
-    player2: parseInt(player2),
-    winner: winner,
-    game_type: game_type,
-    game_id: game_id
-  };
+
 
   let player1_final_result;
   let player2_final_result;
@@ -852,15 +844,34 @@ async function finish_game(match_id, endMode) {
     player2_final_result = "draw"
   }
 
-  if (!player_1_account_player) {
-    gameMatch["player1"] = null
-  }
-  if (!player_2_account_player) {
-    gameMatch["player2"] = null
-  }
+  
+  if (current_games[match_id]['tournament'] === null) {
+    //Partida não é de torneio , por isso precisamos de criar a instância na BD
 
-  // Save GameMatch in the database
-  var res = await GameMatch.create(gameMatch)
+    // Create a GameMatch 
+    var gameMatch = {
+      player1: parseInt(player1),
+      player2: parseInt(player2),
+      winner: winner,
+      game_type: game_type,
+      game_id: game_id
+    };
+
+    if (!player_1_account_player) {
+      gameMatch["player1"] = null
+    }
+    if (!player_2_account_player) {
+      gameMatch["player2"] = null
+    }
+
+    // Save GameMatch in the database
+    await GameMatch.create(gameMatch)
+  }
+  
+  console.log("---- FIM GAME ----")
+  console.log(player1)
+  console.log(player2)
+  console.log(winner)
 
   if (player_1_account_player === true || player_2_account_player === true) {
 
@@ -903,9 +914,13 @@ async function finish_game(match_id, endMode) {
 
   if (current_games[match_id]['tournament'] !== null) {
     var tournament_id = current_games[match_id]['tournament']
+
     await TournamentMatch.findOne({where: {tournament_id: tournament_id, match_id: match_id}}).then(async (game) => {
-      await TournamentMatch.findOne({where: {tournament_id: tournament_id, match_id: game.dataValues.nextGame}}).then(async (nextgame) => {
+      if (game.dataValues.nextGame !== null ) {
+        //Update Players playing next match in the tournament
+        await TournamentMatch.findOne({where: {tournament_id: tournament_id, match_id: game.dataValues.nextGame}}).then(async (nextgame) => {
         if (game.dataValues.match_id === nextgame.dataValues.lastGame1) {
+          // Player que venceu tem que ser colocado como player1 do proximo jogo no torneio
           if (winner == 1) {
             await TournamentMatch.update({player1 : player1}, {where: {tournament_id: tournament_id, match_id: game.dataValues.nextGame}}).catch(err => {
               console.log(err)
@@ -922,6 +937,7 @@ async function finish_game(match_id, endMode) {
             })
           }
         } else {
+          // Player que venceu tem que ser colocado como player2 do proximo jogo no torneio
           if (winner == 1) {
             await TournamentMatch.update({player2 : player1}, {where: {tournament_id: tournament_id, match_id: game.dataValues.nextGame}}).catch(err => {
               console.log(err)
@@ -938,8 +954,38 @@ async function finish_game(match_id, endMode) {
             })
           }
         }
-      })
+        })
+      } else {
+        // Last game from tournament
+        // Update winner and state from tournament
+        if (winner == 1)
+          await Tournament.update({winner: player1, status: "FINISHED"}, {where: {id: tournament_id}}).catch(err => {
+            console.log(err)
+          })
+        else
+          await Tournament.update({winner: player2, status: "FINISHED"}, {where: {id: tournament_id}}).catch(err => {
+            console.log(err)
+          })
+        
+        delete active_tournaments[tournament_id];
+      }
     })
+
+    //Update winner from current match
+    await GameMatch.update({winner: winner}, {where: {id: match_id}}).catch(err => {
+      console.log(err)
+    })
+
+    //Update players that were eliminated from tournament
+    if (winner == 1 ) {
+      await TournamentUser.update({eliminated: true}, {where: {user_id: player2, tournament_id: tournament_id}}).catch(err => {
+        console.log(err)
+      })
+    } else {
+      await TournamentUser.update({eliminated: true}, {where: {user_id: player1, tournament_id: tournament_id}}).catch(err => {
+        console.log(err)
+      })
+    }
   }
 
   io.to(users_info[player1]).emit("match_end", {"game_id": game_id, "match_id": match_id, "match_result": player1_final_result, "end_mode": endMode, "extra": current_games[match_id]['state']['extra']});

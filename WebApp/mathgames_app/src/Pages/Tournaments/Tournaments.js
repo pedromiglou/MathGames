@@ -56,7 +56,7 @@ function Tournaments() {
         if (response.error) {
             setErroJoinningTournament(true)
         } else {
-            retrieveTournaments()
+            goToTournament(tournamentId)
         }
     }
 
@@ -325,6 +325,9 @@ function Tournaments() {
                 
                     tournaments.map(function(tournament, index) {
                        return(
+                        <>
+                        {tournament.status !== "FINISHED" &&
+                            
 						 <li key={tournament.id} className="list-group-item-t d-flex justify-content-between align-items-center row">
                             <div className="col-lg-3 col-md-3 col-sm-3" onClick={() => goToTournament(tournament.id)}>
                                 {tournament.name}
@@ -371,6 +374,8 @@ function Tournaments() {
                             }
                             </div>    
                         </li>
+                        }
+                        </>
                    )})}
 
                    <EntrarTorneioModal

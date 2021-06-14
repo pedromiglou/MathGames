@@ -3,6 +3,7 @@ import React, {useEffect, useState} from "react";
 import "./Bracket.css";
 
 import TournamentService from '../../Services/tournament.service';
+
 import { urlWeb } from "../../data/data";
 
 
@@ -74,7 +75,7 @@ function Bracket() {
 
 
 
-    function renderBrackets(struct) {
+    async function renderBrackets(struct) {
         var bracketCount = 0;
         var groupCount = struct.map(function(s) { return s.roundNo; }).filter((v, i, a) => a.indexOf(v) === i).length; 
 
@@ -130,7 +131,15 @@ function Bracket() {
         lastdiv3.className="bracketbox"
         var lastspan1 = document.createElement("span")
         lastspan1.className = "teamc"
-        lastspan1.innerHTML = (struct[struct.length - 1].player1 === null ? "null" : struct[struct.length - 1].player1)
+
+        var torneio = await TournamentService.getTournamentById(tournament_id)
+        var winner = "null";
+        console.log(players)
+        console.log(torneio)
+        if (torneio !== undefined && torneio.winner !== null) {
+            winner = players[torneio.winner].username
+        }
+        lastspan1.innerHTML = winner
         lastdiv3.appendChild(lastspan1)
         lastdiv2.appendChild(lastdiv3)
         lastdiv.appendChild(lastdiv2)
@@ -188,7 +197,6 @@ function Bracket() {
         }
 
         async function fetchApiTournamentPlayers() {
-            console.log("entrei")
             var response = await TournamentService.getPlayersByTournament(tournament_id)
             if (!response["message"]) {
                 for (let player of response) {

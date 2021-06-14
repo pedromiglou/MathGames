@@ -49,6 +49,7 @@ function GamePage() {
 	const [gerarLinkMode, setGerarLinkMode] = useState(false);
 	const [inviteFriendMode, setInviteFriendMode] = useState(false);
 
+
 	const url = new URLSearchParams(window.location.search);
 	let game_id = url.get("id");
 	const game_info = games_info[game_id];
@@ -330,18 +331,19 @@ function GamePage() {
 
 	useEffect(() => {
 		var button = document.getElementById("button-play");
-
-		if (canPlay){
-			button.disabled = false;
-			button.classList.add("active");
-			if (button.classList.contains("disabled")){
-				button.classList.remove("disabled");
-			}
-		} else {
-			button.disabled = true;
-			button.classList.add("disabled");
-			if (button.classList.contains("active")){
-				button.classList.remove("active")
+		if (button !== undefined && button !== null) {
+			if (canPlay){
+				button.disabled = false;
+				button.classList.add("active");
+				if (button.classList.contains("disabled")){
+					button.classList.remove("disabled");
+				}
+			} else {
+				button.disabled = true;
+				button.classList.add("disabled");
+				if (button.classList.contains("active")){
+					button.classList.remove("active")
+				}
 			}
 		}
 	}, [canPlay]);
@@ -360,6 +362,8 @@ function GamePage() {
 
 	}, [name1,name2]);
 
+
+	console.log("vou render")
 	if ( gerarLinkMode ) {
 		return (
 			<div className="col-lg-12 link-geral-position">
@@ -383,6 +387,17 @@ function GamePage() {
 				<IconContext.Provider  value={{color: 'white'}}>
 					<div className="link-card">
 						<h2>À espera do teu amigo...!</h2>
+						<hr className="link-hr"></hr>
+					</div>
+				</IconContext.Provider>
+			</div>
+		)
+	} else if (tournament_id !== null) {
+		return (
+			<div className="col-lg-12 link-geral-position">
+				<IconContext.Provider  value={{color: 'white'}}>
+					<div className="link-card">
+						<h2>À espera do teu oponente...!</h2>
 						<hr className="link-hr"></hr>
 					</div>
 				</IconContext.Provider>

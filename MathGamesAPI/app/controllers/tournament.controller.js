@@ -315,10 +315,12 @@ exports.initializeround = (req, res) => {
         });
         return
       }
-
+      
+      console.log("vou analisar partidas")
       TournamentMatch.findAll({where: {tournament_id: torneio.dataValues.id, roundNo: parseInt(torneio.dataValues.current_round)}}).then( async (tournament_matches) => {
         for (let game of tournament_matches) {
           await GameMatch.findByPk(game.dataValues.match_id).then(match => {
+            console.log(match.dataValues)
             if (match.dataValues.winner === null) {
               res.status(500).send({
                 message: "Matches from previous round are still being played"
@@ -427,6 +429,7 @@ exports.findOne = (req, res) => {
       });
     });
 };
+
 
 // Update a Tournament by the id in the request
 exports.update = (req, res) => {

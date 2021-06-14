@@ -34,7 +34,7 @@ function TournamentPage() {
     const [erroStartingTournament, setErroStartingTournament] = useState(false)
     const [erroChangingDescription, setErroChangingDescription] = useState(false)
     const [erroInitializeRound, setErroInitializeRound] = useState(false)
-    const [erroCheckIn, setErroCheckIn] = useState(false)
+    const [erroCheckIn, setErroCheckIn] = useState("")
     const [initializeRoundSuccess, setInitializeRoundSuccess] = useState(false)
 
     const url = new URLSearchParams(window.location.search);
@@ -70,7 +70,7 @@ function TournamentPage() {
         setErroStartingTournament(false)
         setErroChangingDescription(false)
         setErroInitializeRound(false)
-        setErroCheckIn(false)
+        setErroCheckIn("")
         setInitializeRoundSuccess(false)
         var response = await TournamentService.leaveTournament(tournament_id, playerId)
         if (response.error) {
@@ -87,7 +87,7 @@ function TournamentPage() {
         setErroStartingTournament(false)
         setErroChangingDescription(false)
         setErroInitializeRound(false)
-        setErroCheckIn(false)
+        setErroCheckIn("")
         setInitializeRoundSuccess(false)
         var response = await TournamentService.removeTournament(tournament_id)
         if (response.error) {
@@ -106,7 +106,7 @@ function TournamentPage() {
         setErroStartingTournament(false)
         setErroChangingDescription(false)
         setErroInitializeRound(false)
-        setErroCheckIn(false)
+        setErroCheckIn("")
         setInitializeRoundSuccess(false)
         if (tournament.max_users !== players.length) {
             setErroTournamentNotFull(true)
@@ -127,7 +127,7 @@ function TournamentPage() {
         setErroStartingTournament(false)
         setErroChangingDescription(false)
         setErroInitializeRound(false)
-        setErroCheckIn(false)
+        setErroCheckIn("")
         setInitializeRoundSuccess(false)
         socket.off("round_start");
 
@@ -156,7 +156,7 @@ function TournamentPage() {
         setErroStartingTournament(false)
         setErroChangingDescription(false)
         setErroInitializeRound(false)
-        setErroCheckIn(false)
+        setErroCheckIn("")
         setInitializeRoundSuccess(false)
         var description = document.getElementById("tournament-details")
         if (description.value === "") {
@@ -180,7 +180,7 @@ function TournamentPage() {
         setErroStartingTournament(false)
         setErroChangingDescription(false)
         setErroInitializeRound(false)
-        setErroCheckIn(false)
+        setErroCheckIn("")
         setInitializeRoundSuccess(false)
         socket.off("check_in");
 
@@ -189,7 +189,13 @@ function TournamentPage() {
         socket.once("check_in", (msg) => {
             let erro = msg['erro'];
             if ( erro ) {
-                setErroCheckIn(true)
+                let message = msg["message"]
+                if (message === "Game has already started")
+                    setErroCheckIn("O teu jogo já iniciou. Check In já nao é permitido. Caso tenhas vencido a partida, espera que o próximo round seja iniciado.")
+                if (message === "You are not participating in this tournament")
+                    setErroCheckIn("Voçe já foi eliminado ou não pertence a este torneio.")
+                if (message === "Tournament is not active")
+                    setErroCheckIn("Este torneio não se encontra ativo.")
             } else {
                 let match_id = msg['match_id']
                 history.push("/gamePage?id="+tournament.game_id+"&tid="+tournament.id+"&mid="+match_id)
@@ -302,9 +308,9 @@ function TournamentPage() {
                     Occoreu um erro ao tentar iniciar a fase seguinte do torneio. Operação não foi concluída.
                 </div> : null}
 
-            {erroCheckIn === true 
+            {erroCheckIn !== "" 
                 ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
-                    Check In não foi efetuado com sucesso. Tente mais tarde.
+                    {erroCheckIn}
                 </div> : null}
             
             {initializeRoundSuccess === true 
