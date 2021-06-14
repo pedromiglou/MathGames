@@ -518,8 +518,10 @@ const Profile = () => {
                                 : Object.entries(games).length === 0 
                                     ? <p className="no-games-found">O seu histório de jogos é vazio!</p>
                                     :
-                                    Object.entries(games).map(
-                                    ([key, value]) => (
+                                    Object.entries(games).map(([key, value]) => (
+                                        <>
+                                        {value["winner"] !== null && 
+                                            
                                         <li
                                             className={
                                                 ((value["winner"] === "1" && value["player1"] === user.id) || (value["winner"] === "2" && value["player2"] === user.id) )
@@ -531,7 +533,7 @@ const Profile = () => {
                                             key={key}
                                         >
                                             <div className="col col-2">
-                                                {value["createdAt"]}
+                                                {value["updatedAt"]}
                                             </div>
                                             <div className="col col-2">
                                                 {value["game_id"] === 0
@@ -568,6 +570,8 @@ const Profile = () => {
                                                 </button>
                                             </div>
                                         </li>
+                                    }
+                                    </>
                                     )
                                 )}
                             </ul>

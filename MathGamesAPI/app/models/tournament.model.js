@@ -44,6 +44,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
         allowNull: false
       },
+      current_round: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
       status: {
         type: Sequelize.STRING(30),
         allowNull: false

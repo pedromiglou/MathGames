@@ -60,6 +60,7 @@ exports.findUsersByTournament = (req, res) => {
 
           const { avatar_accessorie, avatar_color, avatar_hat, avatar_shirt, avatar_trouser, banned, createdAt, email, password, updatedAt, ...newUser } = user.dataValues;
 
+          newUser["eliminated"] = player.dataValues.eliminated
           finalArray.push(newUser)
         }).catch(err => {
           res.status(500).send({

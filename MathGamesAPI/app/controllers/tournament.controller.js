@@ -55,7 +55,8 @@ exports.create = (req, res) => {
     password: req.body.password,
     game_id: req.body.game_id,
     creator: req.body.creator,
-    status: "PREPARING"
+    status: "PREPARING",
+    current_round: 0
   };
 
   // Save Tournament in the database
@@ -178,7 +179,7 @@ exports.initialize = (req, res) => {
     .then(torneio => {
       if (torneio.dataValues.status !== "PREPARING") {
         res.status(500).send({
-          message: "The Tournament as started already."
+          message: "The Tournament has started already."
         });
         return
       }
@@ -280,6 +281,71 @@ exports.initialize = (req, res) => {
 
 
 
+// Initialize tournamnet round
+exports.initializeround = (req, res) => {
+  // Validate request
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!"
+    });
+    return;
+  }
+
+  var torneioId = req.body.tournament_id
+
+  Tournament.findByPk(torneioId)
+    .then(torneio => {
+      if (torneio.dataValues.status !== "STARTED") {
+        res.status(500).send({
+          message: "The Tournament have not started or have already finnished."
+        });
+        return
+      }
+
+      if ( (parseInt(torneio.dataValues.creator) !== parseInt(req.userId))  && (req.account_type !== "A")) {
+        res.status(500).send({
+          message: "The tournament round should be started by the creator or an admin."
+        });
+        return
+      }
+
+      if (parseInt(torneio.dataValues.current_round) === 0) {
+        res.status(200).send({
+          message: "The round can start"
+        });
+        return
+      }
+      
+      console.log("vou analisar partidas")
+      TournamentMatch.findAll({where: {tournament_id: torneio.dataValues.id, roundNo: parseInt(torneio.dataValues.current_round)}}).then( async (tournament_matches) => {
+        for (let game of tournament_matches) {
+          await GameMatch.findByPk(game.dataValues.match_id).then(match => {
+            console.log(match.dataValues)
+            if (match.dataValues.winner === null) {
+              res.status(500).send({
+                message: "Matches from previous round are still being played"
+              });
+              return
+            }
+          })
+        }
+
+        res.status(200).send({
+          message: "The round can start"
+        });
+
+      }).catch(err => {
+      res.status(500).send({
+        message: "An error occurred on the server. Operation was not concluded!"
+      });
+    });
+
+    }).catch(err => {
+      res.status(500).send({
+        message: "An error occurred on the server. Operation was not concluded!"
+      });
+    });
+};
 
 
 
@@ -363,6 +429,7 @@ exports.findOne = (req, res) => {
       });
     });
 };
+
 
 // Update a Tournament by the id in the request
 exports.update = (req, res) => {
@@ -492,9 +559,7 @@ function doBracket(base, players) {
 
   var knownBrackets = [2,4,8,16,32,64] // brackets with "perfect" proportions (full fields, no byes)
   //bracketCount = 0;
-  console.log(players)
   shuffleArray(players)
-  console.log(players)
 
   var closest 		= knownBrackets.filter(function (k) { return k>=base; }  ),
   byes 			= closest-base;
