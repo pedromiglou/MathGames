@@ -11,10 +11,10 @@ import {
 	Button,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-
-import Avatar from "../components/Avatar";
+import { Picker } from "@react-native-picker/picker";
 //import RNPickerSelect from "react-native-picker-select";
 
+import Avatar from "../components/Avatar";
 import { hatItems } from "../data/hatItems";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { shirtItems } from "../data/shirtItems";
@@ -22,11 +22,55 @@ import { accessorieItems } from "../data/accessorieItems";
 import { trouserItems } from "../data/trouserItems";
 import { avatarColors } from "../data/avatarColors";
 
-import { Picker } from "@react-native-picker/picker";
+import AuthService from "./../services/auth.service";
+import UserService from "./../services/user.service";
+import { readData } from "../utilities/AsyncStorage";
+
+import { Entypo } from '@expo/vector-icons'; 
 
 const win = Dimensions.get("window");
 
 class Inventory extends React.Component {
+	componentDidMount() {
+		readData("user").then((user) => {
+			this.setState({ userState: JSON.parse(JSON.parse(user)) });
+
+			if (this.state.userState !== null) {
+				UserService.getUserById(this.state.userState.id).then(
+					(user) => {
+						var trouserT;
+						switch(user.avatar_trouser) {
+							case "Trouser1":
+								trouserT = "#34495E";
+								break;
+							case "Trouser2":
+								trouserT = "#7B7D7D";
+								break;
+							case "Trouser3":
+								trouserT = "#EAEDED";
+								break;
+							default:
+								trouserT = user.avatar_trouser;
+						}
+						this.setState({
+							skinColorState: user.avatar_color,
+							hatNameState: user.avatar_hat,
+							shirtNameState: user.avatar_shirt,
+							accessorieNameState: user.avatar_accessorie,
+							trouserNameState: trouserT,
+						});
+						this.forceRemount();
+					}
+				);
+			}
+		});
+
+
+		if (this.state.userState !== null) {
+			fetchApiUserById();
+		}
+	}
+
 	componentDidUpdate() {
 		console.log("updatin");
 	}
@@ -85,55 +129,183 @@ class Inventory extends React.Component {
 		}
 	};
 
-	/*
-	showItem = (option) => {
-		switch (option) {
-			case "chapeus":
-				console.log("Option: chapeus");
-				this.setState({ option: "chapeus" });
-				break;
-			case "camisolas":
-				console.log("Option: camisolas");
-				this.setState({ option: "camisolas" });
-				break;
-			case "acessorios":
-				console.log("Option: acessorios");
-				this.setState({ option: "acessorios" });
-				break;
-			case "calcas":
-				console.log("Option: calcas");
-				this.setState({ option: "calcas" });
-				break;
-		}
+	saveAvatar = () => {
+		UserService.update_user(
+			this.state.skinColorState,
+			this.state.hatNameState,
+			this.state.shirtNameState,
+			this.state.accessorieNameState,
+			this.state.trouserNameState,
+			this.state.userState.id
+		);
 	};
-	*/
 
-	/*
-	open = () => {
-		this.pickerRef.current.focus();
+	listHats = () => {
+		return hatItems.map((x) => {
+			if (this.state.userState.account_level >= x.lvl) {
+				return (
+					<TouchableOpacity
+						onPress={() => this.changeHat(x.name)}
+						key={x.id}
+					>
+						<View style={styles.imgView}>
+							<Image
+								style={styles.itemImg}
+								resizeMode={"contain"}
+								source={x.img}
+							/>
+						</View>
+					</TouchableOpacity>
+				);
+			} else {
+				return (
+					<TouchableOpacity
+						key={x.id}
+					>
+						<View style={styles.imgView}>
+							<Image
+								style={styles.itemLockedImg}
+								resizeMode={"contain"}
+								source={x.img}
+							/>
+							<Entypo name="lock" size={24} color="black" style={styles.lockIcon}/>
+						</View>
+					</TouchableOpacity>
+				);
+			}
+		});
+	};
+
+
+	listShirts = () => {
+		return shirtItems.map((x) => {
+			console.log(this.state.userState.account_level + " fewf we" + x.lvl)
+			if (this.state.userState.account_level >= x.lvl) {
+				return (
+					<TouchableOpacity
+						onPress={() => this.changeShirt(x.name)}
+						key={x.id}
+					>
+						<View style={styles.imgView}>
+							<Image
+								style={styles.itemImg}
+								resizeMode={"contain"}
+								source={x.img}
+							/>
+						</View>
+					</TouchableOpacity>
+				);
+			} else {
+				return (
+					<TouchableOpacity
+						key={x.id}
+					>
+						<View style={styles.imgView}>
+							<Image
+								style={styles.itemLockedImg}
+								resizeMode={"contain"}
+								source={x.img}
+							/>
+							<Entypo name="lock" size={24} color="black" style={styles.lockIcon}/>
+						</View>
+					</TouchableOpacity>
+				);
+			}
+		});
 	}
 
-	close = () => {
-		this.pickerRef.current.blur();
+	listAccessories = () => {
+		return accessorieItems.map((x) => {
+			if (this.state.userState.account_level >= x.lvl) {
+				return (
+					<TouchableOpacity
+						onPress={() => this.changeAccessorie(x.name)}
+						key={x.id}
+					>
+						<View style={styles.imgView}>
+							<Image
+								style={styles.itemImg}
+								resizeMode={"contain"}
+								source={x.img}
+							/>
+						</View>
+					</TouchableOpacity>
+				);
+			} else {
+				return (
+					<TouchableOpacity
+						key={x.id}
+					>
+						<View style={styles.imgView}>
+							<Image
+								style={styles.itemLockedImg}
+								resizeMode={"contain"}
+								source={x.img}
+							/>
+							<Entypo name="lock" size={24} color="black" style={styles.lockIcon}/>
+						</View>
+					</TouchableOpacity>
+				);
+			}
+		});
 	}
-	*/
+
+	listTrousers = () => {
+		return trouserItems.map((x) => {
+			if (this.state.userState.account_level >= x.lvl) {
+				return (
+					<TouchableOpacity
+						onPress={() => this.changeTrousers(x.name)}
+						key={x.id}
+					>
+						<View style={styles.imgView}>
+							<Image
+								style={styles.itemImg}
+								resizeMode={"contain"}
+								source={x.img}
+							/>
+						</View>
+					</TouchableOpacity>
+				);
+			} else {
+				return (
+					<TouchableOpacity
+						key={x.id}
+					>
+						<View style={styles.imgView}>
+							<Image
+								style={styles.itemLockedImg}
+								resizeMode={"contain"}
+								source={x.img}
+							/>
+							<Entypo name="lock" size={24} color="black" style={styles.lockIcon}/>
+						</View>
+					</TouchableOpacity>
+				);
+			}
+		});
+	}
+
 
 	constructor(props) {
 		super(props);
 		this.state = {
 			uniqueValue: 1,
-			hatNameState: "MagicianHat",
-			shirtNameState: "Camouflage1",
-			accessorieNameState: "AviatorGlasses",
-			trouserNameState: "TrouserJeans",
+			hatNameState: "none",
+			shirtNameState: "none",
+			accessorieNameState: "none",
+			trouserNameState: "none",
 			skinColorState: "#7B241C",
 			option: "none",
-			selectedLanguage: "java",
+			selectedLanguage: "...",
+			userState: null,
 		};
 		//this.pickerRef = useRef();
 	}
 
 	render() {
+		const { navigation } = this.props;
+
 		return (
 			<ScrollView style={styles.scrollView}>
 				<LinearGradient
@@ -158,6 +330,7 @@ class Inventory extends React.Component {
 							accessorieName={this.state.accessorieNameState}
 							trouserName={this.state.trouserNameState}
 							skinColor={this.state.skinColorState}
+							profileCam={false}
 						/>
 					</SafeAreaView>
 
@@ -199,25 +372,13 @@ class Inventory extends React.Component {
 
 					{this.state.option === "chapeus" && (
 						<View style={styles.imgsContainer}>
-							{hatItems.map((x) => (
-								<TouchableOpacity
-									onPress={() => this.changeHat(x.name)}
-									key={x.id}
-								>
-									<View style={styles.imgView}>
-										<Image
-											style={styles.itemImg}
-											resizeMode={"contain"}
-											source={x.img}
-										/>
-									</View>
-								</TouchableOpacity>
-							))}
+							{this.listHats()}
+
 							<View>
 								<TouchableHighlight
-									onPress={() =>
-										navigation.navigate("Profile")
-									}
+									onPress={() => {
+										this.saveAvatar();
+									}}
 									style={styles.buttonDownL}
 								>
 									<Text style={styles.buttonText}>
@@ -228,7 +389,7 @@ class Inventory extends React.Component {
 							<View>
 								<TouchableHighlight
 									onPress={() =>
-										navigation.navigate("LastGames")
+										navigation.navigate("Profile")
 									}
 									style={styles.buttonDownR}
 								>
@@ -242,25 +403,13 @@ class Inventory extends React.Component {
 
 					{this.state.option === "camisolas" && (
 						<View style={styles.imgsContainer}>
-							{shirtItems.map((x) => (
-								<TouchableOpacity
-									onPress={() => this.changeShirt(x.name)}
-									key={x.id}
-								>
-									<View style={styles.imgView}>
-										<Image
-											style={styles.itemImg}
-											resizeMode={"contain"}
-											source={x.img}
-										/>
-									</View>
-								</TouchableOpacity>
-							))}
+							{this.listShirts()}
+
 							<View>
 								<TouchableHighlight
-									onPress={() =>
-										navigation.navigate("Profile")
-									}
+									onPress={() => {
+										this.saveAvatar();
+									}}
 									style={styles.buttonDownL}
 								>
 									<Text style={styles.buttonText}>
@@ -271,7 +420,7 @@ class Inventory extends React.Component {
 							<View>
 								<TouchableHighlight
 									onPress={() =>
-										navigation.navigate("LastGames")
+										navigation.navigate("Profile")
 									}
 									style={styles.buttonDownR}
 								>
@@ -285,27 +434,13 @@ class Inventory extends React.Component {
 
 					{this.state.option === "acessorios" && (
 						<View style={styles.imgsContainer}>
-							{accessorieItems.map((x) => (
-								<TouchableOpacity
-									onPress={() =>
-										this.changeAccessorie(x.name)
-									}
-									key={x.id}
-								>
-									<View style={styles.imgView}>
-										<Image
-											style={styles.itemImg}
-											resizeMode={"contain"}
-											source={x.img}
-										/>
-									</View>
-								</TouchableOpacity>
-							))}
+							{this.listAccessories()}
+
 							<View>
 								<TouchableHighlight
-									onPress={() =>
-										navigation.navigate("Profile")
-									}
+									onPress={() => {
+										this.saveAvatar();
+									}}
 									style={styles.buttonDownL}
 								>
 									<Text style={styles.buttonText}>
@@ -316,7 +451,7 @@ class Inventory extends React.Component {
 							<View>
 								<TouchableHighlight
 									onPress={() =>
-										navigation.navigate("LastGames")
+										navigation.navigate("Profile")
 									}
 									style={styles.buttonDownR}
 								>
@@ -330,50 +465,13 @@ class Inventory extends React.Component {
 
 					{this.state.option === "calcas" && (
 						<View style={styles.imgsContainer}>
-							{trouserItems.map((x) => {
-								if (x.color[0] === "#") {
-									return (
-										<TouchableOpacity
-											onPress={() =>
-												this.changeTrousers(x.color)
-											}
-											key={x.id}
-											style={{
-												backgroundColor: x.color,
-												height: 70,
-												width: 70,
-												margin: 10,
-											}}
-										>
-											<View>
-												<Text> </Text>
-											</View>
-										</TouchableOpacity>
-									);
-								} else {
-									return (
-										<TouchableOpacity
-											onPress={() =>
-												this.changeTrousers(x.name)
-											}
-											key={x.id}
-										>
-											<View style={styles.imgView}>
-												<Image
-													style={styles.itemImg}
-													resizeMode={"contain"}
-													source={x.img}
-												/>
-											</View>
-										</TouchableOpacity>
-									);
-								}
-							})}
+							{this.listTrousers()}
+
 							<View>
 								<TouchableHighlight
-									onPress={() =>
-										navigation.navigate("Profile")
-									}
+									onPress={() => {
+										this.saveAvatar();
+									}}
 									style={styles.buttonDownL}
 								>
 									<Text style={styles.buttonText}>
@@ -384,7 +482,7 @@ class Inventory extends React.Component {
 							<View>
 								<TouchableHighlight
 									onPress={() =>
-										navigation.navigate("LastGames")
+										navigation.navigate("Profile")
 									}
 									style={styles.buttonDownR}
 								>
@@ -427,9 +525,9 @@ class Inventory extends React.Component {
 							>
 								<View>
 									<TouchableHighlight
-										onPress={() =>
-											navigation.navigate("Profile")
-										}
+										onPress={() => {
+											this.saveAvatar();
+										}}
 										style={styles.buttonDownL}
 									>
 										<Text style={styles.buttonText}>
@@ -440,7 +538,7 @@ class Inventory extends React.Component {
 								<View>
 									<TouchableHighlight
 										onPress={() =>
-											navigation.navigate("LastGames")
+											navigation.navigate("Profile")
 										}
 										style={styles.buttonDownR}
 									>
@@ -529,6 +627,25 @@ const styles = StyleSheet.create({
 		width: win.height * 0.1,
 		height: win.height * 0.1,
 		alignSelf: "stretch",
+	},
+
+	itemLockedImg: {
+		flex: 1,
+		width: win.height * 0.1,
+		height: win.height * 0.1,
+		alignSelf: "stretch",
+		opacity: 0.5
+	},
+
+	lockIcon: {
+		position: 'absolute',
+		left: 0,
+		right: 0,
+		top: 0,
+		bottom: 0,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignSelf: 'center'
 	},
 
 	pageTitle: {

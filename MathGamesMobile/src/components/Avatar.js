@@ -2,7 +2,7 @@ import { ExpoWebGLRenderingContext, GLView } from "expo-gl";
 import { Renderer, TextureLoader } from "expo-three";
 import * as React from "react";
 import {
-	AmbientLight,
+	Ambient	,
 	BoxBufferGeometry,
 	Fog,
 	Mesh,
@@ -26,7 +26,6 @@ export default function Avatar(props) {
 
 	React.useEffect(() => {
 		// Clear the animation loop when the component unmounts
-		console.log("olaaaaaaaaaaaaa")
 		return () => clearTimeout(timeout);
 	}, []);
 
@@ -46,13 +45,16 @@ export default function Avatar(props) {
 				renderer.setSize(width, height);
 				renderer.setClearColor(0x000000, 0);
 
+				//renderer.dispose();
+				//renderer.forceContextLoss();
+
 				const camera = new PerspectiveCamera(
 					70,
 					width / height,
 					0.01,
 					1000
 				);
-				camera.position.set(0, 2, 5);
+
 
 				const scene = new Scene();
 				scene.fog = new Fog(sceneColor, 1, 10000);
@@ -60,17 +62,17 @@ export default function Avatar(props) {
 
 				scene.background = null;
 
-				const ambientLight = new AmbientLight(0x101010);
-				scene.add(ambientLight);
+				//const ambientLight = new AmbientLight(0x101010);
+			//	scene.add(ambientLight);
 
 				const pointLight = new PointLight(0xffffff, 2, 1000, 0.001);
 				pointLight.position.set(0, 20, 10);
-				//scene.add(pointLight);
+				scene.add(pointLight);
 
-				const spotLight = new SpotLight(0xffffff, 1);
-				spotLight.position.set(0, 5, 10);
-				spotLight.lookAt(scene.position);
-				scene.add(spotLight);
+				//const spotLight = new SpotLight(0xffffff, 1);
+				//spotLight.position.set(0, 5, 10);
+				//spotLight.lookAt(scene.position);
+				//scene.add(spotLight);
 
 				const cube = new IconMesh();
 				cube.position.set(3, 0, 1);
@@ -233,8 +235,6 @@ export default function Avatar(props) {
 				scene.add(body);
 
 
-				camera.lookAt(body.position);
-
 
 				// ************************** //
 				// Arms
@@ -300,8 +300,23 @@ export default function Avatar(props) {
 				}
 
 				if (coloredTrousers) {
+					var trouserT;
+					switch(props.trouserName) {
+						case "Trouser1":
+							trouserT = "#34495E";
+							break;
+						case "Trouser2":
+							trouserT = "#7B7D7D";
+							break;
+						case "Trouser3":
+							trouserT = "#EAEDED";
+							break;
+						default:
+							trouserT = props.trouserName;
+					}
+
 					const trouserMaterial = new THREE.MeshLambertMaterial({
-						color: props.trouserName,
+						color: trouserT,
 					});
 
 					leg1 = new THREE.Mesh(legGeometry, trouserMaterial);
@@ -315,6 +330,16 @@ export default function Avatar(props) {
 				leg2.position.set(0.5, -2, 0);
 				scene.add(leg2);
 
+
+				console.log(props.shirtName)
+
+				if( props.profileCam ) {
+					camera.position.set(0, 1.8, 3);
+				}
+				else {
+					camera.position.set(0, 2, 5);
+					camera.lookAt(body.position);
+				}
 
 				// ************************** //
 				// Render
@@ -396,7 +421,6 @@ const loadModelsAsync_CowboyHat = async () => {
 
 const loadModelsAsync_MagicianHat = async () => {
 	/// Get all the files in the mesh
-
 	 const model = {
 		"TopHat.obj": require("../../public/avatar_assets/hats/magicianHat/TopHat.obj"),
 		"TopHat.mtl": require("../../public/avatar_assets/hats/magicianHat/TopHat.mtl"),
@@ -432,7 +456,6 @@ const loadModelsAsync_MagicianHat = async () => {
 	/// Add the mesh to the scene
 	//const { x: xFromScreen, y: yFromScreen, z: zFromScreen } = camera.getWorldPosition()
 	mesh.position.set(0, 1.9, 1);
-
 	return mesh;
 };
 

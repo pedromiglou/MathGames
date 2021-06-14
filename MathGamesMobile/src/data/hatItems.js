@@ -8,7 +8,7 @@ export const hatItems =
             lvl: 0
         },
 
-         {
+        {
             id: 1,
             name: "MagicianHat",
             img: require("../../public/avatar_assets/hats/magicianHat/magicianHat.png"),
