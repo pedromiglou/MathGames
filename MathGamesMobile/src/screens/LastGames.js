@@ -22,7 +22,6 @@ function LastGames({ navigation }) {
 			setUser(user);
 
 			UserService.getLastGames(user.id, user.token).then((response) => {
-				console.log(response);
 				if (!response.error) setGames(response);
 				else setGames("erro");
 			});

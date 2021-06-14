@@ -71,9 +71,6 @@ class Inventory extends React.Component {
 		}
 	}
 
-	componentDidUpdate() {
-		console.log("updatin");
-	}
 
 	forceRemount = () => {
 		this.setState({ uniqueValue: this.state.uniqueValue + 1 });
@@ -85,45 +82,35 @@ class Inventory extends React.Component {
 	};
 
 	changeHat = (hatName) => {
-		console.log("Changing hat ...");
 		if (hatName !== undefined) {
-			console.log("changed hat to " + hatName);
 			this.setState({ hatNameState: hatName });
 			this.forceRemount();
 		}
 	};
 
 	changeShirt = (shirtName) => {
-		console.log("Changing shirt ...");
 		if (shirtName !== undefined) {
-			console.log("changed shirt to " + shirtName);
 			this.setState({ shirtNameState: shirtName });
 			this.forceRemount();
 		}
 	};
 
 	changeAccessorie = (accessorieName) => {
-		console.log("Changing shirt ...");
 		if (accessorieName !== undefined) {
-			console.log("changed accessorie to " + accessorieName);
 			this.setState({ accessorieNameState: accessorieName });
 			this.forceRemount();
 		}
 	};
 
 	changeTrousers = (trouserName) => {
-		console.log("Changing trouser ...");
 		if (trouserName !== undefined) {
-			console.log("changed trouser to " + trouserName);
 			this.setState({ trouserNameState: trouserName });
 			this.forceRemount();
 		}
 	};
 
 	changeAvatarColor = (skinColor) => {
-		console.log("Changing skinColor ...");
 		if (skinColor !== undefined) {
-			console.log("changed skinColor to " + skinColor);
 			this.setState({ skinColorState: skinColor });
 			this.forceRemount();
 		}
@@ -140,9 +127,25 @@ class Inventory extends React.Component {
 		);
 	};
 
+	getLevel = (account_level) => {
+		var contador = 1;
+		if (typeof account_level !== "undefined") {
+			while (true) {
+				var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
+				var maximo = 400 * Math.pow(contador, 1.1);
+				if ( (minimo <= account_level) && (account_level < maximo)) {
+					return contador;
+				}
+				contador++;
+			}
+		} else {
+			return 0;
+		}
+	}
+
 	listHats = () => {
 		return hatItems.map((x) => {
-			if (this.state.userState.account_level >= x.lvl) {
+			if (this.getLevel(this.state.userState.account_level) >= x.lvl) {
 				return (
 					<TouchableOpacity
 						onPress={() => this.changeHat(x.name)}
@@ -176,11 +179,9 @@ class Inventory extends React.Component {
 		});
 	};
 
-
 	listShirts = () => {
 		return shirtItems.map((x) => {
-			console.log(this.state.userState.account_level + " fewf we" + x.lvl)
-			if (this.state.userState.account_level >= x.lvl) {
+			if (this.getLevel(this.state.userState.account_level) >= x.lvl) {
 				return (
 					<TouchableOpacity
 						onPress={() => this.changeShirt(x.name)}
@@ -216,7 +217,7 @@ class Inventory extends React.Component {
 
 	listAccessories = () => {
 		return accessorieItems.map((x) => {
-			if (this.state.userState.account_level >= x.lvl) {
+			if (this.getLevel(this.state.userState.account_level) >= x.lvl) {
 				return (
 					<TouchableOpacity
 						onPress={() => this.changeAccessorie(x.name)}
@@ -252,7 +253,7 @@ class Inventory extends React.Component {
 
 	listTrousers = () => {
 		return trouserItems.map((x) => {
-			if (this.state.userState.account_level >= x.lvl) {
+			if (this.getLevel(this.state.userState.account_level) >= x.lvl) {
 				return (
 					<TouchableOpacity
 						onPress={() => this.changeTrousers(x.name)}

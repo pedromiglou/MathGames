@@ -331,10 +331,9 @@ export default function Avatar(props) {
 				scene.add(leg2);
 
 
-				console.log(props.shirtName)
 
 				if( props.profileCam ) {
-					camera.position.set(0, 1.8, 3);
+					camera.position.set(0, 1.7, 2.3);
 				}
 				else {
 					camera.position.set(0, 2, 5);
@@ -448,14 +447,14 @@ const loadModelsAsync_MagicianHat = async () => {
 
 
 	/// Update size and position
-	ExpoTHREE.utils.scaleLongestSideToSize(mesh, 1.5);
+	ExpoTHREE.utils.scaleLongestSideToSize(mesh, 2);
 	ExpoTHREE.utils.alignMesh(mesh, { y: 1 });
 	/// Smooth mesh
 	// ExpoTHREE.utils.computeMeshNormals(mesh)
 
 	/// Add the mesh to the scene
 	//const { x: xFromScreen, y: yFromScreen, z: zFromScreen } = camera.getWorldPosition()
-	mesh.position.set(0, 1.9, 1);
+	mesh.position.set(0, 1.9, 0);
 	return mesh;
 };
 
