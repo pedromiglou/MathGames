@@ -1,9 +1,9 @@
-import {urlAPI} from "./../data/data";
-import {readData, saveData} from "./../utilities/AsyncStorage";
+import { max } from "react-native-reanimated";
+import { urlAPI } from "./../data/data";
+import { readData, saveData } from "./../utilities/AsyncStorage";
 
 class UserService {
-
-    /*
+	/*
     async getUserById(userId) {
         var url = urlAPI + 'api/users/' + userId;
         var res = await fetch(url);
@@ -16,19 +16,66 @@ class UserService {
         return res.json();
     }*/
 
+	async getFriends() {
+		var user = JSON.parse(JSON.parse(await readData("user")));
+		var url = urlAPI + "api/friends/" + user.id;
+		var token = user.token;
 
-    async getFriends() {
-        var user = JSON.parse(JSON.parse(await readData("user")));
-        var url = urlAPI + 'api/friends/' + user.id;
-        var token = user.token; 
+		var res = await fetch(url, { headers: { "x-access-token": token } });
+		if (res.status !== 200) return { error: true };
+		return res.json();
+	}
 
-        var res = await fetch(url, {headers: {'x-access-token': token}});
-        if (res.status !== 200) 
-            return { error: true };
+	async remove_friend(friend1, friend2) {
+		var user = JSON.parse(JSON.parse(await readData("user")));
+		var token = user.token;
+
+		var url = urlAPI + "api/friends/" + friend1 + "/" + friend2;
+
+		var res = await fetch(url, {
+			method: "DELETE",
+			headers: {
+				"Content-type": "application/json",
+				"x-access-token": token,
+			},
+		});
+
+        if (res.status !== 200) return { error: true };
+		return res.json();
+
+	}
+
+
+    async getUsers(username, min_level, max_level, page, pageSize) {
+        var url = urlAPI + 'api/users?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username + '&min_level=' + min_level + '&max_level=' + max_level;
+        var res = await fetch(url);
         return res.json();
     }
 
-    /*
+
+    async send_notification_request(sender, receiver, not_type) {
+        var user = JSON.parse(JSON.parse(await readData("user")));
+		var token = user.token;
+
+        let request= {
+            sender: sender,
+            receiver: receiver,
+            notification_type: not_type
+        }
+
+        var url = urlAPI + 'api/notifications/';
+        
+        await fetch(url, {
+            method:'POST',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': token},
+            body: JSON.stringify(request)
+        });
+
+        return;        
+    }
+
+	/*
     async getNotifications(userId) {
         var url = urlAPI + 'api/notifications/' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
@@ -44,11 +91,6 @@ class UserService {
         return res.json();
     }
     
-    async getUsers(username, min_level, max_level, page, pageSize) {
-        var url = urlAPI + 'api/users?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username + '&min_level=' + min_level + '&max_level=' + max_level;
-        var res = await fetch(url);
-        return res.json();
-    }
 
     async getUsersBanned(username, min_level, max_level, page, pageSize) {
         var url = urlAPI + 'api/users/banned?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username + '&min_level=' + min_level + '&max_level=' + max_level;
@@ -217,24 +259,7 @@ class UserService {
         return;
     }
 
-    async send_notification_request(sender, receiver, not_type) {
-        let request= {
-            sender: sender,
-            receiver: receiver,
-            notification_type: not_type
-        }
-
-        var url = urlAPI + 'api/notifications/';
-        
-        await fetch(url, {
-            method:'POST',
-            headers:{'Content-type':'application/json',
-                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
-            body: JSON.stringify(request)
-        });
-
-        return;        
-    }
+    
 
 
 
@@ -327,7 +352,6 @@ class UserService {
 
         return;  
     }*/
- 
 }
 
 export default new UserService();
