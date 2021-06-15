@@ -2,7 +2,6 @@ import { ExpoWebGLRenderingContext, GLView } from "expo-gl";
 import { Renderer, TextureLoader } from "expo-three";
 import * as React from "react";
 import {
-	Ambient	,
 	BoxBufferGeometry,
 	Fog,
 	Mesh,
@@ -10,7 +9,6 @@ import {
 	PerspectiveCamera,
 	PointLight,
 	Scene,
-	SpotLight,
 } from "three";
 
 import ExpoTHREE from "expo-three";
@@ -45,8 +43,8 @@ export default function Avatar(props) {
 				renderer.setSize(width, height);
 				renderer.setClearColor(0x000000, 0);
 
-				//renderer.dispose();
-				//renderer.forceContextLoss();
+				renderer.dispose();
+				renderer.forceContextLoss();
 
 				const camera = new PerspectiveCamera(
 					70,
@@ -96,10 +94,9 @@ export default function Avatar(props) {
 						scene.add(WitchHat);
 						break;
 
-					default:
-						/* 
+					case "CowboyHat":
 						const CowboyHat = await loadModelsAsync_CowboyHat();
-						scene.add(CowboyHat); */
+						scene.add(CowboyHat);
 						break;
 				}
 
@@ -340,6 +337,7 @@ export default function Avatar(props) {
 					camera.lookAt(body.position);
 				}
 
+
 				// ************************** //
 				// Render
 				// ************************** //
@@ -377,7 +375,6 @@ class IconMesh extends Mesh {
 // Hats
 // ************************** //
 
-/*	NOT WORKING 
 const loadModelsAsync_CowboyHat = async () => {
 	/// Get all the files in the mesh
 	const model = {
@@ -389,34 +386,27 @@ const loadModelsAsync_CowboyHat = async () => {
 		[model["CowBoyHat.obj"]],
 		null,
 		(name) => model[name]
-	);
+	); 
 
 	var material = new THREE.MeshBasicMaterial({
 		color: 0xffffff,
 	});
 	const texture = new TextureLoader().load(require("../../public/avatar_assets/hats/cowboyHat/textures/Material_001_baseColor.png"));
 
-	material.map = texture;
-	mesh.children[0].material = material; 
 
-	console.log(mesh)
-	//console.log(texture)
+	material.map = texture;
+	mesh.children[0].material = material;
 
 
 	/// Update size and position
-	ExpoTHREE.utils.scaleLongestSideToSize(mesh, 0.9);
+	ExpoTHREE.utils.scaleLongestSideToSize(mesh, 2.5);
 	ExpoTHREE.utils.alignMesh(mesh, { y: 1 });
-	/// Smooth mesh
-	// ExpoTHREE.utils.computeMeshNormals(mesh)
 
-	/// Add the mesh to the scene
-	//const { x: xFromScreen, y: yFromScreen, z: zFromScreen } = camera.getWorldPosition()
-	mesh.position.set(1, 0.5, -2);
-	//scene.add(mesh);
-	this.mesh = mesh; 
+	mesh.rotateX(-Math.PI/2)
+	mesh.position.set(0, 2.2, 0);
 
 	return mesh;
-}; */
+};
 
 const loadModelsAsync_MagicianHat = async () => {
 	/// Get all the files in the mesh
@@ -442,6 +432,7 @@ const loadModelsAsync_MagicianHat = async () => {
 		require("../../public/avatar_assets/hats/magicianHat/Texture_TopHat.bmp")
 	);
 
+
 	material.map = texture;
 	mesh.children[0].material = material;
 
@@ -449,11 +440,7 @@ const loadModelsAsync_MagicianHat = async () => {
 	/// Update size and position
 	ExpoTHREE.utils.scaleLongestSideToSize(mesh, 2);
 	ExpoTHREE.utils.alignMesh(mesh, { y: 1 });
-	/// Smooth mesh
-	// ExpoTHREE.utils.computeMeshNormals(mesh)
 
-	/// Add the mesh to the scene
-	//const { x: xFromScreen, y: yFromScreen, z: zFromScreen } = camera.getWorldPosition()
 	mesh.position.set(0, 1.9, 0);
 	return mesh;
 };
@@ -524,8 +511,7 @@ const loadModelsAsync_WitchHat = async () => {
 	/// Add the mesh to the scene
 	//const { x: xFromScreen, y: yFromScreen, z: zFromScreen } = camera.getWorldPosition()
 	mesh.position.set(0, 1.9, 0.5);
-	//scene.add(mesh);
-	//this.mesh = mesh;
+
 
 	return mesh;
 };
@@ -666,19 +652,3 @@ const loadModelsAsync_SteamPunkGlasses = async () => {
 }; */
 
 
-
-
-
-/* const styles = StyleSheet.create({
-
-	graphicContainer: {
-		alignItems: "stretch",
-		width: "100%",
-		height: "40%",
-		backgroundColor: "red",
-		justifyContent: "center",
-		textAlign: "center",
-	},
-
-});
- */

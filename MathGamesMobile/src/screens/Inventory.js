@@ -8,11 +8,11 @@ import {
 	StyleSheet,
 	TouchableHighlight,
 	SafeAreaView,
-	Button,
+	Modal,
+	Pressable,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Picker } from "@react-native-picker/picker";
-//import RNPickerSelect from "react-native-picker-select";
 
 import Avatar from "../components/Avatar";
 import { hatItems } from "../data/hatItems";
@@ -22,11 +22,10 @@ import { accessorieItems } from "../data/accessorieItems";
 import { trouserItems } from "../data/trouserItems";
 import { avatarColors } from "../data/avatarColors";
 
-import AuthService from "./../services/auth.service";
 import UserService from "./../services/user.service";
 import { readData } from "../utilities/AsyncStorage";
 
-import { Entypo } from '@expo/vector-icons'; 
+import { Entypo } from "@expo/vector-icons";
 
 const win = Dimensions.get("window");
 
@@ -39,7 +38,7 @@ class Inventory extends React.Component {
 				UserService.getUserById(this.state.userState.id).then(
 					(user) => {
 						var trouserT;
-						switch(user.avatar_trouser) {
+						switch (user.avatar_trouser) {
 							case "Trouser1":
 								trouserT = "#34495E";
 								break;
@@ -65,12 +64,10 @@ class Inventory extends React.Component {
 			}
 		});
 
-
 		if (this.state.userState !== null) {
 			fetchApiUserById();
 		}
 	}
-
 
 	forceRemount = () => {
 		this.setState({ uniqueValue: this.state.uniqueValue + 1 });
@@ -131,9 +128,10 @@ class Inventory extends React.Component {
 		var contador = 1;
 		if (typeof account_level !== "undefined") {
 			while (true) {
-				var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
+				var minimo =
+					contador === 1 ? 0 : 400 * Math.pow(contador - 1, 1.1);
 				var maximo = 400 * Math.pow(contador, 1.1);
-				if ( (minimo <= account_level) && (account_level < maximo)) {
+				if (minimo <= account_level && account_level < maximo) {
 					return contador;
 				}
 				contador++;
@@ -141,7 +139,7 @@ class Inventory extends React.Component {
 		} else {
 			return 0;
 		}
-	}
+	};
 
 	listHats = () => {
 		return hatItems.map((x) => {
@@ -162,16 +160,19 @@ class Inventory extends React.Component {
 				);
 			} else {
 				return (
-					<TouchableOpacity
-						key={x.id}
-					>
+					<TouchableOpacity key={x.id}>
 						<View style={styles.imgView}>
 							<Image
 								style={styles.itemLockedImg}
 								resizeMode={"contain"}
 								source={x.img}
 							/>
-							<Entypo name="lock" size={24} color="black" style={styles.lockIcon}/>
+							<Entypo
+								name="lock"
+								size={24}
+								color="black"
+								style={styles.lockIcon}
+							/>
 						</View>
 					</TouchableOpacity>
 				);
@@ -198,22 +199,25 @@ class Inventory extends React.Component {
 				);
 			} else {
 				return (
-					<TouchableOpacity
-						key={x.id}
-					>
+					<TouchableOpacity key={x.id}>
 						<View style={styles.imgView}>
 							<Image
 								style={styles.itemLockedImg}
 								resizeMode={"contain"}
 								source={x.img}
 							/>
-							<Entypo name="lock" size={24} color="black" style={styles.lockIcon}/>
+							<Entypo
+								name="lock"
+								size={24}
+								color="black"
+								style={styles.lockIcon}
+							/>
 						</View>
 					</TouchableOpacity>
 				);
 			}
 		});
-	}
+	};
 
 	listAccessories = () => {
 		return accessorieItems.map((x) => {
@@ -234,22 +238,25 @@ class Inventory extends React.Component {
 				);
 			} else {
 				return (
-					<TouchableOpacity
-						key={x.id}
-					>
+					<TouchableOpacity key={x.id}>
 						<View style={styles.imgView}>
 							<Image
 								style={styles.itemLockedImg}
 								resizeMode={"contain"}
 								source={x.img}
 							/>
-							<Entypo name="lock" size={24} color="black" style={styles.lockIcon}/>
+							<Entypo
+								name="lock"
+								size={24}
+								color="black"
+								style={styles.lockIcon}
+							/>
 						</View>
 					</TouchableOpacity>
 				);
 			}
 		});
-	}
+	};
 
 	listTrousers = () => {
 		return trouserItems.map((x) => {
@@ -270,23 +277,29 @@ class Inventory extends React.Component {
 				);
 			} else {
 				return (
-					<TouchableOpacity
-						key={x.id}
-					>
+					<TouchableOpacity key={x.id}>
 						<View style={styles.imgView}>
 							<Image
 								style={styles.itemLockedImg}
 								resizeMode={"contain"}
 								source={x.img}
 							/>
-							<Entypo name="lock" size={24} color="black" style={styles.lockIcon}/>
+							<Entypo
+								name="lock"
+								size={24}
+								color="black"
+								style={styles.lockIcon}
+							/>
 						</View>
 					</TouchableOpacity>
 				);
 			}
 		});
-	}
+	};
 
+	setModalVisible = (visible) => {
+		this.setState({ modalVisible: visible });
+	};
 
 	constructor(props) {
 		super(props);
@@ -300,6 +313,7 @@ class Inventory extends React.Component {
 			option: "none",
 			selectedLanguage: "...",
 			userState: null,
+			modalVisible: false,
 		};
 		//this.pickerRef = useRef();
 	}
@@ -357,141 +371,27 @@ class Inventory extends React.Component {
 						<Picker.Item label="Cor de Pele" value="color" />
 					</Picker>
 
-					{/*
-					<RNPickerSelect
-						onValueChange={(value) => this.showItem(value)}
-						items={[
-							{ label: "Chapeus", value: "chapeus" },
-							{ label: "Camisolas", value: "camisolas" },
-							{ label: "Acessorios", value: "acessorios" },
-							{ label: "Calcas", value: "calcas" },
-						]}
-						style={pickerSelectStyles}
-						placeholder={placeholder}
-					/>
-					*/}
-
 					{this.state.option === "chapeus" && (
 						<View style={styles.imgsContainer}>
 							{this.listHats()}
-
-							<View>
-								<TouchableHighlight
-									onPress={() => {
-										this.saveAvatar();
-									}}
-									style={styles.buttonDownL}
-								>
-									<Text style={styles.buttonText}>
-										Guardar
-									</Text>
-								</TouchableHighlight>
-							</View>
-							<View>
-								<TouchableHighlight
-									onPress={() =>
-										navigation.navigate("Profile")
-									}
-									style={styles.buttonDownR}
-								>
-									<Text style={styles.buttonText}>
-										Cancelar
-									</Text>
-								</TouchableHighlight>
-							</View>
 						</View>
 					)}
 
 					{this.state.option === "camisolas" && (
 						<View style={styles.imgsContainer}>
 							{this.listShirts()}
-
-							<View>
-								<TouchableHighlight
-									onPress={() => {
-										this.saveAvatar();
-									}}
-									style={styles.buttonDownL}
-								>
-									<Text style={styles.buttonText}>
-										Guardar
-									</Text>
-								</TouchableHighlight>
-							</View>
-							<View>
-								<TouchableHighlight
-									onPress={() =>
-										navigation.navigate("Profile")
-									}
-									style={styles.buttonDownR}
-								>
-									<Text style={styles.buttonText}>
-										Cancelar
-									</Text>
-								</TouchableHighlight>
-							</View>
 						</View>
 					)}
 
 					{this.state.option === "acessorios" && (
 						<View style={styles.imgsContainer}>
 							{this.listAccessories()}
-
-							<View>
-								<TouchableHighlight
-									onPress={() => {
-										this.saveAvatar();
-									}}
-									style={styles.buttonDownL}
-								>
-									<Text style={styles.buttonText}>
-										Guardar
-									</Text>
-								</TouchableHighlight>
-							</View>
-							<View>
-								<TouchableHighlight
-									onPress={() =>
-										navigation.navigate("Profile")
-									}
-									style={styles.buttonDownR}
-								>
-									<Text style={styles.buttonText}>
-										Cancelar
-									</Text>
-								</TouchableHighlight>
-							</View>
 						</View>
 					)}
 
 					{this.state.option === "calcas" && (
 						<View style={styles.imgsContainer}>
 							{this.listTrousers()}
-
-							<View>
-								<TouchableHighlight
-									onPress={() => {
-										this.saveAvatar();
-									}}
-									style={styles.buttonDownL}
-								>
-									<Text style={styles.buttonText}>
-										Guardar
-									</Text>
-								</TouchableHighlight>
-							</View>
-							<View>
-								<TouchableHighlight
-									onPress={() =>
-										navigation.navigate("Profile")
-									}
-									style={styles.buttonDownR}
-								>
-									<Text style={styles.buttonText}>
-										Cancelar
-									</Text>
-								</TouchableHighlight>
-							</View>
 						</View>
 					)}
 
@@ -517,40 +417,89 @@ class Inventory extends React.Component {
 									</TouchableOpacity>
 								);
 							})}
-							<View
-								style={{
-									flexDirection: "row",
-									justifyContent: "center",
-									alignItems: "center",
-								}}
-							>
-								<View>
-									<TouchableHighlight
+						</View>
+					)}
+
+					<Modal
+						animationType="slide"
+						transparent={true}
+						visible={this.state.modalVisible}
+						onRequestClose={() => {
+							Alert.alert("Modal has been closed.");
+							this.setModalVisible(!this.state.modalVisible);
+						}}
+					>
+						<View style={styles.centeredView}>
+							<View style={styles.modalView}>
+								<Text style={styles.modalTitle}>
+									Guardar alterações
+								</Text>
+								<Text style={styles.modalText}>
+									Tem a certeza que pretende guardar as
+									alterações efetuadas?
+								</Text>
+								<View
+									style={{
+										flexDirection: "row",
+										justifyContent: "center",
+										alignItems: "center",
+									}}
+								>
+									<Pressable
+										style={[
+											styles.button,
+											styles.buttonOpen,
+										]}
 										onPress={() => {
+											this.setModalVisible(false);
 											this.saveAvatar();
 										}}
-										style={styles.buttonDownL}
 									>
-										<Text style={styles.buttonText}>
+										<Text style={styles.textStyle}>
 											Guardar
 										</Text>
-									</TouchableHighlight>
-								</View>
-								<View>
-									<TouchableHighlight
+									</Pressable>
+									<Pressable
+										style={[
+											styles.button,
+											styles.buttonCancel,
+										]}
 										onPress={() =>
-											navigation.navigate("Profile")
+											this.setModalVisible(
+												!this.state.modalVisible
+											)
 										}
-										style={styles.buttonDownR}
 									>
-										<Text style={styles.buttonText}>
+										<Text style={styles.textStyle}>
 											Cancelar
 										</Text>
-									</TouchableHighlight>
+									</Pressable>
 								</View>
 							</View>
 						</View>
-					)}
+					</Modal>
+					<View
+						style={{
+							flexDirection: "row",
+							justifyContent: "center",
+							alignItems: "center",
+						}}
+					>
+						<Pressable
+							style={[styles.button, styles.buttonOpen]}
+							onPress={() => {
+								this.setModalVisible(true);
+							}}
+						>
+							<Text style={styles.textStyle}>Guardar</Text>
+						</Pressable>
+						<Pressable
+							style={[styles.button, styles.buttonCancel]}
+							onPress={() => navigation.navigate("Perfil")}
+						>
+							<Text style={styles.textStyle}>Cancelar</Text>
+						</Pressable>
+					</View>
 				</LinearGradient>
 			</ScrollView>
 		);
@@ -560,6 +509,66 @@ class Inventory extends React.Component {
 export default Inventory;
 
 const styles = StyleSheet.create({
+	// Model
+	centeredView: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		//marginTop: 22,
+	},
+	modalView: {
+		margin: 20,
+		backgroundColor: "white",
+		borderRadius: 20,
+		padding: 35,
+		alignItems: "center",
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 4,
+		elevation: 5,
+	},
+	button: {
+		borderRadius: 20,
+		padding: 10,
+		elevation: 2,
+	},
+	buttonOpen: {
+		backgroundColor: "green",
+		width: win.width / 3,
+		marginLeft: win.width / 8,
+		marginRight: 20,
+	},
+	buttonClose: {
+		backgroundColor: "#2196F3",
+	},
+
+	buttonCancel: {
+		backgroundColor: "red",
+		width: win.width / 3,
+		marginRight: win.width / 8,
+	},
+
+	textStyle: {
+		color: "white",
+		fontWeight: "bold",
+		textAlign: "center",
+	},
+	modalTitle: {
+		marginBottom: 15,
+		textAlign: "center",
+		fontSize: 30
+	},
+	modalText: {
+		marginBottom: 15,
+		textAlign: "center",
+	},
+
+	//---------------
+
 	picker: {
 		// flex: 1,
 		width: "80%",
@@ -635,18 +644,18 @@ const styles = StyleSheet.create({
 		width: win.height * 0.1,
 		height: win.height * 0.1,
 		alignSelf: "stretch",
-		opacity: 0.5
+		opacity: 0.5,
 	},
 
 	lockIcon: {
-		position: 'absolute',
+		position: "absolute",
 		left: 0,
 		right: 0,
 		top: 0,
 		bottom: 0,
-		justifyContent: 'center',
-		alignItems: 'center',
-		alignSelf: 'center'
+		justifyContent: "center",
+		alignItems: "center",
+		alignSelf: "center",
 	},
 
 	pageTitle: {

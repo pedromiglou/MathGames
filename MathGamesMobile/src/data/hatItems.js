@@ -16,13 +16,13 @@ export const hatItems =
             lvl: 0,
         },
     
-        /* {
+        {
             id: 2,
             name: "CowboyHat",
-            img: process.env.PUBLIC_URL + "/avatar_assets/hats/cowboyHat.png",
+            img: require("../../public/avatar_assets/hats/cowboyHat/cowboyHat.png"),
             path: "./CowboyHat.js",
             lvl: 0
-        }, */
+        },
 
         {
             id: 3,

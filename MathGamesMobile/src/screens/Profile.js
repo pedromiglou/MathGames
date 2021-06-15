@@ -18,7 +18,7 @@ import { ranksInfo } from "../data/ranksInfo";
 import { readData } from "../utilities/AsyncStorage";
 import UserService from "../services/user.service";
 
-import * as Progress from 'react-native-progress';
+// import * as Progress from 'react-native-progress';
 
 const win = Dimensions.get("window");
 //import { navigationRef } from "../App";
@@ -148,10 +148,10 @@ function Profile({ navigation }) {
 				trouserNameState: trouserT,
 			});
 
-			forceRemount();
+			//forceRemount();
 		});
 
-		forceRemount();
+		//forceRemount();
 		return () => {
 			mounted: false;
 		};
@@ -247,9 +247,9 @@ function Profile({ navigation }) {
 				<Text style={{ textAlign: 'center', color: 'white' }}>{getLevel(userInfos.user.account_level)}                Nivel                {getLevel(userInfos.user.account_level) + 1}</Text>
 				<View style={styles.levelProgress}>
 					{/* <Text style={{flex: 1}}>{getLevel(userInfos.user.account_level)}</Text> */}
-					<View style={styles.progressBar}>
-						<Progress.Bar animated={true} progress={ getBarProgression(userInfos.user.account_level)/100 } width={200} color={'orange'}/>
-					</View>
+					{/* <View style={styles.progressBar}>
+						<Progress.Bar progress={ getBarProgression(userInfos.user.account_level)/100 } width={200} color={'orange'}/>
+					</View> */}
 					{/* <Text style={{flex: 1}}>{getLevel(userInfos.user.account_level) + 1}</Text> */}
 				</View>
 
@@ -310,7 +310,8 @@ const styles = StyleSheet.create({
 
 
 	levelProgress: {
-		flexDirection: 'row'
+		flexDirection: 'row',
+		marginBottom: 40
 	},
 
 	progressBar: {
