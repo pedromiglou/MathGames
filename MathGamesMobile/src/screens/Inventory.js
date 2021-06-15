@@ -8,13 +8,13 @@ import {
 	StyleSheet,
 	TouchableHighlight,
 	SafeAreaView,
-	Button,
+	Modal,
+	Pressable,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { Picker } from "@react-native-picker/picker";
 
 import Avatar from "../components/Avatar";
-//import RNPickerSelect from "react-native-picker-select";
-
 import { hatItems } from "../data/hatItems";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { shirtItems } from "../data/shirtItems";
@@ -22,13 +22,51 @@ import { accessorieItems } from "../data/accessorieItems";
 import { trouserItems } from "../data/trouserItems";
 import { avatarColors } from "../data/avatarColors";
 
-import { Picker } from "@react-native-picker/picker";
+import UserService from "./../services/user.service";
+import { readData } from "../utilities/AsyncStorage";
+
+import { Entypo } from "@expo/vector-icons";
 
 const win = Dimensions.get("window");
 
 class Inventory extends React.Component {
-	componentDidUpdate() {
-		console.log("updatin");
+	componentDidMount() {
+		readData("user").then((user) => {
+			this.setState({ userState: JSON.parse(JSON.parse(user)) });
+
+			if (this.state.userState !== null) {
+				UserService.getUserById(this.state.userState.id).then(
+					(user) => {
+						var trouserT;
+						switch (user.avatar_trouser) {
+							case "Trouser1":
+								trouserT = "#34495E";
+								break;
+							case "Trouser2":
+								trouserT = "#7B7D7D";
+								break;
+							case "Trouser3":
+								trouserT = "#EAEDED";
+								break;
+							default:
+								trouserT = user.avatar_trouser;
+						}
+						this.setState({
+							skinColorState: user.avatar_color,
+							hatNameState: user.avatar_hat,
+							shirtNameState: user.avatar_shirt,
+							accessorieNameState: user.avatar_accessorie,
+							trouserNameState: trouserT,
+						});
+						this.forceRemount();
+					}
+				);
+			}
+		});
+
+		if (this.state.userState !== null) {
+			fetchApiUserById();
+		}
 	}
 
 	forceRemount = () => {
@@ -41,99 +79,248 @@ class Inventory extends React.Component {
 	};
 
 	changeHat = (hatName) => {
-		console.log("Changing hat ...");
 		if (hatName !== undefined) {
-			console.log("changed hat to " + hatName);
 			this.setState({ hatNameState: hatName });
 			this.forceRemount();
 		}
 	};
 
 	changeShirt = (shirtName) => {
-		console.log("Changing shirt ...");
 		if (shirtName !== undefined) {
-			console.log("changed shirt to " + shirtName);
 			this.setState({ shirtNameState: shirtName });
 			this.forceRemount();
 		}
 	};
 
 	changeAccessorie = (accessorieName) => {
-		console.log("Changing shirt ...");
 		if (accessorieName !== undefined) {
-			console.log("changed accessorie to " + accessorieName);
 			this.setState({ accessorieNameState: accessorieName });
 			this.forceRemount();
 		}
 	};
 
 	changeTrousers = (trouserName) => {
-		console.log("Changing trouser ...");
 		if (trouserName !== undefined) {
-			console.log("changed trouser to " + trouserName);
 			this.setState({ trouserNameState: trouserName });
 			this.forceRemount();
 		}
 	};
 
 	changeAvatarColor = (skinColor) => {
-		console.log("Changing skinColor ...");
 		if (skinColor !== undefined) {
-			console.log("changed skinColor to " + skinColor);
 			this.setState({ skinColorState: skinColor });
 			this.forceRemount();
 		}
 	};
 
-	/*
-	showItem = (option) => {
-		switch (option) {
-			case "chapeus":
-				console.log("Option: chapeus");
-				this.setState({ option: "chapeus" });
-				break;
-			case "camisolas":
-				console.log("Option: camisolas");
-				this.setState({ option: "camisolas" });
-				break;
-			case "acessorios":
-				console.log("Option: acessorios");
-				this.setState({ option: "acessorios" });
-				break;
-			case "calcas":
-				console.log("Option: calcas");
-				this.setState({ option: "calcas" });
-				break;
+	saveAvatar = () => {
+		UserService.update_user(
+			this.state.skinColorState,
+			this.state.hatNameState,
+			this.state.shirtNameState,
+			this.state.accessorieNameState,
+			this.state.trouserNameState,
+			this.state.userState.id
+		);
+	};
+
+	getLevel = (account_level) => {
+		var contador = 1;
+		if (typeof account_level !== "undefined") {
+			while (true) {
+				var minimo =
+					contador === 1 ? 0 : 400 * Math.pow(contador - 1, 1.1);
+				var maximo = 400 * Math.pow(contador, 1.1);
+				if (minimo <= account_level && account_level < maximo) {
+					return contador;
+				}
+				contador++;
+			}
+		} else {
+			return 0;
 		}
 	};
-	*/
 
-	/*
-	open = () => {
-		this.pickerRef.current.focus();
-	}
+	listHats = () => {
+		return hatItems.map((x) => {
+			if (this.getLevel(this.state.userState.account_level) >= x.lvl) {
+				return (
+					<TouchableOpacity
+						onPress={() => this.changeHat(x.name)}
+						key={x.id}
+					>
+						<View style={styles.imgView}>
+							<Image
+								style={styles.itemImg}
+								resizeMode={"contain"}
+								source={x.img}
+							/>
+						</View>
+					</TouchableOpacity>
+				);
+			} else {
+				return (
+					<TouchableOpacity key={x.id}>
+						<View style={styles.imgView}>
+							<Image
+								style={styles.itemLockedImg}
+								resizeMode={"contain"}
+								source={x.img}
+							/>
+							<Entypo
+								name="lock"
+								size={24}
+								color="black"
+								style={styles.lockIcon}
+							/>
+						</View>
+					</TouchableOpacity>
+				);
+			}
+		});
+	};
 
-	close = () => {
-		this.pickerRef.current.blur();
-	}
-	*/
+	listShirts = () => {
+		return shirtItems.map((x) => {
+			if (this.getLevel(this.state.userState.account_level) >= x.lvl) {
+				return (
+					<TouchableOpacity
+						onPress={() => this.changeShirt(x.name)}
+						key={x.id}
+					>
+						<View style={styles.imgView}>
+							<Image
+								style={styles.itemImg}
+								resizeMode={"contain"}
+								source={x.img}
+							/>
+						</View>
+					</TouchableOpacity>
+				);
+			} else {
+				return (
+					<TouchableOpacity key={x.id}>
+						<View style={styles.imgView}>
+							<Image
+								style={styles.itemLockedImg}
+								resizeMode={"contain"}
+								source={x.img}
+							/>
+							<Entypo
+								name="lock"
+								size={24}
+								color="black"
+								style={styles.lockIcon}
+							/>
+						</View>
+					</TouchableOpacity>
+				);
+			}
+		});
+	};
+
+	listAccessories = () => {
+		return accessorieItems.map((x) => {
+			if (this.getLevel(this.state.userState.account_level) >= x.lvl) {
+				return (
+					<TouchableOpacity
+						onPress={() => this.changeAccessorie(x.name)}
+						key={x.id}
+					>
+						<View style={styles.imgView}>
+							<Image
+								style={styles.itemImg}
+								resizeMode={"contain"}
+								source={x.img}
+							/>
+						</View>
+					</TouchableOpacity>
+				);
+			} else {
+				return (
+					<TouchableOpacity key={x.id}>
+						<View style={styles.imgView}>
+							<Image
+								style={styles.itemLockedImg}
+								resizeMode={"contain"}
+								source={x.img}
+							/>
+							<Entypo
+								name="lock"
+								size={24}
+								color="black"
+								style={styles.lockIcon}
+							/>
+						</View>
+					</TouchableOpacity>
+				);
+			}
+		});
+	};
+
+	listTrousers = () => {
+		return trouserItems.map((x) => {
+			if (this.getLevel(this.state.userState.account_level) >= x.lvl) {
+				return (
+					<TouchableOpacity
+						onPress={() => this.changeTrousers(x.name)}
+						key={x.id}
+					>
+						<View style={styles.imgView}>
+							<Image
+								style={styles.itemImg}
+								resizeMode={"contain"}
+								source={x.img}
+							/>
+						</View>
+					</TouchableOpacity>
+				);
+			} else {
+				return (
+					<TouchableOpacity key={x.id}>
+						<View style={styles.imgView}>
+							<Image
+								style={styles.itemLockedImg}
+								resizeMode={"contain"}
+								source={x.img}
+							/>
+							<Entypo
+								name="lock"
+								size={24}
+								color="black"
+								style={styles.lockIcon}
+							/>
+						</View>
+					</TouchableOpacity>
+				);
+			}
+		});
+	};
+
+	setModalVisible = (visible) => {
+		this.setState({ modalVisible: visible });
+	};
 
 	constructor(props) {
 		super(props);
 		this.state = {
 			uniqueValue: 1,
-			hatNameState: "MagicianHat",
-			shirtNameState: "Camouflage1",
-			accessorieNameState: "AviatorGlasses",
-			trouserNameState: "TrouserJeans",
+			hatNameState: "none",
+			shirtNameState: "none",
+			accessorieNameState: "none",
+			trouserNameState: "none",
 			skinColorState: "#7B241C",
 			option: "none",
-			selectedLanguage: "java",
+			selectedLanguage: "...",
+			userState: null,
+			modalVisible: false,
 		};
 		//this.pickerRef = useRef();
 	}
 
 	render() {
+		const { navigation } = this.props;
+
 		return (
 			<ScrollView style={styles.scrollView}>
 				<LinearGradient
@@ -158,6 +345,7 @@ class Inventory extends React.Component {
 							accessorieName={this.state.accessorieNameState}
 							trouserName={this.state.trouserNameState}
 							skinColor={this.state.skinColorState}
+							profileCam={false}
 						/>
 					</SafeAreaView>
 
@@ -183,216 +371,27 @@ class Inventory extends React.Component {
 						<Picker.Item label="Cor de Pele" value="color" />
 					</Picker>
 
-					{/*
-					<RNPickerSelect
-						onValueChange={(value) => this.showItem(value)}
-						items={[
-							{ label: "Chapeus", value: "chapeus" },
-							{ label: "Camisolas", value: "camisolas" },
-							{ label: "Acessorios", value: "acessorios" },
-							{ label: "Calcas", value: "calcas" },
-						]}
-						style={pickerSelectStyles}
-						placeholder={placeholder}
-					/>
-					*/}
-
 					{this.state.option === "chapeus" && (
 						<View style={styles.imgsContainer}>
-							{hatItems.map((x) => (
-								<TouchableOpacity
-									onPress={() => this.changeHat(x.name)}
-									key={x.id}
-								>
-									<View style={styles.imgView}>
-										<Image
-											style={styles.itemImg}
-											resizeMode={"contain"}
-											source={x.img}
-										/>
-									</View>
-								</TouchableOpacity>
-							))}
-							<View>
-								<TouchableHighlight
-									onPress={() =>
-										navigation.navigate("Perfil")
-									}
-									style={styles.buttonDownL}
-								>
-									<Text style={styles.buttonText}>
-										Guardar
-									</Text>
-								</TouchableHighlight>
-							</View>
-							<View>
-								<TouchableHighlight
-									onPress={() =>
-										navigation.navigate("Perfil")
-									}
-									style={styles.buttonDownR}
-								>
-									<Text style={styles.buttonText}>
-										Cancelar
-									</Text>
-								</TouchableHighlight>
-							</View>
+							{this.listHats()}
 						</View>
 					)}
 
 					{this.state.option === "camisolas" && (
 						<View style={styles.imgsContainer}>
-							{shirtItems.map((x) => (
-								<TouchableOpacity
-									onPress={() => this.changeShirt(x.name)}
-									key={x.id}
-								>
-									<View style={styles.imgView}>
-										<Image
-											style={styles.itemImg}
-											resizeMode={"contain"}
-											source={x.img}
-										/>
-									</View>
-								</TouchableOpacity>
-							))}
-							<View>
-								<TouchableHighlight
-									onPress={() =>
-										navigation.navigate("Perfil")
-									}
-									style={styles.buttonDownL}
-								>
-									<Text style={styles.buttonText}>
-										Guardar
-									</Text>
-								</TouchableHighlight>
-							</View>
-							<View>
-								<TouchableHighlight
-									onPress={() =>
-										navigation.navigate("Perfil")
-									}
-									style={styles.buttonDownR}
-								>
-									<Text style={styles.buttonText}>
-										Cancelar
-									</Text>
-								</TouchableHighlight>
-							</View>
+							{this.listShirts()}
 						</View>
 					)}
 
 					{this.state.option === "acessorios" && (
 						<View style={styles.imgsContainer}>
-							{accessorieItems.map((x) => (
-								<TouchableOpacity
-									onPress={() =>
-										this.changeAccessorie(x.name)
-									}
-									key={x.id}
-								>
-									<View style={styles.imgView}>
-										<Image
-											style={styles.itemImg}
-											resizeMode={"contain"}
-											source={x.img}
-										/>
-									</View>
-								</TouchableOpacity>
-							))}
-							<View>
-								<TouchableHighlight
-									onPress={() =>
-										navigation.navigate("Perfil")
-									}
-									style={styles.buttonDownL}
-								>
-									<Text style={styles.buttonText}>
-										Guardar
-									</Text>
-								</TouchableHighlight>
-							</View>
-							<View>
-								<TouchableHighlight
-									onPress={() =>
-										navigation.navigate("Perfil")
-									}
-									style={styles.buttonDownR}
-								>
-									<Text style={styles.buttonText}>
-										Cancelar
-									</Text>
-								</TouchableHighlight>
-							</View>
+							{this.listAccessories()}
 						</View>
 					)}
 
 					{this.state.option === "calcas" && (
 						<View style={styles.imgsContainer}>
-							{trouserItems.map((x) => {
-								if (x.color[0] === "#") {
-									return (
-										<TouchableOpacity
-											onPress={() =>
-												this.changeTrousers(x.color)
-											}
-											key={x.id}
-											style={{
-												backgroundColor: x.color,
-												height: 70,
-												width: 70,
-												margin: 10,
-											}}
-										>
-											<View>
-												<Text> </Text>
-											</View>
-										</TouchableOpacity>
-									);
-								} else {
-									return (
-										<TouchableOpacity
-											onPress={() =>
-												this.changeTrousers(x.name)
-											}
-											key={x.id}
-										>
-											<View style={styles.imgView}>
-												<Image
-													style={styles.itemImg}
-													resizeMode={"contain"}
-													source={x.img}
-												/>
-											</View>
-										</TouchableOpacity>
-									);
-								}
-							})}
-							<View>
-								<TouchableHighlight
-									onPress={() =>
-										navigation.navigate("Perfil")
-									}
-									style={styles.buttonDownL}
-								>
-									<Text style={styles.buttonText}>
-										Guardar
-									</Text>
-								</TouchableHighlight>
-							</View>
-							<View>
-								<TouchableHighlight
-									onPress={() =>
-										navigation.navigate("Perfil")
-									}
-									style={styles.buttonDownR}
-								>
-									<Text style={styles.buttonText}>
-										Cancelar
-									</Text>
-								</TouchableHighlight>
-							</View>
+							{this.listTrousers()}
 						</View>
 					)}
 
@@ -418,40 +417,88 @@ class Inventory extends React.Component {
 									</TouchableOpacity>
 								);
 							})}
-							<View
-								style={{
-									flexDirection: "row",
-									justifyContent: "center",
-									alignItems: "center",
-								}}
-							>
-								<View>
-									<TouchableHighlight
-										onPress={() =>
-											navigation.navigate("Perfil")
-										}
-										style={styles.buttonDownL}
+						</View>
+					)}
+
+					<Modal
+						animationType="slide"
+						transparent={true}
+						visible={this.state.modalVisible}
+						onRequestClose={() => {
+							this.setModalVisible(!this.state.modalVisible);
+						}}
+					>
+						<View style={styles.centeredView}>
+							<View style={styles.modalView}>
+								<Text style={styles.modalTitle}>
+									Guardar alterações
+								</Text>
+								<Text style={styles.modalText}>
+									Tem a certeza que pretende guardar as
+									alterações efetuadas?
+								</Text>
+								<View
+									style={{
+										flexDirection: "row",
+										justifyContent: "center",
+										alignItems: "center",
+									}}
+								>
+									<Pressable
+										style={[
+											styles.button,
+											styles.buttonOpen,
+										]}
+										onPress={() => {
+											this.setModalVisible(false);
+											this.saveAvatar();
+										}}
 									>
-										<Text style={styles.buttonText}>
+										<Text style={styles.textStyle}>
 											Guardar
 										</Text>
-									</TouchableHighlight>
-								</View>
-								<View>
-									<TouchableHighlight
+									</Pressable>
+									<Pressable
+										style={[
+											styles.button,
+											styles.buttonCancel,
+										]}
 										onPress={() =>
-											navigation.navigate("Perfil")
+											this.setModalVisible(
+												!this.state.modalVisible
+											)
 										}
-										style={styles.buttonDownR}
 									>
-										<Text style={styles.buttonText}>
+										<Text style={styles.textStyle}>
 											Cancelar
 										</Text>
-									</TouchableHighlight>
+									</Pressable>
 								</View>
 							</View>
 						</View>
-					)}
+					</Modal>
+					<View
+						style={{
+							flexDirection: "row",
+							justifyContent: "center",
+							alignItems: "center",
+						}}
+					>
+						<Pressable
+							style={[styles.button, styles.buttonOpen]}
+							onPress={() => {
+								this.setModalVisible(true);
+							}}
+						>
+							<Text style={styles.textStyle}>Guardar</Text>
+						</Pressable>
+						<Pressable
+							style={[styles.button, styles.buttonCancel]}
+							onPress={() => navigation.navigate("Perfil")}
+						>
+							<Text style={styles.textStyle}>Cancelar</Text>
+						</Pressable>
+					</View>
 				</LinearGradient>
 			</ScrollView>
 		);
@@ -461,6 +508,66 @@ class Inventory extends React.Component {
 export default Inventory;
 
 const styles = StyleSheet.create({
+	// Model
+	centeredView: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		//marginTop: 22,
+	},
+	modalView: {
+		margin: 20,
+		backgroundColor: "white",
+		borderRadius: 20,
+		padding: 35,
+		alignItems: "center",
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 4,
+		elevation: 5,
+	},
+	button: {
+		borderRadius: 20,
+		padding: 10,
+		elevation: 2,
+	},
+	buttonOpen: {
+		backgroundColor: "green",
+		width: win.width / 3,
+		marginLeft: win.width / 8,
+		marginRight: 20,
+	},
+	buttonClose: {
+		backgroundColor: "#2196F3",
+	},
+
+	buttonCancel: {
+		backgroundColor: "red",
+		width: win.width / 3,
+		marginRight: win.width / 8,
+	},
+
+	textStyle: {
+		color: "white",
+		fontWeight: "bold",
+		textAlign: "center",
+	},
+	modalTitle: {
+		marginBottom: 15,
+		textAlign: "center",
+		fontSize: 30
+	},
+	modalText: {
+		marginBottom: 15,
+		textAlign: "center",
+	},
+
+	//---------------
+
 	picker: {
 		// flex: 1,
 		width: "80%",
@@ -529,6 +636,25 @@ const styles = StyleSheet.create({
 		width: win.height * 0.1,
 		height: win.height * 0.1,
 		alignSelf: "stretch",
+	},
+
+	itemLockedImg: {
+		flex: 1,
+		width: win.height * 0.1,
+		height: win.height * 0.1,
+		alignSelf: "stretch",
+		opacity: 0.5,
+	},
+
+	lockIcon: {
+		position: "absolute",
+		left: 0,
+		right: 0,
+		top: 0,
+		bottom: 0,
+		justifyContent: "center",
+		alignItems: "center",
+		alignSelf: "center",
 	},
 
 	pageTitle: {
