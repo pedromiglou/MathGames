@@ -1,13 +1,11 @@
 const bodyParser = require("body-parser");
-//const helmet = require("helmet");
 const cors = require('cors')
 const express = require("express");
 const index = require("./app/routes/index")
 const sql = require("./app/models/db.js");
 const errorHandler = require("./app/config/errorhandler");
 var uuid = require('uuid');
-//const { PassThrough } = require("stream");
-//const { match } = require("assert");
+
 
 const app = express();
 app.use(index);
@@ -19,6 +17,36 @@ app.use(errorHandler)
 const server = require("http").createServer(app)
 
 const port = process.env.PORT || 4000;
+
+
+/////
+// Start Swagger Configuration Section
+/////
+
+const swaggerJsDoc = require("swagger-jsdoc")
+const swaggerUi = require("swagger-ui-express")
+
+const swaggerOptions = {
+  swaggerDefinition: {
+    info: {
+      title: "MathGames API",
+      description: "MathGames Server REST API",
+      contact: {
+        name: "MathGames"
+      },
+      servers: ["http://localhost:4000"]
+    }
+  },
+  apis: ["app/routes/*.js"]
+}
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions)
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+
+/////
+// End Swagger Configuration Section
+/////
+
 
 const io = require("socket.io")(server, {
   cors: {
