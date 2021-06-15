@@ -12,13 +12,15 @@ module.exports = app => {
 
     // Initialize tournament
     router.post("/initialize", [authJwt.verifyToken], tournaments.initialize);
+
+    router.post("/initializeround", [authJwt.verifyToken], tournaments.initializeround);
   
     // Retrieve all tournaments
     router.get("/", [authJwt.verifyToken], tournaments.findAll);
   
     // Retrieve a single tournament with id
     router.get("/:id", [authJwt.verifyToken], tournaments.findOne);
-  
+
     // Update a tournament with id
     router.put("/:id", [authJwt.verifyToken], tournaments.update);
   

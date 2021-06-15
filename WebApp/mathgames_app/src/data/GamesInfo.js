@@ -13,7 +13,7 @@ export const games_info =
             toBeDone: false,
             dificulty: 20,
             dificulty_label: "fácil",
-            rules:  "- Cada jogador deloca a peça de forma alternada para um dos quadrados adjacentes que não esteja bloqueado.\n" +
+            rules:  "- Cada jogador desloca a peça de forma alternada para um dos quadrados adjacentes que não esteja bloqueado.\n" +
                     "- A posição onde estava a peça é boqueada, sendo que a peça branca não se pode deslocar para posições bloqueadas.\n" +
                     "- O jogo começa com a peça na posição e5.",
         },

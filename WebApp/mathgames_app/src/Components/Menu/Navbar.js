@@ -142,9 +142,7 @@ function Navbar() {
 	}
 
 	function changeGame(game){
-		console.log(document.getElementById("confirm-b").disabled)
 		document.getElementById("confirm-b").disabled = false;
-		console.log(document.getElementById("confirm-b").disabled)
 		const cards =  []
 		for (var [key,value] of Object.entries(games_info)) {
 			if (!value["toBeDone"] && key !== -1){
@@ -337,6 +335,8 @@ function Navbar() {
 															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} convidou-te para participares no seu torneio.</p>)
 														|| (notification.notification_type === "P" && 
 															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} convidou-te para jogares.</p>)
+														|| (notification.notification_type === "R" && 
+															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} iniciou o próximo round do seu torneio.</p>)
 														}
 														{ (difference < 60 &&
 															<p style={{fontSize: 13}}>há { Number.parseInt(difference)} minutos</p>)
