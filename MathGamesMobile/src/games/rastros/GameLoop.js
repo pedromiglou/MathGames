@@ -63,10 +63,7 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
 
   //initialize game
   events.filter(e => e.type === "init").forEach(e => {
-    entities.push({position: [0, 0], size: Constants.CELL_SIZE, text: "Jogador 2: "+storage.player2,
-      turn: storage.turn, dispatch: dispatch, gameMode: storage.gameMode, renderer: <GameText></GameText>});
-    entities.push({position: [0, 8], size: Constants.CELL_SIZE, text: "Jogador 1: "+storage.player1,
-      turn: storage.turn, dispatch: dispatch, gameMode: storage.gameMode, renderer: <GameText></GameText>});
+    
     entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+storage.player1,
       turn: storage.turn, dispatch: dispatch, renderer: <GameText></GameText>});
 

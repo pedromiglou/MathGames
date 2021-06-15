@@ -28,13 +28,14 @@ class UserService {
         return res.json();
     }
 
-    /*
-    async getNotifications(userId) {
+    
+    async getNotifications(userId, token) {
         var url = urlAPI + 'api/notifications/' + userId;
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        var res = await fetch(url, {headers: {'x-access-token': token}});
         return res.json();
     }
 
+    /*
     async getLastGames(userId) {
         var url = urlAPI + 'api/matches?userid=' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
@@ -42,14 +43,15 @@ class UserService {
             return {'error': true}
         }
         return res.json();
-    }
+    }*/
     
-    async getUsers(username, min_level, max_level, page, pageSize) {
-        var url = urlAPI + 'api/users?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username + '&min_level=' + min_level + '&max_level=' + max_level;
+    async getUsers(username) {
+        var url = urlAPI + 'api/users?orderby=account_level&page=0&size=50&username=' + username;
         var res = await fetch(url);
         return res.json();
     }
 
+    /*
     async getUsersBanned(username, min_level, max_level, page, pageSize) {
         var url = urlAPI + 'api/users/banned?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username + '&min_level=' + min_level + '&max_level=' + max_level;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
@@ -198,9 +200,9 @@ class UserService {
             headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}
         });
         return;
-    }
+    }*/
 
-    accept_friendship(notification) {
+    accept_friendship(notification, token) {
         let friends= {
             friend1: notification.sender_user.sender_id,
             friend2: notification.receiver,
@@ -210,14 +212,14 @@ class UserService {
         fetch(url, {
             method:'POST',
             headers:{'Content-type':'application/json',
-                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
+                     'x-access-token': token},
             body: JSON.stringify(friends)
         });
 
         return;
     }
 
-    async send_notification_request(sender, receiver, not_type) {
+    async send_notification_request(sender, receiver, not_type, token) {
         let request= {
             sender: sender,
             receiver: receiver,
@@ -229,7 +231,7 @@ class UserService {
         await fetch(url, {
             method:'POST',
             headers:{'Content-type':'application/json',
-                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
+                     'x-access-token': token},
             body: JSON.stringify(request)
         });
 
@@ -237,7 +239,7 @@ class UserService {
     }
 
 
-
+    /*
     async remove_friend(friend1, friend2) {
         var url = urlAPI + 'api/friends/' + friend1 + "/" + friend2;
         

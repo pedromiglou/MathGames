@@ -2,19 +2,21 @@ import * as React from 'react';
 import {useState, useEffect} from 'react';
 import {ScrollView, Text, Dimensions, StyleSheet, View} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import UserService from "./../services/user.service";
-import { FontAwesome } from '@expo/vector-icons';
+import UserService from "../services/user.service";
+import { Fontisto } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Feather } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
+import userService from '../services/user.service';
+import { readData } from '../utilities/AsyncStorage';
 
 const win = Dimensions.get('window');
 
-function Friends({ navigation }) {
-    const [friends, setFriends] = useState([]);
+function Ranking({ navigation }) {
+    const [users, setUsers] = useState([]);
     useEffect(() => {
         let mounted = true;
-        UserService.getFriends().then(res=>{
-            setFriends(res);
+        UserService.getUsers("").then(res=>{
+          setUsers(res.users);
         });
         return () => {mounted=false}
       }, []);
@@ -27,15 +29,22 @@ function Friends({ navigation }) {
           </LinearGradient>
         </View>
         <ScrollView>
-            <Text style={styles.title}>Amigos</Text>
-            {friends.map(friend => (
-              <View key={friend.id} style={{flexDirection: "row", width: win.width}}>
-                <Text style={styles.item} >{friend.username}</Text>
-                <TouchableOpacity style={styles.button} onPress={()=>{}} >
-                  <FontAwesome name="envelope-o" size={30} color="white" />
+            <Text style={styles.title}>Classificações</Text>
+            {users.map(user => (
+              <View key={user.id} style={{flexDirection: "row", width: win.width}}>
+                <Text style={styles.item} >{user.username}</Text>
+                <Text style={styles.item} >N</Text>
+                <Text style={styles.item} >{user.account_level}</Text>
+                <TouchableOpacity style={styles.button} onPress={()=>{
+                  readData("user").then(loggedUser=>{
+                    loggedUser=JSON.parse(JSON.parse(loggedUser));
+                    userService.send_notification_request(loggedUser.id, user.id, "F", loggedUser.token);
+                  });
+                }} >
+                  <AntDesign name="adduser" size={30} color="white" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button} onPress={()=>{}}>
-                  <Feather name="user-minus" size={30} color="white" />
+                  <Fontisto name="ban" size={30} color="white" />
                 </TouchableOpacity>
                 
               </View>
@@ -45,7 +54,7 @@ function Friends({ navigation }) {
     );
   }
 
-export default Friends;
+export default Ranking;
 
 const styles = StyleSheet.create({
   title: {
