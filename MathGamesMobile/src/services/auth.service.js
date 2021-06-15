@@ -1,5 +1,5 @@
 import {urlAPI} from "./../data/data";
-import {saveData} from "./../utilities/AsyncStorage";
+import {saveData,readData} from "./../utilities/AsyncStorage";
 import { Alert } from 'react-native';
 
 class AuthService {
@@ -45,7 +45,6 @@ class AuthService {
 
         var json = await res.json();
 
-        console.log(json);
         
         if(json.id) {
             return json;
@@ -59,24 +58,24 @@ class AuthService {
         Alert.alert("Ocorreu um problema no registo")
     }
 
-    /*
+    
     getCurrentUser() {
-        return JSON.parse(sessionStorage.getItem("user"))
+        return readData("user");
     }
 
     getCurrentUserId() {
         let current_user = this.getCurrentUser();
-        return current_user !== null ? current_user.id : sessionStorage.getItem('user_id');
+        return current_user !== null ? current_user.id : readData('user_id');
     }
 
     getCurrentUsername() {
         let current_user = this.getCurrentUser();
-        return current_user !== null ? String(current_user.username) : sessionStorage.getItem('user_id');
+        return current_user !== null ? String(current_user.username) : readData('user_id');
     }
 
     isAuthenticated() {
         return this.getCurrentUser() !== null;
-    }*/
+    }
 }
 
 export default new AuthService()

@@ -65,12 +65,12 @@ function ProfileNav() {
   return (
     <StackProfile.Navigator screenOptions={{headerStyle: {backgroundColor: '#78c9ff'}}}>
       <StackProfile.Screen name="Perfil" options={{headerTitle: () => (<Text style={styles.header}>Perfil</Text>)}} component={Profile} />
-      <StackProfile.Screen name="Inventory" options={{
+      <StackProfile.Screen name="Inventario" options={{
         headerTitle: () => (<Text style={styles.headerWithArrow}>Inventário</Text>),
         headerTintColor: "white",
         headerTitleAlign: "center"
       }} component={Inventory} />
-      <StackProfile.Screen name="LastGames" options={{
+      <StackProfile.Screen name="Ultimos Jogos" options={{
         headerTitle: () => (<Text style={styles.headerWithArrow}>Últimos jogos</Text>),
         headerTintColor: "white",
         headerTitleAlign: "center"
@@ -140,7 +140,7 @@ function App() {
             />
           
           {loggedIn ?
-            <TouchableOpacity style={styles.loginImage} onPress={()=>navigationRef.current.dispatch(DrawerActions.jumpTo('Profile'))}>
+            <TouchableOpacity style={styles.loginImage} onPress={()=>navigationRef.current.dispatch(DrawerActions.jumpTo('Perfil'))}>
               <Text style={styles.username} numberOfLines={1}>{username}</Text>
             </TouchableOpacity>
             :
@@ -163,7 +163,7 @@ function App() {
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Jogos</Text>)}}/>
             <Drawer.Screen name="Classificações" component={Ranking} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Classificações</Text>)}}/>
-            {loggedIn && <Drawer.Screen name="Profile" component={ProfileNav} options={{
+            {loggedIn && <Drawer.Screen name="Perfil" component={ProfileNav} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Perfil</Text>)}}/>}
             {loggedIn && <Drawer.Screen name="Amigos" component={Friends} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Amigos</Text>)}}/>}

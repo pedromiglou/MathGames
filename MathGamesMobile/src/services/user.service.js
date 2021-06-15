@@ -1,35 +1,117 @@
-import {urlAPI} from "./../data/data";
-import {readData, saveData} from "./../utilities/AsyncStorage";
+import { urlAPI } from "./../data/data";
+import { readData, saveData } from "./../utilities/AsyncStorage";
 
 class UserService {
-
-    /*
-    async getUserById(userId) {
-        var url = urlAPI + 'api/users/' + userId;
-        var res = await fetch(url);
-        return res.json();
-    }
-
+	/*
     async getUserRanksById(userId) {
         var url = urlAPI + 'api/userranks/' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         return res.json();
     }*/
 
-
-    async getFriends() {
-        var user = JSON.parse(JSON.parse(await readData("user")));
-        var url = urlAPI + 'api/friends/' + user.id;
-        var token = user.token; 
-
-        var res = await fetch(url, {headers: {'x-access-token': token}});
-        if (res.status !== 200) 
-            return { error: true };
+    async getUserById(userId) {
+        var url = urlAPI + 'api/users/' + userId;
+        var res = await fetch(url);
         return res.json();
     }
 
-    
-    async getNotifications(userId, token) {
+	async getFriends() {
+		var user = JSON.parse(JSON.parse(await readData("user")));
+		var url = urlAPI + "api/friends/" + user.id;
+		var token = user.token;
+
+		var res = await fetch(url, { headers: { "x-access-token": token } });
+		if (res.status !== 200) return { error: true };
+		return res.json();
+	}
+
+	async remove_friend(friend1, friend2) {
+		var user = JSON.parse(JSON.parse(await readData("user")));
+		var token = user.token;
+
+		var url = urlAPI + "api/friends/" + friend1 + "/" + friend2;
+
+		var res = await fetch(url, {
+			method: "DELETE",
+			headers: {
+				"Content-type": "application/json",
+				"x-access-token": token,
+			},
+		});
+
+        if (res.status !== 200) return { error: true };
+		return res.json();
+
+	}
+
+
+    async getUsers(username, min_level, max_level, page, pageSize) {
+        var url = urlAPI + 'api/users?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username + '&min_level=' + min_level + '&max_level=' + max_level;
+        var res = await fetch(url);
+        return res.json();
+    }
+
+
+    async send_notification_request(sender, receiver, not_type) {
+        var user = JSON.parse(JSON.parse(await readData("user")));
+		var token = user.token;
+
+        let request= {
+            sender: sender,
+            receiver: receiver,
+            notification_type: not_type
+        }
+
+        var url = urlAPI + 'api/notifications/';
+        
+        await fetch(url, {
+            method:'POST',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': token},
+            body: JSON.stringify(request)
+        });
+
+        return;        
+    }
+
+
+    async getLastGames(userId) {
+        var user = JSON.parse(JSON.parse(await readData("user")));
+		var token = user.token;
+
+        var url = urlAPI + 'api/matches?userid=' + userId;
+        var res = await fetch(url, {headers: {'x-access-token': token}});
+        if (res.status !== 200) {
+            return {'error': true}
+        }
+        return res.json();
+    }
+
+    //Save avatar function
+    async update_user(color, hat, shirt, accessorie, trouser, user) {
+        let avatar = {
+            avatar_color: color,
+            avatar_hat: hat,
+            avatar_shirt: shirt,
+            avatar_accessorie: accessorie,
+            avatar_trouser: trouser,
+        }
+
+        var url = urlAPI + 'api/users/' + user;
+        
+        readData("user").then((user) => {
+            fetch(url, {
+                method:'PUT',
+                headers:{'Content-type':'application/json',
+                        'x-access-token': JSON.parse(JSON.parse(user))["token"]},
+                body: JSON.stringify(avatar)
+            });
+        })
+
+        return;        
+    }
+
+    async getNotifications(userId) {
         var url = urlAPI + 'api/notifications/' + userId;
         var res = await fetch(url, {headers: {'x-access-token': token}});
         return res.json();
@@ -329,7 +411,6 @@ class UserService {
 
         return;  
     }*/
- 
 }
 
 export default new UserService();

@@ -341,7 +341,7 @@ exports.update = async (req, res) => {
   const urlId = req.params.id;
 
   if (parseInt(req.userId) !== parseInt(urlId)) {
-    res.status(403).send({
+    res.status(401).send({
       message: "Unauthorized!"
     });
     return;
