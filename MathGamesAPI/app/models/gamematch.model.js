@@ -41,9 +41,11 @@ module.exports = (sequelize, Sequelize) => {
       timestamps: true,
       hooks: {
         afterCreate: async (game_match) => {
+
           let winner = game_match.winner;
           let player1 = game_match.player1;
           let player2 = game_match.player2;
+
           if (winner === null) return
 
           if (winner !== "X") {
@@ -94,10 +96,13 @@ module.exports = (sequelize, Sequelize) => {
           }
         },
         afterBulkUpdate: async (game_match) => {
-          let winner = game_match.winner;
-          let player1 = game_match.player1;
-          let player2 = game_match.player2;
-          if (winner === null) return
+          if (Object.keys(game_match.attributes).includes("winner") === false) return
+          
+          var res = await sequelize.models.GameMatches.findByPk(game_match.where.id)
+
+          let winner = res.dataValues.winner;
+          let player1 = res.dataValues.player1;
+          let player2 = res.dataValues.player2;
 
           if (winner !== "X") {
             //alguem ganhou
