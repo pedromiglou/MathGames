@@ -1,19 +1,22 @@
-import {urlAPI} from "./../data/data";
-import {saveData,readData} from "./../utilities/AsyncStorage";
+import { max } from "react-native-reanimated";
+import { urlAPI } from "./../data/data";
+import { readData, saveData } from "./../utilities/AsyncStorage";
 
 class UserService {
 	/*
-    async getUserById(userId) {
-        var url = urlAPI + 'api/users/' + userId;
-        var res = await fetch(url);
-        return res.json();
-    }
+    
 
     async getUserRanksById(userId) {
         var url = urlAPI + 'api/userranks/' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         return res.json();
     }*/
+
+    async getUserById(userId) {
+        var url = urlAPI + 'api/users/' + userId;
+        var res = await fetch(url);
+        return res.json();
+    }
 
 	async getFriends() {
 		var user = JSON.parse(JSON.parse(await readData("user")));
@@ -74,6 +77,45 @@ class UserService {
         return;        
     }
 
+
+    async getLastGames(userId) {
+        var user = JSON.parse(JSON.parse(await readData("user")));
+		var token = user.token;
+
+        var url = urlAPI + 'api/matches?userid=' + userId;
+        var res = await fetch(url, {headers: {'x-access-token': token}});
+        if (res.status !== 200) {
+            return {'error': true}
+        }
+        return res.json();
+    }
+
+
+    //Save avatar function
+    async update_user(color, hat, shirt, accessorie, trouser, user) {
+        let avatar = {
+            avatar_color: color,
+            avatar_hat: hat,
+            avatar_shirt: shirt,
+            avatar_accessorie: accessorie,
+            avatar_trouser: trouser,
+        }
+
+        var url = urlAPI + 'api/users/' + user;
+        
+        readData("user").then((user) => {
+            fetch(url, {
+                method:'PUT',
+                headers:{'Content-type':'application/json',
+                        'x-access-token': JSON.parse(JSON.parse(user))["token"]},
+                body: JSON.stringify(avatar)
+            });
+        })
+
+        return;        
+    }
+
+
 	/*
     async getNotifications(userId) {
         var url = urlAPI + 'api/notifications/' + userId;
@@ -81,17 +123,15 @@ class UserService {
         return res.json();
     }
 
-    async getLastGames(userId, userToken) {
+    async getLastGames(userId) {
         var url = urlAPI + 'api/matches?userid=' + userId;
-        var res = await fetch(url, {headers: {'x-access-token': userToken}})
-
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         if (res.status !== 200) {
             return {'error': true}
         }
-
         return res.json();
     }
-    
+    US
 
     async getUsersBanned(username, min_level, max_level, page, pageSize) {
         var url = urlAPI + 'api/users/banned?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username + '&min_level=' + min_level + '&max_level=' + max_level;
@@ -224,14 +264,12 @@ class UserService {
 
         var url = urlAPI + 'api/users/' + user;
         
-        readData("user").then((user) => {
-            fetch(url, {
-                method:'PUT',
-                headers:{'Content-type':'application/json',
-                        'x-access-token': JSON.parse(JSON.parse(user))["token"]},
-                body: JSON.stringify(avatar)
-            });
-        })
+        await fetch(url, {
+            method:'PUT',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
+            body: JSON.stringify(avatar)
+        });
 
         return;        
     }
