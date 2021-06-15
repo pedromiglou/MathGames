@@ -6,24 +6,28 @@ import Constants from './Constants';
 import Square from './Square';
 import {GameLoop} from './GameLoop';
 import {readData} from './../../utilities/AsyncStorage';
+import Storage from "./Storage";
 
 function GatosCaesEngine() {
     const boardHeight = (Constants.GRID_SIZE+3) * Constants.CELL_SIZE;
     const boardWidth = Constants.GRID_SIZE * Constants.CELL_SIZE;
+
     var entities = [];
+    entities.push({myTurn: null, gameEnded: null, gameMode: null, dif: null, match_id: null,
+        player1: null, player2: null, user_id: null, turn: null, turnCount:null, renderer: <Storage></Storage>});
+
+    //add the tiles
+    var squares = [];
     for (let x = 0; x<8; x++) {
-        for (let y=1; y<9; y++) {
-            entities.push([x, y]);
+        for (let y=0; y<8; y++) {
+            squares.push([x, y+1]);
         }
     }
 
-    entities = entities.map(X=>{
-        return {position: X, size: Constants.CELL_SIZE, valid: false, blockedG:false, blockedC: false, renderer: <Square></Square>};
+    squares.forEach(square=>{
+        entities.push({position: square, size: Constants.CELL_SIZE, valid: false, blockedG:false,
+            blockedC: false, renderer: <Square></Square>});
     });
-    entities[27].valid=true;
-    entities[28].valid=true;
-    entities[35].valid=true;
-    entities[36].valid=true;
 
     const [player1, setPlayer1] = useState("player1");
     const [player2, setPlayer2] = useState("player2");
@@ -42,19 +46,17 @@ function GatosCaesEngine() {
                             p2=p2.slice(1,-1);
                             readData('user_id').then(X=>{
                                 user_id=X.slice(1,-1);
-                                this.engine.dispatch({
-                                    type: "init",
-                                    myTurn: user_id===p1 || gameMode==="No mesmo Computador",
-                                    gameEnded: false,
-                                    gameMode: gameMode,
-                                    dif: dif,
-                                    match_id: match_id,
-                                    player1: p1,
-                                    player2: p2,
-                                    user_id: user_id,
-                                    turn: "gatos",
-                                    turnCount: 0
-                                });
+                                entities[0].myTurn = user_id===p1 || gameMode==="No mesmo Computador";
+                                entities[0].gameEnded = false;
+                                entities[0].gameMode = gameMode;
+                                entities[0].dif = dif;
+                                entities[0].match_id = match_id;
+                                entities[0].player1 = p1;
+                                entities[0].player2 = p2;
+                                entities[0].user_id = user_id;
+                                entities[0].turn = 1;
+                                entities[0].turnCount = 0;
+                                this.engine.dispatch({type: "init"});
                                 setPlayer1(p1);
                                 setPlayer2(p2);
                             });

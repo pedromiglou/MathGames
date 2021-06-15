@@ -45,7 +45,6 @@ class AuthService {
 
         var json = await res.json();
 
-        console.log(json);
         
         if(json.id) {
             return json;

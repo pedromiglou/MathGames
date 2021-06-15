@@ -70,6 +70,7 @@ export default class GatosCaesAI {
             });
         }
 
+        this.aiPieces[chosen[0]][chosen[1]]=true;
         return [chosen[1], chosen[0]];
     }
 

@@ -31,6 +31,7 @@
     "react-bootstrap": "^1.6.0",
     "react-dom": "16.13.1",
     "react-native": "~0.63.4",
+    "react-native-countdown-component": "^2.7.1",
     "react-native-game-engine": "^1.2.0",
     "react-native-gesture-handler": "~1.10.2",
     "react-native-picker-select": "^8.0.4",

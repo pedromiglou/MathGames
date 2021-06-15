@@ -23,7 +23,7 @@ function Welcome({ navigation }) {
             <Text style={styles.text}>Sejam muito bem-vindos à plataforma MathGames. Aqui podem encontrar vários jogos matemáticos para jogarem e se divertirem. Podem jogar competitivamente, criar torneios, jogar com amigos entre outras coisas. Esperemos que se divirtam!</Text>
             
             <TouchableHighlight
-              onPress={() => navigation.navigate('Games')}
+              onPress={() => navigation.navigate('Jogos')}
               style={styles.button}>
               <Text style={styles.buttonText}>Jogar Agora</Text>
             </TouchableHighlight>

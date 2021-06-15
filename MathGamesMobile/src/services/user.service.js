@@ -1,7 +1,16 @@
-import {urlAPI} from "./../data/data";
-import {saveData,readData} from "./../utilities/AsyncStorage";
+import { max } from "react-native-reanimated";
+import { urlAPI } from "./../data/data";
+import { readData, saveData } from "./../utilities/AsyncStorage";
 
 class UserService {
+	/*
+    
+
+    async getUserRanksById(userId) {
+        var url = urlAPI + 'api/userranks/' + userId;
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        return res.json();
+    }*/
 
     async getUserById(userId) {
         var url = urlAPI + 'api/users/' + userId;
@@ -9,43 +18,120 @@ class UserService {
         return res.json();
     }
 
-    async getUserRanksById(userId) {
-        var url = urlAPI + 'api/userranks/' + userId;
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+	async getFriends() {
+		var user = JSON.parse(JSON.parse(await readData("user")));
+		var url = urlAPI + "api/friends/" + user.id;
+		var token = user.token;
+
+		var res = await fetch(url, { headers: { "x-access-token": token } });
+		if (res.status !== 200) return { error: true };
+		return res.json();
+	}
+
+	async remove_friend(friend1, friend2) {
+		var user = JSON.parse(JSON.parse(await readData("user")));
+		var token = user.token;
+
+		var url = urlAPI + "api/friends/" + friend1 + "/" + friend2;
+
+		var res = await fetch(url, {
+			method: "DELETE",
+			headers: {
+				"Content-type": "application/json",
+				"x-access-token": token,
+			},
+		});
+
+        if (res.status !== 200) return { error: true };
+		return res.json();
+
+	}
+
+
+    async getUsers(username, min_level, max_level, page, pageSize) {
+        var url = urlAPI + 'api/users?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username + '&min_level=' + min_level + '&max_level=' + max_level;
+        var res = await fetch(url);
         return res.json();
     }
 
 
-    async getFriends(userId) {
-        var url = urlAPI + 'api/friends/' + userId;
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
-        if (res.status !== 200) 
-            return { error: true };
+    async send_notification_request(sender, receiver, not_type) {
+        var user = JSON.parse(JSON.parse(await readData("user")));
+		var token = user.token;
+
+        let request= {
+            sender: sender,
+            receiver: receiver,
+            notification_type: not_type
+        }
+
+        var url = urlAPI + 'api/notifications/';
+        
+        await fetch(url, {
+            method:'POST',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': token},
+            body: JSON.stringify(request)
+        });
+
+        return;        
+    }
+
+
+    async getLastGames(userId) {
+        var user = JSON.parse(JSON.parse(await readData("user")));
+		var token = user.token;
+
+        var url = urlAPI + 'api/matches?userid=' + userId;
+        var res = await fetch(url, {headers: {'x-access-token': token}});
+        if (res.status !== 200) {
+            return {'error': true}
+        }
         return res.json();
     }
 
+
+    //Save avatar function
+    async update_user(color, hat, shirt, accessorie, trouser, user) {
+        let avatar = {
+            avatar_color: color,
+            avatar_hat: hat,
+            avatar_shirt: shirt,
+            avatar_accessorie: accessorie,
+            avatar_trouser: trouser,
+        }
+
+        var url = urlAPI + 'api/users/' + user;
+        
+        readData("user").then((user) => {
+            fetch(url, {
+                method:'PUT',
+                headers:{'Content-type':'application/json',
+                        'x-access-token': JSON.parse(JSON.parse(user))["token"]},
+                body: JSON.stringify(avatar)
+            });
+        })
+
+        return;        
+    }
+
+
+	/*
     async getNotifications(userId) {
         var url = urlAPI + 'api/notifications/' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         return res.json();
     }
 
-    async getLastGames(userId, userToken) {
+    async getLastGames(userId) {
         var url = urlAPI + 'api/matches?userid=' + userId;
-        var res = await fetch(url, {headers: {'x-access-token': userToken}})
-
+        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
         if (res.status !== 200) {
             return {'error': true}
         }
-
         return res.json();
     }
-    
-    async getUsers(username, min_level, max_level, page, pageSize) {
-        var url = urlAPI + 'api/users?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username + '&min_level=' + min_level + '&max_level=' + max_level;
-        var res = await fetch(url);
-        return res.json();
-    }
+    US
 
     async getUsersBanned(username, min_level, max_level, page, pageSize) {
         var url = urlAPI + 'api/users/banned?orderby=account_level&page=' + page + '&size=' + pageSize + '&username=' + username + '&min_level=' + min_level + '&max_level=' + max_level;
@@ -178,14 +264,12 @@ class UserService {
 
         var url = urlAPI + 'api/users/' + user;
         
-        readData("user").then((user) => {
-            fetch(url, {
-                method:'PUT',
-                headers:{'Content-type':'application/json',
-                        'x-access-token': JSON.parse(JSON.parse(user))["token"]},
-                body: JSON.stringify(avatar)
-            });
-        })
+        await fetch(url, {
+            method:'PUT',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
+            body: JSON.stringify(avatar)
+        });
 
         return;        
     }
@@ -216,24 +300,7 @@ class UserService {
         return;
     }
 
-    async send_notification_request(sender, receiver, not_type) {
-        let request= {
-            sender: sender,
-            receiver: receiver,
-            notification_type: not_type
-        }
-
-        var url = urlAPI + 'api/notifications/';
-        
-        await fetch(url, {
-            method:'POST',
-            headers:{'Content-type':'application/json',
-                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
-            body: JSON.stringify(request)
-        });
-
-        return;        
-    }
+    
 
 
 
@@ -325,8 +392,7 @@ class UserService {
         });
 
         return;  
-    }
- 
+    }*/
 }
 
 export default new UserService();
