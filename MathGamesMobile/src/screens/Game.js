@@ -1,7 +1,8 @@
 import * as React from 'react';
 import {useState} from 'react';
-import {ScrollView, Dimensions, StyleSheet} from 'react-native';
+import {ScrollView, Dimensions, View} from 'react-native';
 import RastrosEngine from './../games/rastros/RastrosEngine';
+import GatosCaesEngine from './../games/gatoscaes/GatosCaesEngine';
 import { LinearGradient } from 'expo-linear-gradient';
 import {readData, saveData} from './../utilities/AsyncStorage';
 import Loading from './../components/Loading';
@@ -38,23 +39,26 @@ function Game({navigation}) {
         });
     });
 
-    return (ready===-1) ? <Loading /> :
-        <ScrollView contentContainerStyle={styles.scrollView}>
-            <LinearGradient colors={['#78c9ff', '#6699f8', '#5379f7', '#5867f7', '#8a54ee']} start={[0,0]} end={[1,1]} style={styles.linearGradient}>
+    return (
+        <View>
+            <View style={{position:"absolute", x: 0, y:0}}>
+                <LinearGradient colors={['#78c9ff', '#6699f8', '#5379f7', '#5867f7', '#8a54ee']} start={[0,0]} end={[1,1]}>
+                    <View style={{minHeight: win.height, minWidth: win.width}}></View>
+                </LinearGradient>
+            </View>
+            {ready===-1 && <Loading />} 
+            
+            {ready===0 &&
+            <ScrollView>
                 <RastrosEngine></RastrosEngine>
-            </LinearGradient>
-        </ScrollView>
-    ;
+            </ScrollView>}
+            
+            {ready===1 &&
+            <ScrollView>
+                <GatosCaesEngine></GatosCaesEngine>
+            </ScrollView>}
+        </View>
+    );
 }
 
 export default Game;
-
-const styles = StyleSheet.create({
-    scrollView: {
-        flexGrow: 1,
-        flex:1
-    },
-    linearGradient: {
-        minHeight: win.height
-    }
-});

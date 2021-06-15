@@ -8,8 +8,13 @@ const win = Dimensions.get('window');
 
 function ChooseGame({ navigation }) {
   return (
-    <ScrollView style={{ flex: 1 }} >
-      <LinearGradient colors={['#78c9ff', '#6699f8', '#5379f7', '#5867f7', '#8a54ee']} start={[0,0]} end={[1,1]}>
+    <View>
+      <View style={{position:"absolute", x: 0, y:0}}>
+        <LinearGradient colors={['#78c9ff', '#6699f8', '#5379f7', '#5867f7', '#8a54ee']} start={[0,0]} end={[1,1]}>
+          <View style={{minHeight: win.height, minWidth: win.width}}></View>
+        </LinearGradient>
+      </View>
+      <ScrollView>
         {gamesInfo.map(X => 
           <TouchableHighlight style={styles.gameTile} key={X.id} onPress = {() => {
                 saveData("game", X);
@@ -37,8 +42,9 @@ function ChooseGame({ navigation }) {
             </View>
           </TouchableHighlight>
         )}
-      </LinearGradient>
-    </ScrollView>
+      </ScrollView>
+    </View>
+    
   );
 }
 

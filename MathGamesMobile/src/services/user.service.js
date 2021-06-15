@@ -1,4 +1,5 @@
-/*import {urlAPI} from "./../data/data";
+import {urlAPI} from "./../data/data";
+import {saveData,readData} from "./../utilities/AsyncStorage";
 
 class UserService {
 
@@ -29,12 +30,14 @@ class UserService {
         return res.json();
     }
 
-    async getLastGames(userId) {
+    async getLastGames(userId, userToken) {
         var url = urlAPI + 'api/matches?userid=' + userId;
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        var res = await fetch(url, {headers: {'x-access-token': userToken}})
+
         if (res.status !== 200) {
             return {'error': true}
         }
+
         return res.json();
     }
     
@@ -175,12 +178,14 @@ class UserService {
 
         var url = urlAPI + 'api/users/' + user;
         
-        await fetch(url, {
-            method:'PUT',
-            headers:{'Content-type':'application/json',
-                     'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
-            body: JSON.stringify(avatar)
-        });
+        readData("user").then((user) => {
+            fetch(url, {
+                method:'PUT',
+                headers:{'Content-type':'application/json',
+                        'x-access-token': JSON.parse(JSON.parse(user))["token"]},
+                body: JSON.stringify(avatar)
+            });
+        })
 
         return;        
     }
@@ -325,4 +330,3 @@ class UserService {
 }
 
 export default new UserService();
-*/

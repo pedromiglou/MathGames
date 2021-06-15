@@ -2,7 +2,6 @@ import { ExpoWebGLRenderingContext, GLView } from "expo-gl";
 import { Renderer, TextureLoader } from "expo-three";
 import * as React from "react";
 import {
-	AmbientLight,
 	BoxBufferGeometry,
 	Fog,
 	Mesh,
@@ -10,7 +9,6 @@ import {
 	PerspectiveCamera,
 	PointLight,
 	Scene,
-	SpotLight,
 } from "three";
 
 import ExpoTHREE from "expo-three";
@@ -29,10 +27,11 @@ export default function Avatar(props) {
 		return () => clearTimeout(timeout);
 	}, []);
 
+
 	return (
 		<GLView
 			style={{ alignItems: "stretch", width: "100%", height: "100%", justifyContent: "center", textAlign: "center",}}
-			onContextCreate={async (gl: ExpoWebGLRenderingContext) => {
+			onContextCreate={async (gl: ExpoWebGLRenderingContext, alpha: true) => {
 				const {
 					drawingBufferWidth: width,
 					drawingBufferHeight: height,
@@ -40,9 +39,12 @@ export default function Avatar(props) {
 				const sceneColor = 0x78c9ff;
 
 				// Create a WebGLRenderer without a DOM element
-				const renderer = new Renderer({ gl });
+				const renderer = new Renderer({ gl, alpha: true });
 				renderer.setSize(width, height);
-				renderer.setClearColor(sceneColor);
+				renderer.setClearColor(0x000000, 0);
+
+				renderer.dispose();
+				renderer.forceContextLoss();
 
 				const camera = new PerspectiveCamera(
 					70,
@@ -50,23 +52,25 @@ export default function Avatar(props) {
 					0.01,
 					1000
 				);
-				camera.position.set(0, 2, 5);
+
 
 				const scene = new Scene();
 				scene.fog = new Fog(sceneColor, 1, 10000);
 				//scene.add(new GridHelper(10, 10));
 
-				const ambientLight = new AmbientLight(0x101010);
-				scene.add(ambientLight);
+				scene.background = null;
+
+				//const ambientLight = new AmbientLight(0x101010);
+			//	scene.add(ambientLight);
 
 				const pointLight = new PointLight(0xffffff, 2, 1000, 0.001);
 				pointLight.position.set(0, 20, 10);
-				//scene.add(pointLight);
+				scene.add(pointLight);
 
-				const spotLight = new SpotLight(0xffffff, 1);
-				spotLight.position.set(0, 5, 10);
-				spotLight.lookAt(scene.position);
-				scene.add(spotLight);
+				//const spotLight = new SpotLight(0xffffff, 1);
+				//spotLight.position.set(0, 5, 10);
+				//spotLight.lookAt(scene.position);
+				//scene.add(spotLight);
 
 				const cube = new IconMesh();
 				cube.position.set(3, 0, 1);
@@ -90,10 +94,9 @@ export default function Avatar(props) {
 						scene.add(WitchHat);
 						break;
 
-					default:
-						/* 
+					case "CowboyHat":
 						const CowboyHat = await loadModelsAsync_CowboyHat();
-						scene.add(CowboyHat); */
+						scene.add(CowboyHat);
 						break;
 				}
 
@@ -118,9 +121,10 @@ export default function Avatar(props) {
 						scene.add(SteamPunkGlasses);  */
 						break;
 				} 
+				
 
 				const avatarMaterial = new THREE.MeshLambertMaterial({
-					color: 0x00ff00,
+					color: props.skinColor,
 				});
 
 
@@ -228,8 +232,6 @@ export default function Avatar(props) {
 				scene.add(body);
 
 
-				camera.lookAt(body.position);
-
 
 				// ************************** //
 				// Arms
@@ -295,8 +297,23 @@ export default function Avatar(props) {
 				}
 
 				if (coloredTrousers) {
+					var trouserT;
+					switch(props.trouserName) {
+						case "Trouser1":
+							trouserT = "#34495E";
+							break;
+						case "Trouser2":
+							trouserT = "#7B7D7D";
+							break;
+						case "Trouser3":
+							trouserT = "#EAEDED";
+							break;
+						default:
+							trouserT = props.trouserName;
+					}
+
 					const trouserMaterial = new THREE.MeshLambertMaterial({
-						color: props.trouserName,
+						color: trouserT,
 					});
 
 					leg1 = new THREE.Mesh(legGeometry, trouserMaterial);
@@ -309,6 +326,16 @@ export default function Avatar(props) {
 				
 				leg2.position.set(0.5, -2, 0);
 				scene.add(leg2);
+
+
+
+				if( props.profileCam ) {
+					camera.position.set(0, 1.7, 2.3);
+				}
+				else {
+					camera.position.set(0, 2, 5);
+					camera.lookAt(body.position);
+				}
 
 
 				// ************************** //
@@ -348,7 +375,6 @@ class IconMesh extends Mesh {
 // Hats
 // ************************** //
 
-/*	NOT WORKING 
 const loadModelsAsync_CowboyHat = async () => {
 	/// Get all the files in the mesh
 	const model = {
@@ -360,39 +386,30 @@ const loadModelsAsync_CowboyHat = async () => {
 		[model["CowBoyHat.obj"]],
 		null,
 		(name) => model[name]
-	);
+	); 
 
 	var material = new THREE.MeshBasicMaterial({
 		color: 0xffffff,
 	});
 	const texture = new TextureLoader().load(require("../../public/avatar_assets/hats/cowboyHat/textures/Material_001_baseColor.png"));
 
-	material.map = texture;
-	mesh.children[0].material = material; 
 
-	console.log(mesh)
-	//console.log(texture)
+	material.map = texture;
+	mesh.children[0].material = material;
 
 
 	/// Update size and position
-	ExpoTHREE.utils.scaleLongestSideToSize(mesh, 0.9);
+	ExpoTHREE.utils.scaleLongestSideToSize(mesh, 2.5);
 	ExpoTHREE.utils.alignMesh(mesh, { y: 1 });
-	/// Smooth mesh
-	// ExpoTHREE.utils.computeMeshNormals(mesh)
 
-	/// Add the mesh to the scene
-	//const { x: xFromScreen, y: yFromScreen, z: zFromScreen } = camera.getWorldPosition()
-	mesh.position.set(1, 0.5, -2);
-	//scene.add(mesh);
-	this.mesh = mesh; 
+	mesh.rotateX(-Math.PI/2)
+	mesh.position.set(0, 2.2, 0);
 
 	return mesh;
-}; */
+};
 
 const loadModelsAsync_MagicianHat = async () => {
 	/// Get all the files in the mesh
-	console.log("ola")
-
 	 const model = {
 		"TopHat.obj": require("../../public/avatar_assets/hats/magicianHat/TopHat.obj"),
 		"TopHat.mtl": require("../../public/avatar_assets/hats/magicianHat/TopHat.mtl"),
@@ -415,20 +432,16 @@ const loadModelsAsync_MagicianHat = async () => {
 		require("../../public/avatar_assets/hats/magicianHat/Texture_TopHat.bmp")
 	);
 
+
 	material.map = texture;
 	mesh.children[0].material = material;
 
 
 	/// Update size and position
-	ExpoTHREE.utils.scaleLongestSideToSize(mesh, 1.5);
+	ExpoTHREE.utils.scaleLongestSideToSize(mesh, 2);
 	ExpoTHREE.utils.alignMesh(mesh, { y: 1 });
-	/// Smooth mesh
-	// ExpoTHREE.utils.computeMeshNormals(mesh)
 
-	/// Add the mesh to the scene
-	//const { x: xFromScreen, y: yFromScreen, z: zFromScreen } = camera.getWorldPosition()
-	mesh.position.set(0, 1.9, 1);
-
+	mesh.position.set(0, 1.9, 0);
 	return mesh;
 };
 
@@ -498,8 +511,7 @@ const loadModelsAsync_WitchHat = async () => {
 	/// Add the mesh to the scene
 	//const { x: xFromScreen, y: yFromScreen, z: zFromScreen } = camera.getWorldPosition()
 	mesh.position.set(0, 1.9, 0.5);
-	//scene.add(mesh);
-	//this.mesh = mesh;
+
 
 	return mesh;
 };
@@ -640,19 +652,3 @@ const loadModelsAsync_SteamPunkGlasses = async () => {
 }; */
 
 
-
-
-
-/* const styles = StyleSheet.create({
-
-	graphicContainer: {
-		alignItems: "stretch",
-		width: "100%",
-		height: "40%",
-		backgroundColor: "red",
-		justifyContent: "center",
-		textAlign: "center",
-	},
-
-});
- */
