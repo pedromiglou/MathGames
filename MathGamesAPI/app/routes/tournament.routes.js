@@ -53,7 +53,7 @@ module.exports = app => {
      *      '500':
      *         description: An internal error has occoured
      */
-    router.post("/initialize", [authJwt.verifyToken], tournaments.initialize);
+    router.post("/initialize", [authJwt.verifyToken, authJwt.isTournamentManager], tournaments.initialize);
 
     /**
      * @swagger
@@ -70,7 +70,7 @@ module.exports = app => {
      *      '500':
      *         description: An internal error has occoured
      */
-    router.post("/initializeround", [authJwt.verifyToken], tournaments.initializeround);
+    router.post("/initializeround", [authJwt.verifyToken, authJwt.isTournamentManager], tournaments.initializeround);
   
     /**
      * @swagger
@@ -108,6 +108,23 @@ module.exports = app => {
 
     /**
      * @swagger
+     * /api/tournaments/creator/:id:
+     *  get:
+     *    description: Retrieves information of all tournament that belong to creator by creator id
+     *    responses: 
+     *      '200':
+     *         description: Retrieved required tournament with success
+     *      '401':
+     *         description: Unauthorized operation
+     *      '403':
+     *         description: No token provided
+     *      '500':
+     *         description: An internal error has occoured
+     */
+     router.get("/creator/:id", [authJwt.verifyToken, authJwt.isTournamentManager], tournaments.findByCreator);
+
+    /**
+     * @swagger
      * /api/tournaments/:id:
      *  put:
      *    description: Updates tournament information by tournament id
@@ -121,7 +138,7 @@ module.exports = app => {
      *      '500':
      *         description: An internal error has occoured
      */
-    router.put("/:id", [authJwt.verifyToken], tournaments.update);
+    router.put("/:id", [authJwt.verifyToken, authJwt.isTournamentManager], tournaments.update);
   
     /**
      * @swagger
@@ -138,7 +155,7 @@ module.exports = app => {
      *      '500':
      *         description: An internal error has occoured
      */
-    router.delete("/:id", [authJwt.verifyToken], tournaments.delete);
+    router.delete("/:id", [authJwt.verifyToken, authJwt.isTournamentManager], tournaments.delete);
   
     /**
      * @swagger

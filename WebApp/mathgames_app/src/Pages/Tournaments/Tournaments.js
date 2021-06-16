@@ -28,7 +28,7 @@ function Tournaments() {
         
     const [userTournaments, setUserTournaments] = useState([])
     const [tournaments, setTournaments] = useState([]);
-    const [tournament_inputs, setTournamentInputs] = useState({name: "", capacity: "", private: null});
+    const [tournament_inputs, setTournamentInputs] = useState({name: "", capacity: "", private: null, jogos: "0-1", creator: null});
 
     const [page_tournaments, setPageTournaments] = useState(1);
 	const [count_tournaments, setCountTournaments] = useState(0);
@@ -153,7 +153,8 @@ function Tournaments() {
 
 
 
-    async function filtrar() {
+    function filtrar() {
+        setTournamentInputs({name: "", capacity: "", private: null, jogos: "0-1", creator: null})
         var nome = document.getElementById("filter_nome")
         var capacidade = document.getElementById("filter_capacidade")
 
@@ -169,8 +170,50 @@ function Tournaments() {
         } else {
             privacidade = null
         }
+
+        var rastros = document.getElementById("rastros")
+        var gatoscaes = document.getElementById("gatoscaes")
+        var arrayJogos = []
+        var stringJogos = ""
+
+        if (rastros.checked)
+            arrayJogos.push(0)
+        if (gatoscaes.checked)
+            arrayJogos.push(1)
         
-        setTournamentInputs({name: nome.value, capacity: capacidade.value, private: privacidade})
+        if (arrayJogos.length === 0)
+            stringJogos = "0-1"
+        else {
+            for (let game of arrayJogos) {
+                stringJogos=stringJogos + game + "-"
+            }
+            stringJogos = stringJogos.slice(0,-1)
+        }
+
+        setTournamentInputs({name: nome.value, capacity: capacidade.value, private: privacidade, jogos: stringJogos, creator: null})
+        clearInputs()
+
+    }
+
+    function filtrarByCreator() {
+        tournament_inputs["creator"] = current_user.id
+        clearInputs()
+        retrieveTournaments()
+    }
+
+    function clearInputs() {
+        var publico = document.getElementById("publico")
+        publico.checked = false
+        var privado = document.getElementById("privado")
+        privado.checked = false
+        var rastros = document.getElementById("rastros")
+        rastros.checked = false
+        var gatoscaes = document.getElementById("gatoscaes")
+        gatoscaes.checked = false
+        var nome = document.getElementById("filter_nome")
+        nome.value = ""
+        var capacidade = document.getElementById("filter_capacidade")
+        capacidade.value = ""
     }
 
     const retrieveTournaments = () => {
@@ -182,7 +225,12 @@ function Tournaments() {
         }
 
         async function fetchApiTournaments() {
-			var response = await TournamentService.getTournamentsWithFilters(tournament_inputs.name, tournament_inputs.capacity, tournament_inputs.private, parseInt(page_tournaments)-1, 10);
+            var response
+            console.log(tournament_inputs)
+            if (tournament_inputs.creator === null)
+			    response = await TournamentService.getTournamentsWithFilters(tournament_inputs.name, tournament_inputs.capacity, tournament_inputs.private, tournament_inputs.jogos, parseInt(page_tournaments)-1, 10);
+            else
+                response = await TournamentService.getTournamentByCreator(tournament_inputs.creator)    
             if (!response["message"]) {
                 setTournaments(response.tournaments);
                 setCountTournaments(response.totalPages)
@@ -264,7 +312,7 @@ function Tournaments() {
                                                 <h5>Rastros</h5>
                                             </div>
                                             <div className="inner-checkbox">
-                                                <input className="form-control form-control-lg" id="GC" type="checkbox" name="Privado"/>
+                                                <input className="form-control form-control-lg" id="gatoscaes" type="checkbox" name="Privado"/>
                                                 <h5>Gatos&Cães</h5>
                                             </div>
                                             
@@ -288,7 +336,7 @@ function Tournaments() {
                         <Link to="createTournament" className="btn btn-lg btn-search">
                             Criar Novo Torneio <FaIcons.FaPlus/>
                         </Link>
-                        <button id="myTButton" className="btn btn-lg btn-search" type="button">Ver os meus torneios <FaIcons.FaSearch/></button>
+                        <button id="myTButton" className="btn btn-lg btn-search" type="button" onClick={filtrarByCreator}>Ver os meus torneios <FaIcons.FaSearch/></button>
                     </div>
                     }
 				</div>

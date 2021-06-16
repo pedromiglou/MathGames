@@ -40,7 +40,7 @@ function TournamentPage() {
     const url = new URLSearchParams(window.location.search);
 	let tournament_id = url.get("id");
     
-    const retrieveInformation = async () => {
+    const retrieveInformation = () => {
         
         async function fetchApiTournament() {
             var response = await TournamentService.getTournamentById(tournament_id)
@@ -53,14 +53,19 @@ function TournamentPage() {
             if (!response["message"]) 
                 setPlayers(response)
         }
-        await fetchApiTournament();
-        await fetchApiTournamentPlayers();
-        setReadyToDisplay(true)
+
+        async function getData() {
+            await fetchApiTournament();
+            await fetchApiTournamentPlayers();
+            setReadyToDisplay(true)
+
+        }
+        getData();
 	}
 
     useEffect(
 		retrieveInformation
-	, []) 
+	, [tournament_id]) 
 
 
     async function removePlayer(playerId) {

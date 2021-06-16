@@ -11,9 +11,18 @@ class TournamentService {
         return res.json();
     }
 
+    async getTournamentByCreator(creator_id) {
+        var url = urlAPI + 'api/tournaments/creator/' + creator_id;
+        var res = await fetch(url, {
+            method:'GET',
+            headers:{'Content-type':'application/json',
+            'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        return res.json();
+    }
 
-    async getTournamentsWithFilters(nome, capacidade, privado, page, pageSize) {
-        var url = urlAPI + 'api/tournaments?page=' + page + '&size=' + pageSize;
+
+    async getTournamentsWithFilters(nome, capacidade, privado, jogos, page, pageSize) {
+        var url = urlAPI + 'api/tournaments?page=' + page + '&size=' + pageSize+'&jogos='+jogos;
         if (privado !== null && privado !== undefined)
             url = url + '&private='+privado;
 
