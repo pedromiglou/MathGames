@@ -124,6 +124,10 @@ function LastGames({ navigation }) {
 								</View>
 							</View>
 						))}
+
+					{games.length === 0 && (
+						<Text style={styles.noGames}>O seu histório de jogos esta vazio!</Text>
+					)}
 				</View>
 			</ScrollView>
 		</View>
@@ -133,6 +137,16 @@ function LastGames({ navigation }) {
 export default LastGames;
 
 const styles = StyleSheet.create({
+    noGames:{
+        flex: 1,
+        alignSelf: 'center', 
+        color: 'white', 
+        fontSize: 20,
+        marginTop: 30,
+        fontWeight: 'bold',
+        textDecorationLine: 'underline',
+    },
+
 	winRow: {
 		flexDirection: "row",
 		borderWidth: 2,

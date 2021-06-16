@@ -80,7 +80,7 @@ function Friends({ navigation }) {
 	}
 
 	function sendFriendRequest(sender, receiver, not_type) {
-		UserService.send_notification_request(sender, receiver, not_type);
+		UserService.send_notification_request(sender, receiver, not_type, user.token);
 	}
 
 	return (
@@ -167,7 +167,7 @@ function Friends({ navigation }) {
 						}}
 					>
 						<View>
-							<Feather name="user-plus" size={30} color="white" />
+							<Feather name="search" size={30} color="white" />
 						</View>
 						<View style={{ marginLeft: 10 }}>
 							<Text style={styles.addButtonText}>Pesquisar</Text>
@@ -184,7 +184,7 @@ function Friends({ navigation }) {
 								<View
 									style={{
 										flexDirection: "row",
-										width: win.width,
+										flex: 1,
 										borderBottomWidth: 2,
 										borderBottomColor: "white",
 									}}
@@ -429,12 +429,15 @@ const styles = StyleSheet.create({
 		textAlign: "left",
 		fontFamily: "BubblegumSans",
 		color: "white",
+		flex: 1,
 	},
 	button: {
 		marginLeft: 20,
 		marginRight: 0,
 		padding: 20,
 		marginRight: "auto",
+		flex: 1,
+
 	},
 	addButton: {
 		marginLeft: "auto",

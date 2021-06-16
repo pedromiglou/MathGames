@@ -52,7 +52,7 @@ class UserService {
     }
 
 
-    async send_notification_request(sender, receiver, not_type) {
+    /* async send_notification_request(sender, receiver, not_type) {
         var user = JSON.parse(JSON.parse(await readData("user")));
 		var token = user.token;
 
@@ -62,17 +62,23 @@ class UserService {
             notification_type: not_type
         }
 
+        console.log(sender)
+        console.log(receiver)
+        console.log(not_type)
+
         var url = urlAPI + 'api/notifications/';
         
-        await fetch(url, {
+        var xx = await fetch(url, {
             method:'POST',
             headers:{'Content-type':'application/json',
                      'x-access-token': token},
             body: JSON.stringify(request)
         });
 
+        console.log(xx)
+
         return;        
-    }
+    } */
 
 
     async getLastGames(userId) {
@@ -318,6 +324,35 @@ class UserService {
         });
 
         return;        
+    }
+
+
+    async report_player(sender, receiver, reason) {
+        var user = JSON.parse(JSON.parse(await readData("user")));
+		var token = user.token;
+
+        let report= {
+            reason: reason,
+            receiver: receiver,
+            sender: sender,
+        }
+
+        var url = urlAPI + 'api/reports/';
+        
+        let res = await fetch(url, {
+            method:'POST',
+            headers:{'Content-type':'application/json',
+                     'x-access-token': token},
+            body: JSON.stringify(report)
+        });
+
+        if (res.status === 405) 
+            return { error: true, report_already_made: true};
+
+        if (res.status !== 200) 
+            return { error: true, report_already_made: false };
+        
+        return { error: false, report_already_made: false };
     }
 
 
