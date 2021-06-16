@@ -41,7 +41,7 @@ export default class GatosCaesAI {
     at the end transform chosen as needed
     */
     randomPlay(valid_squares) {
-        this.turnCount += 2;
+        this.turnCount += 1;
         var chosen = null;
 
         if (Math.random()>this.dif) {
@@ -60,7 +60,7 @@ export default class GatosCaesAI {
                         }
                     }
                 }
-                var newScore = this.minimax(validSquares2, 1 + Math.floor(this.turnCount/10), -100, 100, false);
+                var newScore = this.minimax(validSquares2, 1 + Math.floor(this.turnCount/5), -100, 100, false);
                 if (newScore > score) {
                     chosen = piece;
                     score = newScore;
