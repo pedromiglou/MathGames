@@ -15,6 +15,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Feather } from "@expo/vector-icons";
 import { readData } from "../utilities/AsyncStorage";
+import ChooseGameModal from './../components/ChooseGameModal';
 
 const win = Dimensions.get("window");
 
@@ -25,6 +26,7 @@ function Friends({ navigation }) {
 	const [modalUsername, setModalUsername] = useState("");
 	const [modalOperation, setModalOperation] = useState("");
 	const [modalVisible, setModalVisible] = useState(false);
+	const [ChooseGameModalVisible, setChooseGameModalVisible] = useState(false);
 
 	const [usersFound, setUsersFound] = useState([]);
 	const [inputText, onChangeInputText] = useState(null);
@@ -124,7 +126,11 @@ function Friends({ navigation }) {
 						<Text style={styles.item}>{friend.username}</Text>
 						<TouchableOpacity
 							style={styles.button}
-							onPress={() => {}}
+							onPress={() => {
+								setModalUserId(friend.id);
+								setModalUsername(friend.username);
+								setChooseGameModalVisible(true);
+							}}
 						>
 							<FontAwesome
 								name="envelope-o"
@@ -136,7 +142,6 @@ function Friends({ navigation }) {
 							style={styles.button}
 							onPress={() => {
 								setModalUserId(friend.id);
-								setModalUsername(friend.username);
 								setModalOperation("remove");
 								setModalVisible(true);
 							}}
@@ -331,6 +336,8 @@ function Friends({ navigation }) {
 					</Modal>
 				)}
 			</ScrollView>
+			<ChooseGameModal visible={ChooseGameModalVisible} setVisible={setChooseGameModalVisible}
+				opponent={modalUserId}></ChooseGameModal>
 		</View>
 	);
 }

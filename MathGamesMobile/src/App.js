@@ -103,6 +103,30 @@ function NotificationsNav() {
   )
 }
 
+const StackFriends = createStackNavigator();
+
+function FriendsNav() {
+  const [currentGame, setCurrentGame] = useState({name: ""});
+  useEffect(() => {
+    let mounted = true;
+    readData("game").then(value => {if (value !== null && mounted) {setCurrentGame(JSON.parse(value));}});
+    return () => {mounted=false}
+  }, [currentGame]);
+
+  return (
+    <StackFriends.Navigator screenOptions={{headerStyle: {backgroundColor: '#78c9ff'}}} initialRouteName="Amigos">
+      <StackFriends.Screen name="Amigos" options={{
+        headerTitle: () => (<Text style={styles.header}>Amigos</Text>)
+      }} component={Friends} />
+      <StackFriends.Screen name="Game" options={{
+        headerTitle: () => (<Text style={styles.headerWithArrow}>{currentGame.title}</Text>),
+        headerTintColor: "white",
+        headerTitleAlign: "center"
+      }} component={Game} />
+    </StackFriends.Navigator>
+  )
+}
+
 const Drawer = createDrawerNavigator();
 
 function App() {
@@ -165,7 +189,7 @@ function App() {
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Classificações</Text>)}}/>
             {loggedIn && <Drawer.Screen name="Perfil" component={ProfileNav} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Perfil</Text>)}}/>}
-            {loggedIn && <Drawer.Screen name="Amigos" component={Friends} options={{
+            {loggedIn && <Drawer.Screen name="Amigos" component={FriendsNav} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Amigos</Text>)}}/>}
             {loggedIn && <Drawer.Screen name="Notificações" component={NotificationsNav} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Notificações</Text>)}}/>}
