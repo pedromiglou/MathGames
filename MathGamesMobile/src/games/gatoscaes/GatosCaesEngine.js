@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useState, useEffect} from 'react';
+import {useEffect} from 'react';
 import {StyleSheet, View} from 'react-native';
 import { GameEngine } from 'react-native-game-engine';
 import Constants from './Constants';
@@ -28,22 +28,23 @@ function GatosCaesEngine() {
         entities.push({position: square, size: Constants.CELL_SIZE, valid: false, blockedG:false,
             blockedC: false, renderer: <Square></Square>});
     });
-
-    const [player1, setPlayer1] = useState("player1");
-    const [player2, setPlayer2] = useState("player2");
     
     useEffect(() => {
         let mounted = true;
         readData("gameMode").then(X=>{
             gameMode=X.slice(1,-1);
-            readData("dif").then(X=>{
-                dif= X!==null ? X.slice(1,-1) : null;
-                readData('match_id').then(X=>{
-                    match_id=X;
-                    readData('player1').then(p1=>{
-                        p1=p1.slice(1,-1);
-                        readData('player2').then(p2=>{
-                            p2=p2.slice(1,-1);
+            readData('player1').then(p1=>{
+                p1=p1.slice(1,-1);
+                readData('player2').then(p2=>{
+                    p2=p2.slice(1,-1);
+                    entities.push({position: [0, 0], size: Constants.CELL_SIZE, text: "Jogador 2: "+p2, turn: 1,
+                        dispatch: this.engine.dispatch, gameMode: gameMode, renderer: <GameText></GameText>});
+                    entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "Jogador 1: "+p1, turn: 1,
+                        dispatch: this.engine.dispatch, gameMode: gameMode, renderer: <GameText></GameText>});
+                    readData("dif").then(X=>{
+                        dif= X!==null ? X.slice(1,-1) : null;
+                        readData('match_id').then(X=>{
+                            match_id=X;
                             readData('user_id').then(X=>{
                                 user_id=X.slice(1,-1);
                                 entities[0].myTurn = user_id===p1 || gameMode==="No mesmo Computador";
@@ -57,8 +58,6 @@ function GatosCaesEngine() {
                                 entities[0].turn = 1;
                                 entities[0].turnCount = 0;
                                 this.engine.dispatch({type: "init"});
-                                setPlayer1(p1);
-                                setPlayer2(p2);
                             });
                         });
                     });

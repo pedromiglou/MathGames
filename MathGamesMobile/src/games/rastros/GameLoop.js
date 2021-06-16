@@ -139,7 +139,7 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
       }
     } else if (e.type === "gameEnded") {
       storage.gameEnded=true;
-      if (storage.gameMode !== "Competitivo") {
+      if (storage.gameMode === "No mesmo computador") {
         if (e.turn===1) {
           entities.push({visible:true, text: "Time Ended. "+storage.player2+ " won!", renderer: <GameModal></GameModal>});
         } else {

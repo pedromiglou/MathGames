@@ -79,10 +79,6 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
   events.filter(e => e.type === "init").forEach(e => {
     // Clear listeners to make sure there are no repeated events
     socket.off("move_piece");
-    entities.push({position: [0, 0], size: Constants.CELL_SIZE, text: "Jogador 2: "+storage.player2,
-      turn: storage.turn, dispatch: dispatch, gameMode: storage.gameMode, renderer: <GameText></GameText>});
-    entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "Jogador 1: "+storage.player1,
-      turn: storage.turn, dispatch: dispatch, gameMode: storage.gameMode, renderer: <GameText></GameText>});
     entities.push({position: [0, 10], size: Constants.CELL_SIZE, text: "É a vez do "+storage.player1,
       renderer: <GameText></GameText>});
 
@@ -168,7 +164,7 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
       }
     } else if (e.type === "gameEnded") {
       storage.gameEnded=true;
-      if (storage.gameMode!=="Competitivo") {
+      if (storage.gameMode==="No mesmo Computador") {
         if (storage.turn===1) {
           entities.push({visible:true, text: "Time Ended. "+storage.player2+ " won!", renderer: <GameModal></GameModal>});
         } else {

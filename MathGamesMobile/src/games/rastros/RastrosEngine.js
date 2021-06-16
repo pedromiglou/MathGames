@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useState, useEffect} from 'react';
+import {useEffect} from 'react';
 import {StyleSheet, View} from 'react-native';
 import { GameEngine } from 'react-native-game-engine';
 import Constants from './Constants';
@@ -33,23 +33,22 @@ function RastrosEngine() {
     entities[31].blocked = true;
     entities.push({position: [4,3], size: Constants.CELL_SIZE, renderer: <Piece></Piece>});
 
-    entities.push({position: [0, 0], size: Constants.CELL_SIZE, text: "Jogador 2: "+"storage.player2",
-      turn: 1, dispatch: "dispatch", gameMode: "storage.gameMode", renderer: <GameText></GameText>});
-    entities.push({position: [0, 8], size: Constants.CELL_SIZE, text: "Jogador 1: "+"storage.player1",
-      turn: 1, dispatch: "dispatch", gameMode: "storage.gameMode", renderer: <GameText></GameText>});
-
     useEffect(() => {
         let mounted = true;
         readData("gameMode").then(X=>{
             gameMode=X.slice(1,-1);
-            readData("dif").then(X=>{
-                dif= X!==null ? X.slice(1,-1) : null;
-                readData('match_id').then(X=>{
-                    match_id=X;
-                    readData('player1').then(p1=>{
-                        p1=p1.slice(1,-1);
-                        readData('player2').then(p2=>{
-                            p2=p2.slice(1,-1);
+            readData('player1').then(p1=>{
+                p1=p1.slice(1,-1);
+                readData('player2').then(p2=>{
+                    p2=p2.slice(1,-1);
+                    entities.push({position: [0, 0], size: Constants.CELL_SIZE, text: "Jogador 2: "+p2, turn: 1,
+                        dispatch: this.engine.dispatch, gameMode: gameMode, renderer: <GameText></GameText>});
+                    entities.push({position: [0, 8], size: Constants.CELL_SIZE, text: "Jogador 1: "+p1, turn: 1,
+                        dispatch: this.engine.dispatch, gameMode: gameMode, renderer: <GameText></GameText>});
+                    readData("dif").then(X=>{
+                        dif= X!==null ? X.slice(1,-1) : null;
+                        readData('match_id').then(X=>{
+                            match_id=X;
                             readData('user_id').then(X=>{
                                 user_id=X.slice(1,-1);
                                 entities[0].myTurn = user_id===p1 || gameMode==="No mesmo Computador";
