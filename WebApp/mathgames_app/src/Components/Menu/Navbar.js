@@ -247,6 +247,16 @@ function Navbar() {
 		socket.emit("get_match_id", {"user_id": AuthService.getCurrentUserId(), "outro_id": id_outro_jogador})
 	}
 
+
+	function friendRequest() {
+		var input = document.getElementById("inputFriend")
+		var other_username = input.value
+		if (other_username !== undefined && other_username !== null && other_username !== "")
+			UserService.send_notification_request_by_username(current_user.id, other_username, "F");
+		input.value = ""
+	}
+
+
 	function run_logout() {
 		sessionStorage.removeItem("user");
 		window.location.assign(urlWeb)
@@ -408,6 +418,15 @@ function Navbar() {
 									</div>
 								</Dropdown.ItemText>
 								}
+								<Dropdown.Divider />
+								<Dropdown.ItemText>
+									<div className="row navbar-dropdown-row">
+										<Dropdown.ItemText>
+											<input id={"inputFriend"} type={"text"} placeholder={"username"}></input>
+										</Dropdown.ItemText>
+										<button type={"button"} onClick={() => friendRequest()}>Invite</button>
+									</div>
+								</Dropdown.ItemText>
 							</DropdownButton>
 						</div>
 						<GameModal

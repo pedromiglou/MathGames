@@ -1,5 +1,5 @@
 import React from 'react';
-import * as IoIcons from 'react-icons/io';
+//import * as IoIcons from 'react-icons/io';
 import * as CgIcons from 'react-icons/cg';
 import * as BsIcons from 'react-icons/bs';
 import * as RiIcons from 'react-icons/ri';
@@ -49,15 +49,15 @@ export const sidebarData_group_user = [
 ]
 
 export const sidebarData_group2 = [
-    {
+    /*{
         id: 3,
         title: 'Definições',
         path: '/settings',
         icon: <IoIcons.IoMdSettings/>,
         cName: 'nav-text',
-    },
+    },*/
     {
-        id: 4,
+        id: 3,
         title: 'Quem somos',
         path: '/about',
         icon: <BsIcons.BsQuestionCircle/>,
@@ -79,13 +79,13 @@ export const sidebarData_group_admin = [
         path: '/podium',
         icon: <ImIcons.ImUsers/>,
         cName: 'nav-text',
-    },
-    {
+    }
+    /*{
         id: 2,
         title: 'Gerir Torneios',
         path: '/manageTournaments',
         icon: <RiIcons.RiTrophyFill/>,
         cName: 'nav-text',
-    }
+    }*/
 ]
 

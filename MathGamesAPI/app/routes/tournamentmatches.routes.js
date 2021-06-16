@@ -36,7 +36,7 @@ module.exports = app => {
      *      '500':
      *         description: An internal error has occoured
      */
-    router.get("/", [authJwt.verifyToken], tournamentmatches.findAll);
+    router.get("/", [authJwt.verifyToken, authJwt.isAdmin], tournamentmatches.findAll);
 
     /**
      * @swagger

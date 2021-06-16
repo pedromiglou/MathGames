@@ -57,7 +57,7 @@ exports.findAll = (req, res) => {
 
   var whereCondition = user_id ? { [Op.or]: [{ player1: user_id}, {player2: user_id} ] } : null;
   var limitCondition = user_id ? 5 : null;
-  var orderCondition = user_id ?  [["createdAt", 'DESC']]  : null;
+  var orderCondition = user_id ?  [["updatedAt", 'DESC']]  : null;
   GameMatch.findAll({ where: whereCondition, limit: limitCondition, order: orderCondition })
     .then(data => {
       res.send(data);
