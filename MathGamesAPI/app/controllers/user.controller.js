@@ -317,7 +317,7 @@ exports.findByName = (req, res) => {
       UserRanks.findByPk(data.dataValues.id)
         .then(ranks => {
 
-          const { password, email, createdAt, updatedAt, banned, id, account_type, ...userWithoutPassword } = data.dataValues;
+          const { password, email, createdAt, updatedAt, banned, account_type, ...userWithoutPassword } = data.dataValues;
           const { user_id, ...ranksWithoutUserId} = ranks.dataValues;
           userWithoutPassword["ranks"] = ranksWithoutUserId
           res.send(userWithoutPassword);

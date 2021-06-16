@@ -316,11 +316,9 @@ exports.initializeround = (req, res) => {
         return
       }
       
-      console.log("vou analisar partidas")
       TournamentMatch.findAll({where: {tournament_id: torneio.dataValues.id, roundNo: parseInt(torneio.dataValues.current_round)}}).then( async (tournament_matches) => {
         for (let game of tournament_matches) {
           await GameMatch.findByPk(game.dataValues.match_id).then(match => {
-            console.log(match.dataValues)
             if (match.dataValues.winner === null) {
               res.status(500).send({
                 message: "Matches from previous round are still being played"
@@ -357,6 +355,14 @@ exports.findAll = (req, res) => {
 
   const capacity = !req.query.capacity ? "%": req.query.capacity;
 
+  const jogos = req.query.jogos
+
+  let arrayIds = jogos.split("-")
+
+  arrayIds = arrayIds.map(function(e) { 
+    return parseInt(e);
+  });
+  
   var condition;
   if (req.query.private === "true") {
     condition = {private: true};
@@ -367,6 +373,7 @@ exports.findAll = (req, res) => {
   }
   condition["name"] = { [Op.like]: `%${name}` };
   condition["max_users"] = { [Op.like]: `${capacity}` }
+  condition["game_id"] = arrayIds 
 
   const { limit, offset } = getPagination(page, size);
   Tournament.findAndCountAll({
@@ -429,6 +436,29 @@ exports.findOne = (req, res) => {
       });
     });
 };
+
+
+// Find a single Tournament with an id
+exports.findByCreator = (req, res) => {
+  const creator_id = req.params.id;
+
+  Tournament.findAll({where: {creator: creator_id}})
+    .then(data => {
+      var tournament_list = []
+      for (let tournament of data) {
+        const { password, ...tournamentWithoutPassword } = tournament.dataValues;
+        tournament_list.push(tournamentWithoutPassword)
+      }
+      var response = {"tournaments": tournament_list}
+      res.send(response);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving Tournaments that belong to creator with id=" + creator_id
+      });
+    });
+};
+
 
 
 // Update a Tournament by the id in the request
