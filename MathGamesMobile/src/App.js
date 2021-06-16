@@ -11,18 +11,20 @@ import Profile from './screens/Profile';
 import LastGames from './screens/LastGames';
 import Inventory from './screens/Inventory';
 import Friends from './screens/Friends';
+import Ranking from './screens/Ranking';
 
 import { Feather } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { useState, useEffect } from 'react';
 import { useFonts } from 'expo-font';
-import {readData, saveData} from './utilities/AsyncStorage';
+import {readData, saveData, deleteData} from './utilities/AsyncStorage';
 import Game from './screens/Game';
 /* Uuid */
 import { v4 as uuidv4 } from 'uuid';
 
 import { DrawerActions } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import Notifications from './screens/Notifications';
 export const navigationRef = React.createRef();
 export function openDrawer(routeName, params) {
   navigationRef.current.dispatch(DrawerActions.toggleDrawer());
@@ -40,7 +42,7 @@ function Games() {
     return () => {mounted=false}
   }, [currentGame]);
   return (
-    <Stack.Navigator screenOptions={{headerStyle: {backgroundColor: '#78c9ff'}}}>
+    <Stack.Navigator screenOptions={{headerStyle: {backgroundColor: '#78c9ff'}}} initialRouteName="Jogos">
       <Stack.Screen name="Jogos" options={{headerTitle: () => (<Text style={styles.header}>Jogos</Text>)}} component={ChooseGame} />
       <Stack.Screen name="Jogo" options={{
         headerTitle: () => (<Text style={styles.headerWithArrow}>{currentGame.title}</Text>),
@@ -77,6 +79,30 @@ function ProfileNav() {
   )
 }
 
+const StackNotifications = createStackNavigator();
+
+function NotificationsNav() {
+  const [currentGame, setCurrentGame] = useState({name: ""});
+  useEffect(() => {
+    let mounted = true;
+    readData("game").then(value => {if (value !== null && mounted) {setCurrentGame(JSON.parse(value));}});
+    return () => {mounted=false}
+  }, [currentGame]);
+
+  return (
+    <StackNotifications.Navigator screenOptions={{headerStyle: {backgroundColor: '#78c9ff'}}} initialRouteName="Notificações">
+      <StackNotifications.Screen name="Notificações" options={{
+        headerTitle: () => (<Text style={styles.header}>Notificações</Text>)
+      }} component={Notifications} />
+      <Stack.Screen name="Game" options={{
+        headerTitle: () => (<Text style={styles.headerWithArrow}>{currentGame.title}</Text>),
+        headerTintColor: "white",
+        headerTitleAlign: "center"
+      }} component={Game} />
+    </StackNotifications.Navigator>
+  )
+}
+
 const Drawer = createDrawerNavigator();
 
 function App() {
@@ -96,6 +122,8 @@ function App() {
   })
 
   if (!loaded) {
+    deleteData("user");
+    deleteData("user_id");
     return <Text>Loading...</Text>;
   } else {
     return (
@@ -133,13 +161,13 @@ function App() {
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Bem-vindo</Text>)}}/>
             <Drawer.Screen name="Jogos" component={Games} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Jogos</Text>)}}/>
-            <Drawer.Screen name="Classificações" component={Welcome} options={{
+            <Drawer.Screen name="Classificações" component={Ranking} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Classificações</Text>)}}/>
             {loggedIn && <Drawer.Screen name="Perfil" component={ProfileNav} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Perfil</Text>)}}/>}
             {loggedIn && <Drawer.Screen name="Amigos" component={Friends} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Amigos</Text>)}}/>}
-            {loggedIn && <Drawer.Screen name="Notificações" component={Welcome} options={{
+            {loggedIn && <Drawer.Screen name="Notificações" component={NotificationsNav} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Notificações</Text>)}}/>}
             <Drawer.Screen name="Definições" component={Welcome} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Definições</Text>)}}/>
