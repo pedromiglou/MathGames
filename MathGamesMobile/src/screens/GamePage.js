@@ -13,8 +13,16 @@ const win = Dimensions.get('window');
 
 function GamePage({navigation}) {
   const [game, setGame] = useState({name: ""});
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
     readData("game").then(value => {if (value !== null) {setGame(JSON.parse(value));}})
+
+    readData("user").then((user) => {
+        var current_user = JSON.parse(JSON.parse(user));
+        setUser(current_user);
+    });
+
   }, []);
   const [aiMode, setAIMode] = useState("");
 
@@ -47,26 +55,32 @@ function GamePage({navigation}) {
 
         <Text style={styles.characteristics}>Rank</Text>
 
-        <View style={{flexDirection: "row"}}>
-            <Image
-              style={styles.image2}
-              resizeMode = {'contain'}
-              source={require('./../../public/images/ranks/bronze1.png')}
-            />
-            <SimpleLineIcons name="arrow-down" size={24} color="black" style={styles.arrowIcon} />
-            <Image
-              style={styles.image}
-              resizeMode = {'contain'}
-              source={require('./../../public/images/ranks/bronze2.png')}
-            />
-            <SimpleLineIcons name="arrow-up" size={24} color="black" style={styles.arrowIcon}/>
-            <Image
-              style={styles.image2}
-              resizeMode = {'contain'}
-              source={require('./../../public/images/ranks/bronze3.png')}
-            />
-          
-        </View>
+        {user != null ? (
+
+            <View style={{flexDirection: "row"}}>
+                <Image
+                style={styles.image2}
+                resizeMode = {'contain'}
+                source={require('./../../public/images/ranks/bronze1.png')}
+                />
+                <SimpleLineIcons name="arrow-down" size={24} color="black" style={styles.arrowIcon} />
+                <Image
+                style={styles.image}
+                resizeMode = {'contain'}
+                source={require('./../../public/images/ranks/bronze2.png')}
+                />
+                <SimpleLineIcons name="arrow-up" size={24} color="black" style={styles.arrowIcon}/>
+                <Image
+                style={styles.image2}
+                resizeMode = {'contain'}
+                source={require('./../../public/images/ranks/bronze3.png')}
+                />
+            </View>
+        ) : (
+
+            <Text style={styles.noUserText}>Crie uma conta para ter acesso aos ranks!</Text>
+
+        )}
         
         <TouchableHighlight style={styles.button} onPress = {() => {
                       saveData("gameMode", "Competitivo");
@@ -251,5 +265,13 @@ const styles = StyleSheet.create({
     textAlign:'center',
     color: "white",
     fontFamily: 'BubblegumSans'
+  },
+
+  noUserText:{ 
+      textAlign: 'center',
+      color: 'white',
+      fontFamily: 'BubblegumSans',
+      fontSize: 20,
+      marginBottom: 25
   }
 });

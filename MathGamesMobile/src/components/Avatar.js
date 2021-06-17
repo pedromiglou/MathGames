@@ -31,7 +31,7 @@ export default function Avatar(props) {
 	return (
 		<GLView
 			style={{ alignItems: "stretch", width: "100%", height: "100%", justifyContent: "center", textAlign: "center",}}
-			onContextCreate={async (gl: ExpoWebGLRenderingContext, alpha: true) => {
+			onContextCreate={async (gl: ExpoWebGLRenderingContext) => {
 				const {
 					drawingBufferWidth: width,
 					drawingBufferHeight: height,

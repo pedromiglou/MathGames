@@ -10,7 +10,7 @@ import { readData } from "../utilities/AsyncStorage";
 const win = Dimensions.get("window");
 
 function LastGames({ navigation }) {
-	const [games, setGames] = useState();
+	const [games, setGames] = useState([]);
 	const [user, setUser] = useState();
 
 	useEffect(() => {
@@ -21,13 +21,17 @@ function LastGames({ navigation }) {
 
 			setUser(user);
 
-			UserService.getLastGames(user.id, user.token).then((response) => {
-				if (!response.error) setGames(response);
-				else setGames("erro");
-			});
+			const interval = setInterval(() => {
+				UserService.getLastGames(user.id, user.token).then(
+					(response) => {
+						if (!response.error) setGames(response);
+					}
+				);
+			}, 5000);
 
 			return () => {
 				mounted: false;
+				clearInterval(interval);
 			};
 		});
 	}, []);
@@ -66,8 +70,7 @@ function LastGames({ navigation }) {
 						</View>
 					</View>
 
-					{games != null &&
-						games != undefined &&
+					{games.length !== 0 &&
 						Object.entries(games).map(([key, value]) => (
 							<View
 								style={
@@ -91,7 +94,7 @@ function LastGames({ navigation }) {
 												: styles.loseText
 										}
 									>
-										{value.createdAt}
+										{value.updatedAt}
 									</Text>
 								</View>
 								<View style={styles.infoCol}>
@@ -124,6 +127,12 @@ function LastGames({ navigation }) {
 								</View>
 							</View>
 						))}
+
+					{games.length === 0 && (
+						<Text style={styles.noGames}>
+							O seu histório de jogos esta vazio!
+						</Text>
+					)}
 				</View>
 			</ScrollView>
 		</View>
@@ -133,6 +142,16 @@ function LastGames({ navigation }) {
 export default LastGames;
 
 const styles = StyleSheet.create({
+	noGames: {
+		flex: 1,
+		alignSelf: "center",
+		color: "white",
+		fontSize: 20,
+		marginTop: 30,
+		fontWeight: "bold",
+		textDecorationLine: "underline",
+	},
+
 	winRow: {
 		flexDirection: "row",
 		borderWidth: 2,
