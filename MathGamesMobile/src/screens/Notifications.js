@@ -31,7 +31,7 @@ function Notifications({ navigation }) {
       readData("user").then(user=>{
         user=JSON.parse(JSON.parse(user));
         UserService.delete(notification.id, user.token);
-        var id_outro_jogador = notification.sender_user.sender_id
+        var id_outro_jogador = notification.sender_user.sender_id;
       
         socket.once("match_link", (msg) => {
           console.log(msg);
@@ -40,6 +40,9 @@ function Notifications({ navigation }) {
             saveData("game", gamesInfo[Number(msg['game_id'])]);
             saveData("gameMode", "Amigo");
             saveData("opponent", id_outro_jogador);
+
+            socket.emit("entered_invite", {"user_id": user.id, "outro_id": id_outro_jogador,
+              "match_id": msg['match_id'], "game_id": Number(msg['game_id'])})
             navigation.navigate("Game");
 
           } else if (msg["error"]) {

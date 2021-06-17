@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, StyleSheet, Text, TouchableHighlight, View, Dimensions, ScrollView, Image } from 'react-native';
+import { Modal, StyleSheet, Text, TouchableHighlight, View, Dimensions, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {gamesInfo} from './../data/GamesInfo';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -19,24 +19,26 @@ function ChooseGameModal(props) {
                 <ScrollView style={{backgroundColor: "#dcdfe4"}}>
                     {gamesInfo.map(X => 
                     <TouchableHighlight style={styles.gameTile} key={X.id} onPress = {() => {
-                            socket.once("match_link", (msg) => {
+                            socket.once("invite_link", (msg) => {
                               console.log(msg);
                               if (msg["match_id"]) {
                                 saveData("match_id", msg['match_id']);
-                                saveData("game", gamesInfo[Number(msg['game_id'])]);
+                                saveData("game", X);
                                 saveData("gameMode", "Amigo");
                                 saveData("opponent", props.opponent);
                                 props.setVisible(false);
                                 navigation.navigate("Game");
                     
-                              } else if (msg["error"]) {
-                                console.log("there was an error");
+                              } else {
+                                Alert.alert("Não foi possível convidar", "Criaste um link recentemente, espera mais um pouco até criares um novo.")
                               }
                             });
                             
                             readData("user").then(user=>{
                               user = JSON.parse(JSON.parse(user));
-                              UserService.send_notification_request(user.id, props.opponent, "P", user.token);
+                              UserService.send_notification_request(user.id, props.opponent, "P", user.token).then(
+                                ()=>socket.emit("generate_invite", {"user_id": user.id, "outro_id": props.opponent, "game_id": X.id})
+                              )
                             });
                         }
                         }>
