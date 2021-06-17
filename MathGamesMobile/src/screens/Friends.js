@@ -44,9 +44,10 @@ function Friends({ navigation }) {
 		let mounted = true;
 
 		const interval = setInterval(() => {
-			console.log("This will run every 5 seconds!");
+			console.log("Friends interval ...");
 			UserService.getFriends().then((res) => {
-				setFriends(res);
+                if(res != friends)
+				    setFriends(res);
 			});
 		}, 5000);
 
@@ -96,9 +97,7 @@ function Friends({ navigation }) {
 					></View>
 				</LinearGradient>
 			</View>
-			<ScrollView>
-				<Text style={styles.title}>Amigos</Text>
-
+			<ScrollView     style={{ minHeight: win.height, minWidth: win.width }}>
 				{friends.length === 0 && (
 					<View>
 						<Text style={styles.noFriends}>

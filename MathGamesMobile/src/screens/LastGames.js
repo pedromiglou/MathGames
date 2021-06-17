@@ -20,20 +20,30 @@ function LastGames({ navigation }) {
 			var user = JSON.parse(JSON.parse(user));
 
 			setUser(user);
-
-			const interval = setInterval(() => {
-				UserService.getLastGames(user.id, user.token).then(
-					(response) => {
-						if (!response.error) setGames(response);
-					}
-				);
-			}, 5000);
-
-			return () => {
-				mounted: false;
-				clearInterval(interval);
-			};
 		});
+
+
+        const interval = setInterval(() => {
+            readData("user").then((user_) => {
+                var user_ = JSON.parse(JSON.parse(user_));
+                console.log("Last Games Interval")
+                
+                if( user_ !== user)
+                    setUser(user_);
+                UserService.getLastGames(user.id, user.token).then(
+                    (response) => {
+                        if (!response.error) setGames(response);
+                    }
+                );
+            })
+        }, 5000);
+
+
+        return () => {
+            mounted: false;
+            clearInterval(interval);
+        };
+
 	}, []);
 
 	return (
