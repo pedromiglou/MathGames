@@ -20,6 +20,10 @@ import { readData } from "../utilities/AsyncStorage";
 import { Picker } from "@react-native-picker/picker";
 import { Feather } from "@expo/vector-icons";
 
+
+import AddFriendModal from '../components/AddFriendModal'
+import ReportUserModal from '../components/ReportUserModal'
+
 const win = Dimensions.get("window");
 
 function Ranking({ navigation }) {
@@ -76,29 +80,18 @@ function Ranking({ navigation }) {
 		});
     }
 
-	function sendFriendRequest(sender, receiver, not_type) {
-		UserService.send_notification_request(
-			sender,
-			receiver,
-			not_type,
-			user.token
-		);
-	}
-
-	async function report_player(player) {
-		if (selectedMotive !== "motivo") {
-			UserService.report_player(user.id, player, selectedMotive).then(
-				(result) => console.log(result)
-			);
-		}
-	}
-
 	function fetchUserByUsername(username) {
 		UserService.getUsers(username, "", "", 0, 10).then((result) => {
 			const usersFoundInFecth = result.users;
 			setUsersFound(usersFoundInFecth);
 		});
 	}
+
+
+    function toggleModalVisibility() {
+        setModalVisible(!modalVisible)
+    }
+
 
 	var rankPosition = 1;
 
@@ -178,7 +171,7 @@ function Ranking({ navigation }) {
 					<View>
 						<TextInput
 							style={styles.input}
-							placeholder="             Escreve o nome para procurar          "
+							placeholder="Escreve o nome para procurar"
 							onChangeText={onChangeInputText}
 						/>
 						<TouchableOpacity
@@ -228,7 +221,7 @@ function Ranking({ navigation }) {
 							<Text style={styles.topText}>Experiência</Text>
 						</View>
 						<View style={styles.topBoxActions}>
-							<Text style={styles.topText}>Acoes</Text>
+							<Text style={styles.topText}>Ações</Text>
 						</View>
 					</View>
 				) : (
@@ -340,144 +333,10 @@ function Ranking({ navigation }) {
 				})}
 
 				{modalOperation === "report" && (
-					<Modal
-						animationType="slide"
-						transparent={true}
-						visible={modalVisible}
-						onRequestClose={() => {
-							setModalVisible(!modalVisible);
-						}}
-					>
-						<View style={styles.centeredView}>
-							<View style={styles.modalView}>
-								<Text style={styles.modalTitle}>
-									Reportar Jogador
-								</Text>
-								<Text style={styles.modalText}>
-									Tem a certeza que pretende reportar o
-									jogador {modalUsername} ?
-								</Text>
-								<Picker
-									style={styles.picker}
-									//mode="dropdown"
-									itemStyle={styles.itemStyle}
-									selectedValue={selectedMotive}
-									onValueChange={(itemValue, itemIndex) => {
-										setSelectedMotive(itemValue);
-									}}
-								>
-									<Picker.Item
-										label="Motivo"
-										value="motivo"
-									/>
-									<Picker.Item
-										label="Cheats"
-										value="Cheats"
-									/>
-									<Picker.Item
-										label="Bug Abuse"
-										value="Bug Abuse"
-									/>
-								</Picker>
-								<View
-									style={{
-										flexDirection: "row",
-										justifyContent: "center",
-										alignItems: "center",
-									}}
-								>
-									<TouchableOpacity
-										style={[
-											styles.buttonModal,
-											styles.buttonOpen,
-										]}
-										onPress={() => {
-											setModalVisible(false);
-											report_player(modalUserId);
-										}}
-									>
-										<Text style={styles.textStyle}>
-											Reportar
-										</Text>
-									</TouchableOpacity>
-									<TouchableOpacity
-										style={[
-											styles.buttonModal,
-											styles.buttonCancel,
-										]}
-										onPress={() =>
-											setModalVisible(!modalVisible)
-										}
-									>
-										<Text style={styles.textStyle}>
-											Cancelar
-										</Text>
-									</TouchableOpacity>
-								</View>
-							</View>
-						</View>
-					</Modal>
+					<ReportUserModal toggleModalVisibility={toggleModalVisibility} modalUserId={modalUserId} modalUsername={modalUsername} user={user} modalVisible={modalVisible}/>
 				)}
 				{modalOperation === "add" && (
-					<Modal
-						animationType="slide"
-						transparent={true}
-						visible={modalVisible}
-						onRequestClose={() => {
-							setModalVisible(!modalVisible);
-						}}
-					>
-						<View style={styles.centeredView}>
-							<View style={styles.modalView}>
-								<Text style={styles.modalTitle}>
-									Adicionar Amigo
-								</Text>
-								<Text style={styles.modalText}>
-									Tem a certeza que pretende adicionar{" "}
-									{modalUsername} como amigo?
-								</Text>
-								<View
-									style={{
-										flexDirection: "row",
-										justifyContent: "center",
-										alignItems: "center",
-									}}
-								>
-									<TouchableOpacity
-										style={[
-											styles.buttonModal,
-											styles.buttonOpen,
-										]}
-										onPress={() => {
-											setModalVisible(false);
-											sendFriendRequest(
-												user.id,
-												modalUserId,
-												"F"
-											);
-										}}
-									>
-										<Text style={styles.textStyle}>
-											Adicionar
-										</Text>
-									</TouchableOpacity>
-									<TouchableOpacity
-										style={[
-											styles.buttonModal,
-											styles.buttonCancel,
-										]}
-										onPress={() =>
-											setModalVisible(!modalVisible)
-										}
-									>
-										<Text style={styles.textStyle}>
-											Cancelar
-										</Text>
-									</TouchableOpacity>
-								</View>
-							</View>
-						</View>
-					</Modal>
+                    <AddFriendModal toggleModalVisibility={toggleModalVisibility} modalUserId={modalUserId} modalUsername={modalUsername} user={user} modalVisible={modalVisible}/>
 				)}
 			</ScrollView>
 		</View>
@@ -650,6 +509,7 @@ const styles = StyleSheet.create({
 		alignContent: "center",
 		alignSelf: "center",
 		width: win.width * 0.8,
+        textAlign: 'center'
 	},
 	searchButton: {
 		marginLeft: "auto",

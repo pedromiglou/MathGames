@@ -2,12 +2,15 @@ import { urlAPI } from "./../data/data";
 import { readData, saveData } from "./../utilities/AsyncStorage";
 
 class UserService {
-	/*
+	
     async getUserRanksById(userId) {
+        var user = JSON.parse(JSON.parse(await readData("user")));
+        var token = user.token;
+
         var url = urlAPI + 'api/userranks/' + userId;
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        var res = await fetch(url, {headers: {'x-access-token': token}});
         return res.json();
-    }*/
+    }
 
     async getUserById(userId) {
         var url = urlAPI + 'api/users/' + userId;
