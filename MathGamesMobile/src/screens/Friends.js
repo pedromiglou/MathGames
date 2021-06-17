@@ -16,6 +16,8 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { Feather } from "@expo/vector-icons";
 import { readData } from "../utilities/AsyncStorage";
 import ChooseGameModal from './../components/ChooseGameModal';
+import RemoveFriendModal from "../components/RemoveFriendModal";
+import AddFriendModal from "../components/AddFriendModal";
 
 const win = Dimensions.get("window");
 
@@ -40,38 +42,22 @@ function Friends({ navigation }) {
 		});
 
 		let mounted = true;
-		UserService.getFriends().then((res) => {
-			setFriends(res);
-		});
+
+		const interval = setInterval(() => {
+			console.log("This will run every 5 seconds!");
+			UserService.getFriends().then((res) => {
+				setFriends(res);
+			});
+		}, 5000);
 
 		return () => {
 			mounted = false;
+			clearInterval(interval);
 		};
-	}, []); //friends
-	/* console.log("1111")
+	}, []);
 
-	readData("user").then((user) => {
-		console.log("ola")
-		var current_user = JSON.parse(JSON.parse(user));
-		setUser(current_user)
-	})
-
-	UserService.getFriends().then((res) => {
-		console.log("olaa22")
-
-		setFriends(res);
-	}); */
-
-	function remove_friend(friendId) {
-		UserService.remove_friend(user.id, friendId).then((result) => {
-			if (result != "error") {
-				const newFriends = friends.filter(
-					(user) => user.id !== friendId
-				);
-
-				setFriends(newFriends);
-			}
-		});
+	function toggleModalVisibility() {
+		setModalVisible(!modalVisible);
 	}
 
 	function fetchUserByUsername(username) {
@@ -81,8 +67,14 @@ function Friends({ navigation }) {
 		});
 	}
 
-	function sendFriendRequest(sender, receiver, not_type) {
-		UserService.send_notification_request(sender, receiver, not_type);
+	function reloadFriends() {
+		UserService.getFriends().then((res) => {
+			setFriends(res);
+		});
+	}
+
+	function settingFriends(friends) {
+		setFriends(friends);
 	}
 
 	return (
@@ -106,6 +98,7 @@ function Friends({ navigation }) {
 			</View>
 			<ScrollView>
 				<Text style={styles.title}>Amigos</Text>
+
 				{friends.length === 0 && (
 					<View>
 						<Text style={styles.noFriends}>
@@ -172,7 +165,7 @@ function Friends({ navigation }) {
 						}}
 					>
 						<View>
-							<Feather name="user-plus" size={30} color="white" />
+							<Feather name="search" size={30} color="white" />
 						</View>
 						<View style={{ marginLeft: 10 }}>
 							<Text style={styles.addButtonText}>Pesquisar</Text>
@@ -181,159 +174,69 @@ function Friends({ navigation }) {
 				</TouchableOpacity>
 
 				{usersFound.length !== 0 &&
-					usersFound.map((found) => (
-						<View key={found.id}>
-							{friends.some(
-								(element) => element.username === found.username
-							) === false && (
-								<View
-									style={{
-										flexDirection: "row",
-										width: win.width,
-										borderBottomWidth: 2,
-										borderBottomColor: "white",
-									}}
-								>
-									<Text style={styles.item}>
-										{found.username}
-									</Text>
+					usersFound.map((found) => {
+						return (
+							found.username !== user.username && (
+								<View key={found.id}>
+									{friends.some(
+										(element) =>
+											element.username === found.username
+									) === false && (
+										<View
+											style={{
+												flexDirection: "row",
+												flex: 1,
+												borderBottomWidth: 2,
+												borderBottomColor: "white",
+											}}
+										>
+											<Text style={styles.item}>
+												{found.username}
+											</Text>
 
-									<TouchableOpacity
-										style={styles.button}
-										onPress={() => {
-											setModalOperation("add");
-											setModalVisible(true);
-											setModalUserId(found.id);
-											setModalUsername(found.username);
-										}}
-									>
-										<Feather
-											name="user-plus"
-											size={30}
-											color="white"
-										/>
-									</TouchableOpacity>
+											<TouchableOpacity
+												style={styles.button}
+												onPress={() => {
+													setModalOperation("add");
+													setModalVisible(true);
+													setModalUserId(found.id);
+													setModalUsername(
+														found.username
+													);
+												}}
+											>
+												<Feather
+													name="user-plus"
+													size={30}
+													color="white"
+												/>
+											</TouchableOpacity>
+										</View>
+									)}
 								</View>
-							)}
-						</View>
-					))}
+							)
+						);
+					})}
 
 				{modalOperation === "remove" && (
-					<Modal
-						animationType="slide"
-						transparent={true}
-						visible={modalVisible}
-						onRequestClose={() => {
-							setModalVisible(!modalVisible);
-						}}
-					>
-						<View style={styles.centeredView}>
-							<View style={styles.modalView}>
-								<Text style={styles.modalTitle}>Remover</Text>
-								<Text style={styles.modalText}>
-									Tem a certeza que pretende remover{" "}
-									{modalUsername} da lista de amigos?
-								</Text>
-								<View
-									style={{
-										flexDirection: "row",
-										justifyContent: "center",
-										alignItems: "center",
-									}}
-								>
-									<TouchableOpacity
-										style={[
-											styles.buttonModal,
-											styles.buttonOpen,
-										]}
-										onPress={() => {
-											setModalVisible(false);
-											remove_friend(modalUserId);
-										}}
-									>
-										<Text style={styles.textStyle}>
-											Remover
-										</Text>
-									</TouchableOpacity>
-									<TouchableOpacity
-										style={[
-											styles.buttonModal,
-											styles.buttonCancel,
-										]}
-										onPress={() =>
-											setModalVisible(!modalVisible)
-										}
-									>
-										<Text style={styles.textStyle}>
-											Cancelar
-										</Text>
-									</TouchableOpacity>
-								</View>
-							</View>
-						</View>
-					</Modal>
+					<RemoveFriendModal
+						toggleModalVisibility={toggleModalVisibility}
+						settingFriends={settingFriends}
+						modalUserId={modalUserId}
+						modalUsername={modalUsername}
+						friends={friends}
+						user={user}
+						modalVisible={modalVisible}
+					/>
 				)}
 				{modalOperation === "add" && (
-					<Modal
-						animationType="slide"
-						transparent={true}
-						visible={modalVisible}
-						onRequestClose={() => {
-							setModalVisible(!modalVisible);
-						}}
-					>
-						<View style={styles.centeredView}>
-							<View style={styles.modalView}>
-								<Text style={styles.modalTitle}>
-									Adicionar Amigo
-								</Text>
-								<Text style={styles.modalText}>
-									Tem a certeza que pretende adicionar{" "}
-									{modalUsername} como amigo?
-								</Text>
-								<View
-									style={{
-										flexDirection: "row",
-										justifyContent: "center",
-										alignItems: "center",
-									}}
-								>
-									<TouchableOpacity
-										style={[
-											styles.buttonModal,
-											styles.buttonOpen,
-										]}
-										onPress={() => {
-											setModalVisible(false);
-											//remove_friend(modalUserId);
-											sendFriendRequest(
-												user.id,
-												modalUserId,
-												"F"
-											);
-										}}
-									>
-										<Text style={styles.textStyle}>
-											Adicionar
-										</Text>
-									</TouchableOpacity>
-									<TouchableOpacity
-										style={[
-											styles.buttonModal,
-											styles.buttonCancel,
-										]}
-										onPress={() =>
-											setModalVisible(!modalVisible)
-										}
-									>
-										<Text style={styles.textStyle}>
-											Cancelar
-										</Text>
-									</TouchableOpacity>
-								</View>
-							</View>
-						</View>
-					</Modal>
+					<AddFriendModal
+						toggleModalVisibility={toggleModalVisibility}
+						modalUserId={modalUserId}
+						modalUsername={modalUsername}
+						user={user}
+						modalVisible={modalVisible}
+					/>
 				)}
 			</ScrollView>
 			<ChooseGameModal visible={ChooseGameModalVisible} setVisible={setChooseGameModalVisible}
@@ -412,6 +315,7 @@ const styles = StyleSheet.create({
 		backgroundColor: "white",
 		color: "black",
 		marginTop: 70,
+		textAlign: "center",
 	},
 	noFriends: {
 		fontSize: 20,
@@ -436,12 +340,14 @@ const styles = StyleSheet.create({
 		textAlign: "left",
 		fontFamily: "BubblegumSans",
 		color: "white",
+		flex: 1,
 	},
 	button: {
 		marginLeft: 20,
 		marginRight: 0,
 		padding: 20,
 		marginRight: "auto",
+		flex: 1,
 	},
 	addButton: {
 		marginLeft: "auto",

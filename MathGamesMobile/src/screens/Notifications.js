@@ -38,12 +38,14 @@ function Notifications({ navigation }) {
           if (msg["match_id"]) {
             saveData("match_id", msg['match_id']);
             saveData("game", gamesInfo[Number(msg['game_id'])]);
+            saveData("gameMode", "Amigo");
+            saveData("opponent", id_outro_jogador);
             navigation.navigate("Game");
 
           } else if (msg["error"]) {
             console.log("there was an error");
           }
-        })
+        });
       
         socket.emit("get_match_id", {"user_id": user.id, "outro_id": id_outro_jogador})
       })

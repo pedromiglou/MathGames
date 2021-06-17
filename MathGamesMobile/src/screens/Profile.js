@@ -11,7 +11,7 @@ import {
 	TouchableHighlight,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import Avatar from "../components/Avatar";
+// import Avatar from "../components/Avatar";
 import { gamesInfo } from "./../data/GamesInfo";
 import { ranksInfo } from "../data/ranksInfo";
 
@@ -25,150 +25,54 @@ const win = Dimensions.get("window");
 //import { DrawerActions } from "@react-navigation/native";
 
 function Profile({ navigation }) {
-	const [uniqueValue, setUniqueValue] = useState(1);
 
 	const [userInfos, setUserInfos] = useState({
 		user: "",
 		dict: [],
-		skinColorState: "#ffffff",
-		hatNameState: "none",
-		shirtNameState: "none",
-		accessorieNameState: "none",
-		trouserNameState: "none",
 	});
 
 	useEffect(() => {
-		/* const unsubscribe = navigation.addListener("focus", () => {
-			console.log("bbbbbbbbbbbbbbbbbbbbbbbbbbbb");
-
-			readData("user").then((user) => {
-				var current_user = JSON.parse(JSON.parse(user));
-
-				UserService.getUserById(current_user.id).then((result) => {
-					var current_user = result;
-
-					var trouserT;
-					switch (current_user.avatar_trouser) {
-						case "Trouser1":
-							trouserT = "#34495E";
-							break;
-						case "Trouser2":
-							trouserT = "#7B7D7D";
-							break;
-						case "Trouser3":
-							trouserT = "#EAEDED";
-							break;
-						default:
-							trouserT = current_user.avatar_trouser;
-					}
-
-					console.log(current_user.avatar_hat)
-
-					setUserInfos({
-						user: current_user,
-						dict: userInfos.dict,
-						skinColorState: current_user.avatar_color,
-						hatNameState: current_user.avatar_hat,
-						shirtNameState: current_user.avatar_shirt,
-						accessorieNameState: current_user.avatar_accessorie,
-						trouserNameState: trouserT,
-					});
-
-					forceRemount();
-				});
-			});
-
-			//forceRemount();
-			forceRemount();
-
-			//return "done";
-		}); */
-
 		readData("user").then((user) => {
 			var current_user = JSON.parse(JSON.parse(user));
 
-			var ranks_dict = {};
-			for (const [, value] of Object.entries(gamesInfo)) {
-				if (value["toBeDone"] === false) {
-					var userRankValue;
-					var userRank = 0;
-					switch (value["id"]) {
-						case 0:
-							userRankValue = current_user.userRanksData.rastros;
-							break;
-						case 1:
-							userRankValue =
-								current_user.userRanksData.gatos_e_caes;
-							break;
-						default:
-							userRankValue = 0;
-							break;
-					}
-
-					if (userRankValue <= 25) userRank = 0;
-					else if (userRankValue <= 75) userRank = 1;
-					else if (userRankValue <= 175) userRank = 2;
-					else if (userRankValue <= 275) userRank = 3;
-					else if (userRankValue <= 400) userRank = 4;
-					else if (userRankValue <= 550) userRank = 5;
-					else if (userRankValue <= 700) userRank = 6;
-					else if (userRankValue <= 850) userRank = 7;
-					else if (userRankValue <= 1050) userRank = 8;
-					else if (userRankValue <= 1250) userRank = 9;
-					else if (userRankValue <= 1450) userRank = 10;
-					else if (userRankValue <= 1700) userRank = 11;
-					else userRank = 12;
-
-					ranks_dict[value["id"]] = userRank;
-				}
-			}
-
-			var trouserT;
-			switch (current_user.avatar_trouser) {
-				case "Trouser1":
-					trouserT = "#34495E";
-					break;
-				case "Trouser2":
-					trouserT = "#7B7D7D";
-					break;
-				case "Trouser3":
-					trouserT = "#EAEDED";
-					break;
-				default:
-					trouserT = current_user.avatar_trouser;
-			}
-
 			setUserInfos({
 				user: current_user,
-				dict: ranks_dict,
-				skinColorState: current_user.avatar_color,
-				hatNameState: current_user.avatar_hat,
-				shirtNameState: current_user.avatar_shirt,
-				accessorieNameState: current_user.avatar_accessorie,
-				trouserNameState: trouserT,
+				dict: [],
 			});
-
-			//forceRemount();
 		});
 
-		//forceRemount();
+		const interval = setInterval(() => {
+			readData("user").then((user) => {
+                var current_user = JSON.parse(JSON.parse(user));
+
+				UserService.getUserRanksById(current_user.id).then(
+					(response) => {
+						var ranks_dict = getRanks(response);
+
+						if (ranks_dict != undefined)
+							setUserInfos({
+								user: current_user,
+								dict: ranks_dict,
+							});
+					}
+				);
+			});
+		}, 10000);
+
 		return () => {
 			mounted: false;
+			clearInterval(interval);
 		};
 	}, []);
-
-	function forceRemount() {
-		console.log("remounting");
-		setUniqueValue(uniqueValue + 1);
-	}
 
 	const getLevel = (account_level) => {
 		var contador = 1;
 		if (typeof account_level !== "undefined") {
 			while (true) {
-				var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
+				var minimo =
+					contador === 1 ? 0 : 400 * Math.pow(contador - 1, 1.1);
 				var maximo = 400 * Math.pow(contador, 1.1);
-				if ( (minimo <= account_level) && (account_level < maximo)) {
+				if (minimo <= account_level && account_level < maximo) {
 					return contador;
 				}
 				contador++;
@@ -176,15 +80,52 @@ function Profile({ navigation }) {
 		} else {
 			return 0;
 		}
-	}
+	};
 
-    const getBarProgression = (account_level) => {
-		var nivel_atual = getLevel(account_level)
-        var minimo = 400 * Math.pow(nivel_atual-1, 1.1);
+	const getBarProgression = (account_level) => {
+		var nivel_atual = getLevel(account_level);
+		var minimo = 400 * Math.pow(nivel_atual - 1, 1.1);
 		var maximo = 400 * Math.pow(nivel_atual, 1.1);
-        return ((account_level-minimo)/(maximo - minimo)) * 100
-	}
+		return ((account_level - minimo) / (maximo - minimo)) * 100;
+	};
 
+	const getRanks = (current_user_rank) => {
+		var ranks_dict = {};
+		for (const [, value] of Object.entries(gamesInfo)) {
+			if (value["toBeDone"] === false) {
+				var userRankValue;
+				var userRank = 0;
+				switch (value["id"]) {
+					case 0:
+						userRankValue = current_user_rank.rastros;
+						break;
+					case 1:
+						userRankValue = current_user_rank.gatos_e_caes;
+						break;
+					default:
+						userRankValue = 0;
+						break;
+				}
+
+				if (userRankValue <= 25) userRank = 0;
+				else if (userRankValue <= 75) userRank = 1;
+				else if (userRankValue <= 175) userRank = 2;
+				else if (userRankValue <= 275) userRank = 3;
+				else if (userRankValue <= 400) userRank = 4;
+				else if (userRankValue <= 550) userRank = 5;
+				else if (userRankValue <= 700) userRank = 6;
+				else if (userRankValue <= 850) userRank = 7;
+				else if (userRankValue <= 1050) userRank = 8;
+				else if (userRankValue <= 1250) userRank = 9;
+				else if (userRankValue <= 1450) userRank = 10;
+				else if (userRankValue <= 1700) userRank = 11;
+				else userRank = 12;
+
+				ranks_dict[value["id"]] = userRank;
+			}
+		}
+        return ranks_dict;
+	};
 
 	return (
 		<View>
@@ -233,18 +174,10 @@ function Profile({ navigation }) {
 					</Text>
 				</View>
 
-				{/* <SafeAreaView style={styles.avatarContainer} key={uniqueValue}>
-					<Avatar
-						hatName={userInfos.hatNameState}
-						shirtName={userInfos.shirtNameState}
-						accessorieName={userInfos.accessorieNameState}
-						trouserName={userInfos.trouserNameState}
-						skinColor={userInfos.skinColorState}
-						profileCam={true}
-					/>
-				</SafeAreaView> */}
-
-				<Text style={{ textAlign: 'center', color: 'white' }}>{getLevel(userInfos.user.account_level)}                Nivel                {getLevel(userInfos.user.account_level) + 1}</Text>
+				<Text style={{ textAlign: "center", color: "white" }}>
+					{getLevel(userInfos.user.account_level)} Nivel{" "}
+					{getLevel(userInfos.user.account_level) + 1}
+				</Text>
 				<View style={styles.levelProgress}>
 					{/* <Text style={{flex: 1}}>{getLevel(userInfos.user.account_level)}</Text> */}
 					{/* <View style={styles.progressBar}>
@@ -307,11 +240,9 @@ function Profile({ navigation }) {
 export default Profile;
 
 const styles = StyleSheet.create({
-
-
 	levelProgress: {
-		flexDirection: 'row',
-		marginBottom: 40
+		flexDirection: "row",
+		marginBottom: 40,
 	},
 
 	progressBar: {
@@ -319,9 +250,7 @@ const styles = StyleSheet.create({
 		marginRight: "auto",
 		marginBottom: 30,
 		marginTop: 15,
-
 	},
-	
 
 	scrollView: {
 		//flex: 1,
