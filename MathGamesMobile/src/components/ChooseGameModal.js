@@ -3,6 +3,9 @@ import { Modal, StyleSheet, Text, TouchableHighlight, View, Dimensions, ScrollVi
 import { useNavigation } from '@react-navigation/native';
 import {gamesInfo} from './../data/GamesInfo';
 import { LinearGradient } from 'expo-linear-gradient';
+import { readData, saveData } from '../utilities/AsyncStorage';
+import UserService from "./../services/user.service";
+import socket from "./../utilities/Socket";
 
 const win = Dimensions.get('window');
 
@@ -16,8 +19,25 @@ function ChooseGameModal(props) {
                 <ScrollView style={{backgroundColor: "#dcdfe4"}}>
                     {gamesInfo.map(X => 
                     <TouchableHighlight style={styles.gameTile} key={X.id} onPress = {() => {
-                            saveData("game", X);
-                            navigation.navigate('Jogo');
+                            socket.once("match_link", (msg) => {
+                              console.log(msg);
+                              if (msg["match_id"]) {
+                                saveData("match_id", msg['match_id']);
+                                saveData("game", gamesInfo[Number(msg['game_id'])]);
+                                saveData("gameMode", "Amigo");
+                                saveData("opponent", props.opponent);
+                                props.setVisible(false);
+                                navigation.navigate("Game");
+                    
+                              } else if (msg["error"]) {
+                                console.log("there was an error");
+                              }
+                            });
+                            
+                            readData("user").then(user=>{
+                              user = JSON.parse(JSON.parse(user));
+                              UserService.send_notification_request(user.id, props.opponent, "P", user.token);
+                            });
                         }
                         }>
                         <View>
@@ -35,7 +55,7 @@ function ChooseGameModal(props) {
                 <TouchableHighlight
                     style={ styles.button }
                     onPress={() => {
-                      navigation.goBack();
+                      props.setVisible(false);
                     }}>
                     <Text style={styles.buttonText}>Voltar à página do jogo</Text>
                 </TouchableHighlight>

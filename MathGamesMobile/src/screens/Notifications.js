@@ -5,10 +5,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import UserService from "./../services/user.service";
 import { Feather } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { readData } from '../utilities/AsyncStorage';
+import { readData, saveData } from '../utilities/AsyncStorage';
 import { EvilIcons } from '@expo/vector-icons';
-import userService from './../services/user.service';
-import ChooseGameModal from './../components/ChooseGameModal';
+import {gamesInfo} from "./../data/GamesInfo";
+import socket from "./../utilities/Socket";
 
 const win = Dimensions.get('window');
 
@@ -26,6 +26,31 @@ function Notifications({ navigation }) {
         
         return () => {mounted=false}
       }, []);
+    
+    function accept_game(notification) {
+      readData("user").then(user=>{
+        user=JSON.parse(JSON.parse(user));
+        UserService.delete(notification.id, user.token);
+        var id_outro_jogador = notification.sender_user.sender_id
+      
+        socket.once("match_link", (msg) => {
+          console.log(msg);
+          if (msg["match_id"]) {
+            saveData("match_id", msg['match_id']);
+            saveData("game", gamesInfo[Number(msg['game_id'])]);
+            saveData("gameMode", "Amigo");
+            saveData("opponent", id_outro_jogador);
+            navigation.navigate("Game");
+
+          } else if (msg["error"]) {
+            console.log("there was an error");
+          }
+        });
+      
+        socket.emit("get_match_id", {"user_id": user.id, "outro_id": id_outro_jogador})
+      })
+      
+    }
     
     return (
       <View>
@@ -45,7 +70,7 @@ function Notifications({ navigation }) {
                       readData("user").then(user=> {
                         user = JSON.parse(JSON.parse(user));
 
-                        userService.accept_friendship(notification, user.token);
+                        UserService.accept_friendship(notification, user.token);
                       })
                     }} >
                       <EvilIcons name="check" size={36} color="white" />
@@ -60,7 +85,7 @@ function Notifications({ navigation }) {
                   return (
                   <View key={notification.id} style={{flexDirection: "row", width: win.width}}>
                       <Text style={styles.item} >Convite de {notification.sender_user.sender}</Text>
-                      <TouchableOpacity style={styles.button} onPress={()=>{}} >
+                      <TouchableOpacity style={styles.button} onPress={()=>accept_game(notification)} >
                         <EvilIcons name="check" size={36} color="white" />
                       </TouchableOpacity>
                       <TouchableOpacity style={styles.button} onPress={()=>{}}>
@@ -71,7 +96,6 @@ function Notifications({ navigation }) {
               }
             })}
         </ScrollView>
-        <ChooseGameModal visible={true} text="A"></ChooseGameModal>
       </View>
     );
   }

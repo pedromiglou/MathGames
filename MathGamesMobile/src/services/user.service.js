@@ -120,7 +120,7 @@ class UserService {
         return;        
     }
 
-    async getNotifications(userId) {
+    async getNotifications(userId, token) {
         var url = urlAPI + 'api/notifications/' + userId;
         var res = await fetch(url, {headers: {'x-access-token': token}});
         return res.json();
@@ -282,16 +282,16 @@ class UserService {
         });
 
         return;        
-    }
+    }*/
 
-    delete(notificationId) {
+    delete(notificationId, token) {
         var url = urlAPI + 'api/notifications/' + notificationId;
         fetch(url, {
             method:'DELETE',
-            headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}
+            headers: {'x-access-token': token}
         });
         return;
-    }*/
+    }
 
     accept_friendship(notification, token) {
         let friends= {
