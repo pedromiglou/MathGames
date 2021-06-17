@@ -317,8 +317,8 @@ io.on("connection", (socket) => {
   // 
 
   socket.on("generate_invite", (msg) => {
-    let user_id = msg["user_id"]
-    let outro_id = msg["outro_id"]
+    let user_id = String(msg["user_id"])
+    let outro_id = String(msg["outro_id"])
     let game_id = parseInt(msg["game_id"])
 
     // If the user still has an active link, return null match_id
@@ -340,15 +340,15 @@ io.on("connection", (socket) => {
   // user that accepts friend invite needs match_id. 
   socket.on("get_match_id", (msg) => {
     if (msg["user_id"] !== null) {
-      var user_id = msg["user_id"]
-      var outro_id = msg["outro_id"]
+      var user_id = String(msg["user_id"])
+      var outro_id = String(msg["outro_id"])
 
       users_info[user_id] = socket.id
 
-      if ( Object.keys(active_friend_invites).includes(String(outro_id)) && active_friend_invites[outro_id]["outro_id"] === String(user_id)) {
-        io.to( users_info[String(user_id)] ).emit("match_link", {"match_id": active_friend_invites[outro_id]["match_id"], "game_id": active_friend_invites[outro_id]["game_id"]})
+      if ( Object.keys(active_friend_invites).includes(outro_id) && active_friend_invites[outro_id]["outro_id"] === user_id) {
+        io.to( users_info[user_id] ).emit("match_link", {"match_id": active_friend_invites[outro_id]["match_id"], "game_id": active_friend_invites[outro_id]["game_id"]})
       } else {
-        io.to( users_info[String(user_id)] ).emit("match_link", {"error": "invite expired"})
+        io.to( users_info[user_id] ).emit("match_link", {"error": "invite expired"})
       }
     }
   })
@@ -357,14 +357,14 @@ io.on("connection", (socket) => {
     console.log("User conected through link.")
     if (msg["user_id"] !== null) {
       var match_id = msg["match_id"]
-      var user_id = msg["user_id"]
-      var outro_id = msg["outro_id"]
+      var user_id = String(msg["user_id"])
+      var outro_id = String(msg["outro_id"])
       var game_id = parseInt(msg["game_id"])
       users_info[user_id] = socket.id
 
-      if ( Object.keys(active_friend_invites).includes(String(outro_id)) && active_friend_invites[outro_id]["outro_id"] === String(user_id)) {
-        console.log("Vou criar e enviar!")
+      if ( Object.keys(active_friend_invites).includes(outro_id) && active_friend_invites[outro_id]["outro_id"] === user_id) {
         create_game(match_id, game_id, user_id, outro_id, "amigo", null)
+
         //io.to( users_info[outro_id] ).emit("friend_joined", {"match_id": match_id, "player1": user_id, "player2": outro_id})
       }
     }
@@ -541,6 +541,9 @@ io.on("connection", (socket) => {
       return
     })
 
+    //setTimeout(() => { check_check_ins(torneio.id) }, 300000);
+
+
     //Atualizar o current_round para o round que vai arrancar
     await Tournament.update({current_round: (torneio.current_round + 1)}, {where: {id: torneio.id}}).then(success => {
       io.to( socket.id ).emit("round_start", {"erro": false});
@@ -617,6 +620,10 @@ io.on("connection", (socket) => {
 });
 
 
+function check_check_ins(tournament_id) {
+
+}
+
 function create_game(match_id, game_id, user1, user2, game_type, tournament_id) {
   user1 = String(user1);
   user2 = String(user2);
@@ -671,6 +678,8 @@ function create_game(match_id, game_id, user1, user2, game_type, tournament_id) 
 function initiate_game(match_id) {
   let user1 = current_games[match_id]['state']['player1'];
   let user2 = current_games[match_id]['state']['player2'];
+  console.log("Player1: ", user1)
+  console.log("Player2: ", user2)
 
   let username1;
   let username2;
@@ -686,6 +695,7 @@ function initiate_game(match_id) {
       username1 = u1.dataValues.username
       current_games[match_id]['users'][user1] = [ current_games[match_id]['users'][user1][0], true ]
     }
+    console.log("username1: ", username1)
 
     if (u2 === null)
       username2 = user2
@@ -694,6 +704,10 @@ function initiate_game(match_id) {
       current_games[match_id]['users'][user2] = [ current_games[match_id]['users'][user2][0], true ]
     }
 
+    console.log("username2: ", username2)
+    console.log(users_info)
+    console.log(users_info[user1])
+    console.log(users_info[user2])
     io.to(users_info[user1]).emit("match_found", {"erro": false, "match_id": match_id, "player1": username1, "player2": username2});
     io.to(users_info[user2]).emit("match_found", {"erro": false, "match_id": match_id, "player1": username1, "player2": username2});
   });
@@ -896,47 +910,80 @@ async function finish_game(match_id, endMode) {
     await GameMatch.create(gameMatch)
   }
   
-  console.log("---- FIM GAME ----")
-  console.log(player1)
-  console.log(player2)
-  console.log(winner)
 
   if (player_1_account_player === true || player_2_account_player === true) {
 
-    if (game_type === "online") {
+    if (game_type === "online" && current_games[match_id]['tournament'] === null) {
+      // Jogo online modo competitivo
       var jogo = null;
       if (game_id === 0)
         jogo = "rastros"
       else if (game_id === 1)
         jogo = "gatos_e_caes"
       
+      var player1_elo = 0
+      var player2_elo = 0
+
+      if (player_1_account_player) {
+        await UserRank.findByPk(player1).then(ranks_player1 => {
+          player1_elo = ranks_player1.dataValues[jogo]
+        })
+      } else {
+        player1_elo = 700
+      }
+
+      if (player_2_account_player) {
+        await UserRank.findByPk(player2).then(ranks_player2 => {
+          player2_elo = ranks_player2.dataValues[jogo]
+        })
+      } else {
+        player2_elo = 700
+      }
+
+      var higher_elo_difference
+      var lower_elo_difference
+
+      if (player1_elo > player2_elo) {
+        higher_elo_difference = Math.round((1 / (1+Math.pow(10, (player2_elo-player1_elo)/400))) *50)
+        lower_elo_difference = Math.round((1 / (1+Math.pow(10, (player1_elo-player2_elo)/400))) *50)
+      } else {
+        higher_elo_difference = Math.round((1 / (1+Math.pow(10, (player1_elo-player2_elo)/400))) *50)
+        lower_elo_difference = Math.round((1 / (1+Math.pow(10, (player2_elo-player1_elo)/400))) *50)
+      }
+
       if (winner === "1") {
+        if (player1_elo > player2_elo) {
+          player1_elo = player1_elo + lower_elo_difference
+          player2_elo = player2_elo - lower_elo_difference
+        } else {
+          player1_elo = player1_elo + higher_elo_difference
+          player2_elo = player2_elo - higher_elo_difference
+        }
+
         if (player_1_account_player) {
-          await UserRank.findByPk(player1).then(ranks_player1 => {
-            var updated_elo = ranks_player1.dataValues[jogo] + 25;
-            UserRank.update({ [jogo]: updated_elo}, {where: {user_id: player1}}).then(result => {console.log(result)}).catch(err => console.log(err));
-          })
+          UserRank.update({ [jogo]: player1_elo}, {where: {user_id: player1}}).then(result => {console.log(result)}).catch(err => console.log(err));
         }
         if (player_2_account_player) {
-          await UserRank.findByPk(player2).then(ranks_player2 => {
-            var updated_elo = ranks_player2.dataValues[jogo] - 25;
-            UserRank.update({ [jogo]: updated_elo}, {where: {user_id: player2}}).then(result => {console.log(result)}).catch(err => console.log(err));
-          })
+          UserRank.update({ [jogo]: player2_elo}, {where: {user_id: player2}}).then(result => {console.log(result)}).catch(err => console.log(err));
         }
+
       } else if (winner === "2") {
+        if (player1_elo > player2_elo) {
+          player1_elo = player1_elo - higher_elo_difference
+          player2_elo = player2_elo + higher_elo_difference
+        } else {
+          player1_elo = player1_elo - lower_elo_difference
+          player2_elo = player2_elo + lower_elo_difference
+        }
+
         if (player_2_account_player) {
-          await UserRank.findByPk(player2).then(ranks_player2 => {
-            var updated_elo = ranks_player2.dataValues[jogo] + 25;
-            UserRank.update({ [jogo]: updated_elo}, {where: {user_id: player2}}).then(result => {console.log(result)}).catch(err => console.log(err));
-          }).catch(err => {console.log(err)})
+          UserRank.update({ [jogo]: player2_elo}, {where: {user_id: player2}}).then(result => {console.log(result)}).catch(err => console.log(err));
         }
         if (player_1_account_player) {
-          await UserRank.findByPk(player1).then(ranks_player1 => {
-            var updated_elo = ranks_player1.dataValues[jogo] - 25;
-            UserRank.update({ [jogo]: updated_elo}, {where: {user_id: player1}}).then(result => {console.log(result)}).catch(err => console.log(err));
-          })
+          UserRank.update({ [jogo]: player1_elo}, {where: {user_id: player1}}).then(result => {console.log(result)}).catch(err => console.log(err));
         }
       }
+
     }
   }
 

@@ -67,7 +67,7 @@ function Game()  {
                 <div className="col-3 mt-4">
                     <div className="row h-50 d-flex justify-content-center">
                         <div className="col">
-                            <div className="row d-flex justify-content-center">
+                            <div id="player2-info" className="row d-flex justify-content-center">
                                 {/* {game_mode!=="ai" && <GameTimer ref={gameTimer2Ref} totalGameTime={10000} player="player2" gameId={game_id} gameMode={game_mode} currentMatch={current_match.current} finishMatchMethod={triggerFinishGame} autoStart={false}></GameTimer>} */}
                                 <div className="col">
                                     <h5>Player 2</h5>
@@ -82,7 +82,7 @@ function Game()  {
                     </div>
                     <div className="row h-50 d-flex justify-content-center">
                         <div className="col">
-                            <div className="row d-flex justify-content-center">
+                            <div id="player1-info" className="row d-flex justify-content-center">
                                 {/* {game_mode!=="ai" && <GameTimer ref={gameTimer1Ref} totalGameTime={10000} player="player1" gameId={game_id} gameMode={game_mode} currentMatch={current_match.current} finishMatchMethod={triggerFinishGame} autoStart={true}></GameTimer>} */}
                                 <div className="col">
                                     <h5>Player 1</h5>
@@ -102,7 +102,7 @@ function Game()  {
                 <div className="col-3 mt-4">
                     <div className="row h-50 d-flex justify-content-center">
                         <div className="col">
-                            <div className="row d-flex justify-content-center">
+                            <div id="player1-info" className="row d-flex justify-content-center">
                                 {/* {game_mode!=="ai" && <GameTimer ref={gameTimer2Ref} totalGameTime={10000} player="player2" gameId={game_id} gameMode={game_mode} currentMatch={current_match.current} finishMatchMethod={triggerFinishGame} autoStart={false}></GameTimer>} */}
                                 <div className="col">
                                     <h5>Player 1</h5>
@@ -117,7 +117,7 @@ function Game()  {
                     </div>
                     <div className="row h-50 d-flex justify-content-center">
                         <div className="col">
-                            <div className="row d-flex justify-content-center">
+                            <div id="player2-info" className="row d-flex justify-content-center">
                                 {/* {game_mode!=="ai" && <GameTimer ref={gameTimer1Ref} totalGameTime={10000} player="player1" gameId={game_id} gameMode={game_mode} currentMatch={current_match.current} finishMatchMethod={triggerFinishGame} autoStart={true}></GameTimer>} */}
                                 <div className="col">
                                     <h5>Player 2</h5>
