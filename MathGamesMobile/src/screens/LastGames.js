@@ -25,7 +25,6 @@ function LastGames({ navigation }) {
 				UserService.getLastGames(user.id, user.token).then(
 					(response) => {
 						if (!response.error) setGames(response);
-						else setGames("erro");
 					}
 				);
 			}, 5000);

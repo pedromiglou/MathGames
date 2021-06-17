@@ -20,9 +20,9 @@ import { readData } from "../utilities/AsyncStorage";
 import { Picker } from "@react-native-picker/picker";
 import { Feather } from "@expo/vector-icons";
 
-
-import AddFriendModal from '../components/AddFriendModal'
-import ReportUserModal from '../components/ReportUserModal'
+import AddFriendModal from "../components/AddFriendModal";
+import ReportUserModal from "../components/ReportUserModal";
+import RemoveFriendModal from "../components/RemoveFriendModal";
 
 const win = Dimensions.get("window");
 
@@ -30,6 +30,7 @@ function Ranking({ navigation }) {
 	const [usersFound, setUsersFound] = useState([]);
 
 	const [user, setUser] = useState(null);
+	const [friends, setFriends] = useState([]);
 
 	const [modalOperation, setModalOperation] = useState("");
 	const [modalUserId, setModalUserId] = useState("");
@@ -52,8 +53,17 @@ function Ranking({ navigation }) {
 			setUsersFound(res.users);
 		});
 
+		const interval = setInterval(() => {
+			console.log("This will run every 10 seconds!");
+			if (user !== null)
+				UserService.getFriends().then((res) => {
+					setFriends(res);
+				});
+		}, 10000);
+
 		return () => {
 			mounted = false;
+			clearInterval(interval);
 		};
 	}, []);
 
@@ -74,11 +84,11 @@ function Ranking({ navigation }) {
 		}
 	};
 
-    function resetRanks() {
-        UserService.getUsers("").then((res) => {
+	function resetRanks() {
+		UserService.getUsers("").then((res) => {
 			setUsersFound(res.users);
 		});
-    }
+	}
 
 	function fetchUserByUsername(username) {
 		UserService.getUsers(username, "", "", 0, 10).then((result) => {
@@ -87,11 +97,13 @@ function Ranking({ navigation }) {
 		});
 	}
 
+	function toggleModalVisibility() {
+		setModalVisible(!modalVisible);
+	}
 
-    function toggleModalVisibility() {
-        setModalVisible(!modalVisible)
-    }
-
+	function settingFriends(friends) {
+		setFriends(friends);
+	}
 
 	var rankPosition = 1;
 
@@ -139,7 +151,7 @@ function Ranking({ navigation }) {
 							<TouchableOpacity
 								style={styles.button}
 								onPress={() => {
-                                    resetRanks()
+									resetRanks();
 									setSearchVisibility(!searchVisibility);
 								}}
 							>
@@ -164,42 +176,39 @@ function Ranking({ navigation }) {
 								</View>
 							</TouchableOpacity>
 						</View>
-					</>
-				)}
-
-				{searchVisibility === true && (
-					<View>
-						<TextInput
-							style={styles.input}
-							placeholder="Escreve o nome para procurar"
-							onChangeText={onChangeInputText}
-						/>
-						<TouchableOpacity
-							style={styles.searchButton}
-							onPress={() => {
-								fetchUserByUsername(inputText);
-							}}
-						>
-							<View
-								style={{
-									flexDirection: "row",
+						<View>
+							<TextInput
+								style={styles.input}
+								placeholder="Escreve o nome para procurar"
+								onChangeText={onChangeInputText}
+							/>
+							<TouchableOpacity
+								style={styles.searchButton}
+								onPress={() => {
+									fetchUserByUsername(inputText);
 								}}
 							>
-								<View>
-									<Feather
-										name="search"
-										size={30}
-										color="white"
-									/>
+								<View
+									style={{
+										flexDirection: "row",
+									}}
+								>
+									<View>
+										<Feather
+											name="search"
+											size={30}
+											color="white"
+										/>
+									</View>
+									<View style={{ marginLeft: 10 }}>
+										<Text style={styles.searchButtonText}>
+											Pesquisar
+										</Text>
+									</View>
 								</View>
-								<View style={{ marginLeft: 10 }}>
-									<Text style={styles.searchButtonText}>
-										Pesquisar
-									</Text>
-								</View>
-							</View>
-						</TouchableOpacity>
-					</View>
+							</TouchableOpacity>
+						</View>
+					</>
 				)}
 
 				{user !== null ? (
@@ -246,15 +255,7 @@ function Ranking({ navigation }) {
 
 				{usersFound.map((found) => {
 					return user !== null ? (
-						<View
-							key={found.id}
-							style={{
-								flex: 1,
-								flexDirection: "row",
-								borderBottomWidth: 2,
-								borderColor: "white",
-							}}
-						>
+						<View key={found.id} style={styles.playerRow}>
 							<View style={styles.itemName}>
 								<Text style={styles.itemTextName}>
 									{rankPosition++ + ".  " + found.username}
@@ -270,37 +271,98 @@ function Ranking({ navigation }) {
 									{found.account_level}
 								</Text>
 							</View>
+
 							<View style={{ flex: 1, flexDirection: "row" }}>
-								<TouchableOpacity
-									style={styles.button}
-									onPress={() => {
-										setModalOperation("add");
-										setModalVisible(true);
-										setModalUserId(found.id);
-										setModalUsername(found.username);
-									}}
-								>
-									<AntDesign
-										name="adduser"
-										size={30}
-										color="white"
-									/>
-								</TouchableOpacity>
-								<TouchableOpacity
-									style={styles.button}
-									onPress={() => {
-										setModalOperation("report");
-										setModalVisible(true);
-										setModalUserId(found.id);
-										setModalUsername(found.username);
-									}}
-								>
-									<MaterialIcons
-										name="report"
-										size={25}
-										color="white"
-									/>
-								</TouchableOpacity>
+								{friends.some(
+									(element) =>
+										element.username === found.username
+								) === false ? (
+									<>
+										{found.username !== user.username && (
+											<>
+												<TouchableOpacity
+													style={styles.button}
+													onPress={() => {
+														setModalOperation(
+															"add"
+														);
+														setModalVisible(true);
+														setModalUserId(
+															found.id
+														);
+														setModalUsername(
+															found.username
+														);
+													}}
+												>
+													<AntDesign
+														name="adduser"
+														size={30}
+														color="white"
+													/>
+												</TouchableOpacity>
+												<TouchableOpacity
+													style={styles.button}
+													onPress={() => {
+														setModalOperation(
+															"report"
+														);
+														setModalVisible(true);
+														setModalUserId(
+															found.id
+														);
+														setModalUsername(
+															found.username
+														);
+													}}
+												>
+													<MaterialIcons
+														name="report"
+														size={25}
+														color="white"
+													/>
+												</TouchableOpacity>
+											</>
+										)}
+									</>
+								) : (
+									<>
+										<TouchableOpacity
+											style={styles.button}
+											onPress={() => {
+												setModalOperation("remove");
+												setModalVisible(true);
+												setModalUserId(found.id);
+												setModalUsername(
+													found.username
+												);
+											}}
+										>
+											<AntDesign
+												name="deleteuser"
+												size={30}
+												color="white"
+											/>
+										</TouchableOpacity>
+										<TouchableOpacity
+											style={styles.button}
+											onPress={() => {
+												setModalOperation("report");
+												setModalVisible(true);
+												setModalUserId(found.id);
+												setModalUsername(
+													found.username
+												);
+											}}
+										>
+											<MaterialIcons
+												name="report"
+												size={25}
+												color="white"
+											/>
+										</TouchableOpacity>
+									</>
+								)}
 							</View>
 						</View>
 					) : (
@@ -333,10 +395,33 @@ function Ranking({ navigation }) {
 				})}
 
 				{modalOperation === "report" && (
-					<ReportUserModal toggleModalVisibility={toggleModalVisibility} modalUserId={modalUserId} modalUsername={modalUsername} user={user} modalVisible={modalVisible}/>
+					<ReportUserModal
+						toggleModalVisibility={toggleModalVisibility}
+						modalUserId={modalUserId}
+						modalUsername={modalUsername}
+						user={user}
+						modalVisible={modalVisible}
+					/>
 				)}
 				{modalOperation === "add" && (
-                    <AddFriendModal toggleModalVisibility={toggleModalVisibility} modalUserId={modalUserId} modalUsername={modalUsername} user={user} modalVisible={modalVisible}/>
+					<AddFriendModal
+						toggleModalVisibility={toggleModalVisibility}
+						modalUserId={modalUserId}
+						modalUsername={modalUsername}
+						user={user}
+						modalVisible={modalVisible}
+					/>
+				)}
+				{modalOperation === "remove" && (
+					<RemoveFriendModal
+						toggleModalVisibility={toggleModalVisibility}
+						settingFriends={settingFriends}
+						modalUserId={modalUserId}
+						modalUsername={modalUsername}
+						friends={friends}
+						user={user}
+						modalVisible={modalVisible}
+					/>
 				)}
 			</ScrollView>
 		</View>
@@ -346,6 +431,20 @@ function Ranking({ navigation }) {
 export default Ranking;
 
 const styles = StyleSheet.create({
+	playerRow: {
+		flex: 1,
+		flexDirection: "row",
+		borderBottomWidth: 2,
+		borderColor: "white",
+	},
+	playerRowUser: {
+		flex: 1,
+		flexDirection: "row",
+		borderBottomWidth: 2,
+		borderBottomColor: "white",
+		borderLeftWidth: 2,
+		borderLeftColor: "gold",
+	},
 	searchButtonToggle: {
 		position: "absolute",
 		right: 0,
@@ -492,6 +591,14 @@ const styles = StyleSheet.create({
 		color: "white",
 	},
 
+	itemTextNameUser: {
+		fontSize: 20,
+		textAlign: "left",
+		fontFamily: "BubblegumSans",
+		color: "white",
+		fontWeight: "bold",
+	},
+
 	button: {
 		marginLeft: 10,
 		marginTop: 10,
@@ -509,7 +616,7 @@ const styles = StyleSheet.create({
 		alignContent: "center",
 		alignSelf: "center",
 		width: win.width * 0.8,
-        textAlign: 'center'
+		textAlign: "center",
 	},
 	searchButton: {
 		marginLeft: "auto",

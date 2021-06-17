@@ -31,6 +31,7 @@ function RemoveFriendModal(props) {
 					(user) => user.id !== friendId
 				);
 
+
 				props.settingFriends(newFriends);
 			}
 		});

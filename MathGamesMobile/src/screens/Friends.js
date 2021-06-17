@@ -40,23 +40,19 @@ function Friends({ navigation }) {
 		});
 
 		let mounted = true;
-		
 
+		const interval = setInterval(() => {
+			console.log("This will run every 5 seconds!");
+			UserService.getFriends().then((res) => {
+				setFriends(res);
+			});
+		}, 5000);
 
-        const interval = setInterval(() => {
-            console.log('This will run every 5 seconds!');
-            UserService.getFriends().then((res) => {
-                setFriends(res);
-            });
-          }, 5000);
-
-          
 		return () => {
 			mounted = false;
-            clearInterval(interval);
+			clearInterval(interval);
 		};
 	}, []);
-
 
 	function toggleModalVisibility() {
 		setModalVisible(!modalVisible);
@@ -70,10 +66,10 @@ function Friends({ navigation }) {
 	}
 
 	function reloadFriends() {
-        UserService.getFriends().then((res) => {
+		UserService.getFriends().then((res) => {
 			setFriends(res);
 		});
-    }
+	}
 
 	function settingFriends(friends) {
 		setFriends(friends);
@@ -100,7 +96,7 @@ function Friends({ navigation }) {
 			</View>
 			<ScrollView>
 				<Text style={styles.title}>Amigos</Text>
-				
+
 				{friends.length === 0 && (
 					<View>
 						<Text style={styles.noFriends}>
@@ -173,42 +169,49 @@ function Friends({ navigation }) {
 				</TouchableOpacity>
 
 				{usersFound.length !== 0 &&
-					usersFound.map((found) => (
-						<View key={found.id}>
-							{friends.some(
-								(element) => element.username === found.username
-							) === false && (
-								<View
-									style={{
-										flexDirection: "row",
-										flex: 1,
-										borderBottomWidth: 2,
-										borderBottomColor: "white",
-									}}
-								>
-									<Text style={styles.item}>
-										{found.username}
-									</Text>
+					usersFound.map((found) => {
+						return (
+							found.username !== user.username && (
+								<View key={found.id}>
+									{friends.some(
+										(element) =>
+											element.username === found.username
+									) === false && (
+										<View
+											style={{
+												flexDirection: "row",
+												flex: 1,
+												borderBottomWidth: 2,
+												borderBottomColor: "white",
+											}}
+										>
+											<Text style={styles.item}>
+												{found.username}
+											</Text>
 
-									<TouchableOpacity
-										style={styles.button}
-										onPress={() => {
-											setModalOperation("add");
-											setModalVisible(true);
-											setModalUserId(found.id);
-											setModalUsername(found.username);
-										}}
-									>
-										<Feather
-											name="user-plus"
-											size={30}
-											color="white"
-										/>
-									</TouchableOpacity>
+											<TouchableOpacity
+												style={styles.button}
+												onPress={() => {
+													setModalOperation("add");
+													setModalVisible(true);
+													setModalUserId(found.id);
+													setModalUsername(
+														found.username
+													);
+												}}
+											>
+												<Feather
+													name="user-plus"
+													size={30}
+													color="white"
+												/>
+											</TouchableOpacity>
+										</View>
+									)}
 								</View>
-							)}
-						</View>
-					))}
+							)
+						);
+					})}
 
 				{modalOperation === "remove" && (
 					<RemoveFriendModal
@@ -348,5 +351,4 @@ const styles = StyleSheet.create({
 		fontSize: 25,
 		color: "white",
 	},
-
 });
