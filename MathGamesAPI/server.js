@@ -484,6 +484,7 @@ io.on("connection", (socket) => {
   })
 
   socket.on("forfeit_match", (msg) => {
+    console.log("Forfeiting match: ", user_id)
     var user_id = String(msg["user_id"]);
 
     if ( socket.id === users_info[user_id] ) {

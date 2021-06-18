@@ -1,7 +1,6 @@
-import React, { useRef, useEffect, useCallback } from "react";
+import React, { useRef, useEffect } from "react";
 import { GameOverModal } from '../../Components/GameOverModal';
 import { useHistory, useLocation } from "react-router-dom";
-import {Prompt} from 'react-router-dom';
 import "./Game.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import socket from "../../index";
@@ -20,7 +19,7 @@ function Game()  {
     const gameTimer1Ref = useRef();
     const gameTimer2Ref = useRef();
     const activeGameRef = useRef();
-    
+    const playerCardRef = useRef();
 
     let history = useHistory()
     const location = useLocation();
@@ -32,22 +31,26 @@ function Game()  {
     ai_diff = params.ai_diff;
     current_match.current = params.match;
 
-    const matchHasFinished = useCallback(() => {
-        const sceneNames = {0: "RastrosScene", 1: "GatosCaesScene"};
-        if (activeGameRef.current === undefined)
-            return false;
-        let game = activeGameRef.current.getGame();
-        let scene = game.scene.getScene(sceneNames[game_id]);
-
-        return scene.game_over;
-    }, [game_id])
-
     useEffect(() => {
+
+        function matchHasFinished() {
+            let sceneNames = {0: "RastrosScene", 1: "GatosCaesScene"};
+
+            if (activeGameRef.current === undefined)
+                return false;
+
+            let game = activeGameRef.current.getGame();
+            let scene = game.scene.getScene(sceneNames[game_id]);
+
+            return scene.game_over;
+        }
+
         return history.listen((location) => {
             if (!matchHasFinished())
                 socket.emit("forfeit_match", {"user_id": authService.getCurrentUserId()})
-        }) 
-    }, [history, location, matchHasFinished]);
+        })
+
+    }, [history, location, game_id]);
 
     function processGameOver(msg) {
 
@@ -60,6 +63,9 @@ function Game()  {
             gameTimer1Ref.current.pause();
             gameTimer2Ref.current.pause();
         }
+
+        
+        playerCardRef.current.setGameOver();
 
     }
 
@@ -75,7 +81,7 @@ function Game()  {
     }
 
     function triggerFinishGame(gameOverMessage) {
-        const sceneNames = {0: "RastrosScene", 1: "GatosCaesScene"};
+        let sceneNames = {0: "RastrosScene", 1: "GatosCaesScene"};
         
         let game = activeGameRef.current.getGame();
         let scene = game.scene.getScene(sceneNames[game_id]);
@@ -114,7 +120,7 @@ function Game()  {
                                 <div id="player1-countdown" className="col d-flex justify-content-end">
                                     {game_mode!=="ai" && <GameTimer ref={gameTimer1Ref} totalGameTime={15000} player="player1" gameId={game_id} gameMode={game_mode} currentMatch={current_match.current} finishMatchMethod={triggerFinishGame} autoStart={true}></GameTimer>}
                                 </div>
-                                <PlayerCard username={current_match.current["player1"]} gameId={game_id} gameMode={game_mode} shouldFindUser={game_mode!=="offline"} showReportButton={false} other_player={current_match.current["player2"]}></PlayerCard>
+                                <PlayerCard ref={playerCardRef} username={current_match.current["player1"]} gameId={game_id} gameMode={game_mode} shouldFindUser={game_mode!=="offline"} showReportButton={false} other_player={current_match.current["player2"]}></PlayerCard>
                             </div>
                         </div>
                     </div>
@@ -148,7 +154,7 @@ function Game()  {
                                 <div id="player2-countdown" className="col d-flex justify-content-end">
                                     {game_mode!=="ai" && <GameTimer ref={gameTimer2Ref} totalGameTime={15000} player="player2" gameId={game_id} gameMode={game_mode} currentMatch={current_match.current} finishMatchMethod={triggerFinishGame} autoStart={false}></GameTimer>}
                                 </div>
-                                <PlayerCard username={current_match.current["player2"]} gameId={game_id} gameMode={game_mode} shouldFindUser={game_mode!=="offline"} showReportButton={false} other_player={current_match.current["player1"]}></PlayerCard>
+                                <PlayerCard ref={playerCardRef} username={current_match.current["player2"]} gameId={game_id} gameMode={game_mode} shouldFindUser={game_mode!=="offline"} showReportButton={false} other_player={current_match.current["player1"]}></PlayerCard>
                             </div>
                         </div>
                     </div>
@@ -158,7 +164,6 @@ function Game()  {
 
     return (
         <>
-            <Prompt when={!matchHasFinished()} message="Sair da página irá resultar em derrota imediata. Queres sair?"></Prompt>
             <div className="row ml-5">
                 { getCurrentPlayerCard() }
                 <div className="col-9">
