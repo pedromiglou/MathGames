@@ -309,8 +309,26 @@ var active_tournaments = {}
 
 //Connecting new Users
 io.on("connection", (socket) => { 
-  console.log("New client connected");
-  console.log("id: ", socket.id);
+    console.log("New client connected");
+    console.log("id: ", socket.id);
+
+    socket.on("disconnect", function() {
+        var user_id = String( Object.keys(users_info).find(key => users_info[key] === socket.id) );
+        console.log("user id: ", user_id)
+        if (user_id === null)
+            return;
+
+        delete users_info[user_id];
+        
+        let user_idx_0 = match_queue[0].indexOf(user_id);
+        let user_idx_1 = match_queue[1].indexOf(user_id);
+
+        if ( user_idx_0 > -1 )
+            match_queue[0].splice( user_idx_0, 1 )
+        if ( user_idx_1 > -1 )
+            match_queue[1].splice( user_idx_1, 1 )
+
+    })
 
   //
   // FRIEND GAME BY INVITE SECTION
@@ -419,11 +437,13 @@ io.on("connection", (socket) => {
 
   //User says that he wants to play Online and put himself in matchqueue list
   socket.on("enter_matchmaking", (msg) => {
+      
     var user_id = String(msg["user_id"]);
+    console.log("Entering matchmaking: ", user_id)
     var game_id = parseInt(msg["game_id"]);
     users_info[user_id] = socket.id;
     match_queue[game_id].push(user_id)
-
+    console.log(match_queue)
     if ( match_queue[game_id].length >= 2 ) {
       console.log("Match found.");
       var player1 = String( match_queue[game_id].shift() );
@@ -441,11 +461,15 @@ io.on("connection", (socket) => {
   });
 
   socket.on("leave_matchmaking", (msg) => {
+    
     var user_id = String(msg["user_id"]);
+    console.log("Leaving matchmaking: ", user_id)
     var game_id = parseInt(msg["game_id"]);
 
-    if ( socket.id === users_info[user_id] )
-        match_queue[game_id].splice( match_queue[game_id].indexOf(user_id), 1 )
+    let user_idx = match_queue[game_id].indexOf(user_id);
+
+    if ( socket.id === users_info[user_id] && user_idx > -1 )
+        match_queue[game_id].splice( user_idx, 1 )
   })
 
   //User sends match id, userid and new_pos when he wants to make a move in the game

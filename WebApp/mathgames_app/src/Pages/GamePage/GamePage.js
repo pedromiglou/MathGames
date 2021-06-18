@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useHistory } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
+import { Prompt } from 'react-router';
 import { Card } from "react-bootstrap";
 //import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -60,12 +61,21 @@ function GamePage() {
 	let new_match_id = url.get("mid");
 	let tournament_id = url.get("tid");
 
-	let history = useHistory()
+	let history = useHistory();
+    const location = useLocation();
+
+    useEffect(() => {
+        return history.listen((location) => {
+            console.log(location)
+            if (!searchingForMatch)
+                socket.emit("leave_matchmaking", {"user_id": AuthService.getCurrentUserId(), "game_id": game_id})
+         }) 
+    }, [location]);
 
     useEffect(() => {
         if (!searchingForMatch)
             socket.emit("leave_matchmaking", {"user_id": AuthService.getCurrentUserId(), "game_id": game_id})
-    }, [searchingForMatch])
+    }, [searchingForMatch]);
 
     useEffect(() => {
 		var button = document.getElementById("button-play");
@@ -189,7 +199,7 @@ function GamePage() {
     function create_match_found_listener(gameMode) {
         socket.off("match_found");
         socket.once("match_found", (msg) => {
-            console.log("Friend just joined!");
+            setSearchingForMatch(false)
             var match = { match_id: msg['match_id'], player1: msg['player1'], player2: msg['player2'] };
             dispatch( addMatch(match) );
             history.push({
