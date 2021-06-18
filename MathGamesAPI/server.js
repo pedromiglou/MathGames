@@ -315,7 +315,8 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect", function() {
         var user_id = String( Object.keys(users_info).find(key => users_info[key] === socket.id) );
-        console.log("user id: ", user_id)
+        console.log("Leaving user id: ", user_id)
+        console.log(match_queue)
         if (user_id === null)
             return;
 
@@ -328,9 +329,14 @@ io.on("connection", (socket) => {
             match_queue[0].splice( user_idx_0, 1 )
         if ( user_idx_1 > -1 )
             match_queue[1].splice( user_idx_1, 1 )
+          
+        console.log(match_queue)
+        
+        console.log("---")
+        console.log(players_in_game)
 
         var in_game_user_match_id = players_in_game[user_id]
-        
+        console.log(in_game_user_match_id)
 
         if ( in_game_user_match_id !== undefined ) {
           let game = current_games[in_game_user_match_id];
@@ -595,7 +601,8 @@ io.on("connection", (socket) => {
       return
     })
 
-    setTimeout(() => { check_check_ins(torneio.id) }, 10000);
+    // 5 minutes to check if everybody checked in
+    setTimeout(() => { check_check_ins(torneio.id) }, 300000);
 
 
     //Atualizar o current_round para o round que vai arrancar
@@ -804,12 +811,12 @@ function create_game(match_id, game_id, user1, user2, game_type, tournament_id) 
                                               current_games[match_id]['state']['isFinished'] = true;
                                               current_games[match_id]['state']['winner'] = "2";
                                               finish_game(match_id, "timeout");
-                                            }, 15000);
+                                            }, 300000);
   current_games[match_id]['timers'][user2] = new Timer(function() {
                                               current_games[match_id]['state']['isFinished'] = true;
                                               current_games[match_id]['state']['winner'] = "1";
                                               finish_game(match_id, "timeout");
-                                            }, 15000);
+                                            }, 300000);
 
   current_games[match_id]['timers'][user1].start();
 
@@ -1219,6 +1226,9 @@ async function finish_game(match_id, endMode) {
 
   delete current_games[match_id];
   delete active_friend_link[match_id];
+
+  delete players_in_game[player1];
+  delete players_in_game[player2];
 
 }
 
