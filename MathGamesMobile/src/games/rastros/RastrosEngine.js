@@ -35,6 +35,7 @@ function RastrosEngine() {
 
     useEffect(() => {
         let mounted = true;
+        console.log("started reading data");
         readData("gameMode").then(X=>{
             gameMode=X.slice(1,-1);
             readData('player1').then(p1=>{
@@ -48,19 +49,23 @@ function RastrosEngine() {
                     readData("dif").then(X=>{
                         dif= X!==null ? X.slice(1,-1) : null;
                         readData('match_id').then(X=>{
-                            match_id=X;
+                            match_id=X.slice(1,-1);
                             readData('user_id').then(X=>{
                                 user_id=X.slice(1,-1);
-                                entities[0].myTurn = user_id===p1 || gameMode==="No mesmo Computador";
-                                entities[0].gameEnded = false;
-                                entities[0].gameMode = gameMode;
-                                entities[0].dif = dif;
-                                entities[0].match_id = match_id;
-                                entities[0].player1 = p1;
-                                entities[0].player2 = p2;
-                                entities[0].user_id = user_id;
-                                entities[0].turn = 1;
-                                this.engine.dispatch({type: "init"});
+                                readData('username').then(X=>{
+                                    username=X.slice(1,-1);
+                                    entities[0].myTurn = username===p1 || gameMode==="No mesmo Computador";
+                                    entities[0].gameEnded = false;
+                                    entities[0].gameMode = gameMode;
+                                    entities[0].dif = dif;
+                                    entities[0].match_id = match_id;
+                                    entities[0].player1 = p1;
+                                    entities[0].player2 = p2;
+                                    entities[0].user_id = user_id;
+                                    entities[0].username = username;
+                                    entities[0].turn = 1;
+                                    this.engine.dispatch({type: "init"});
+                                });
                             });
                         });
                     });

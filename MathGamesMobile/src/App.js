@@ -137,17 +137,20 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
 
-  readData('user_id').then(id=>{
-    if (id===null) {
-      saveData('user_id', uuidv4());
+  readData('username').then(username=>{
+    if (username===null) {
+      username = uuidv4();
+      saveData('user_id', username);
+      saveData('username', username);
     } else {
-      setUsername(id.slice(1, -1));
+      setUsername(username.slice(1, -1));
     }
   })
 
   if (!loaded) {
     deleteData("user");
     deleteData("user_id");
+    deleteData("username")
     return <Text>Loading...</Text>;
   } else {
     return (
