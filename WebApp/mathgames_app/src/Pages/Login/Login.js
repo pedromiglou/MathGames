@@ -47,9 +47,10 @@ function Login() {
         setErroPasswordRegisto(false);
         setErroEmailUsernameRegisto("");
         setErroNamesAlreadyTakenRegisto("");
+
         if (document.getElementById("passwordRegisto").value.match(/^(?=.*\d)(?=.*[a-zA-Z]).{5,25}$/)) {
 
-            if (25 >= document.getElementById("nomeUtilizadorRegisto").value.length && document.getElementById("nomeUtilizadorRegisto").value.length >= 3) {
+            if (20 >= document.getElementById("nomeUtilizadorRegisto").value.length && document.getElementById("nomeUtilizadorRegisto").value.length >= 3) {
                 
                 if (/\S+@\S+\.\S+/.test(document.getElementById("emailRegisto").value)) {
                     var response = await AuthService.register(
@@ -169,6 +170,7 @@ function Login() {
                 ? <div className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
                 A sua conta foi criada com sucesso! 
                 </div> : null}
+
                 
             <div className="forms-container-login">
                 <div id="signin_id" className={"signin"}>

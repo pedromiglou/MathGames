@@ -8,7 +8,7 @@ module.exports = (sequelize, Sequelize) => {
         primaryKey: true
       },
       name: {
-        type: Sequelize.STRING(70),
+        type: Sequelize.STRING(45),
         unique: true,
         allowNull: false
       },
@@ -54,7 +54,7 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false
       }
     }, {
-      timestamps: false
+      timestamps: true
     });
     return Tournament;
   };

@@ -263,14 +263,19 @@ function GamePage() {
 		let id_outro_jogador = parseInt(localStorage.getItem("outrojogador"))
 		localStorage.removeItem("outrojogador")
 
-		socket.once("invite_link", (msg) => {
+		socket.once("invite_link", async (msg) => {
 			let new_match_id = msg['match_id'];
 			
 			if ( new_match_id === null ) {
-				alert("Criaste um link recentemente, espera mais um pouco até criares um novo.")
+				alert("Envias-te um convite recentemente. Espera mais um pouco para puderes enviar um novo.")
 				return;
 			}
-			
+
+            var current_user = AuthService.getCurrentUser()
+
+			var notification_text = current_user.username + " convidou-te para jogares."
+
+		    await userService.send_notification_request(current_user.id, id_outro_jogador, "P", notification_text);
 			friend_match.current = new_match_id;
 			setInviteFriendMode(true);
 		})

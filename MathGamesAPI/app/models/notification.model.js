@@ -25,6 +25,10 @@ module.exports = (sequelize, Sequelize) => {
       notification_type: {
           type: Sequelize.CHAR(1),
           allowNull: false
+      },
+      notification_text: {
+        type: Sequelize.STRING(120),
+        allowNull: false
       }
     }, {
       timestamps: true

@@ -212,7 +212,8 @@ function Navbar() {
 	async function invite_for_game(invited_player) {
 		localStorage.setItem("jogoporinvite", true)
 		localStorage.setItem("outrojogador", invited_player)
-		await UserService.send_notification_request(current_user.id, invited_player, "P");
+		//var notification_text = current_user.username + " convidou-te para jogares."
+		//await UserService.send_notification_request(current_user.id, invited_player, "P", notification_text);
 		var elemento = document.getElementById("linktogame")
 		var url = "/gamePage?id=" + choosenGame
 		setLinkToGameHref(url)
@@ -251,8 +252,9 @@ function Navbar() {
 	function friendRequest() {
 		var input = document.getElementById("inputFriend")
 		var other_username = input.value
+		var notification_text = current_user.username + " enviou-te um pedido de amizade."
 		if (other_username !== undefined && other_username !== null && other_username !== "")
-			UserService.send_notification_request_by_username(current_user.id, other_username, "F");
+			UserService.send_notification_request_by_username(current_user.id, other_username, "F", notification_text);
 		input.value = ""
 	}
 
@@ -339,14 +341,22 @@ function Navbar() {
 											return (
 												<div className="row">
 													<div className="col-9" style={{fontSize: 18}}>
+														{
+														/* Notification_Type List:
+															- F -> Enviou pedido de amizade
+															- T -> Convidou para participar no torneio
+															- P -> Convidou-te para uma partida
+															- R -> Iniciou um novo round do torneio
+														*/
+														}
 														{ (notification.notification_type === "F" && 
-															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} enviou-te um pedido de amizade.</p>)
+															<p style={{marginBottom: "0.3em"}}>{notification.notification_text}</p>)
 														|| (notification.notification_type === "T" && 
-															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} convidou-te para participares no seu torneio.</p>)
+															<p style={{marginBottom: "0.3em"}}>{notification.notification_text} participares no seu torneio.</p>)
 														|| (notification.notification_type === "P" && 
-															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} convidou-te para jogares.</p>)
+															<p style={{marginBottom: "0.3em"}}>{notification.notification_text}</p>)
 														|| (notification.notification_type === "R" && 
-															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} iniciou o próximo round do seu torneio.</p>)
+															<p style={{marginBottom: "0.3em"}}>{notification.notification_text}</p>)
 														}
 														{ (difference < 60 &&
 															<p style={{fontSize: 13}}>há { Number.parseInt(difference)} minutos</p>)
