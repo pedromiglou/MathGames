@@ -24,7 +24,7 @@ const getPagingData = (data, page, limit) => {
 
 
 // Create and Save a new Tournament
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   // Validate request
   if (!req.body) {
     res.status(400).send({
@@ -41,10 +41,18 @@ exports.create = (req, res) => {
   }
 
   if (req.body.private === true && req.body.password === "") {
-    res.status(400).send({
+    res.status(500).send({
       message: "Private tournaments must have a password."
     });
     return;
+  }
+
+  var resultado = await Tournament.findOne({where: {name: req.body.name}})
+  if (resultado !== null) {
+    res.status(400).send({
+      message: "Tournament name is already in use!"
+    });
+    return
   }
 
   // Create a Tournament
@@ -63,11 +71,9 @@ exports.create = (req, res) => {
   Tournament.create(tournament)
     .then(data => {
       res.send(data);
-    })
-    .catch(err => {
+    }).catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Tournament."
+        message: "Some error occurred while creating the TournamentUser."
       });
     });
 };

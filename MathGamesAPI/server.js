@@ -569,7 +569,7 @@ io.on("connection", (socket) => {
       return
     })
 
-    //setTimeout(() => { check_check_ins(torneio.id) }, 300000);
+    setTimeout(() => { check_check_ins(torneio.id) }, 10000);
 
 
     //Atualizar o current_round para o round que vai arrancar
@@ -648,8 +648,108 @@ io.on("connection", (socket) => {
 });
 
 
-function check_check_ins(tournament_id) {
+async function check_check_ins(tournament_id) {
 
+  if (Object.keys(active_tournaments).includes(String(tournament_id))) {
+    for (let match_id in active_tournaments[String(tournament_id)]["rooms"]) {
+      if (active_tournaments[String(tournament_id)]["rooms"][match_id]["players_in"].length < 2) {
+
+        var winner = "1"
+        var player1 = active_tournaments[String(tournament_id)]["rooms"][match_id]["player1"]
+        var player2 = active_tournaments[String(tournament_id)]["rooms"][match_id]["player2"]
+
+        if (active_tournaments[String(tournament_id)]["rooms"][match_id]["players_in"].length === 0) {
+          // Noone has checked in for the match. Random player will pass
+          var randomNumber = Math.round(Math.random())
+
+          if (randomNumber === 1){
+            winner = "1"
+          } else {
+            winner = "2"
+          }
+        }
+
+        if (active_tournaments[String(tournament_id)]["rooms"][match_id]["players_in"].length === 1) {
+          // 1 player has checked in. The other have not. The one who checked in wins.
+
+          if (active_tournaments[String(tournament_id)]["rooms"][match_id]["players_in"].includes(player1)) {
+            winner = "1"
+          } else {
+            winner = "2"
+          }
+        }
+
+        await TournamentMatch.findOne({where: {tournament_id: tournament_id, match_id: match_id}}).then(async (game) => {
+          if (game.dataValues.nextGame !== null ) {
+            //Update Players playing next match in the tournament
+            await TournamentMatch.findOne({where: {tournament_id: tournament_id, match_id: game.dataValues.nextGame}}).then(async (nextgame) => {
+            if (game.dataValues.match_id === nextgame.dataValues.lastGame1) {
+              // Player que venceu tem que ser colocado como player1 do proximo jogo no torneio
+              if (winner == 1) {
+                await TournamentMatch.update({player1 : player1}, {where: {tournament_id: tournament_id, match_id: game.dataValues.nextGame}}).catch(err => {
+                  console.log(err)
+                })
+                await GameMatch.update({player1 : player1}, {where: {id: game.dataValues.nextGame}}).catch(err => {
+                  console.log(err)
+                })
+              } else {
+                await TournamentMatch.update({player1 : player2}, {where: {tournament_id: tournament_id, match_id: game.dataValues.nextGame}}).catch(err => {
+                  console.log(err)
+                })
+                await GameMatch.update({player1 : player2}, {where: {id: game.dataValues.nextGame}}).catch(err => {
+                  console.log(err)
+                })
+              }
+            } else {
+              // Player que venceu tem que ser colocado como player2 do proximo jogo no torneio
+              if (winner == 1) {
+                await TournamentMatch.update({player2 : player1}, {where: {tournament_id: tournament_id, match_id: game.dataValues.nextGame}}).catch(err => {
+                  console.log(err)
+                })
+                await GameMatch.update({player2 : player1}, {where: {id: game.dataValues.nextGame}}).catch(err => {
+                  console.log(err)
+                })
+              } else {
+                await TournamentMatch.update({player2 : player2}, {where: {tournament_id: tournament_id, match_id: game.dataValues.nextGame}}).catch(err => {
+                  console.log(err)
+                })
+                await GameMatch.update({player2 : player2}, {where: {id: game.dataValues.nextGame}}).catch(err => {
+                  console.log(err)
+                })
+              }
+            }
+            })
+          } else {
+            // Last game from tournament
+            // Update winner and state from tournament
+            if (winner == 1)
+              await Tournament.update({winner: player1, status: "FINISHED"}, {where: {id: tournament_id}})
+            else
+              await Tournament.update({winner: player2, status: "FINISHED"}, {where: {id: tournament_id}})
+            
+            delete active_tournaments[tournament_id];
+          }
+        })
+    
+        //Update winner from current match
+        await GameMatch.update({winner: winner}, {where: {id: match_id}}).catch(err => {
+          console.log(err)
+        })
+  
+        //Update players that were eliminated from tournament
+        if (winner == 1 ) {
+          await TournamentUser.update({eliminated: true}, {where: {user_id: player2, tournament_id: tournament_id}}).catch(err => {
+            console.log(err)
+          })
+        } else {
+          await TournamentUser.update({eliminated: true}, {where: {user_id: player1, tournament_id: tournament_id}}).catch(err => {
+            console.log(err)
+          })
+        }
+        
+      }
+    } 
+  }
 }
 
 function create_game(match_id, game_id, user1, user2, game_type, tournament_id) {
