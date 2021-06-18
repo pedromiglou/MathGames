@@ -256,8 +256,9 @@ function Podium() {
 			  	<>
 			  	<label style={{color: "#0056b3", fontSize: 20}} for="reason">Motivo: </label>
 			  	<select id="reason" className="form-select" aria-label="Default select example">
-				  <option selected value="Cheats">Cheats</option>
-				  <option value="Bug Abuse">Bug Abuse</option>
+				  <option selected value="Uso Batota">Uso Batota</option>
+				  <option value="Exploração de Bug">Exploração de Bug</option>
+				  <option value="Nome inapropriado">Nome inapropriado</option>
 				</select>
 				</>
 			  }
