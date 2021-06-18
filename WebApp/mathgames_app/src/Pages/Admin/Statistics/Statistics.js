@@ -35,18 +35,18 @@ function Statistics() {
         mostPlayed_e.style.textDecoration = ""; */
 	}
 
-	function changeToTorneios() {
+	/*function changeToTorneios() {
 		setFilterOption("Torneios");
 
 		
-		/*allGames_e = document.getElementById("allGames");
+		allGames_e = document.getElementById("allGames");
 		recommended_e = document.getElementById("recommendedGames");
 		mostPlayed_e = document.getElementById("mostPlayedGames");
 
 		allGames_e.style.textDecoration = "";
         recommended_e.style.textDecoration = "underline";
-        mostPlayed_e.style.textDecoration = ""; */
-	}
+        mostPlayed_e.style.textDecoration = ""; 
+	}*/
 
 	function changeToJogadores() {
 		setFilterOption("Jogadores");

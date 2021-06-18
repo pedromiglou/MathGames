@@ -33,7 +33,11 @@ exports.create = (req, res) => {
     return;
   }
 
+  console.log("im here on report")
   if (parseInt(req.userId) !== parseInt(req.body.sender)) {
+    console.log("foi aqui")
+    console.log(req.userId)
+    console.log(req.body.sender)
     res.status(401).send({
       message: "Unauthorized!"
     });
@@ -126,6 +130,23 @@ exports.delete = (req, res) => {
     .catch(err => {
       res.status(500).send({
         message: "Could not delete Report with id=" + id
+      });
+    });
+};
+
+
+// Delete all Reports from the database.
+exports.deleteAll = (req, res) => {
+  Report.destroy({
+    where: {},
+    truncate: false
+  })
+    .then(nums => {
+      res.send({ message: `${nums} Reports were deleted successfully!` });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while removing all Reports."
       });
     });
 };
