@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import { GameOverModal } from '../../Components/GameOverModal';
 import { useHistory, useLocation } from "react-router-dom";
 import {Prompt} from 'react-router-dom';
@@ -20,7 +20,7 @@ function Game()  {
     const gameTimer1Ref = useRef();
     const gameTimer2Ref = useRef();
     const activeGameRef = useRef();
-    const sceneNames = {0: "RastrosScene", 1: "GatosCaesScene"};
+    
 
     let history = useHistory()
     const location = useLocation();
@@ -32,21 +32,22 @@ function Game()  {
     ai_diff = params.ai_diff;
     current_match.current = params.match;
 
-    useEffect(() => {
-        return history.listen((location) => {
-            if (!matchHasFinished())
-                socket.emit("forfeit_match", {"user_id": authService.getCurrentUserId()})
-        }) 
-    }, [history, location]);
-
-    function matchHasFinished() {
+    const matchHasFinished = useCallback(() => {
+        const sceneNames = {0: "RastrosScene", 1: "GatosCaesScene"};
         if (activeGameRef.current === undefined)
             return false;
         let game = activeGameRef.current.getGame();
         let scene = game.scene.getScene(sceneNames[game_id]);
 
         return scene.game_over;
-    }
+    }, [game_id])
+
+    useEffect(() => {
+        return history.listen((location) => {
+            if (!matchHasFinished())
+                socket.emit("forfeit_match", {"user_id": authService.getCurrentUserId()})
+        }) 
+    }, [history, location, matchHasFinished]);
 
     function processGameOver(msg) {
 
@@ -74,6 +75,7 @@ function Game()  {
     }
 
     function triggerFinishGame(gameOverMessage) {
+        const sceneNames = {0: "RastrosScene", 1: "GatosCaesScene"};
         
         let game = activeGameRef.current.getGame();
         let scene = game.scene.getScene(sceneNames[game_id]);
