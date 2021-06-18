@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useHistory } from "react-router-dom";
-import { Prompt } from 'react-router';
 import { Card } from "react-bootstrap";
 //import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -66,16 +65,15 @@ function GamePage() {
 
     useEffect(() => {
         return history.listen((location) => {
-            console.log(location)
             if (!searchingForMatch)
                 socket.emit("leave_matchmaking", {"user_id": AuthService.getCurrentUserId(), "game_id": game_id})
          }) 
-    }, [location]);
+    }, [history, location, searchingForMatch, game_id]);
 
     useEffect(() => {
         if (!searchingForMatch)
             socket.emit("leave_matchmaking", {"user_id": AuthService.getCurrentUserId(), "game_id": game_id})
-    }, [searchingForMatch]);
+    }, [searchingForMatch, game_id]);
 
     useEffect(() => {
 		var button = document.getElementById("button-play");
