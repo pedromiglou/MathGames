@@ -67,7 +67,7 @@ function GamePage() {
         return history.listen((location) => {
             if (!searchingForMatch)
                 socket.emit("leave_matchmaking", {"user_id": AuthService.getCurrentUserId(), "game_id": game_id})
-         }) 
+        }) 
     }, [history, location, searchingForMatch, game_id]);
 
     useEffect(() => {
@@ -464,6 +464,7 @@ function GamePage() {
                                         </div>
                                         <div>
                                             <h1 id="waiting_rider">À procura de jogo competitivo</h1>
+                                            <h5>[Abandonar esta página irá cancelar a procura]</h5>
                                         </div>
                                         <div className="div-button">
                                             <button id="button-play" className="button-stop" onClick={() => {setSearchingForMatch(false); setCanPlay(false)}}>Cancelar Procura   </button>

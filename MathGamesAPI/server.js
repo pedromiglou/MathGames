@@ -280,6 +280,7 @@ async function synchronize() {
 synchronize()
 
 var current_games = {};
+var players_in_game = {};
 var match_queue = {0: [], 1: []};
 var users_info = {}
 var active_friend_link = {}
@@ -327,6 +328,16 @@ io.on("connection", (socket) => {
             match_queue[0].splice( user_idx_0, 1 )
         if ( user_idx_1 > -1 )
             match_queue[1].splice( user_idx_1, 1 )
+
+        var in_game_user_match_id = players_in_game[user_id]
+        
+
+        if ( in_game_user_match_id !== undefined ) {
+          let game = current_games[in_game_user_match_id];
+          game['state']['isFinished'] = true;
+          game['state']['winner'] = (user_id === current_games[in_game_user_match_id]['state']['player1']) ? "2" : "1";
+          finish_game(in_game_user_match_id, "forfeit")
+        }
 
     })
 
@@ -469,8 +480,24 @@ io.on("connection", (socket) => {
     let user_idx = match_queue[game_id].indexOf(user_id);
 
     if ( socket.id === users_info[user_id] && user_idx > -1 )
-        match_queue[game_id].splice( user_idx, 1 )
+      match_queue[game_id].splice( user_idx, 1 )
   })
+
+  socket.on("forfeit_match", (msg) => {
+    var user_id = String(msg["user_id"]);
+
+    if ( socket.id === users_info[user_id] ) {
+      var in_game_user_match_id = players_in_game[user_id]
+
+      if ( in_game_user_match_id !== undefined ) {
+        let game = current_games[in_game_user_match_id];
+        game['state']['isFinished'] = true;
+        game['state']['winner'] = (user_id === current_games[in_game_user_match_id]['state']['player1']) ? "2" : "1";
+        finish_game(in_game_user_match_id, "forfeit")
+      }
+    }
+
+  });
 
   //User sends match id, userid and new_pos when he wants to make a move in the game
   socket.on("move", (new_pos, user_id, match_id) => {
@@ -503,8 +530,6 @@ io.on("connection", (socket) => {
           
           current_games[match_id]['state']['isFinished'] = true
           current_games[match_id]['state']['winner'] = (user_id === current_games[match_id]['state']['player1']) ? "2" : "1"
-          current_games[match_id]['timers'][user_id].pause();
-          current_games[match_id]['timers'][opponent].pause();
           
           finish_game(match_id, "invalid_move")
         }
@@ -806,8 +831,6 @@ function create_game(match_id, game_id, user1, user2, game_type, tournament_id) 
 function initiate_game(match_id) {
   let user1 = current_games[match_id]['state']['player1'];
   let user2 = current_games[match_id]['state']['player2'];
-  console.log("Player1: ", user1)
-  console.log("Player2: ", user2)
 
   let username1;
   let username2;
@@ -832,10 +855,8 @@ function initiate_game(match_id) {
       current_games[match_id]['users'][user2] = [ current_games[match_id]['users'][user2][0], true ]
     }
 
-    console.log("username2: ", username2)
-    console.log(users_info)
-    console.log(users_info[user1])
-    console.log(users_info[user2])
+    players_in_game[user1] = match_id;
+    players_in_game[user2] = match_id;
     io.to(users_info[user1]).emit("match_found", {"erro": false, "match_id": match_id, "player1": username1, "player2": username2});
     io.to(users_info[user2]).emit("match_found", {"erro": false, "match_id": match_id, "player1": username1, "player2": username2});
   });
@@ -988,18 +1009,20 @@ function validate_gatoscaes_move(user_id, match_id, new_pos) {
 }
 
 
-//endMode: ["invalid_move", "valid_move"]
+//endMode: ["invalid_move", "valid_move", "timeout"]
 async function finish_game(match_id, endMode) {
-  console.log("Tou finnish game")
-  var winner = current_games[match_id]['state']['winner'] 
-  var player1 = current_games[match_id]['state']['player1']
-  var player_1_account_player = current_games[match_id]['users'][player1][1]
-  var player2 = current_games[match_id]['state']['player2'] 
-  var player_2_account_player = current_games[match_id]['users'][player2][1]
-  var game_id = current_games[match_id]['game_id']
-  var game_type = current_games[match_id]['game_type']
+  let current_match = current_games[match_id]
+  console.log("Terminating match ", match_id);
+  var winner = current_match['state']['winner']
+  var player1 = current_match['state']['player1']
+  var player_1_account_player = current_match['users'][player1][1]
+  var player2 = current_match['state']['player2'] 
+  var player_2_account_player = current_match['users'][player2][1]
+  var game_id = current_match['game_id']
+  var game_type = current_match['game_type']
 
-
+  current_match['timers'][player1].pause();
+  current_match['timers'][player2].pause();
 
   let player1_final_result;
   let player2_final_result;
@@ -1013,12 +1036,11 @@ async function finish_game(match_id, endMode) {
     player1_final_result = "draw"
     player2_final_result = "draw"
   }
-
   
-  if (current_games[match_id]['tournament'] === null) {
+  if (current_match['tournament'] === null) {
     //Partida não é de torneio , por isso precisamos de criar a instância na BD
 
-    // Create a GameMatch 
+    // Create a GameMatch
     var gameMatch = {
       player1: parseInt(player1),
       player2: parseInt(player2),
@@ -1041,7 +1063,7 @@ async function finish_game(match_id, endMode) {
 
   if (player_1_account_player === true || player_2_account_player === true) {
 
-    if (game_type === "online" && current_games[match_id]['tournament'] === null) {
+    if (game_type === "online" && current_match['tournament'] === null) {
       // Jogo online modo competitivo
       var jogo = null;
       if (game_id === 0)
@@ -1115,8 +1137,8 @@ async function finish_game(match_id, endMode) {
     }
   }
 
-  if (current_games[match_id]['tournament'] !== null) {
-    var tournament_id = current_games[match_id]['tournament']
+  if (current_match['tournament'] !== null) {
+    var tournament_id = current_match['tournament']
 
     await TournamentMatch.findOne({where: {tournament_id: tournament_id, match_id: match_id}}).then(async (game) => {
       if (game.dataValues.nextGame !== null ) {

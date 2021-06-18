@@ -1,6 +1,7 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { GameOverModal } from '../../Components/GameOverModal';
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
+import {Prompt} from 'react-router-dom';
 import "./Game.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import socket from "../../index";
@@ -19,8 +20,10 @@ function Game()  {
     const gameTimer1Ref = useRef();
     const gameTimer2Ref = useRef();
     const activeGameRef = useRef();
+    const sceneNames = {0: "RastrosScene", 1: "GatosCaesScene"};
 
     let history = useHistory()
+    const location = useLocation();
     var params = history.location.state
     var game_id, game_mode, ai_diff;
 
@@ -28,6 +31,22 @@ function Game()  {
     game_mode = params.game_mode;
     ai_diff = params.ai_diff;
     current_match.current = params.match;
+
+    useEffect(() => {
+        return history.listen((location) => {
+            if (!matchHasFinished())
+                socket.emit("forfeit_match", {"user_id": authService.getCurrentUserId()})
+        }) 
+    }, [history, location]);
+
+    function matchHasFinished() {
+        if (activeGameRef.current === undefined)
+            return false;
+        let game = activeGameRef.current.getGame();
+        let scene = game.scene.getScene(sceneNames[game_id]);
+
+        return scene.game_over;
+    }
 
     function processGameOver(msg) {
 
@@ -55,7 +74,6 @@ function Game()  {
     }
 
     function triggerFinishGame(gameOverMessage) {
-        const sceneNames = {0: "RastrosScene", 1: "GatosCaesScene"};
         
         let game = activeGameRef.current.getGame();
         let scene = game.scene.getScene(sceneNames[game_id]);
@@ -138,22 +156,23 @@ function Game()  {
 
     return (
         <>
-        <div className="row ml-5">
-            { getCurrentPlayerCard() }
-            <div className="col-9">
-                {game_id===0 &&
-                    <div id="my_div_game" className="container-canvas" style={{width: '1100px', height: '577px'}}>
-                        <RastrosEngine ref={activeGameRef} trigger_timer_switch={triggerTimerSwitch} process_game_over={processGameOver} arg_game_mode={game_mode} arg_ai_diff={ai_diff} curr_match={current_match.current}></RastrosEngine>
-                    </div>
-                }
-                {game_id===1 &&
-                    <div id="my_div_game" className="container-canvas" style={{width: '1200px', height: '624px'}}>
-                        <GatosCaesEngine ref={activeGameRef} trigger_timer_switch={triggerTimerSwitch} process_game_over={processGameOver} arg_game_mode={game_mode} arg_ai_diff={ai_diff} curr_match={current_match.current}></GatosCaesEngine>
-                    </div>
-                }
+            <Prompt when={!matchHasFinished()} message="Sair da página irá resultar em derrota imediata. Queres sair?"></Prompt>
+            <div className="row ml-5">
+                { getCurrentPlayerCard() }
+                <div className="col-9">
+                    {game_id===0 &&
+                        <div id="my_div_game" className="container-canvas" style={{width: '1100px', height: '577px'}}>
+                            <RastrosEngine ref={activeGameRef} trigger_timer_switch={triggerTimerSwitch} process_game_over={processGameOver} arg_game_mode={game_mode} arg_ai_diff={ai_diff} curr_match={current_match.current}></RastrosEngine>
+                        </div>
+                    }
+                    {game_id===1 &&
+                        <div id="my_div_game" className="container-canvas" style={{width: '1200px', height: '624px'}}>
+                            <GatosCaesEngine ref={activeGameRef} trigger_timer_switch={triggerTimerSwitch} process_game_over={processGameOver} arg_game_mode={game_mode} arg_ai_diff={ai_diff} curr_match={current_match.current}></GatosCaesEngine>
+                        </div>
+                    }
+                </div>
             </div>
-        </div>
-        <GameOverModal ref={gameOverModalRef}></GameOverModal>
+            <GameOverModal ref={gameOverModalRef}></GameOverModal>
         </>
     );
 }
