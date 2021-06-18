@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import './PlayerCard.css';
+import {Prompt} from 'react-router-dom';
 // import Avatar from '../Avatar';
 import userService from '../../Services/user.service';
 import { ranks_info } from '../../data/ranksInfo';
@@ -11,13 +12,14 @@ import { Modal, Button } from "react-bootstrap";
 import * as MdIcons from 'react-icons/md';
 
 
-const PlayerCard = (({username, gameId, shouldFindUser, showReportButton, other_player}) => {
+const PlayerCard = forwardRef(({username, gameId, shouldFindUser, showReportButton, other_player}, ref) => {
     const [user, setUser] = useState(null);
     const [other_user, setOtherUser] = useState(null)
 
     const [modalConfirmShow, setConfirmModalShow] = useState(false);
 	const [modalUsername, setModalUsername] = useState("");
 	const [modalId, setModalUserId] = useState(0);
+    const [gameOver, setGameOver] = useState(false);
 
     var rankGameNames = {0: "rastros", 1: "gatos_e_caes"};
     //const Avatar = React.lazy(() => import('../Avatar'));
@@ -33,6 +35,14 @@ const PlayerCard = (({username, gameId, shouldFindUser, showReportButton, other_
             userService.getUserByUsername(other_player).then(value => {setOtherUser(value)})
 
     }, [username, shouldFindUser, showReportButton, other_player])
+
+    useImperativeHandle(ref, () => ({
+
+        setGameOver() {
+            console.log("Setting to true");
+            setGameOver(true);
+        }
+    }));
 
     function isGuest() {
         return user===null;
@@ -104,6 +114,7 @@ const PlayerCard = (({username, gameId, shouldFindUser, showReportButton, other_
 
     return (
         <div className="exterior-card rounded">
+            <Prompt when={!gameOver} message="Sair da página irá resultar em derrota imediata. Queres sair?"></Prompt>
             <div className="main-card">
 
                 <div className="row ml-0 mr-0 h-100">
