@@ -39,6 +39,18 @@ function Profile({ navigation }) {
 				user: current_user,
 				dict: [],
 			});
+
+            UserService.getUserRanksById(current_user.id).then(
+                (response) => {
+                    var ranks_dict = getRanks(response);
+
+                    if (ranks_dict != undefined)
+                        setUserInfos({
+                            user: current_user,
+                            dict: ranks_dict,
+                        });
+                }
+            );
 		});
 
 		const interval = setInterval(() => {

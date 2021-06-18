@@ -67,14 +67,16 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
     entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+storage.player1,
       turn: storage.turn, dispatch: dispatch, renderer: <GameText></GameText>});
 
-    //configure socket
-    socket.on("move_piece", new_pos=>{
-      dispatch({type: "comp", pos: new_pos});
-    });
-    socket.on("match_end", (msg) => {
-      storage.gameEnded=true;
-      entities.push({visible:true, text: "Game ended by the server", renderer: <GameModal></GameModal>});
-    });
+    //configure socket if online
+    if (gameMode==="Competitivo"||gameMode==="Amigo") {
+      socket.on("move_piece", new_pos=>{
+        dispatch({type: "comp", pos: new_pos});
+      });
+      socket.on("match_end", (msg) => {
+        storage.gameEnded=true;
+        entities.push({visible:true, text: "Game ended by the server", renderer: <GameModal></GameModal>});
+      });
+    }
 
     //create the AI and make it play if not our turn
     if (storage.gameMode==="Contra o Computador") {
@@ -133,7 +135,7 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
         ai.AI_blocked_squares[e.y][e.x] = true;
         dispatch({type: "ai"});
         storage.myTurn=false;
-      } else if (gameMode==="Competitivo") {
+      } else if (gameMode==="Competitivo"||gameMode==="Amigo") {
         socket.emit("move", e.y*7+e.x, storage.user_id, storage.match_id);
         storage.myTurn=false;
       }

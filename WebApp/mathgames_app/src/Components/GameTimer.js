@@ -7,7 +7,7 @@ export const GameTimer = forwardRef(({totalGameTime, player, gameId, gameMode, c
 
     useEffect(() => {
         if (!autoStart) {
-            var timer = document.getElementById(player + "-countdown");
+            var timer = document.getElementById(player + "-info");
             timer.style.opacity = 0.5;
         }
     }, [player, autoStart])
@@ -16,13 +16,13 @@ export const GameTimer = forwardRef(({totalGameTime, player, gameId, gameMode, c
 
         pause() {
             timerApi.current.pause();
-            var timer = document.getElementById(player + "-countdown");
+            var timer = document.getElementById(player + "-info");
             timer.style.opacity = 0.5;
         },
 
         start() {
             timerApi.current.start();
-            var timer = document.getElementById(player + "-countdown");
+            var timer = document.getElementById(player + "-info");
             timer.style.opacity = 1;
         }
 

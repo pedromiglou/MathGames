@@ -17,6 +17,7 @@ function Create() {
 
     const [error, setError] = useState(false);
     const [gameError, setGameError] = useState(false);
+    const [duplicatedNameError, setDuplicatedNameError] = useState(false)
     const [fieldsError, setFieldsError] = useState(false);
     const [sucesso, setSucesso] = useState("");
 
@@ -72,6 +73,7 @@ function Create() {
     async function createTournament() {
         setGameError(false)
         setError(false)
+        setDuplicatedNameError(false)
         setFieldsError(false)
         var name = document.getElementById('filter_username').value;
         if (name === "") {setFieldsError(true); return}
@@ -94,14 +96,14 @@ function Create() {
         if (game_id === -1) {
             setGameError(true);
         } else {
-            setGameError(false);
             var creator = AuthService.getCurrentUser().id;
             var res = await TournamentService.createTournament(name, max_users, privado, password, game_id, creator);
             if (res.error) {
-                setError(true);
-                setSucesso(false);
+                if (res.message === "Tournament name is already in use!")
+                    setDuplicatedNameError(true)
+                else
+                    setError(true);
             } else {
-                setError(false);
                 setSucesso(true);
                 history.push({
                     pathname: "/tournaments"
@@ -124,9 +126,15 @@ function Create() {
             ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
             Erro. Escolha o jogo do torneio.
             </div> : null}
+        
         {fieldsError === true 
             ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
             Deve preencher todos os campos para criar o torneio. 
+            </div> : null}
+
+        {duplicatedNameError === true 
+            ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+            O nome do torneio deve ser único. Por favor, selecione um novo nome. 
             </div> : null}
 
         <div className="all-create">

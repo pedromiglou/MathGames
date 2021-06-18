@@ -4,7 +4,6 @@ import {View, ScrollView, Text, Image, Dimensions, StyleSheet, TouchableHighligh
 import {readData, saveData} from "../utilities/AsyncStorage";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-import { Feather } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SimpleLineIcons } from '@expo/vector-icons';
@@ -165,8 +164,8 @@ function GamePage({navigation}) {
 
         {aiMode==="P" && <View style={styles.buttonView}>
           <TouchableHighlight style={styles.button} onPress = {() => {
-                        readData('user_id').then(id=>{
-                          saveData('player1', id.slice(1,-1));
+                        readData('username').then(username=>{
+                          saveData('player1', username.slice(1,-1));
                           saveData('player2', "AI")
                           navigation.navigate("Game");
                         })
@@ -178,9 +177,9 @@ function GamePage({navigation}) {
             </LinearGradient>
           </TouchableHighlight>
           <TouchableHighlight style={styles.button} onPress = {() => {
-                        readData('user_id').then(id=>{
+                        readData('username').then(username=>{
                           saveData('player1', "AI")
-                          saveData('player2', id.slice(1,-1));
+                          saveData('player2', username.slice(1,-1));
                           navigation.navigate("Game");
                         })
                       }}>

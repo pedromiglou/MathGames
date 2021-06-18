@@ -18,7 +18,7 @@ const win = Dimensions.get("window");
 function AboutUs({ navigation }) {
     
 	function openLink(url) {
-		Linking.openURL("https://expo.io");
+		Linking.openURL(url);
 	}
 
 	return (
@@ -75,7 +75,7 @@ function AboutUs({ navigation }) {
 								<TouchableHighlight
 									style={styles.buttonR}
 									onPress={() => {
-										openLink("ola");
+										openLink("https://www.linkedin.com/in/ricardo-cruz-139599208/");
 									}}
 								>
 									<Feather
@@ -120,7 +120,7 @@ function AboutUs({ navigation }) {
 								<TouchableHighlight
 									style={styles.buttonR}
 									onPress={() => {
-										openLink("ola");
+										openLink("https://www.linkedin.com/in/diogo-carvalho-43bb33209/");
 									}}
 								>
 									<Feather
@@ -165,7 +165,7 @@ function AboutUs({ navigation }) {
 								<TouchableHighlight
 									style={styles.buttonR}
 									onPress={() => {
-										openLink("ola");
+										openLink("https://www.linkedin.com/in/rafael-baptista-51319a195/");
 									}}
 								>
 									<Feather
@@ -210,7 +210,7 @@ function AboutUs({ navigation }) {
 								<TouchableHighlight
 									style={styles.buttonR}
 									onPress={() => {
-										openLink("ola");
+										openLink("https://www.linkedin.com/in/diogo-cunha-a86185177/");
 									}}
 								>
 									<Feather
@@ -255,7 +255,7 @@ function AboutUs({ navigation }) {
 								<TouchableHighlight
 									style={styles.buttonR}
 									onPress={() => {
-										openLink("ola");
+										openLink("https://www.linkedin.com/in/pedro-amaral-528b221a3/");
 									}}
 								>
 									<Feather
@@ -300,7 +300,7 @@ function AboutUs({ navigation }) {
 								<TouchableHighlight
 									style={styles.buttonR}
 									onPress={() => {
-										openLink("ola");
+										openLink("https://www.linkedin.com/in/pedro-santos-46103920a/");
 									}}
 								>
 									<Feather

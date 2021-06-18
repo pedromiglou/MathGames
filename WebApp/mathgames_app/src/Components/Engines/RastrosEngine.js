@@ -38,9 +38,14 @@ export const RastrosEngine = forwardRef(({trigger_timer_switch, process_game_ove
             scene: [newScene]
         }
         gameInstance.current = new Phaser.Game(config);
+
     }, [trigger_timer_switch, process_game_over, arg_game_mode, arg_ai_diff, curr_match]);
 
     useImperativeHandle(ref, () => ({
+
+        isFinished() {
+            return gameInstance.current.scene.getScene("RastrosScene").game_over;
+        },
 
         getGame() {
             return gameInstance.current;

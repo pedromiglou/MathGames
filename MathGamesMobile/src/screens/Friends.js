@@ -49,7 +49,6 @@ function Friends({ navigation }) {
         });
 
 		const interval = setInterval(() => {
-			console.log("Friends interval ...");
 			UserService.getFriends().then((res) => {
                 if(res != friends)
 				    setFriends(res);
