@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useState} from 'react';
-import {ScrollView, Dimensions, View} from 'react-native';
+import {ScrollView, Dimensions, View, StyleSheet, TouchableOpacity} from 'react-native';
 import RastrosEngine from './../games/rastros/RastrosEngine';
 import GatosCaesEngine from './../games/gatoscaes/GatosCaesEngine';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -8,21 +8,16 @@ import {readData, saveData} from './../utilities/AsyncStorage';
 import Loading from './../components/Loading';
 import {gamesInfo} from "./../data/GamesInfo";
 import socket from "./../utilities/Socket";
-import { Feather } from "@expo/vector-icons";
-import RulesModal from "../components/RulesModal";
 
 const win = Dimensions.get("window");
 
 function Game({ navigation }) {
 	//wait until everything is ready
 	const [ready, setReady] = useState(-1);
-	const [modalVisible, setModalVisible] = useState(false);
-    const [game, setGame] = useState({name: ""});
 
 	var game_id;
 	var gameMode;
 	var user_id;
-    readData("game").then(value => {if (value !== null) {setGame(JSON.parse(value));}})
 
     readData('gameMode').then(mode=>{
         gameMode = mode.slice(1,-1);
@@ -112,11 +107,6 @@ function Game({ navigation }) {
         }
     });
 
-
-	function toggleModalVisibility() {
-		setModalVisible(!modalVisible);
-	}
-
 	return (
 		<View>
 			<View style={{ position: "absolute", x: 0, y: 0 }}>
@@ -137,18 +127,7 @@ function Game({ navigation }) {
 				</LinearGradient>
 			</View>
 
-			<View style={styles.help}>
-				<TouchableOpacity
-					style={styles.buttonHelp}
-					onPress={() => {
-						//setModalVisible(true);
-					}}
-				>
-					<View>
-						<Feather name="help-circle" size={30} color="white" />
-					</View>
-				</TouchableOpacity>
-			</View>
+			
 
 			{ready === -1 && <Loading />}
 
@@ -162,14 +141,6 @@ function Game({ navigation }) {
 				<ScrollView>
 					<GatosCaesEngine></GatosCaesEngine>
 				</ScrollView>
-			)}
-
-			{modalVisible === true && (
-				{/* <RulesModal
-					toggleModalVisibility={toggleModalVisibility}
-					modalVisible={modalVisible}
-					game={game}
-				/> */}
 			)}
 		</View>
 	);

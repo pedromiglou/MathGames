@@ -40,10 +40,10 @@ function makePlay(entities, storage, piece, newPos) {
 
   //atualizar o texto em baixo
   if (oldEntity.text.slice(11, oldEntity.text.length)===storage.player1) {
-    entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+storage.player2,
+    entities.push({position: [1, 9], size: Constants.CELL_SIZE, text: "É a vez do "+storage.player2,
       renderer: <GameText></GameText>});
   } else {
-    entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+storage.player1,
+    entities.push({position: [1, 9], size: Constants.CELL_SIZE, text: "É a vez do "+storage.player1,
       renderer: <GameText></GameText>});
   }
 }
@@ -64,7 +64,7 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
   //initialize game
   events.filter(e => e.type === "init").forEach(e => {
     
-    entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "É a vez do "+storage.player1,
+    entities.push({position: [1, 9], size: Constants.CELL_SIZE, text: "É a vez do "+storage.player1,
       turn: storage.turn, dispatch: dispatch, renderer: <GameText></GameText>});
 
     //configure socket if online

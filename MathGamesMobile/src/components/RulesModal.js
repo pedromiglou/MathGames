@@ -5,9 +5,8 @@ import {
 	StyleSheet,
 	View,
 	Modal,
+	TouchableOpacity
 } from "react-native";
-
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 
 const win = Dimensions.get("window");
@@ -20,7 +19,7 @@ function RulesModal(props) {
 			transparent={true}
 			visible={props.modalVisible}
 			onRequestClose={() => {
-				props.toggleModalVisibility();
+				props.setModalVisible(false);
 			}}
 		>
 			<View style={styles.centeredView}>
@@ -41,7 +40,7 @@ function RulesModal(props) {
 						<TouchableOpacity
 							style={[styles.buttonModal, styles.buttonOpen]}
 							onPress={() => {
-								props.toggleModalVisibility();
+								props.setModalVisible(false);
 							}}
 						>
 							<Text style={styles.textStyle}>Ok!</Text>

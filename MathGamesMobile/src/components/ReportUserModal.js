@@ -8,11 +8,11 @@ import {
 	View,
 	Modal,
 	TextInput,
+	TouchableOpacity
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import UserService from "../services/user.service";
 import { Fontisto } from "@expo/vector-icons";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import userService from "../services/user.service";

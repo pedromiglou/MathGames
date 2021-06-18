@@ -66,7 +66,7 @@ function GameText(props) {
         player=0;
         styles = StyleSheet.create({
             row: {
-                width: props.size*7,
+                width: props.size*6,
                 height: props.size,
                 position: 'absolute',
                 left: x * props.size,

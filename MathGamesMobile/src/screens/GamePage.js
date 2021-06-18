@@ -8,8 +8,8 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import RulesModal from "../components/RulesModal";
-import { TouchableOpacity} from 'react-native-gesture-handler'
-
+import { TouchableOpacity} from 'react-native-gesture-handler';
+import { Feather } from "@expo/vector-icons";
 
 const win = Dimensions.get('window');
 
@@ -28,10 +28,6 @@ function GamePage({navigation}) {
   }, []);
   const [aiMode, setAIMode] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-
-  function toggleModalVisibility() {
-    setModalVisible(!modalVisible);
-  }
 
   return (
     <View>
@@ -204,9 +200,7 @@ function GamePage({navigation}) {
             </View>
           </LinearGradient>
         </TouchableHighlight>
-        { modalVisible === true && (
-            <RulesModal toggleModalVisibility={toggleModalVisibility} modalVisible={modalVisible} game={game} />
-        )}
+        <RulesModal setModalVisible={setModalVisible} modalVisible={modalVisible} game={game} />
       </ScrollView>
     </View>
 

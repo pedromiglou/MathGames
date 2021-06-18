@@ -26,6 +26,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { DrawerActions } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Notifications from './screens/Notifications';
+
 export const navigationRef = React.createRef();
 export function openDrawer(routeName, params) {
   navigationRef.current.dispatch(DrawerActions.toggleDrawer());
