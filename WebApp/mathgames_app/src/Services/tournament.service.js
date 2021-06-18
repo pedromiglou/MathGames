@@ -84,7 +84,11 @@ class TournamentService {
             body: JSON.stringify(tournament)
         });
         if (res.status !== 200) {
-            return {error: true}
+            if (res.status === 400) {
+                return {error: true, message: "Tournament name is already in use!"}
+            } else {
+                return {error: true, message: "Internal Server Error"}
+            }
         }
         return {error: false};
     }

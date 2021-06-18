@@ -91,14 +91,14 @@ function Statistics() {
                   {filterOption === "Jogos" &&
                     <h1>Estatisticas Jogos</h1>
                   }
-                  {filterOption === "Torneios" &&
+                  {/*{filterOption === "Torneios" &&
                     <h1>Estatisticas Torneios</h1>
-                  }
+                  }*/}
                   {filterOption === "Jogadores" &&
                     <h1>Estatisticas Jogadores</h1>
                   }
 						      </div>
-                  <div className="col-lg-3 col-md-3 col-sm-3 top-button">
+                  <div className="col-lg-4 col-md-4 col-sm-4 top-button">
                     <button
                       onClick={changeToJogos}
                       className={
@@ -110,7 +110,7 @@ function Statistics() {
                       Estatisticas Jogos
                     </button>
                   </div>
-                  <div className="col-lg-3 col-md-3 col-sm-3 top-button">
+                  {/*<div className="col-lg-3 col-md-3 col-sm-3 top-button">
                     <button
                       onClick={changeToTorneios}
                       className={
@@ -121,8 +121,8 @@ function Statistics() {
                     >
                       Estatisticas Torneios
                     </button>
-                  </div>
-                  <div className="col-lg-3 col-md-3 col-sm-3 top-button">
+                    </div>*/}
+                  <div className="col-lg-4 col-md-4 col-sm-4 top-button">
                     <button
                       onClick={changeToJogadores}
                       className={
