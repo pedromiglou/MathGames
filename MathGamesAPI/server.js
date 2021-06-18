@@ -362,11 +362,8 @@ io.on("connection", (socket) => {
       var game_id = parseInt(msg["game_id"])
       users_info[user_id] = socket.id
 
-      if ( Object.keys(active_friend_invites).includes(outro_id) && active_friend_invites[outro_id]["outro_id"] === user_id) {
+      if ( Object.keys(active_friend_invites).includes(outro_id) && active_friend_invites[outro_id]["outro_id"] === user_id)
         create_game(match_id, game_id, user_id, outro_id, "amigo", null)
-
-        //io.to( users_info[outro_id] ).emit("friend_joined", {"match_id": match_id, "player1": user_id, "player2": outro_id})
-      }
     }
   })
 
@@ -421,9 +418,8 @@ io.on("connection", (socket) => {
   // 
 
   //User says that he wants to play Online and put himself in matchqueue list
-  socket.on("user_id", (msg) => {
-    console.log(msg)
-    var user_id = msg["user_id"];
+  socket.on("enter_matchmaking", (msg) => {
+    var user_id = String(msg["user_id"]);
     var game_id = parseInt(msg["game_id"]);
     users_info[user_id] = socket.id;
     match_queue[game_id].push(user_id)
@@ -443,6 +439,14 @@ io.on("connection", (socket) => {
       }
     }
   });
+
+  socket.on("leave_matchmaking", (msg) => {
+    var user_id = String(msg["user_id"]);
+    var game_id = parseInt(msg["game_id"]);
+
+    if ( socket.id === users_info[user_id] )
+        match_queue[game_id].splice( match_queue[game_id].indexOf(user_id), 1 )
+  })
 
   //User sends match id, userid and new_pos when he wants to make a move in the game
   socket.on("move", (new_pos, user_id, match_id) => {
