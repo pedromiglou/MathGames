@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useState} from 'react';
-import {ScrollView, Dimensions, View} from 'react-native';
+import {ScrollView, Dimensions, View, StyleSheet, TouchableOpacity} from 'react-native';
 import RastrosEngine from './../games/rastros/RastrosEngine';
 import GatosCaesEngine from './../games/gatoscaes/GatosCaesEngine';
 import { LinearGradient } from 'expo-linear-gradient';

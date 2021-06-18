@@ -5,9 +5,8 @@ import {
 	StyleSheet,
 	View,
 	Modal,
+    TouchableOpacity
 } from "react-native";
-
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 
 const win = Dimensions.get("window");

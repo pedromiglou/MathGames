@@ -9,6 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import RulesModal from "../components/RulesModal";
 import { TouchableOpacity} from 'react-native-gesture-handler'
+import { Feather } from "@expo/vector-icons";
 
 
 const win = Dimensions.get('window');
