@@ -131,16 +131,11 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
 
       makePlay(entities, storage, piece, newPos);
 
-      console.log(gameMode);
       if (gameMode==="Contra o Computador") {
         ai.AI_blocked_squares[e.y][e.x] = true;
         dispatch({type: "ai"});
         storage.myTurn=false;
       } else if (gameMode==="Competitivo"||gameMode==="Amigo") {
-        console.log(gameMode);
-        console.log("user_id: " + storage.user_id);
-        console.log("mathc_id: " + storage.match_id);
-        console.log(e.y*7+e.x);
         socket.emit("move", e.y*7+e.x, storage.user_id, storage.match_id);
         storage.myTurn=false;
       }

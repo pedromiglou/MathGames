@@ -160,7 +160,6 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
         dispatch({type: "ai"});
         storage.myTurn=false;
       } else if (storage.gameMode==="Competitivo"||gameMode==="Amigo") {
-        console.log(e.y*8+e.x);
         socket.emit("move", String(e.y*8+e.x), storage.user_id, storage.match_id);
         storage.myTurn=false;
       }

@@ -26,26 +26,21 @@ function Game({navigation}) {
             saveData("gameMode", "Amigo");
             readData("user_id").then(user_id=>{
                 user_id = user_id.slice(1,-1);
-                console.log("user_id: "+user_id);
                 readData("opponent").then(opponent=>{
-                    console.log("opponent: "+opponent);
                     socket.once("match_link", (msg) => {
-                        console.log(msg);
                         if (msg["match_id"]) {
                             saveData("match_id", msg['match_id']);
                             saveData("game", gamesInfo[Number(msg['game_id'])]);
                             socket.emit("entered_invite", {"user_id": user_id, "outro_id": opponent,
                                 "match_id": msg['match_id'], "game_id": Number(msg['game_id'])});
                         } else if (msg["error"]) {
-                            console.log("there was an error");
+                            Alert.alert("Error inviting player", "there was an error");
                         }
                     });
                     
                     socket.emit("get_match_id", {"user_id": user_id, "outro_id": opponent})
         
                     socket.once("match_found", (msg) => {
-                        console.log("Friend just joined!");
-                        console.log(msg);
                         saveData('match_id', msg['match_id']);
                         saveData('player1', msg['player1']);
                         saveData('player2', msg['player2']);
@@ -54,7 +49,6 @@ function Game({navigation}) {
                             setReady(game.id);
                         });
                     });
-                    console.log("listener created");
                 });
             });
 
@@ -62,7 +56,6 @@ function Game({navigation}) {
         } else if (gameMode==="Inviter"&&ready===-1) {
             saveData("gameMode", "Amigo");
             socket.once("invite_link", (msg) => {
-                console.log(msg);
                 if (msg["match_id"]) {
                   saveData("match_id", msg['match_id']);
                 } else {
@@ -80,8 +73,6 @@ function Game({navigation}) {
             });
 
             socket.once("match_found", (msg) => {
-                console.log("Friend just joined!");
-                console.log(msg);
                 saveData('match_id', msg['match_id']);
                 saveData('player1', msg['player1']);
                 saveData('player2', msg['player2']);
@@ -93,7 +84,6 @@ function Game({navigation}) {
 
         //code executed for competitive, AI and in same device
         } else if (gameMode!=="Amigo"&&ready===-1) { 
-            console.log("listener not created");
             readData('game').then(game=>{
                 game_id = JSON.parse(game).id;
                 //se for fazer as primeiras comunicacoes com o servidor

@@ -21,9 +21,6 @@ function ChooseGameModal(props) {
                     <TouchableHighlight style={styles.gameTile} key={X.id} onPress = {() => {
                           readData("user").then(user=>{
                             user = JSON.parse(JSON.parse(user));
-                            console.log("generating invite")
-                            console.log("opponent:" + props.opponent);
-                            console.log("me: " + user.id);
                             UserService.send_notification_request(user.id, props.opponent, "P", user.token).then(()=>{
                               saveData("opponent", props.opponent);
                               saveData("gameMode", "Inviter");

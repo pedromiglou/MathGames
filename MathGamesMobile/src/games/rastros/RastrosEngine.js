@@ -35,7 +35,6 @@ function RastrosEngine() {
 
     useEffect(() => {
         let mounted = true;
-        console.log("started reading data");
         readData("gameMode").then(X=>{
             gameMode=X.slice(1,-1);
             readData('player1').then(p1=>{
