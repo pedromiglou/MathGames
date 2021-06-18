@@ -6,6 +6,10 @@
 }
 */
 
+#sidebar {
+    top: 100px;
+}
+
 /* Global horizontal Navbar */
 #horizontal_nav_row.row{
     background-color: #F1F1F1;
@@ -13,7 +17,7 @@
     height: 100px;
     width: 100%;
     position: -webkit-sticky;
-    position: sticky;
+    position: fixed;
     top:0px;
     display: flex;
     color: navy;

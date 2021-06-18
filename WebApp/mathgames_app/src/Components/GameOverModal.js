@@ -26,7 +26,7 @@ export const GameOverModal = forwardRef((props, ref) => {
         
         if ( result === "offline_finish" ) {
             let winner = endGameMessage["winner"];
-            if ( endMode === "timeout" || endMode === "invalid_move" )
+            if ( endMode === "timeout" || endMode === "invalid_move" || endMode === "forfeit" )
                 return {game_id: gameId, result: result, winner: winner, message: EndGameStatements["win"][endMode]};
             
             return {game_id: gameId, result: result, winner: winner, message: EndGameStatements["win"][gameId][endMode]};
@@ -36,7 +36,7 @@ export const GameOverModal = forwardRef((props, ref) => {
             return {game_id: gameId, result: result, ai_difficulty: aiDifficulty};
         }
 
-        if ( endMode === "timeout" || endMode === "invalid_move" )
+        if ( endMode === "timeout" || endMode === "invalid_move" || endMode === "forfeit" )
             return {game_id: gameId, result: result, message: EndGameStatements[result][endMode]};
 
         return {game_id: gameId, result: result, message: EndGameStatements[result][gameId][endMode]};
