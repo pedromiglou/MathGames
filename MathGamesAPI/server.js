@@ -1220,6 +1220,9 @@ async function finish_game(match_id, endMode) {
   delete current_games[match_id];
   delete active_friend_link[match_id];
 
+  delete players_in_game[player1];
+  delete players_in_game[player2];
+
 }
 
 var Timer = function(callback, delay) {
