@@ -452,9 +452,10 @@ io.on("connection", (socket) => {
     var user_id = String(msg["user_id"]);
     console.log("Entering matchmaking: ", user_id)
     var game_id = parseInt(msg["game_id"]);
+    
     users_info[user_id] = socket.id;
     match_queue[game_id].push(user_id)
-    console.log(match_queue)
+
     if ( match_queue[game_id].length >= 2 ) {
       console.log("Match found.");
       var player1 = String( match_queue[game_id].shift() );
