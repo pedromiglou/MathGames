@@ -36,12 +36,17 @@ function Friends({ navigation }) {
 	const [user, setUser] = useState(null);
 
 	useEffect(() => {
+        let mounted = true;
+
 		readData("user").then((user) => {
 			var current_user = JSON.parse(JSON.parse(user));
 			setUser(current_user);
 		});
 
-		let mounted = true;
+        UserService.getFriends().then((res) => {
+            if(res != friends)
+                setFriends(res);
+        });
 
 		const interval = setInterval(() => {
 			console.log("Friends interval ...");
