@@ -28,7 +28,7 @@ function GatosCaesEngine() {
 
     squares.forEach(square=>{
         entities.push({position: square, size: Constants.CELL_SIZE, valid: false, blockedG:false,
-            blockedC: false, renderer: <Square></Square>});
+            blockedC: false, last: false, renderer: <Square></Square>});
     });
     
     useEffect(() => {

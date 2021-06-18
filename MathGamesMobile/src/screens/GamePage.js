@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import {View, ScrollView, Text, Image, Dimensions, StyleSheet, TouchableHighlight} from 'react-native';
+import {View, ScrollView, Text, Image, Dimensions, StyleSheet, TouchableHighlight, TouchableOpacity} from 'react-native';
 import {readData, saveData} from "../utilities/AsyncStorage";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,8 +8,8 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import RulesModal from "../components/RulesModal";
-import { TouchableOpacity} from 'react-native-gesture-handler';
 import { Feather } from "@expo/vector-icons";
+
 
 const win = Dimensions.get('window');
 
@@ -207,20 +207,6 @@ function GamePage({navigation}) {
     
   );
 }
-
-/* convidar por link
-<TouchableHighlight style={styles.button} onPress = {() => {
-              saveData("gameMode", "Gerar link de convite");
-              navigation.navigate("Game");
-            }}>
-  <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
-    <View style={styles.buttonView}>
-      <Feather name="link" size={22} color="black" style={styles.icon} />
-      <Text style={styles.modeName}>Gerar link de convite</Text>
-    </View>
-  </LinearGradient>
-</TouchableHighlight>
-*/
 
 export default GamePage;
 

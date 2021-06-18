@@ -28,7 +28,7 @@ function RastrosEngine() {
     }
     squares.forEach(square => {
         entities.push({position: square, size: Constants.CELL_SIZE, valid: false, blocked:false,
-            renderer: <Square></Square>});
+            last: false, renderer: <Square></Square>});
     })
 
     entities[31].blocked = true;

@@ -26,7 +26,11 @@ function makePlay(entities, storage, newPos) {
   var x = newPos[0];
   var y = newPos[1];
 
+  //put piece in place and update highlight
+  entities.slice(1, 65).forEach(entity=>entity.last=false);
   entities.push({position: [x, y+1], size: Constants.CELL_SIZE, type: storage.turn, renderer: <Piece></Piece>});
+  entities[x*8+y+1].last=true;
+
   if (storage.turn===2) {
     entities[x*8+y+1].blockedC = true;
     entities[x*8+y+1].blockedG = true;

@@ -24,10 +24,13 @@ function makePlay(entities, storage, piece, newPos) {
   //block previous piece position
   entities.push({position: piece.position, size: Constants.CELL_SIZE, renderer: <Blocked></Blocked>});
 
-  //move piece to new position
+  //move piece to new position and update highlight
+  entities.slice(1, 51).forEach(entity=>entity.last=false);
+  entities[piece.position[0]*7+piece.position[1]].last=true;
   piece.position = [newPos[0], newPos[1]+1];
   entities[piece.position[0]*7+piece.position[1]].blocked=true;
-
+  entities[piece.position[0]*7+piece.position[1]].last=true;
+  
   //switch timers
   storage.turn = storage.turn===1 ? 2 : 1;
   entities[51].turn = storage.turn;
