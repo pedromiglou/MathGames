@@ -219,11 +219,12 @@ class UserService {
         return;
     }
 
-    async send_notification_request(sender, receiver, not_type) {
+    async send_notification_request(sender, receiver, not_type, not_text) {
         let request= {
             sender: sender,
             receiver: receiver,
-            notification_type: not_type
+            notification_type: not_type,
+            notification_text: not_text
         }
 
         var url = urlAPI + 'api/notifications/';
@@ -239,7 +240,7 @@ class UserService {
 
 
 
-    async send_notification_request_by_username(sender, receiver, not_type) {
+    async send_notification_request_by_username(sender, receiver, not_type, not_text) {
         var url1 = urlAPI + 'api/users/username/'+receiver
         fetch(url1, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}}).then(res => {
             if (res.status !== 200) {
@@ -249,7 +250,8 @@ class UserService {
                 let request= {
                     sender: sender,
                     receiver: result.id,
-                    notification_type: not_type
+                    notification_type: not_type,
+                    notification_text: not_text
                 }
         
                 var url = urlAPI + 'api/notifications/';

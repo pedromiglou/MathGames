@@ -382,7 +382,8 @@ exports.findAll = (req, res) => {
     condition["game_id"] = arrayIds 
   }
   condition["status"] = { [Op.ne] : "FINISHED"}
-  
+
+
   const { limit, offset } = getPagination(page, size);
   Tournament.findAndCountAll({
                       where: condition,
