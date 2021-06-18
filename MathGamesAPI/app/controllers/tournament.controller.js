@@ -24,7 +24,7 @@ const getPagingData = (data, page, limit) => {
 
 
 // Create and Save a new Tournament
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   // Validate request
   if (!req.body) {
     res.status(400).send({
@@ -41,10 +41,18 @@ exports.create = (req, res) => {
   }
 
   if (req.body.private === true && req.body.password === "") {
-    res.status(400).send({
+    res.status(500).send({
       message: "Private tournaments must have a password."
     });
     return;
+  }
+
+  var resultado = await Tournament.findOne({where: {name: req.body.name}})
+  if (resultado !== null) {
+    res.status(400).send({
+      message: "Tournament name is already in use!"
+    });
+    return
   }
 
   // Create a Tournament
@@ -63,11 +71,9 @@ exports.create = (req, res) => {
   Tournament.create(tournament)
     .then(data => {
       res.send(data);
-    })
-    .catch(err => {
+    }).catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Tournament."
+        message: "Some error occurred while creating the TournamentUser."
       });
     });
 };
@@ -356,12 +362,6 @@ exports.findAll = (req, res) => {
   const capacity = !req.query.capacity ? "%": req.query.capacity;
 
   const jogos = req.query.jogos
-
-  let arrayIds = jogos.split("-")
-
-  arrayIds = arrayIds.map(function(e) { 
-    return parseInt(e);
-  });
   
   var condition;
   if (req.query.private === "true") {
@@ -371,10 +371,18 @@ exports.findAll = (req, res) => {
   } else {
     condition = {[Op.or]: [{private: true}, {private: false}] }
   }
+
   condition["name"] = { [Op.like]: `%${name}` };
   condition["max_users"] = { [Op.like]: `${capacity}` }
-  condition["game_id"] = arrayIds 
-
+  if (jogos !== undefined) {
+    let arrayIds = jogos.split("-")
+    arrayIds = arrayIds.map(function(e) { 
+      return parseInt(e);
+    });
+    condition["game_id"] = arrayIds 
+  }
+  condition["status"] = { [Op.ne] : "FINISHED"}
+  
   const { limit, offset } = getPagination(page, size);
   Tournament.findAndCountAll({
                       where: condition,
@@ -385,6 +393,10 @@ exports.findAll = (req, res) => {
         var tournament_ids = data.rows.map(element => {
           return element.id;
         });
+      }
+      for (i = 0; i < data.rows.length ; i++) {
+        const { password, ...tournamentWithoutPassword } = data.rows[i].dataValues;
+        data.rows[i].dataValues = tournamentWithoutPassword;
       }
 
       TournamentUsers.findAll({where: {tournament_id: tournament_ids}}).then( tournament_users => {
@@ -441,16 +453,46 @@ exports.findOne = (req, res) => {
 // Find a single Tournament with an id
 exports.findByCreator = (req, res) => {
   const creator_id = req.params.id;
+  const { page, size } = req.query;
+  const { limit, offset } = getPagination(page, size);
 
-  Tournament.findAll({where: {creator: creator_id}})
+  Tournament.findAndCountAll({where: {creator: creator_id}, limit, offset})
     .then(data => {
-      var tournament_list = []
-      for (let tournament of data) {
-        const { password, ...tournamentWithoutPassword } = tournament.dataValues;
-        tournament_list.push(tournamentWithoutPassword)
+      if (data.length !== 0) {
+        var tournament_ids = data.rows.map(element => {
+          return element.id;
+        });
       }
-      var response = {"tournaments": tournament_list}
-      res.send(response);
+      for (i = 0; i < data.rows.length ; i++) {
+        const { password, ...tournamentWithoutPassword } = data.rows[i].dataValues;
+        data.rows[i].dataValues = tournamentWithoutPassword;
+      }
+
+      TournamentUsers.findAll({where: {tournament_id: tournament_ids}}).then( tournament_users => {
+        for (var tournament in data.rows) {
+          let contador = 0;
+          var indices = []
+          for (var user in tournament_users ) {
+            if (tournament_users[user].tournament_id === data.rows[tournament].id) {
+              contador++;
+              indices.push(user)
+            }
+          }
+          for (var x = indices.length - 1; x >= 0; x--) {
+            tournament_users.splice(indices[x], 1);
+          }
+          indices = [];
+          data.rows[tournament].dataValues["usersCount"] = contador;
+        }
+        const response = getPagingData(data, page, limit);
+        res.send(response);
+      }).catch(err => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while retrieving Tournaments Users."
+        });
+      })
+
     })
     .catch(err => {
       res.status(500).send({
