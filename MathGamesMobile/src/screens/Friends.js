@@ -44,7 +44,6 @@ function Friends({ navigation }) {
 		let mounted = true;
 
 		const interval = setInterval(() => {
-			console.log("This will run every 5 seconds!");
 			UserService.getFriends().then((res) => {
 				setFriends(res);
 			});

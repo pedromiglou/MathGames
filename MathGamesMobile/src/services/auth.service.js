@@ -19,7 +19,8 @@ class AuthService {
         var json = await res.json()
 
         if(json.id) {
-            saveData("user_id", String(json.username));
+            saveData("user_id", String(json.id));
+            saveData("username", String(json.username));
             saveData("user", JSON.stringify(json));
             return json;
         } else {

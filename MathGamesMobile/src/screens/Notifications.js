@@ -7,8 +7,6 @@ import { Feather } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { readData, saveData } from '../utilities/AsyncStorage';
 import { EvilIcons } from '@expo/vector-icons';
-import {gamesInfo} from "./../data/GamesInfo";
-import socket from "./../utilities/Socket";
 
 const win = Dimensions.get('window');
 
@@ -31,25 +29,9 @@ function Notifications({ navigation }) {
       readData("user").then(user=>{
         user=JSON.parse(JSON.parse(user));
         UserService.delete(notification.id, user.token);
-        var id_outro_jogador = notification.sender_user.sender_id
-      
-        socket.once("match_link", (msg) => {
-          console.log(msg);
-          if (msg["match_id"]) {
-            saveData("match_id", msg['match_id']);
-            saveData("game", gamesInfo[Number(msg['game_id'])]);
-            saveData("gameMode", "Amigo");
-            saveData("opponent", id_outro_jogador);
-            navigation.navigate("Game");
-
-          } else if (msg["error"]) {
-            console.log("there was an error");
-          }
-        });
-      
-        socket.emit("get_match_id", {"user_id": user.id, "outro_id": id_outro_jogador})
+        saveData("opponent", notification.sender_user.sender_id);
+        saveData("gameMode", "Invited").then(()=>navigation.navigate("Game"));
       })
-      
     }
     
     return (
