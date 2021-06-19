@@ -163,17 +163,13 @@ function TournamentPage() {
         setErroInitializeRound(false)
         setErroCheckIn("")
         setInitializeRoundSuccess(false)
-        var description = document.getElementById("tournament-details")
-        if (description.value === "") {
-            description =  description.placeholder
-        } else {
-            description =  description.value
-        }
-        var response = await TournamentService.changeDescription(tournament_id, description)
+        var tournament_details = document.getElementById("tournament-details")
+        var response = await TournamentService.changeDescription(tournament_id, tournament_details.value)
         if (response.error) {
             setErroChangingDescription(true)
         } else {
             retrieveInformation()
+            tournament_details.value = "";
         }
     }
 
@@ -229,7 +225,7 @@ function TournamentPage() {
 
     useEffect( () => {
         setUserInTournament(players.some(e => e.username === current_user.username ));
-    })
+    }, [userInTournament , players, current_user.username])
 
     const [entrarTorneioModal, setEntrarTorneioModal] = useState(false);
     const [sairTorneioModal, setSairTorneioModal] = useState(false);
@@ -374,17 +370,22 @@ function TournamentPage() {
       }
 
     function make_fields_editable(){
-        var tournament_details = document.getElementById("tournament-details");
-        var buttons = document.getElementById("action-buttons");
+        let tournament_details = document.getElementById("tournament-details");
+        let buttons = document.getElementById("action-buttons");
         tournament_details.readOnly = false;
+        tournament_details.value = tournament_details.placeholder;
         buttons.style.display = "flex";
+        
     }
 
-    function make_fields_not_editable(){
-        var tournament_details = document.getElementById("tournament-details");
-        var buttons = document.getElementById("action-buttons");
+    function make_fields_not_editable(option){
+        let tournament_details = document.getElementById("tournament-details");
+        let buttons = document.getElementById("action-buttons");
         tournament_details.readOnly = true;
         buttons.style.display = "none";
+        if (option === "delete"){
+            tournament_details.value = "";
+        }
     }
 
     if (!readyToDisplay) {
@@ -458,11 +459,11 @@ function TournamentPage() {
                 </div> : null}
 
             <div className="tournaments-container">
+            <h1 className="tournament-name-h1">{tournament.name}</h1>
                 <div className="tournamentPage_section">
                     <div className="participants_section">
-                        <h1 className="tournament-name-h1">{tournament.name}</h1>
                         <div className="tournament-info-sp">
-                            <h2>Participantes: {players.length}/{tournament.max_users}</h2>
+                            <h2 className="tournament-participants">Participantes: {players.length}/{tournament.max_users}</h2>
                             {tournament.status === "PREPARING" && 
                             <h2 className="tournament-state">Estado: A aguardar jogadores... </h2> }
                             {tournament.status === "STARTED" && 
@@ -492,7 +493,7 @@ function TournamentPage() {
                             {players.map(function(player, index) {
                                 return(
                                     <li key={index} className="list-group-item-t d-flex justify-content-between align-items-center row participants-item">
-                                        <div className="col-lg-4 col-md-3 col-sm-3">
+                                        <div className="col-lg-4 col-md-4 col-sm-4">
                                             {player.username}
                                         </div>    
                                         <div className="col-lg-3 col-md-3 col-sm-3">
@@ -501,14 +502,12 @@ function TournamentPage() {
                 
                                         <div className="col-lg-3 col-md-3 col-sm-3">
                                             Rank
-                                    </div>
-
-                                        <div className="col-lg-2 col-md-2 col-sm-2">
-                                        {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
-                                            <IoIcons.IoBan onClick={() => {setJogadorSelecionado({id: player.id, name: player.username}); setRemovingPlayerModal(true)}}/>
-                                        }                
-
                                         </div>
+                                        {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
+                                        <div className="col-lg-2 col-md-2 col-sm-2">
+                                            <IoIcons.IoBan onClick={() => {setJogadorSelecionado({id: player.id, name: player.username}); setRemovingPlayerModal(true)}}/>
+                                        </div>
+                                        }  
                                     </li>
                             )})}
 
@@ -547,15 +546,16 @@ function TournamentPage() {
                             </div>
                             }
 
-                            <div className="tournament-bracket">
-                                <div className="brackets">
-                                    <div id="button-join-tournament" onClick={() => history.push("/bracket?id="+tournament_id)} className="button-clicky see-bracket">
-                                        <span className="shadow"></span>
-                                        <span className="front">Ver Bracket</span>
-                                    </div>
-                                    {/* <button onClick={() => history.push("/bracket?id="+tournament_id)}>See Bracket</button> */}
+                            
+                            {tournament.status !== "PREPARING" &&
+                                <div id="button-join-tournament" onClick={() => history.push("/bracket?id="+tournament_id)} className="button-clicky see-bracket">
+                                    <span className="shadow"></span>
+                                    <span className="front">Ver Bracket</span>
                                 </div>
-                            </div>
+                            }  
+                            
+                                
+                            
                         </div>
                         
 
@@ -585,55 +585,66 @@ function TournamentPage() {
                             <div className="details-edit">
                                 <h1>Descrição do Torneio</h1>
                                 {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
-                                    <MdIcons.MdModeEdit size={35} id="edit-icon" className="edit-icon" title="edit" onClick={() => make_fields_editable()}/>
+                                    <MdIcons.MdModeEdit size={40} id="edit-icon" className="edit-icon" title="editar" onClick={() => make_fields_editable()}/>
                                 }
                             </div>
                             <div className="description-t" >
                                 <textarea  className="description-input" id="tournament-details" readOnly placeholder={tournament.description}></textarea>
-                            </div>
-                            <div className="action-buttons" id="action-buttons" style={{display:"none"}}>
                                 {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
                                     <>
-                                    <button onClick={() => {make_fields_not_editable(); changeDescription() } }>Confirmar</button>
-                                    <button onClick={() => make_fields_not_editable()}>Cancelar</button>
+                                    <div className="buttons-description-tournament" id="action-buttons" style={{display:"none"}}>
+                                        <div id="button-join-tournament" onClick={() => {make_fields_not_editable("add"); changeDescription() } } className="button-clicky join-tournament description-c">
+                                            <span className="shadow"></span>
+                                            <span className="front">Confirmar</span>
+                                        </div>
+
+                                        <div id="button-join-tournament" onClick={() => make_fields_not_editable("delete")} className="button-clicky leave-tournament description-c">
+                                            <span className="shadow"></span>
+                                            <span className="front">Cancelar</span>
+                                        </div>
+
+                                        {/* <button onClick={() => {make_fields_not_editable(); changeDescription() } }>Confirmar</button>
+                                        <button onClick={() => make_fields_not_editable()}>Cancelar</button> */}
+                                    </div>
+                                    
                                     </>
                                 }
-
+                            
                             </div>
                         </div>
-                        <h1>Jogo</h1>
-                        
-                            
-                        <div className="game-info">
-                            <div className="image">
-                                <img
-                                src={games_info[tournament.game_id].img}
-                                alt="Info"
-                                className="game-image"
-                                />
-                            </div>
-                            <div className="game-description">
-                                <p className="game-details-p">
-                                    {games_info[tournament.game_id].title}
-                                </p>
-                                <hr className="descr-div-caract"></hr>
-                                <div className="col-lg-12 game-caracteristics">
-                                    <h2 className="caract-gamemode"> Caracteristicas </h2>
-                                    
-                                    <h4>Dificuldade</h4>
-                                    <div className="progress caract">
-                                        <div
-                                            className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
-                                            role="progressbar"
-                                            aria-valuenow="75"
-                                            aria-valuemin="0"
-                                            aria-valuemax="100"
-                                            style={{ width: games_info[tournament.game_id].dificulty + "%" }}
-                                        >
-                                            <span>{games_info[tournament.game_id].dificulty_label}</span>
+
+                        <hr className="tournament-divider description-game"></hr>
+    
+                        <div>
+                            <div className="game-info">
+                                <div className="game-description">
+                                    <div className="col-lg-12 game-caracteristics">
+                                        <h1 className="jogos-label">Jogo</h1>
+                                        <span>{games_info[tournament.game_id].description}</span>
+                                        <h2 className="caract-label"> Caracteristicas </h2>
+                                        
+                                        <h5>Dificuldade</h5>
+                                        <div className="progress caract">
+                                            <div
+                                                className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
+                                                role="progressbar"
+                                                aria-valuenow="75"
+                                                aria-valuemin="0"
+                                                aria-valuemax="100"
+                                                style={{ width: games_info[tournament.game_id].dificulty + "%" }}
+                                            >
+                                                <span>{games_info[tournament.game_id].dificulty_label}</span>
+                                            </div>
                                         </div>
+                                        <h5>Idade: +{games_info[tournament.game_id].age} </h5>
                                     </div>
-                                    <h4>Idade: +{games_info[tournament.game_id].age} </h4>
+                                </div>
+                                <div className="image">
+                                    <img
+                                    src={games_info[tournament.game_id].img}
+                                    alt={games_info[tournament.game_id].title}
+                                    className="game-image"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -650,9 +661,6 @@ function TournamentPage() {
                                     <span className="shadow"></span>
                                     <span className="front">Iniciar Torneio</span>
                                 </div>
-
-                                {/* <button onClick={() => removeTournament()}>Eliminar Torneio</button> */}
-                                {/* <button onClick={() => initializeTournament()}>Iniciar Torneio</button> */}
                             </>
                             }
 
