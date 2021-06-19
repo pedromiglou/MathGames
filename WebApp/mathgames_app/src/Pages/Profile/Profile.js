@@ -97,7 +97,7 @@ const Profile = () => {
 		// Load user games history
         async function fetchApiLastGames() {
             var response = await UserService.getLastGames(current_user.id);
-
+            console.log(response)
             if (!response.error)
                 setGames(response);
             else
@@ -508,9 +508,9 @@ const Profile = () => {
                                 <li className="table-header">
                                     <div className="col col-2">Data</div>
                                     <div className="col col-2">Jogo</div>
+                                    <div className="col col-2">Modo Jogo</div>
                                     <div className="col col-2">Resultado</div>
                                     <div className="col col-2">Exp. Ganha</div>
-                                    <div className="col col-2">Detalhes</div>
                                 </li>
                                 {
                                 games === "erro" 
@@ -541,7 +541,11 @@ const Profile = () => {
                                                         "Gatos&Cães" : "Outro"}
                                             </div>
                                             <div className="col col-2">
-                                                { ((value["winner"] === "1" && value["player1"] === user.id) || (value["winner"] === "2" && value["player2"] === user.id) )
+                                                {value["game_type"] === "online" ? "Online" 
+                                                    : value["game_type"] === "amigo" ? "Amigo" : "Outro" }
+                                            </div>
+                                            <div className="col col-2">
+                                                 { ((value["winner"] === "1" && value["player1"] === user.id) || (value["winner"] === "2" && value["player2"] === user.id) )
                                                             ? "Vitória"
                                                             : ((value["winner"] === "2" && value["player1"] === user.id) || (value["winner"] === "1" && value["player2"] === user.id) ) 
                                                             ? "Derrota"
@@ -549,15 +553,9 @@ const Profile = () => {
                                                             }
                                             </div>
                                             <div className="col col-2">
-                                                +{((value["winner"] === "1" && value["player1"] === user.id) || (value["winner"] === "2" && value["player2"] === user.id) )
-                                                            ? "100"
-                                                            : ((value["winner"] === "2" && value["player1"] === user.id) || (value["winner"] === "1" && value["player2"] === user.id) ) 
-                                                            ? "30"
-                                                            : "45"
-                                                            }
-                                            </div>
-                                            <div className="col col-2">
+                                                {/*
                                                 <button
+                                                
                                                     className={
                                                         ((value["winner"] === "1" && value["player1"] === user.id) || (value["winner"] === "2" && value["player2"] === user.id) )
                                                             ? "won-button table-row"
@@ -567,7 +565,13 @@ const Profile = () => {
                                                     }
                                                 >
                                                     Detalhes
-                                                </button>
+                                                </button>*/}
+                                                 +{((value["winner"] === "1" && value["player1"] === user.id) || (value["winner"] === "2" && value["player2"] === user.id) )
+                                                            ? "100"
+                                                            : ((value["winner"] === "2" && value["player1"] === user.id) || (value["winner"] === "1" && value["player2"] === user.id) ) 
+                                                            ? "30"
+                                                            : "45"
+                                                            }
                                             </div>
                                         </li>
                                     }

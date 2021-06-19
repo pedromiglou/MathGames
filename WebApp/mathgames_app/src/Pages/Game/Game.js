@@ -24,12 +24,13 @@ function Game()  {
     let history = useHistory()
     const location = useLocation();
     var params = history.location.state
-    var game_id, game_mode, ai_diff;
+    var game_id, game_mode, ai_diff, tournament_id;
 
     game_id = parseInt( params.game_id );
     game_mode = params.game_mode;
     ai_diff = params.ai_diff;
     current_match.current = params.match;
+    tournament_id = params.tournament
 
     useEffect(() => {
 
@@ -91,10 +92,16 @@ function Game()  {
 
     function getCurrentPlayerCard() {
         var showReportButton = false
+        var showForfeitFlag = false
 
-        if (current_match.current["player1"].length < 21 && current_match.current["player2"].length < 21)
-            showReportButton = true
-        
+        if (game_mode === "online" || game_mode === "amigo") {
+            showForfeitFlag = true
+
+            if (current_match.current["player1"].length < 21 && current_match.current["player2"].length < 21) {
+                showReportButton = true
+            }
+        }
+
         if ( current_match.current["player1"]===authService.getCurrentUsername() || game_mode==="offline" )
             return(
                 <div className="col-3 mt-4">
@@ -120,7 +127,7 @@ function Game()  {
                                 <div id="player1-countdown" className="col d-flex justify-content-end">
                                     {game_mode!=="ai" && <GameTimer ref={gameTimer1Ref} totalGameTime={300000} player="player1" gameId={game_id} gameMode={game_mode} currentMatch={current_match.current} finishMatchMethod={triggerFinishGame} autoStart={true}></GameTimer>}
                                 </div>
-                                <PlayerCard ref={playerCardRef} username={current_match.current["player1"]} gameId={game_id} gameMode={game_mode} shouldFindUser={game_mode!=="offline"} showReportButton={false} other_player={current_match.current["player2"]} showForfeitFlag={true}></PlayerCard>
+                                <PlayerCard ref={playerCardRef} username={current_match.current["player1"]} gameId={game_id} gameMode={game_mode} shouldFindUser={game_mode!=="offline"} showReportButton={false} other_player={current_match.current["player2"]} showForfeitFlag={showForfeitFlag}></PlayerCard>
                             </div>
                         </div>
                     </div>
@@ -154,7 +161,7 @@ function Game()  {
                                 <div id="player2-countdown" className="col d-flex justify-content-end">
                                     {game_mode!=="ai" && <GameTimer ref={gameTimer2Ref} totalGameTime={300000} player="player2" gameId={game_id} gameMode={game_mode} currentMatch={current_match.current} finishMatchMethod={triggerFinishGame} autoStart={false}></GameTimer>}
                                 </div>
-                                <PlayerCard ref={playerCardRef} username={current_match.current["player2"]} gameId={game_id} gameMode={game_mode} shouldFindUser={game_mode!=="offline"} showReportButton={false} other_player={current_match.current["player1"]} showForfeitFlag={true}></PlayerCard>
+                                <PlayerCard ref={playerCardRef} username={current_match.current["player2"]} gameId={game_id} gameMode={game_mode} shouldFindUser={game_mode!=="offline"} showReportButton={false} other_player={current_match.current["player1"]} showForfeitFlag={showForfeitFlag}></PlayerCard>
                             </div>
                         </div>
                     </div>
@@ -179,7 +186,7 @@ function Game()  {
                     }
                 </div>
             </div>
-            <GameOverModal ref={gameOverModalRef}></GameOverModal>
+            <GameOverModal ref={gameOverModalRef} tournament_id={tournament_id}></GameOverModal>
         </>
     );
 }
