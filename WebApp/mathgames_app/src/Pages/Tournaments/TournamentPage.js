@@ -240,17 +240,13 @@ function TournamentPage() {
         setErroInitializeRound(false)
         setErroCheckIn("")
         setInitializeRoundSuccess(false)
-        var description = document.getElementById("tournament-details")
-        if (description.value === "") {
-            description =  description.placeholder
-        } else {
-            description =  description.value
-        }
-        var response = await TournamentService.changeDescription(tournament_id, description)
+        var tournament_details = document.getElementById("tournament-details")
+        var response = await TournamentService.changeDescription(tournament_id, tournament_details.value)
         if (response.error) {
             setErroChangingDescription(true)
         } else {
             retrieveInformation()
+            tournament_details.value = "";
         }
     }
 
@@ -286,6 +282,127 @@ function TournamentPage() {
     }
     
 
+    const [userInTournament, setUserInTournament] = useState(players.some(e => e.username === current_user.username ));
+
+    useEffect( () => {
+        setUserInTournament(players.some(e => e.username === current_user.username ));
+    }, [userInTournament , players, current_user.username])
+
+    const [entrarTorneioModal, setEntrarTorneioModal] = useState(false);
+    const [sairTorneioModal, setSairTorneioModal] = useState(false);
+    const [erroPassword, setErroPassword] = useState(false);
+    const [erroJoinningTournament, setErroJoinningTournament] = useState(false)
+    const [erroLeavingTournament, setErroLeavingTournament] = useState(false)
+    const [successJoinningTournament, setSuccessJoinningTournament] = useState(false)
+    const [successLeavingTournament, setSuccessLeavingTournament] = useState(false)
+    
+    async function entrarTorneio(tournamentId, password) {
+        setErroJoinningTournament(false)
+        setSuccessJoinningTournament(false)
+        var response = await TournamentService.jointTournament(tournamentId, current_user.id, password)
+        if (response.error) {
+            setErroJoinningTournament(true)
+        } else {
+            setSuccessJoinningTournament(true)
+            setUserInTournament(true)
+            window.location.reload(false);
+        }
+    }
+
+    async function sairTorneio(tournamentId) {
+        setErroLeavingTournament(false)
+        setSuccessLeavingTournament(false)
+        var response = await TournamentService.leaveTournament(tournamentId, current_user.id)
+        if (response.error) {
+            setErroLeavingTournament(true)
+        } 
+        else {
+            setSuccessLeavingTournament(true)
+            setUserInTournament(false)
+        }
+    }
+
+
+    function EntrarTorneioModal(props) {
+        function confirmar() {
+            setErroPassword(false);
+            var password = null
+            if (props.torneioprivate === "true") {
+                password = document.getElementById("joinpassword").value
+                if (password === null || password === "") {
+                    setErroPassword(true);
+                    return
+                }
+            }
+            entrarTorneio(props.torneioid, password)
+            props.onHide()
+        }
+
+        return (
+          <Modal
+            {...props}
+            size="md"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header closeButton>
+              <Modal.Title id="contained-modal-title-vcenter" style={{color: "#0056b3", fontSize: 30}}>
+                Entrar Torneio
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                {erroPassword === true 
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                    Deve preencher a password
+                </div> : null}
+
+                {props.torneioprivate === "true" &&
+                    <> 
+                    <p style={{color: "#0056b3", fontSize: 20}}>Este torneio é privado. Insira password:</p>
+                    <input id={"joinpassword"} type={"password"} placeholder={"Password"}></input>
+                    </>
+                }
+
+              <p style={{color: "#0056b3", fontSize: 20}}>Tem a certeza que pretende entrar no torneio {props.torneioname}?</p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button style={{fontSize: 18}} onClick={() => {confirmar();}} className="btn save-btn">Confirmar</Button>
+              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Cancelar</Button>
+            </Modal.Footer>
+          </Modal>
+        );
+    }
+
+
+    function SairTorneioModal(props) {
+        function confirmar() {
+            sairTorneio(props.torneioid)
+            props.onHide()
+            history.push("/tournaments");
+        }
+
+        return (
+            <Modal
+            {...props}
+            size="md"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+            >
+            <Modal.Header closeButton>
+                <Modal.Title id="contained-modal-title-vcenter" style={{color: "#0056b3", fontSize: 30}}>
+                Sair Torneio
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <p style={{color: "#0056b3", fontSize: 20}}>Tem a certeza que pretende sair do torneio {props.torneioname}?</p>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button style={{fontSize: 18}} onClick={() => {confirmar();}} className="btn save-btn">Confirmar</Button>
+                <Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Cancelar</Button>
+            </Modal.Footer>
+            </Modal>
+        );
+    }
 
 
     function RemoverPlayerModal(props) {
@@ -314,17 +431,22 @@ function TournamentPage() {
       }
 
     function make_fields_editable(){
-        var tournament_details = document.getElementById("tournament-details");
-        var buttons = document.getElementById("action-buttons");
+        let tournament_details = document.getElementById("tournament-details");
+        let buttons = document.getElementById("action-buttons");
         tournament_details.readOnly = false;
+        tournament_details.value = tournament_details.placeholder;
         buttons.style.display = "flex";
+        
     }
 
-    function make_fields_not_editable(){
-        var tournament_details = document.getElementById("tournament-details");
-        var buttons = document.getElementById("action-buttons");
+    function make_fields_not_editable(option){
+        let tournament_details = document.getElementById("tournament-details");
+        let buttons = document.getElementById("action-buttons");
         tournament_details.readOnly = true;
         buttons.style.display = "none";
+        if (option === "delete"){
+            tournament_details.value = "";
+        }
     }
 
     if (!readyToDisplay) {
@@ -333,16 +455,30 @@ function TournamentPage() {
                 <div className="tournaments-container">
 
                     <div className="tournamentPage_section">
-                        <p>Rendering...</p>
+                        <p>A carregar o torneio...</p>
                     </div>
                 </div>
             </>
         )
     }
-    console.log(players)
     return(
         <>
-
+            {successJoinningTournament === true 
+                ? <div className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                    Entrou no torneio com sucesso.
+                </div> : null}
+            {successLeavingTournament === true 
+                ? <div className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                    Saiu do torneio com sucesso.
+                </div> : null}
+            {erroJoinningTournament === true 
+                    ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                        Occoreu um erro ao tentar entrar no torneio. Operação não foi concluída.
+                    </div> : null}
+            {erroLeavingTournament === true 
+                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+                    Occoreu um erro ao tentar sair do torneio. Operação não foi concluída.
+                </div> : null}
             {erroRemovingPlayer === true 
                 ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
                     Occoreu um erro ao tentar remover o jogador. Operação não foi concluída.
@@ -380,17 +516,25 @@ function TournamentPage() {
             
             {initializeRoundSuccess === true 
                 ? <div className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
-                    Round iniciado com sucesso!
+                    Ronda iniciada com sucesso!
                 </div> : null}
 
             <div className="tournaments-container">
+            <h1 className="tournament-name-h1">{tournament.name}</h1>
                 <div className="tournamentPage_section">
                     <div className="participants_section">
-                        <h1>{tournament.name}</h1>
-                        <h2>Status: {tournament.status}</h2>
-                        <h2>Participantes: {players.length}/{tournament.max_users}</h2>
-                        <ul className="list-group">
-                            <li className="list-group-item-t d-flex justify-content-between align-items-center row">
+                        <div className="tournament-info-sp">
+                            <h2 className="tournament-participants">Participantes: {players.length}/{tournament.max_users}</h2>
+                            {tournament.status === "PREPARING" && 
+                            <h2 className="tournament-state">Estado: A aguardar jogadores... </h2> }
+                            {tournament.status === "STARTED" && 
+                            <h2 className="tournament-state">Estado: Iniciado </h2>}
+                            {tournament.status === "FINISHED" && 
+                            <h2 className="tournament-state">Estado: Torneio Concluido </h2>}
+                        </div>
+                        <hr className="tournament-divider state-participants"></hr>
+                        <ul className="tournament-list-participants">
+                            <li className="list-group-item-t d-flex justify-content-between align-items-center row participants-item">
                                 <div className="col-lg-4 col-md-4 col-sm-4">
                                     Nome
                                 </div>    
@@ -404,13 +548,13 @@ function TournamentPage() {
                                     <div className="col-lg-2 col-md-2 col-sm-2">
                                     
                                     </div>
-                                    }                             
+                                }                             
                             </li>
                         
                             {players.map(function(player, index) {
                                 return(
-                                    <li key={index} className="list-group-item-t d-flex justify-content-between align-items-center row">
-                                        <div className="col-lg-4 col-md-3 col-sm-3">
+                                    <li key={index} className="list-group-item-t d-flex justify-content-between align-items-center row participants-item">
+                                        <div className="col-lg-4 col-md-4 col-sm-4">
                                             {player.username}
                                         </div>    
                                         <div className="col-lg-3 col-md-3 col-sm-3">
@@ -423,14 +567,14 @@ function TournamentPage() {
                                                     ranks_info[player.finalRank].image}
                                                 alt="Rank"
                                             />
-                                    </div>
-
-                                        <div className="col-lg-2 col-md-2 col-sm-2">
-                                        {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
-                                            <IoIcons.IoBan onClick={() => {setJogadorSelecionado({id: player.id, name: player.username}); setRemovingPlayerModal(true)}}/>
-                                        }                
-
                                         </div>
+
+    
+                                        {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
+                                        <div className="col-lg-2 col-md-2 col-sm-2">
+                                            <IoIcons.IoBan onClick={() => {setJogadorSelecionado({id: player.id, name: player.username}); setRemovingPlayerModal(true)}}/>
+                                        </div>
+                                        }  
                                     </li>
                             )})}
 
@@ -450,93 +594,155 @@ function TournamentPage() {
                             }
 
                         </ul>
+                        
+                        <div className="tournament-bottom-actions">
+                            {tournament.creator !== current_user.id && tournament.status === "PREPARING" ?
+                                userInTournament ? 
+                                <div id="button-join-tournament" onClick={() => setSairTorneioModal(true)} className="button-clicky leave-tournament">
+                                    <span className="shadow"></span>
+                                    <span className="front">Sair do Torneio</span>
+                                </div>
+                                :
+                                <div id="button-join-tournament" onClick={() => setEntrarTorneioModal(true)} className="button-clicky join-tournament">
+                                    <span className="shadow"></span>
+                                    <span className="front">Entrar no Torneio</span>
+                                </div>
+                            :
+                            <div>
+
+                            </div>
+                            }
+
+                            
+                            {tournament.status !== "PREPARING" &&
+                                <div id="button-join-tournament" onClick={() => history.push("/bracket?id="+tournament_id)} className="button-clicky see-bracket">
+                                    <span className="shadow"></span>
+                                    <span className="front">Ver Bracket</span>
+                                </div>
+                            }  
+                            
+                                
+                            
+                        </div>
+                        
+
+                        
+
+                    <EntrarTorneioModal
+                        show={entrarTorneioModal}
+                        onHide={() => setEntrarTorneioModal(false)}
+                        torneioid={tournament.id}
+                        torneioname={tournament.name}
+                        torneioprivate={tournament.private === true ? "true" : "false"}
+                    />  
+
+                    <SairTorneioModal
+                        show={sairTorneioModal}
+                        onHide={() => setSairTorneioModal(false)}
+                        torneioid={tournament.id}
+                        torneioname={tournament.name}
+                    /> 
+        
                     </div>
+
+                    <div className="vertical-divider"></div>
 
                     <div className="brackets_section">
                         <div className="tournament-rules">
                             <div className="details-edit">
                                 <h1>Descrição do Torneio</h1>
                                 {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
-                                    <MdIcons.MdModeEdit size={35} id="edit-icon" className="edit-icon" title="edit" onClick={() => make_fields_editable()}/>
+                                    <MdIcons.MdModeEdit size={40} id="edit-icon" className="edit-icon" title="editar" onClick={() => make_fields_editable()}/>
                                 }
                             </div>
                             <div className="description-t" >
                                 <textarea  className="description-input" id="tournament-details" readOnly placeholder={tournament.description}></textarea>
-                            </div>
-                            <div className="action-buttons" id="action-buttons" style={{display:"none"}}>
                                 {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
                                     <>
-                                    <button onClick={() => {make_fields_not_editable(); changeDescription() } }>Confirmar</button>
-                                    <button onClick={() => make_fields_not_editable()}>Cancelar</button>
+                                    <div className="buttons-description-tournament" id="action-buttons" style={{display:"none"}}>
+                                        <div id="button-join-tournament" onClick={() => {make_fields_not_editable("add"); changeDescription() } } className="button-clicky join-tournament description-c">
+                                            <span className="shadow"></span>
+                                            <span className="front">Confirmar</span>
+                                        </div>
+
+                                        <div id="button-join-tournament" onClick={() => make_fields_not_editable("delete")} className="button-clicky leave-tournament description-c">
+                                            <span className="shadow"></span>
+                                            <span className="front">Cancelar</span>
+                                        </div>
+
+                                        {/* <button onClick={() => {make_fields_not_editable(); changeDescription() } }>Confirmar</button>
+                                        <button onClick={() => make_fields_not_editable()}>Cancelar</button> */}
+                                    </div>
+                                    
                                     </>
                                 }
-
+                            
                             </div>
                         </div>
-                        <h1>Jogo</h1>
-                        
-                            
-                        <div className="game-info">
-                            <div className="image">
-                                <img
-                                src={games_info[tournament.game_id].img}
-                                alt="Info"
-                                className="game-image"
-                                />
-                            </div>
-                            <div className="game-description">
-                                <p className="game-details-p">
-                                    {games_info[tournament.game_id].title}
-                                </p>
-                                <hr className="descr-div-caract"></hr>
-                                <div className="col-lg-12 game-caracteristics">
-                                    <h2 className="caract-gamemode"> Caracteristicas </h2>
-                                    
-                                    <h4>Dificuldade</h4>
-                                    <div className="progress caract">
-                                        <div
-                                            className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
-                                            role="progressbar"
-                                            aria-valuenow="75"
-                                            aria-valuemin="0"
-                                            aria-valuemax="100"
-                                            style={{ width: games_info[tournament.game_id].dificulty + "%" }}
-                                        >
-                                            <span>{games_info[tournament.game_id].dificulty_label}</span>
+
+                        <hr className="tournament-divider description-game"></hr>
+    
+                        <div>
+                            <div className="game-info">
+                                <div className="game-description">
+                                    <div className="col-lg-12 game-caracteristics">
+                                        <h1 className="jogos-label">Jogo</h1>
+                                        <span>{games_info[tournament.game_id].description}</span>
+                                        <h2 className="caract-label"> Caracteristicas </h2>
+                                        
+                                        <h5>Dificuldade</h5>
+                                        <div className="progress caract">
+                                            <div
+                                                className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
+                                                role="progressbar"
+                                                aria-valuenow="75"
+                                                aria-valuemin="0"
+                                                aria-valuemax="100"
+                                                style={{ width: games_info[tournament.game_id].dificulty + "%" }}
+                                            >
+                                                <span>{games_info[tournament.game_id].dificulty_label}</span>
+                                            </div>
                                         </div>
+                                        <h5>Idade: +{games_info[tournament.game_id].age} </h5>
                                     </div>
-                                    <h4>Idade: +{games_info[tournament.game_id].age} </h4>
+                                </div>
+                                <div className="image">
+                                    <img
+                                    src={games_info[tournament.game_id].img}
+                                    alt={games_info[tournament.game_id].title}
+                                    className="game-image"
+                                    />
                                 </div>
                             </div>
                         </div>
                         
 
-                        <div className="tournament-bracket">
-                            <h1>Brackets</h1>
-                            <div className="brackets">
-                                <button onClick={() =>   history.push("/bracket?id="+tournament_id)}>See Bracket</button>
-                            </div>
+                        <div className="tournament-bottom-actions">
+                            {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
+                            <>
+                                <div id="button-join-tournament" onClick={() => removeTournament()} className="button-clicky leave-tournament">
+                                    <span className="shadow"></span>
+                                    <span className="front">Eliminar Torneio</span>
+                                </div>
+                                <div id="button-join-tournament" onClick={() => initializeTournament()} className="button-clicky join-tournament">
+                                    <span className="shadow"></span>
+                                    <span className="front">Iniciar Torneio</span>
+                                </div>
+                            </>
+                            }
+
+                            {tournament.creator === current_user.id && tournament.status === "STARTED" &&
+                                <>
+                                <button onClick={() => initializeNextRound()}>Iniciar Fase Seguinte</button>
+                                </>
+                            }
+
+                            {players.some(e => (e.id === current_user.id && e.eliminated === false)) && tournament.status === "STARTED" &&
+                                <>
+                                <button onClick={() => checkInForGame()}>Check In</button>
+                                </>
+                            }
                         </div>
-                        
-                        {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
-                        <>
-                            <button onClick={() => removeTournament()}>Eliminar Torneio</button>
-                            <button onClick={() => initializeTournament()}>Iniciar Torneio</button>
-                        </>
-                        }
-
-                        {tournament.creator === current_user.id && tournament.status === "STARTED" &&
-                            <>
-                            <button onClick={() => initializeNextRound()}>Iniciar Fase Seguinte</button>
-                            </>
-                        }
-
-                        {players.some(e => (e.id === current_user.id && e.eliminated === false)) && tournament.status === "STARTED" &&
-                            <>
-                            <button onClick={() => checkInForGame()}>Check In</button>
-                            </>
-                        }
-                        
                     </div>
                 </div>
             </div>

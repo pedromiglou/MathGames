@@ -1,15 +1,9 @@
-.list-group {
-	margin-left: 5%;
-	margin-right: 5%;
-}
-
 .pointer:hover {
 	cursor: pointer;
 }
 
 .list-users{
-	margin: 2em 5em;
-	padding: 1em 2em;
+	margin: 2em 3em;
 }
 
 .filters{
@@ -18,14 +12,19 @@
 	align-items: center;
 	justify-content: center;
 	margin: 2em 0;
+	flex-wrap: wrap;
 }
 
 .title-ind{
+	flex: 1 1 10%;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	margin-right: 3em;
+}
+
+.filters > :nth-child(2){
+	flex: 1 1 65%;
 }
 
 .filters h1{
@@ -123,4 +122,167 @@ ul.list-group{
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+}
+
+
+.podium-flex-buttons{
+	display: flex;
+}
+
+
+.join-tournament{
+    background: hsl(135, 53%, 53%) !important;
+}
+
+.join-tournament span.front{
+    background: hsl(125, 74%, 43%) !important;
+}
+
+.remove-friend{
+	background: hsl(0, 47%, 51%) !important;
+}
+
+.remove-friend span.front{
+	background: hsl(0, 74%, 43%) !important;
+}
+
+.report-player{
+	background: hsl(34, 53%, 53%) !important;
+}
+
+.report-player span.front{
+	background: hsl(37, 74%, 43%) !important;
+}
+
+.add-friend{
+	background: hsl(135, 53%, 53%) !important;
+}
+
+.add-friend span.front{
+	background: hsl(125, 74%, 43%) !important;
+}
+
+.upgrade-user{
+	background: hsl(135, 53%, 53%) !important;
+}
+
+.upgrade-user span.front{
+	background: hsl(125, 74%, 43%) !important;
+}
+
+.downgrade-user{
+	background: hsl(34, 53%, 53%) !important;
+}
+
+.downgrade-user span.front{
+	background: hsl(37, 74%, 43%) !important;
+}
+
+.ban-user{
+	background: hsl(0, 47%, 51%) !important;
+}
+
+.ban-user span.front{
+	background: hsl(0, 74%, 43%) !important;
+}	
+
+.remove-ban-user{
+	background: hsl(187, 53%, 53%) !important;
+}
+
+.remove-ban-user span.front{
+	background: hsl(189, 86%, 49%) !important;
+}
+
+.search-clicky{
+    background: hsl(187, 53%, 53%) !important;
+	width: 150px !important;
+	margin-bottom: 2em !important;
+}
+
+.search-clicky span.front{
+    background: hsl(189, 86%, 49%) !important;
+}
+
+
+.button-clicky-podium {
+    width: 50px;
+	color: white;
+	border: none;
+	border-radius: 12px !important;
+	padding: 0;
+	cursor: pointer !important;
+	position: relative !important;
+    margin: 0 auto;
+}
+
+.button-clicky-podium span.front {
+	display: block;
+	padding: 5px 10px;
+	border-radius: 12px !important;
+	color: white;
+	transform: translateY(-8px);
+	text-align: center;
+    font-size: 1em;
+}
+
+
+.button-clicky-podium:hover span.front{
+	transform: translateY(-4px);
+	transition: filter 250ms;
+  	filter: brightness(110%);
+}
+
+.button-clicky-podium:active span.front{
+	transform: translateY(-1px);
+	transition: filter 250ms;
+  	filter: brightness(110%);
+}
+
+
+
+
+@media only screen and (max-width: 1048px) {
+	.list-group-item:nth-child(1) {
+		font-size: 1.5em;
+	}
+
+	.list-group-item {
+		font-size: 1.2em;
+	}
+}
+
+
+@media only screen and (max-width: 960px) {
+	.form-players{
+		padding: 0 1em 2em 1em;
+	}
+
+	.list-group-item:nth-child(1) {
+		font-size: 1.2em;
+		margin: 0;
+	}
+
+	.list-group-item {
+		font-size: 1em;
+		margin: 0;
+	}
+}
+
+@media only screen and (max-width: 578px) {
+	.form-players{
+		flex-direction: column;
+	}
+
+	#filter_username, #filter_allusers_max_level, #filter_allusers_min_level{
+		font-size: 0.8em;
+	}
+
+	.title-ind{
+		font-size: 0.8em;
+	}
+
+	.podium-flex-buttons{
+		margin-top: 1em;
+	}
 }
