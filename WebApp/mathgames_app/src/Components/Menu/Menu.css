@@ -7,25 +7,38 @@
 */
 
 /* Global horizontal Navbar */
-#horizontal_nav_row.row{
+#horizontal_nav_row.navbar-row{
     background-color: #F1F1F1;
     margin:0;
     height: 100px;
     width: 100%;
-    position: -webkit-sticky;
-    position: sticky;
+    position: -webkit-sticky !important;
+    position: sticky !important;
     top:0px;
     display: flex;
-    color: navy;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+    color: rgb(0, 195, 255);
 }
 
 /*Bars and Logo */
-#row-logo.row{
+#row-logo.logo-bars-section{
+    flex: 1 1 30%;
     margin:0;
     /* padding: 8px 16px; */
-    width: min(50%, 400px);
     min-width: 250px;
 }
+
+.navbar-icons-flex{
+    flex: 1 1 65%;
+    display: flex;
+    gap: 10%;
+    justify-content: flex-end;
+    align-items: center;
+    margin-right: 5%;
+}
+
 
 .nav-logo{
     width: min(80%, 350px);
@@ -36,13 +49,32 @@
 
 .logo{
     width: 100%;
-    min-width: 100px;
+    min-width: 300px;
     height: 100%;
 }
 
 .notification-img {
     height: 40px;
 } 
+
+.navbar-icon{
+    font-size: 42px;
+    color: rgb(2, 204, 255) !important;
+    cursor: pointer;
+    background-color: rgb(255, 255, 255);
+    border-radius: 50%;
+    padding: 0.2em;
+}
+
+.navbar-icon:hover{
+    font-size: 42px;
+    color: rgb(255, 255, 255) !important;
+    cursor: pointer;
+    background-color: rgb(2, 204, 255);
+    border-radius: 50%;
+    padding: 0.2em;
+}
+
 
 .icon-adjust {
     padding-bottom: 20px;
@@ -51,18 +83,6 @@
 .nav-options {
     width: 100%;
     justify-content: flex-end;
-}
-
-/* horizontal navbar */
-.navbar{
-    display: flex;
-    width: 30%;
-    max-width: calc(100% - 400px);
-    height: 100%;
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    padding: 0.5rem 1rem;
 }
 
 #notifs-number {
@@ -82,8 +102,36 @@
 }
 
 .round_profile_logo{
-    width: 70px;
-    height: 70px;
+    width: 100px;
+    height: 70px; 
+}
+
+.key-down{
+    position: absolute;
+    top: 40%;
+    right: 0;
+    font-size: 25px;
+}
+
+.user-name{
+    font-size: 1.2em;
+    text-align: center;
+}
+
+#user_dropdown{
+    width: 100px !important;
+    height: 70px !important;
+    background-color: rgb(255, 255, 255) !important;
+    border-top-left-radius: 95% !important;
+    border-top-right-radius: 95% !important;
+    border-radius: 50%;
+    position: relative;
+}
+
+#user_dropdown canvas{
+    width: 70px !important;
+    height: 50px !important;
+    max-height: 50px !important;
 }
 
 .profile_logo{
@@ -91,24 +139,88 @@
     min-width: 70px;
 }
 
+.perfil-info-modal{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 3.5em;
+}
+
+.perfil-info-modal > :first-child{
+    font-size: 2em;
+}
+
+.perfil-info-modal > :last-child{
+    font-size: 1.5em;
+    width: 100px;
+    text-align: right;
+}
+
+.remove-decoration{
+    text-decoration: none !important;
+    padding: 0.2em;
+}
+
+.icon-word{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 1.5em;
+    gap: 0.5em;
+}
+
+.remove-decoration h4{
+    margin: 0;
+    color: gray;
+}
+
+.remove-decoration:hover{
+    background-color: rgb(235, 235, 235);
+    border-radius: 10px;
+}
+
+.remove-decoration:hover h4{
+    color:#0061E0 !important;
+}
+
+.remove-decoration:hover svg{
+    color:#0061E0 !important;
+}
+
+
 .navbar-account-info {
     font-size: x-large;
 }
 
-.h2-login { 
-    font-family: Bubblegum Sans;
-    font-size: xx-large;
-    font-style: normal;
-    font-variant: normal;
-    font-weight: 500;
-    display: inline;
-
-    padding-right: 20px;
+.login-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
+    text-decoration: none !important;
 }
 
-.h2-login:hover {
-    text-decoration: none;
+.navbar-icon-h2:hover{
+    font-size: 42px;
+    color: rgb(2, 204, 255) !important;
+    cursor: pointer;
+    background-color: rgb(255, 255, 255);
 }
+
+.navbar-icon-h2{
+    font-size: 42px;
+    color: rgb(255, 255, 255) !important;
+    cursor: pointer;
+    background-color: rgb(2, 204, 255);
+    border-radius: 15px;
+    padding: 0 0.2em;
+}
+
+
+
+
+
 
 /*to fix
 .icon_notifications:hover {
@@ -301,104 +413,38 @@ span.icons-noname{
 }
 
 /* media queries */
-/* Extra small devices (phones, 600px and down) */
-@media only screen and (max-width: 600px) {
-    /*Bars and Logo */
-    #row-logo.row{
-        margin:0;
-        padding: 8px 16px;
-        width: 100%;
+
+@media only screen and (max-width: 845px) {
+    #horizontal_nav_row.navbar-row{
+        height: 190px;
     }
 
-    .nav-logo{
-        width: calc(80% - 40px);
-        height: auto;
-    }
-
-    .logo{
-        width: 100%;
-        min-width: 100px;
-        height: 100%;
+    .menu-bars{
         display: none;
     }
 
-
-    .navbar-account-info {
-        display: none !important;
+    #horizontal_nav_row.navbar-row{
+        flex-direction: column;
     }
 
-
-    .h2-login {
-        display: none;
+    #row-logo{
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .navbar-icons-flex{
+        flex: 0 0 0%;
+        margin: 0 auto !important;
+        width: 330px;
     }
 
+    .login-case{
+        justify-content: center;
+        align-items: center;
+    }
+
+   
 }
-
-/* Small devices (portrait tablets and large phones, 600px and up) */
-@media only screen and (min-width: 600px) {
-
-    .navbar-account-info {
-        display: none !important;
-    }
-
-    .h2-login {
-        display: none;
-    }
-
-}
-
-/* Medium devices (landscape tablets, 768px and up) */
-@media only screen and (min-width: 768px) {
-    .example {background: blue;}
-
-    .h2-login {
-        display: none;
-    }
-
-    .navbar-account-info {
-        display: initial !important;
-    }
-
-    .navbar-account-info h5 {
-        font-size: medium;
-    }
-} 
-
-/* Large devices (laptops/desktops, 992px and up) */
-@media only screen and (min-width: 992px) {
-    .example {background: orange;}
-
-    .h2-login {
-        display: initial;
-    }
-
-    .navbar-account-info {
-        display: initial !important;
-    }
-
-    .navbar-account-info h5 {
-        font-size: large;
-    }
-
-} 
-
-
-
-/* Extra large devices (large laptops and desktops, 1200px and up) */
-@media only screen and (min-width: 1200px) {
-    .example {background: pink;}
-
-    .h2-login {
-        display: initial;
-    }
-
-    .navbar-account-info {
-        display: initial !important;
-    }
-
-}
-
-
 
 
 /* Merdas do Rafa para depois organizar */
