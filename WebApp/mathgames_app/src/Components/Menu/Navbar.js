@@ -254,6 +254,7 @@ function Navbar() {
 		if (other_username !== undefined && other_username !== null && other_username !== "")
 			UserService.send_notification_request_by_username(current_user.id, other_username, "F");
 		input.value = ""
+		hideAddFriendInput();
 	}
 
 
@@ -307,6 +308,22 @@ function Navbar() {
             });
         }
     }, [dispatch])
+
+
+	function showAddFriendInput(){
+		let inviteFriend_Separator_div = document.getElementById("inviteFriend-Separator");
+		let inviteFriend_div = document.getElementById("inviteFriend");
+		inviteFriend_div.style.display = "flex";
+		inviteFriend_Separator_div.style.display = "flex";
+	}
+
+	function hideAddFriendInput(){
+		let inviteFriend_Separator_div = document.getElementById("inviteFriend-Separator");
+		let inviteFriend_div = document.getElementById("inviteFriend");
+		inviteFriend_div.style.display = "none";
+		inviteFriend_Separator_div.style.display = "none";
+	}
+	
 	return (
 		<IconContext.Provider value={{color: 'grey'}}>
 			<div id="horizontal_nav_row" className="row sticky-top">
@@ -391,8 +408,28 @@ function Navbar() {
 						/>
 						<div title="Amigos" className="col-xl-2 col-lg-2 col-md-2 col-sm-3 col-xs-3 d-flex align-items-center justify-content-center">
 							<DropdownButton	menuAlign="right" title={<FaIcons.FaUserFriends size={42}/>} id="friends-dropdown">
-								<Dropdown.ItemText><div className="friends-modal"><h4>Amigos</h4></div></Dropdown.ItemText>
+								<Dropdown.ItemText>
+									<div className="friends-modal">
+										<h4>Amigos</h4>
+										<div onClick={() => showAddFriendInput()} title="Adicionar amigo" className="button-add-friend">
+											<span className="shadow"></span>
+											<span className="front"><FaIcons.FaUserPlus size={24} color={"white"}/></span>
+										</div>
+									</div>
+								</Dropdown.ItemText>
 								<Dropdown.Divider />
+								<Dropdown.ItemText id="inviteFriend" style={{display: "none"}}>
+									<div className="addFriendRow">
+										<input id="inputFriend" type="text" className="inputAddFriend" placeholder="username"></input>
+										<div onClick={() => friendRequest()} title="Enviar pedido" className="invite-friend-button">
+											<span className="shadow"></span>
+											<span className="front">Enviar</span>
+										</div>
+										{/* <button type="button" onClick={() => friendRequest()}>Enviar</button> */}
+									</div>
+								</Dropdown.ItemText>
+								<Dropdown.Divider id="inviteFriend-Separator" style={{display: "none"}} />
+
 								{ friends.length > 0 &&
 								<Dropdown.ItemText>{
 										<ul className="list-friends">
@@ -409,24 +446,17 @@ function Navbar() {
 											);
 										})}
 										</ul>
-								}</Dropdown.ItemText>
+										}
+									</Dropdown.ItemText>
+								
 								}
 								{ friends.length === 0 &&
 								<Dropdown.ItemText>
-									<div className="row navbar-dropdown-row">
-										<Dropdown.ItemText>Não possui amigos.</Dropdown.ItemText>
+									<div className="row">
+										Não possui amigos.
 									</div>
 								</Dropdown.ItemText>
 								}
-								<Dropdown.Divider />
-								<Dropdown.ItemText>
-									<div className="row navbar-dropdown-row">
-										<Dropdown.ItemText>
-											<input id={"inputFriend"} type={"text"} placeholder={"username"}></input>
-										</Dropdown.ItemText>
-										<button type={"button"} onClick={() => friendRequest()}>Invite</button>
-									</div>
-								</Dropdown.ItemText>
 							</DropdownButton>
 						</div>
 						<GameModal

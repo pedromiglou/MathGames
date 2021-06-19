@@ -449,6 +449,19 @@ span.icons-noname{
 /* Modal Amigos */
 .friends-modal{
     min-width: 230px;
+    display: flex;
+    align-items: center;
+}
+
+.add_friend_button{
+    margin-left: auto;
+    border-radius: 10px;
+    padding: 0.4em;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+}
+
+.add_friend_button:hover{
+    cursor: pointer;
 }
 
 .list-item-friends{
@@ -563,4 +576,103 @@ span.icons-noname{
 	border-radius: 15px;
 	box-shadow: rgba(0, 0, 0, 0.35) 5px 15px 15px;
 	border: 2px solid white;
+}
+
+
+/* Clicky button */
+
+.button-add-friend {
+	color: white;
+	background: hsl(120, 53%, 53%);
+	border: none;
+	border-radius: 12px;
+	padding: 0;
+	cursor: pointer;
+	position: relative;
+    margin-left: auto;
+}
+
+.button-add-friend span.front {
+	display: block;
+	padding: 5px 10px;
+	border-radius: 12px;
+	background: hsl(120, 86%, 58%);
+	color: white;
+	transform: translateY(-8px);
+	text-align: center;
+}
+
+
+.button-add-friend:hover span.front{
+	transform: translateY(-4px);
+	transition: filter 250ms;
+  	filter: brightness(110%);
+}
+
+.button-add-friend:active span.front{
+	transform: translateY(-1px);
+	transition: filter 250ms;
+  	filter: brightness(110%);
+}
+
+.shadow {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	border-radius: 12px;
+	background: hsl(0deg 0% 0% / 0.25);
+	transform: translateY(2px);
+	filter: blur(4%);
+  }
+
+
+.addFriendRow{
+    display: flex;
+}
+
+.inputAddFriend{
+    width: 100%;
+    min-width: 110px;
+    font-size: 1.2em;
+    padding: 2px 10px;
+    outline: none;
+    border: 1px solid rgb(0, 162, 255);
+    border-radius: 4px;
+    margin-right: 30px;
+}
+
+.invite-friend-button {
+	color: white;
+	background: hsl(187, 53%, 53%) !important;
+	border: none;
+	border-radius: 12px !important;
+	padding: 0;
+	cursor: pointer !important;
+	position: relative !important;
+    margin-left: auto;
+}
+
+.invite-friend-button span.front {
+	display: block;
+	padding: 5px 10px;
+	border-radius: 12px !important;
+	background: hsl(189, 86%, 49%) !important;
+	color: white;
+	transform: translateY(-8px);
+	text-align: center;
+}
+
+
+.invite-friend-button:hover span.front{
+	transform: translateY(-4px);
+	transition: filter 250ms;
+  	filter: brightness(110%);
+}
+
+.invite-friend-button:active span.front{
+	transform: translateY(-1px);
+	transition: filter 250ms;
+  	filter: brightness(110%);
 }
