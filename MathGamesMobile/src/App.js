@@ -27,6 +27,8 @@ import { DrawerActions } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Notifications from './screens/Notifications';
 
+import * as ScreenOrientation from 'expo-screen-orientation';
+
 export const navigationRef = React.createRef();
 export function openDrawer(routeName, params) {
   navigationRef.current.dispatch(DrawerActions.toggleDrawer());
@@ -150,6 +152,7 @@ function App() {
   })
 
   if (!loaded) {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
     deleteData("user");
     deleteData("user_id");
     deleteData("username")

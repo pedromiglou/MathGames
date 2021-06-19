@@ -5,7 +5,6 @@ import {gamesInfo} from './../data/GamesInfo';
 import { LinearGradient } from 'expo-linear-gradient';
 import { readData, saveData } from '../utilities/AsyncStorage';
 import UserService from "./../services/user.service";
-import socket from "./../utilities/Socket";
 
 const win = Dimensions.get('window');
 
@@ -17,7 +16,7 @@ function ChooseGameModal(props) {
             <View style={styles.modalView}>
                 <Text style={styles.text}>Escolhe o jogo que queres jogar</Text>
                 <ScrollView style={{backgroundColor: "#dcdfe4"}}>
-                    {gamesInfo.map(X => 
+                    {gamesInfo.filter(game=>!game.toBeDone).map(X => 
                     <TouchableHighlight style={styles.gameTile} key={X.id} onPress = {() => {
                           readData("user").then(user=>{
                             user = JSON.parse(JSON.parse(user));

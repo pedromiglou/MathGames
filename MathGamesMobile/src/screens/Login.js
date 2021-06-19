@@ -21,6 +21,8 @@ function Login(props) {
                     onChangeText={onChangeUsername}
                     value={username}
                     placeholder="Nome de Utilizador"
+                    autoCompleteType="username"
+                    textContentType="username"
                 />                      
                 <TextInput
                     style={styles.input}
@@ -28,6 +30,8 @@ function Login(props) {
                     value={password}
                     secureTextEntry={true}
                     placeholder="Palavra-chave"
+                    autoCompleteType="password"
+                    textContentType="password"
                 />
                 <TouchableHighlight onPress={()=>AuthService.login(username, password).then(res =>{if (res) props.login(true); props.return(false);})}
                     style={styles.button}>
@@ -49,6 +53,8 @@ function Login(props) {
                     onChangeText={onChangeUsername}
                     value={username}
                     placeholder="Nome de Utilizador"
+                    autoCompleteType="username"
+                    textContentType="username"
                 />
                 <TextInput
                     style={styles.input}
@@ -56,6 +62,8 @@ function Login(props) {
                     value={email}
                     secureTextEntry={false}
                     placeholder="Email"
+                    autoCompleteType="email"
+                    textContentType="emailAddress"
                 />
                 <TextInput
                     style={styles.input}
@@ -63,9 +71,17 @@ function Login(props) {
                     value={password}
                     secureTextEntry={true}
                     placeholder="Palavra-chave"
+                    autoCompleteType="password"
+                    textContentType="password"
                 />
-                <TouchableHighlight onPress={()=>AuthService.register(username, email, password).then(res =>{if (res) setLogin(true)})}
-                    style={styles.button}>
+                <TouchableHighlight onPress={()=>AuthService.register(username, email, password).then(res =>{
+                    if (res) {
+                        onChangeUsername("");
+                        onChangeEmail("");
+                        onChangePassword("");
+                        setLogin(true);
+                    }
+                })} style={styles.button}>
                     <Text style={styles.buttonText}>Criar Conta</Text>
                 </TouchableHighlight>
                 <TouchableHighlight

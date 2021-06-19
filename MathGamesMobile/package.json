@@ -25,6 +25,7 @@
     "expo-graphics": "^2.0.0",
     "expo-linear-gradient": "~9.1.0",
     "expo-progress": "^0.0.2",
+    "expo-screen-orientation": "~3.1.0",
     "expo-splash-screen": "~0.10.2",
     "expo-three": "^5.7.0",
     "expo-updates": "~0.5.4",
