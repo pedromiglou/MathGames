@@ -94,12 +94,12 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
       socket.on("match_end", (msg) => {
         if (msg.game_id === storage.game_id) {
           storage.gameEnded=true;
-          entities.push({visible:true, text: "Game ended by the server", renderer: <GameModal></GameModal>});
+          entities.push({visible:true, storage: storage, endMode: msg.end_mode,
+            winner: msg.match_result, renderer: <GameModal></GameModal>});
         }
       });
     }
     
-
     //create the AI and make it play if not our turn
     if (storage.gameMode==="Contra o Computador") {
       if (storage.myTurn) {
@@ -170,11 +170,8 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
     } else if (e.type === "gameEnded") {
       storage.gameEnded=true;
       if (storage.gameMode==="No mesmo Computador") {
-        if (storage.turn===1) {
-          entities.push({visible:true, text: "Time Ended. "+storage.player2+ " won!", renderer: <GameModal></GameModal>});
-        } else {
-          entities.push({visible:true, text: "Time Ended. "+storage.player1+ " won!", renderer: <GameModal></GameModal>});
-        }
+        entities.push({visible:true, storage: storage, endMode: "timeout",
+            winner: e.turn===1?2:1, renderer: <GameModal></GameModal>});
       }
       
       return entities;
@@ -229,17 +226,17 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
   }
 
   if (nValidSquaresCats===0&&nValidSquaresDogs>0) {
-    entities.push({visible:true, text: "Player 2 won", renderer: <GameModal></GameModal>});
+    entities.push({visible:true, storage: storage, endMode: "no_moves", winner: 2, renderer: <GameModal></GameModal>});
     storage.gameEnded = true;
   } else if (nValidSquaresDogs===0&&nValidSquaresCats>0) {
-    entities.push({visible:true, text: "Player 1 won", renderer: <GameModal></GameModal>});
+    entities.push({visible:true, storage: storage, endMode: "no_moves", winner: 1, renderer: <GameModal></GameModal>});
     storage.gameEnded = true;
   } else if (nValidSquaresDogs===0&&nValidSquaresCats===0) {
     if (turn===1) {
-      entities.push({visible:true, text: "Player 2 won", renderer: <GameModal></GameModal>});
+      entities.push({visible:true, storage: storage, endMode: "no_moves", winner: 2, renderer: <GameModal></GameModal>});
       storage.gameEnded = true;
     } else {
-      entities.push({visible:true, text: "Player 1 won", renderer: <GameModal></GameModal>});
+      entities.push({visible:true, storage: storage, endMode: "no_moves", winner: 1, renderer: <GameModal></GameModal>});
       storage.gameEnded = true;
     }
   }

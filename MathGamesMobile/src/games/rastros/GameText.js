@@ -92,7 +92,7 @@ function GameText(props) {
             {player>0 && props.gameMode !== "Contra o Computador" && <CountDown
                 style={{alignSelf: "flex-start", width: 70, position: "absolute"}}
                 until={300}
-                onFinish={() => props.dispatch({type: "gameEnded"})}
+                onFinish={() => props.dispatch({type: "gameEnded", turn: props.turn})}
                 size={15}
                 timeToShow={["M","S"]}
                 timeLabelStyle={{fontFamily: "BubblegumSans"}}
