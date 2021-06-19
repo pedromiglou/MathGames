@@ -313,6 +313,22 @@ io.on("connection", (socket) => {
     console.log("New client connected");
     console.log("id: ", socket.id);
 
+
+    socket.on("new_user", (msg) => {
+      let user_id = String(msg["user_id"])
+      users_info[user_id] = socket.id;
+    })
+
+    socket.on("new_notification", (msg) => {
+      let sender = String(msg["sender"])
+      let receiver = String(msg["receiver"])
+      let notification_type = msg["notification_type"]
+      let notification_text = msg["notification_text"]
+
+      create_notification(sender, receiver, notification_type, notification_text)
+    })
+
+
     socket.on("disconnect", function() {
         var user_id = String( Object.keys(users_info).find(key => users_info[key] === socket.id) );
         console.log("Leaving user id: ", user_id)
@@ -341,10 +357,6 @@ io.on("connection", (socket) => {
 
     })
 
-
-    socket.on("send_notification", (msg) =>  {
-
-    })
 
   //
   // FRIEND GAME BY INVITE SECTION
@@ -437,7 +449,6 @@ io.on("connection", (socket) => {
       users_info[user_id] = socket.id
 
       if ( Object.keys(active_friend_link).includes(match_id) ) {
-        console.log("Vou criar e enviar!")
         create_game(match_id, game_id, user_id, active_friend_link[match_id], "amigo", null)
         io.to( users_info[active_friend_link[match_id]] ).emit("friend_joined", {"match_id": match_id, "player1": user_id, "player2": active_friend_link[match_id]})
       }
@@ -589,13 +600,7 @@ io.on("connection", (socket) => {
     //Buscar todos os jogadores ainda nao eliminados e enviar notificação
     TournamentUser.findAll({where: {tournament_id: torneio.id, eliminated: false}}).then(players_in_play => {
       for (let player of players_in_play) {
-        let notification = {
-          sender: torneio.creator,
-          receiver: player.dataValues.user_id,
-          notification_type: "R",
-          notification_text: torneio.name + " iniciou um novo round! Faça o check-in para a sua partida."
-        }
-        Notification.create(notification);
+        create_notification(torneio.creator, player.dataValues.user_id, "R", torneio.name + " iniciou um novo round! Faça o check-in para a sua partida.")
       }
     }).catch(err => {
       io.to( socket.id ).emit("round_start", {"erro": true});
@@ -1234,6 +1239,36 @@ async function finish_game(match_id, endMode) {
   delete players_in_game[player1];
   delete players_in_game[player2];
 
+}
+
+
+async function create_notification(sender, receiver, notification_type, notification_text) {
+  let notification = {
+    sender: sender,
+    receiver: receiver,
+    notification_type: notification_type,
+    notification_text: notification_text
+  }
+
+  if (notification_type === "F" || notification_type === "A" || notification_type === "N" || notification_type === "P" || notification_type === "T") {
+    var result = await Notification.findOne({where: {
+      sender: sender,
+      receiver: receiver,
+      notification_type: notification_type
+    }})
+
+    if (result !== null) {
+      res.status(405).send({
+        message: "Duplicated notification is not allowed."
+      });
+      return
+    }
+  }
+
+
+  Notification.create(notification).then( succes => {
+    io.to(users_info[receiver]).emit("reload_notifications", {"reload": true})
+  });
 }
 
 var Timer = function(callback, delay) {

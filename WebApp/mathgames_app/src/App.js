@@ -28,9 +28,6 @@ import TournamentPage from './Pages/Tournaments/TournamentPage';
 import Bracket from './Pages/Tournaments/Bracket';
 
 
-/* Uuid */
-import { v4 as uuidv4 } from 'uuid';
-
 
 /* Redux */
 import { Provider } from 'react-redux';
@@ -40,47 +37,43 @@ import store from './store';
 
 function App() {
 
-    if (sessionStorage.getItem('user_id') === null)
-        sessionStorage.setItem('user_id', "Guest_" + uuidv4());		
-
 
     
     return(
         <Provider store={store}>
             <BrowserRouter >
-                <div className="wrapper">
-                    <div id="sidebarCollapse" className="menu-bars" onClick={toggleNav}>
-                        <IconContext.Provider value={{color: 'grey'}}>
-                            <FaIcons.FaBars/>
-                        </IconContext.Provider>
-                    </div>
-
-                    <Navbar/>
-
-                    <nav id="sidebar" className="nav-menu active">
-                        <Sidemenu/>
-                    </nav>
-
-                    <div id="content" className="content">
-                        <Switch>
-                            <Route exact path='/' component={withRouter(Welcome)} />
-                            <Route exact path='/gamesDashboard' component={withRouter(ChooseGame)} />
-                            <Route path='/game/' component={withRouter(Game)} />
-                            <Route exact path='/login' component={withRouter(Login)} />
-                            <Route path='/gamePage' component={withRouter(GamePage)}/>
-                            <Route exact path='/profile' component={withRouter(Profile)}/>
-                            <Route exact path='/podium' component={withRouter(Podium)}/>
-                            <Route exact path='/settings' component={withRouter(Settings)}/>
-                            <Route exact path='/statistics' component={withRouter(Statistics)}/>
-                            <Route exact path='/about' component={withRouter(AboutUs)}/>
-                            <Route exact path='/tournaments' component={withRouter(Tournaments)}/>
-                            <Route exact path='/createTournament' component={withRouter(CreateTournament)}/>
-                            <Route path='/tournament' component={withRouter(TournamentPage)}/>
-                            <Route path='/bracket' component={withRouter(Bracket)}/>
-                        </Switch>
-                    </div>
-
+                <div id="sidebarCollapse" className="menu-bars" onClick={toggleNav}>
+                    <IconContext.Provider value={{color: 'grey'}}>
+                        <FaIcons.FaBars/>
+                    </IconContext.Provider>
                 </div>
+
+                <Navbar/>
+
+                <nav id="sidebar" className="nav-menu active">
+                    <Sidemenu/>
+                </nav>
+
+                <div id="content" className="content">
+                    <Switch>
+                        <Route exact path='/' component={withRouter(Welcome)} />
+                        <Route exact path='/gamesDashboard' component={withRouter(ChooseGame)} />
+                        <Route path='/game/' component={withRouter(Game)} />
+                        <Route exact path='/login' component={withRouter(Login)} />
+                        <Route path='/gamePage' component={withRouter(GamePage)}/>
+                        <Route exact path='/profile' component={withRouter(Profile)}/>
+                        <Route exact path='/podium' component={withRouter(Podium)}/>
+                        <Route exact path='/settings' component={withRouter(Settings)}/>
+                        <Route exact path='/statistics' component={withRouter(Statistics)}/>
+                        <Route exact path='/about' component={withRouter(AboutUs)}/>
+                        <Route exact path='/tournaments' component={withRouter(Tournaments)}/>
+                        <Route exact path='/createTournament' component={withRouter(CreateTournament)}/>
+                        <Route path='/tournament' component={withRouter(TournamentPage)}/>
+                        <Route path='/bracket' component={withRouter(Bracket)}/>
+                    </Switch>
+                </div>
+
+            
             </BrowserRouter>
         </Provider>
     )

@@ -6,7 +6,11 @@ import Pagination from "@material-ui/lab/Pagination";
 import * as IoIcons from 'react-icons/io5';
 import * as MdIcons from 'react-icons/md';
 import * as FaIcons from 'react-icons/fa';
+import * as GiIcons from 'react-icons/gi';
 import { Modal, Button } from "react-bootstrap";
+
+import socket from "../../index"
+
 
 import AuthService from '../../Services/auth.service';
 import UserService from '../../Services/user.service';
@@ -82,12 +86,16 @@ function Podium() {
 	};
 	
 	function friend_request(friend2) {
-		UserService.send_notification_request(current_user.id, friend2, "F");
-		
+		//UserService.send_notification_request(current_user.id, friend2, "F");
+		var notification_text = current_user.username + " enviou-te um pedido de amizade."
+		socket.emit("new_notification", {"sender": current_user.id, "receiver": friend2, "notification_type": "F", "notification_text": notification_text})
+
 	}
 
 	async function remove_friend(friend2) {
 		await UserService.remove_friend(current_user.id, friend2);
+		var notification_text = current_user.username + " removeu-te da sua lista de amigos."
+		socket.emit("new_notification", {"sender": current_user.id, "receiver": friend2, "notification_type": "N", "notification_text": notification_text})
 		window.location.reload();
 	}
 
@@ -384,6 +392,12 @@ function Podium() {
 							<h1>Todos os Jogadores</h1>
 						</div>
 					}
+					{ (current_user === null || current_user["account_type"] !== "A") && 
+						<div className="title-ind">
+							<i><GiIcons.GiPodium/></i>
+							<h1>Classificações</h1>
+						</div>
+					}
 					<div className="row">
 						<div className="col-12 col-md-12 col-lg-12">
 							<form className="shadow-white form-center" onSubmit={submitFunction}>
@@ -404,8 +418,11 @@ function Podium() {
 									</div>
 								</div>
 								
-								
-								<button id="searchButton" onClick={() => {setAllUsersInputs({ username: document.getElementById("filter_username").value, min_level: document.getElementById("filter_allusers_min_level").value, max_level: document.getElementById("filter_allusers_max_level").value }); setFriendRequestSucess(false); setReportSucess(false)}} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
+								<div id="searchButton" onClick={() => {setAllUsersInputs({ username: document.getElementById("filter_username").value, min_level: document.getElementById("filter_allusers_min_level").value, max_level: document.getElementById("filter_allusers_max_level").value }); setFriendRequestSucess(false); setReportSucess(false)}} className="button-clicky-podium search-clicky">
+									<span className="shadow"></span>
+									<span className="front">Procurar <FaIcons.FaSearch/></span>
+								</div>
+								{/* <button id="searchButton" onClick={() => {setAllUsersInputs({ username: document.getElementById("filter_username").value, min_level: document.getElementById("filter_allusers_min_level").value, max_level: document.getElementById("filter_allusers_max_level").value }); setFriendRequestSucess(false); setReportSucess(false)}} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button> */}
 							</form>
 							
 						</div>
@@ -445,9 +462,12 @@ function Podium() {
 							<div className="col-lg-3 col-md-3 col-sm-3">
 								Experiência
 							</div>
-							<div className="col-lg-2 col-md-2 col-sm-2">
-								Ações
-							</div>
+
+							{current_user !== null && 
+								<div className="col-lg-2 col-md-2 col-sm-2">
+									Ações
+								</div>
+							}
 						</li>
 
 						{users.map(function(user, index) {
@@ -487,47 +507,90 @@ function Podium() {
 									<div className="col-lg-3 col-md-3 col-sm-3">
 										{user.account_level} pontos
 									</div>
-									<div className="col-lg-2 col-md-2 col-sm-2">
-										{ current_user !== null && current_user["account_type"] !== "A" && 
-											<>
-											{ friends.length !== 0 &&
+									{current_user !== null && 
+										<div className="col-lg-2 col-md-2 col-sm-2 podium-flex-buttons">
+											{ current_user !== null && current_user["account_type"] !== "A" && 
 												<>
-												{ friends.some(e => e.id === user.id) &&
+												{ friends.length !== 0 &&
 													<>
-													<i className="subicon pointer"   onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_friend"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><IoIcons.IoPersonRemove/></i>
-													<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><MdIcons.MdReport/></i>
-													</>
-												} 
-												{ (!friends.some(e => e.id === user.id) && user.id !== current_user.id ) &&
+													{ friends.some(e => e.id === user.id) &&
+														<>
+														<div title="Remover Amigo" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_friend"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}  className="button-clicky-podium remove-friend">
+															<span className="shadow"></span>
+															<span className="front"><IoIcons.IoPersonRemove/></span>
+														</div>
+														<div title="Reportar Jogador" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}  className="button-clicky-podium report-player">
+															<span className="shadow"></span>
+															<span className="front"><MdIcons.MdReport/></span>
+														</div>
+
+														{/* <i className="subicon pointer"   onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_friend"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><IoIcons.IoPersonRemove/></i>
+														<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><MdIcons.MdReport/></i> */}
+														</>
+													} 
+													{ (!friends.some(e => e.id === user.id) && user.id !== current_user.id ) &&
+														<>
+														<div title="Adicionar Amigo" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("friend_request"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}  className="button-clicky-podium add-friend">
+															<span className="shadow"></span>
+															<span className="front"><IoIcons.IoPersonAdd/></span>
+														</div>
+														<div title="Reportar Jogador" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}  className="button-clicky-podium report-player">
+															<span className="shadow"></span>
+															<span className="front"><MdIcons.MdReport/></span>
+														</div>
+
+														{/* <i className="subicon pointer"  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("friend_request"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}></i>
+														<i className="subicon pointer" style={{marginLeft:"10px"}}   onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><MdIcons.MdReport/></i> */}
+														</>
+													} 
+													</>	
+												}
+												{ friends.length === 0 &&  user.id !== current_user.id &&
 													<>
-													<i className="subicon pointer"  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("friend_request"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}></i>
-													<i className="subicon pointer" style={{marginLeft:"10px"}}   onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><MdIcons.MdReport/></i>
+													<div title="Adicionar Amigo" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("friend_request"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}  className="button-clicky-podium add-friend">
+														<span className="shadow"></span>
+														<span className="front"><IoIcons.IoPersonAdd/></span>
+													</div>
+													<div title="Reportar Jogador" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}  className="button-clicky-podium report-player">
+														<span className="shadow"></span>
+														<span className="front"><MdIcons.MdReport/></span>
+													</div>
+
+													{/* <i className="subicon pointer"  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("friend_request"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><IoIcons.IoPersonAdd/></i>
+													<i className="subicon pointer" style={{marginLeft:"10px"}}   onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><MdIcons.MdReport/></i> */}
 													</>
-												} 
-												</>	
-											}
-											{ friends.length === 0 &&  user.id !== current_user.id &&
-												<>
-												<i className="subicon pointer"  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("friend_request"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><IoIcons.IoPersonAdd/></i>
-												<i className="subicon pointer" style={{marginLeft:"10px"}}   onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><MdIcons.MdReport/></i>
+													
+												}
 												</>
-												
 											}
-											</>
-										}
 
 
-										{ current_user !== null && current_user["account_type"] === "A" && user.id !== current_user.id  &&
-											<>
+											{ current_user !== null && current_user["account_type"] === "A" && user.id !== current_user.id  &&
+												<>
+													<div title="Subir Privilégios" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("upgrade"); setConfirmModalShow(true) }}  className="button-clicky-podium upgrade-user">
+														<span className="shadow"></span>
+														<span className="front"><FaIcons.FaRegArrowAltCircleUp/></span>
+													</div>
+													<div title="Rebaixar Privilégios" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("downgrade"); setConfirmModalShow(true) }}  className="button-clicky-podium downgrade-user">
+														<span className="shadow"></span>
+														<span className="front"><FaIcons.FaRegArrowAltCircleDown/></span>
+													</div>
+													<div title="Banir Utilizador" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("ban"); setConfirmModalShow(true) }}  className="button-clicky-podium ban-user">
+														<span className="shadow"></span>
+														<span className="front"><IoIcons.IoBan/></span>
+													</div>
+													
+													{/* <i className="subicon pointer" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("upgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleUp/></i>
+													<i className="subicon pointer" style={{marginLeft:"10px"}} onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("downgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleDown/></i>
+													<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("ban"); setConfirmModalShow(true) }}><IoIcons.IoBan/></i> */}
+													
+												</>
+											}
 										
-												<i className="subicon pointer" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("upgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleUp/></i>
-												<i className="subicon pointer" style={{marginLeft:"10px"}} onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("downgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleDown/></i>
-												<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("ban"); setConfirmModalShow(true) }}><IoIcons.IoBan/></i>
-												
-											</>
-										}
-										
-									</div>
+										</div>
+									
+									}
+									
 								</li>
 							)
 							})
@@ -573,7 +636,7 @@ function Podium() {
 
 						<div className="row">
 							<div className="col-12 col-md-12 col-lg-12">
-								<form className="shadow-white" onSubmit={submitFunction}>
+								<form className="shadow-white form-center" onSubmit={submitFunction}>
 									<div className="form-players">
 										<div className="name-section">
 											<h2>Nome</h2>
@@ -592,7 +655,11 @@ function Podium() {
 										</div>
 									</div>
 									{ current_user !== null && current_user["account_type"] === "A" &&
-										<button id="viewnormal" onClick={() => {setNormalInputs({ username: document.getElementById("filter_normal_username").value, min_level: document.getElementById("filter_normal_min_level").value, max_level: document.getElementById("filter_normal_max_level").value }); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
+										<div id="viewnormal" onClick={() => {setNormalInputs({ username: document.getElementById("filter_normal_username").value, min_level: document.getElementById("filter_normal_min_level").value, max_level: document.getElementById("filter_normal_max_level").value }); }} className="button-clicky-podium search-clicky">
+											<span className="shadow"></span>
+											<span className="front">Procurar <FaIcons.FaSearch/></span>
+										</div>
+										// <button id="viewnormal" onClick={() => {setNormalInputs({ username: document.getElementById("filter_normal_username").value, min_level: document.getElementById("filter_normal_min_level").value, max_level: document.getElementById("filter_normal_max_level").value }); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
 									}
 								</form>
 								
@@ -660,10 +727,24 @@ function Podium() {
 										<div className="col-lg-3 col-md-3 col-sm-3">
 											{user.account_level} pontos
 										</div>
-										<div className="col-lg-2 col-md-2 col-sm-2">
-											<i className="subicon pointer" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("upgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleUp/></i>
+										<div className="col-lg-2 col-md-2 col-sm-2 podium-flex-buttons">
+											
+											<div title="Subir Privilégios" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("upgrade"); setConfirmModalShow(true) }}  className="button-clicky-podium upgrade-user">
+												<span className="shadow"></span>
+												<span className="front"><FaIcons.FaRegArrowAltCircleUp/></span>
+											</div>
+											<div title="Rebaixar Privilégios" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("downgrade"); setConfirmModalShow(true) }}  className="button-clicky-podium downgrade-user">
+												<span className="shadow"></span>
+												<span className="front"><FaIcons.FaRegArrowAltCircleDown/></span>
+											</div>
+											<div title="Banir Utilizador" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("ban"); setConfirmModalShow(true) }}  className="button-clicky-podium ban-user">
+												<span className="shadow"></span>
+												<span className="front"><IoIcons.IoBan/></span>
+											</div>
+
+											{/* <i className="subicon pointer" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("upgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleUp/></i>
 											<i className="subicon pointer" style={{marginLeft:"10px"}} onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("downgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleDown/></i>
-											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("ban"); setConfirmModalShow(true) }}><IoIcons.IoBan/></i>
+											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("ban"); setConfirmModalShow(true) }}><IoIcons.IoBan/></i> */}
 										</div>
 									</li>
 								)
@@ -706,7 +787,7 @@ function Podium() {
 						</div>
 						<div className="row">
 							<div className="col-12 col-md-12 col-lg-12">
-								<form className="shadow-white" onSubmit={submitFunction}>
+								<form className="shadow-white form-center" onSubmit={submitFunction}>
 									<div className="form-players">
 										<div className="name-section">
 											<h2>Nome</h2>
@@ -725,7 +806,11 @@ function Podium() {
 										</div>
 									</div>
 									{ current_user !== null && current_user["account_type"] === "A" &&
-										<button id="viewprivilege" onClick={() => {setPrivilegeInputs({ username: document.getElementById("filter_privilege_username").value, min_level: document.getElementById("filter_privilege_min_level").value, max_level: document.getElementById("filter_privilege_max_level").value }); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
+										<div id="viewprivilege" onClick={() => {setPrivilegeInputs({ username: document.getElementById("filter_privilege_username").value, min_level: document.getElementById("filter_privilege_min_level").value, max_level: document.getElementById("filter_privilege_max_level").value }); }} className="button-clicky-podium search-clicky">
+											<span className="shadow"></span>
+											<span className="front">Procurar <FaIcons.FaSearch/></span>
+										</div>
+										// <button id="viewprivilege" onClick={() => {setPrivilegeInputs({ username: document.getElementById("filter_privilege_username").value, min_level: document.getElementById("filter_privilege_min_level").value, max_level: document.getElementById("filter_privilege_max_level").value }); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
 									}
 								</form>
 								
@@ -793,10 +878,24 @@ function Podium() {
 										<div className="col-lg-3 col-md-3 col-sm-3">
 											{user.account_level} pontos
 										</div>
-										<div className="col-lg-2 col-md-2 col-sm-2">
-											<i className="subicon pointer" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("upgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleUp/></i>
+										<div className="col-lg-2 col-md-2 col-sm-2 podium-flex-buttons">
+											<div title="Subir Privilégios" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("upgrade"); setConfirmModalShow(true) }}  className="button-clicky-podium upgrade-user">
+												<span className="shadow"></span>
+												<span className="front"><FaIcons.FaRegArrowAltCircleUp/></span>
+											</div>
+											<div title="Rebaixar Privilégios" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("downgrade"); setConfirmModalShow(true) }}  className="button-clicky-podium downgrade-user">
+												<span className="shadow"></span>
+												<span className="front"><FaIcons.FaRegArrowAltCircleDown/></span>
+											</div>
+											<div title="Banir Utilizador" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("ban"); setConfirmModalShow(true) }}  className="button-clicky-podium ban-user">
+												<span className="shadow"></span>
+												<span className="front"><IoIcons.IoBan/></span>
+											</div>
+
+
+											{/* <i className="subicon pointer" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("upgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleUp/></i>
 											<i className="subicon pointer" style={{marginLeft:"10px"}} onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("downgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleDown/></i>
-											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("ban"); setConfirmModalShow(true) }}><IoIcons.IoBan/></i>
+											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("ban"); setConfirmModalShow(true) }}><IoIcons.IoBan/></i> */}
 										</div>
 									</li>
 								)
@@ -839,7 +938,7 @@ function Podium() {
 						</div>
 						<div className="row">
 							<div className="col-12 col-md-12 col-lg-12">
-								<form className="shadow-white" onSubmit={submitFunction}>
+								<form className="shadow-white form-center" onSubmit={submitFunction}>
 									<div className="form-players">
 										<div className="name-section">
 											<h2>Nome</h2>
@@ -858,7 +957,11 @@ function Podium() {
 										</div>
 									</div>
 									{ current_user !== null && current_user["account_type"] === "A" &&
-										<button id="viewadmin" onClick={() => {setAdminInputs({ username: document.getElementById("filter_admin_username").value, min_level: document.getElementById("filter_admin_min_level").value, max_level: document.getElementById("filter_admin_max_level").value }); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
+										<div id="viewadmin" onClick={() => {setAdminInputs({ username: document.getElementById("filter_admin_username").value, min_level: document.getElementById("filter_admin_min_level").value, max_level: document.getElementById("filter_admin_max_level").value }); }} className="button-clicky-podium search-clicky">
+											<span className="shadow"></span>
+											<span className="front">Procurar <FaIcons.FaSearch/></span>
+										</div>
+										// <button id="viewadmin" onClick={() => {setAdminInputs({ username: document.getElementById("filter_admin_username").value, min_level: document.getElementById("filter_admin_min_level").value, max_level: document.getElementById("filter_admin_max_level").value }); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
 									}
 								</form>
 								
@@ -926,10 +1029,23 @@ function Podium() {
 										<div className="col-lg-3 col-md-3 col-sm-3">
 											{user.account_level} pontos
 										</div>
-										<div className="col-lg-2 col-md-2 col-sm-2">
-											<i className="subicon pointer" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("upgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleUp/></i>
+										<div className="col-lg-2 col-md-2 col-sm-2 podium-flex-buttons">
+											<div title="Subir Privilégios" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("upgrade"); setConfirmModalShow(true) }}  className="button-clicky-podium upgrade-user">
+												<span className="shadow"></span>
+												<span className="front"><FaIcons.FaRegArrowAltCircleUp/></span>
+											</div>
+											<div title="Rebaixar Privilégios" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("downgrade"); setConfirmModalShow(true) }}  className="button-clicky-podium downgrade-user">
+												<span className="shadow"></span>
+												<span className="front"><FaIcons.FaRegArrowAltCircleDown/></span>
+											</div>
+											<div title="Banir utilizador" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("ban"); setConfirmModalShow(true) }}  className="button-clicky-podium ban-user">
+												<span className="shadow"></span>
+												<span className="front"><IoIcons.IoBan/></span>
+											</div>
+
+											{/* <i className="subicon pointer" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("upgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleUp/></i>
 											<i className="subicon pointer" style={{marginLeft:"10px"}} onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("downgrade"); setConfirmModalShow(true) }}><FaIcons.FaRegArrowAltCircleDown/></i>
-											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("ban"); setConfirmModalShow(true) }}><IoIcons.IoBan/></i>
+											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("ban"); setConfirmModalShow(true) }}><IoIcons.IoBan/></i> */}
 										</div>
 									</li>
 								)
@@ -972,7 +1088,7 @@ function Podium() {
 						</div>
 						<div className="row">
 							<div className="col-12 col-md-12 col-lg-12">
-								<form className="shadow-white" onSubmit={submitFunction}>
+								<form className="shadow-white form-center" onSubmit={submitFunction}>
 									<div className="form-players">
 										<div className="name-section">
 											<h2>Nome</h2>
@@ -991,7 +1107,11 @@ function Podium() {
 										</div>
 									</div>
 									{ current_user !== null && current_user["account_type"] === "A" &&
-										<button id="viewbanned" onClick={() => {setBannedInputs({ username: document.getElementById("filter_banned_username").value, min_level: document.getElementById("filter_banned_min_level").value, max_level: document.getElementById("filter_banned_max_level").value }); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
+										<div id="viewbanned" onClick={() => {setBannedInputs({ username: document.getElementById("filter_banned_username").value, min_level: document.getElementById("filter_banned_min_level").value, max_level: document.getElementById("filter_banned_max_level").value }); }} className="button-clicky-podium search-clicky">
+											<span className="shadow"></span>
+											<span className="front">Procurar <FaIcons.FaSearch/></span>
+										</div>
+										// <button id="viewbanned" onClick={() => {setBannedInputs({ username: document.getElementById("filter_banned_username").value, min_level: document.getElementById("filter_banned_min_level").value, max_level: document.getElementById("filter_banned_max_level").value }); }} className="btn btn-lg btn-search" type="button">Procurar <FaIcons.FaSearch/></button>
 									}
 								</form>
 								
@@ -1059,8 +1179,13 @@ function Podium() {
 										<div className="col-lg-3 col-md-3 col-sm-3">
 											{user.account_level} pontos
 										</div>
-										<div className="col-lg-2 col-md-2 col-sm-2">
-											<i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_ban"); setConfirmModalShow(true) }}><IoIcons.IoRemoveCircle/></i>
+										<div className="col-lg-2 col-md-2 col-sm-2 podium-flex-buttons">
+											<div title="Remover Ban" onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_ban"); setConfirmModalShow(true) }}  className="button-clicky-podium remove-ban-user">
+												<span className="shadow"></span>
+												<span className="front"><IoIcons.IoRemoveCircle/></span>
+											</div>
+									
+											{/* <i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("remove_ban"); setConfirmModalShow(true) }}><IoIcons.IoRemoveCircle/></i> */}
 										</div>
 									</li>
 								)

@@ -1,4 +1,6 @@
 import React, {useEffect, useState} from "react";
+import {useHistory} from 'react-router-dom';
+
 
 import "./Bracket.css";
 
@@ -80,6 +82,8 @@ function Bracket() {
     const [readyToDisplay, setReadyToDisplay] = useState(false)
     const [bracketUnavailable, setBracketUnavailable] = useState(false)
 
+    const history = useHistory();
+
     const url = new URLSearchParams(window.location.search);
 	let tournament_id = url.get("id");
     if (tournament_id === null || tournament_id === undefined) {
@@ -97,6 +101,8 @@ function Bracket() {
                     return true
                 }
                 return false
+            } else {
+                history.push("/tournaments")
             }
             return false
         }
@@ -140,7 +146,7 @@ function Bracket() {
 
     useEffect(
         retrieveInformation
-    , [bracket, players, tournament_id]) 
+    , [bracket, players, tournament_id, history]) 
 
 
     useEffect( () => {

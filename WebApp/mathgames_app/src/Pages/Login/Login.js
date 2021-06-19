@@ -5,24 +5,14 @@ import "./Login.css";
 import AuthService from "../../Services/auth.service";
 import {urlWeb} from "./../../data/data";
 
+
+
 function Login() {
     const [signIn, setSignIn] = useState(true);
-    const [errorLogin, setErroLogin] = useState(false);
-    const [errorBan, setErroBan] = useState(false);
-    const [errorRegisto, setErroRegisto] = useState(false);
-    const [errorNamesAlreadyTakenRegisto, setErroNamesAlreadyTakenRegisto] = useState("");
-    const [errorPasswordRegisto, setErroPasswordRegisto] = useState(false);
-    const [errorEmailUsernameRegisto, setErroEmailUsernameRegisto] = useState("");
-    const [sucessoRegisto, setSucessoRegisto] = useState(false);
 
     async function login() {
-        setErroRegisto(false);
-        setErroLogin(false);
-        setErroBan(false);
-        setSucessoRegisto(false);
-        setErroPasswordRegisto(false);
-        setErroEmailUsernameRegisto("");
-        setErroNamesAlreadyTakenRegisto("");
+        hide_everything()
+
         var response = await AuthService.login(
             document.getElementById("nomeUtilizadorLogin").value,
             document.getElementById("passwordLogin").value
@@ -31,22 +21,16 @@ function Login() {
         if (response.id !== undefined)
             window.location.assign(urlWeb);
         else if (response.msg === "This account is banned") {
-            setErroBan(true);
+            document.getElementById("erroBan").style.display = "block"
         } else {
-            setErroLogin(true);
+            document.getElementById("erroLogin").style.display = "block"
         }
     }
 
     
 
     async function register() {
-        setErroRegisto(false);
-        setErroLogin(false);
-        setErroBan(false);
-        setSucessoRegisto(false);
-        setErroPasswordRegisto(false);
-        setErroEmailUsernameRegisto("");
-        setErroNamesAlreadyTakenRegisto("");
+        hide_everything()
 
         if (document.getElementById("passwordRegisto").value.match(/^(?=.*\d)(?=.*[a-zA-Z]).{5,25}$/)) {
 
@@ -64,31 +48,50 @@ function Login() {
                         document.getElementById('emailRegisto').value = ''
                         document.getElementById('passwordRegisto').value = ''
                         document.getElementById('change_button').click()
-                        setSucessoRegisto(true);
+                        document.getElementById("sucessoRegisto").style.display = "block"
                         }
                     else {
                         if (response.error === "username")
                             // username já foi escolhido
-                            setErroNamesAlreadyTakenRegisto("Username");
+                            document.getElementById("erroNamesAlreadyTakenRegisto").style.display = "block"
                         if (response.error === "email")
                             // email já foi escolhido
-                            setErroNamesAlreadyTakenRegisto("Email");
+                            document.getElementById("erroEmailAlreadyTakenRegisto").style.display = "block"
                         if (response.error === "error")
                             // outro erro na base de dados
-                            setErroRegisto(true);
+                            document.getElementById("erroRegisto").style.display = "block"
+
                     }
                 } else {
                     // erro email
-                    setErroEmailUsernameRegisto("Email");
+                    document.getElementById("erroEmailInvalido").style.display = "block"
                 }
             } else {
                 // erro username
-                setErroEmailUsernameRegisto("Username");
+                document.getElementById("erroUsernameInvalido").style.display = "block"
             }
         } else {
             // password tem que ter 5 caracteres, no minimo uma letra e um numero
-            setErroPasswordRegisto(true);
+            document.getElementById("erroPasswordRegisto").style.display = "block"
         }
+    }
+
+    function hide_everything() {
+        document.getElementById("erroLogin").style.display = "none"
+        document.getElementById("erroBan").style.display = "none"
+        document.getElementById("erroRegisto").style.display = "none"
+        document.getElementById("erroNamesAlreadyTakenRegisto").style.display = "none"
+        document.getElementById("erroEmailAlreadyTakenRegisto").style.display = "none"
+        document.getElementById("erroPasswordRegisto").style.display = "none"
+        document.getElementById("sucessoRegisto").style.display = "none"
+        document.getElementById("erroUsernameInvalido").style.display = "none"
+        document.getElementById("erroEmailInvalido").style.display = "none"
+
+
+    }
+
+    function hide_message(id) {
+        document.getElementById(id).style.display = "none"
     }
 
 
@@ -131,45 +134,52 @@ function Login() {
             
 
             <div className="container container-login">
-            {errorBan === true 
-                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}> 
+
+            <div id={"erroBan"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}> 
                 Esta conta encontra-se banida.
-                 </div> : null}
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroBan")}></img>
+            </div> 
 
-            {errorLogin === true 
-                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}> 
-                Ocorreu um erro no seu processo login. As suas credênciais são inválidas.
-                 </div> : null}
+             <div id={"erroLogin"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}> 
+                Ocorreu um erro no seu processo login. As suas credênciais são inválidas. 
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroLogin")}></img>
+             </div> 
 
-            {errorRegisto === true 
-                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+            <div id={"erroRegisto"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}} >
                 Erro. Por favor efetue novamente.
-                 </div> : null}
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroRegisto")}></img>
+            </div>
 
-            {errorNamesAlreadyTakenRegisto !== "" 
-                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
-                Erro. {errorNamesAlreadyTakenRegisto} já se encontra em utilização.
-                 </div> : null}
+            <div id={"erroNamesAlreadyTakenRegisto"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+                Erro. O nome que introduziu já se encontra em utilização.
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroNamesAlreadyTakenRegisto")}></img>
+            </div>
+
+            <div id={"erroEmailAlreadyTakenRegisto"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+                Erro. O email que introduziu já se encontra em utilização.
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroEmailAlreadyTakenRegisto")}></img>
+            </div>
             
-            {errorPasswordRegisto === true 
-                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", textAlign:"center", fontSize:"22px"}}>
+            <div id={"erroPasswordRegisto"} className="alert alert-danger" role="alert" style={{margin:"10px auto", textAlign:"center", fontSize:"22px", display:"none"}}>
                 Palavra-passe inválida. Palavra-passe tem que ter no mínimo 5 caracteres, um número e uma letra.
-                 </div> : null}
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroPasswordRegisto")}></img>
+            </div> 
 
-            {errorEmailUsernameRegisto === "Username"
-                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+
+            <div id={"erroUsernameInvalido"}  className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
                 Username inválido. Username tem que ter no minimo 3 caracteres, e um maximo de 20.
-                 </div> : null}
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroUsernameInvalido")}></img>
+             </div> 
 
-            {errorEmailUsernameRegisto === "Email"
-                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+            <div id={"erroEmailInvalido"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
                 Email inválido. Insira um email válido.
-                 </div> : null}
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroEmailInvalido")}></img>
+            </div>
 
-            {sucessoRegisto === true 
-                ? <div className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+            <div id={"sucessoRegisto"} className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
                 A sua conta foi criada com sucesso! 
-                </div> : null}
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("sucessoRegisto")}></img>
+            </div> 
 
                 
             <div className="forms-container-login">
