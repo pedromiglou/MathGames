@@ -4,14 +4,14 @@ import Button from 'react-bootstrap/Button';
 import * as FaIcons from "react-icons/fa";
 import './RulesTooltip.css';
 
-export const RulesTooltip = ({rules, website}) => {
+export const RulesTooltip = ({rules, website, size, title, className }) => {
     const [show, setShow] = useState(false);
     const target = useRef(null);
   
     return (
         <>
-            <Button ref={target} onClick={() => setShow(!show)} className="rule-button align-self-center">
-                <FaIcons.FaQuestionCircle size={42}/>
+            <Button ref={target} onClick={() => setShow(!show)} className={"rule-button align-self-center " + className}>
+                <FaIcons.FaQuestionCircle title={title} size={size}/>
             </Button>
             <Overlay target={target.current} show={show} placement="bottom">
             {({ placement, arrowProps, show: _show, popper, ...props }) => (

@@ -54,6 +54,7 @@ function Login(props) {
                     style={styles.input}
                     onChangeText={onChangeEmail}
                     value={email}
+                    secureTextEntry={false}
                     placeholder="Email"
                 />
                 <TextInput

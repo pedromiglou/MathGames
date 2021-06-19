@@ -4,6 +4,8 @@ import {IconContext} from 'react-icons';
 import * as FaIcons from 'react-icons/fa';
 import * as FiIcons from "react-icons/fi";
 import * as IoIcons from 'react-icons/io5';
+import * as MdIcons from 'react-icons/md';
+import * as CgIcons from 'react-icons/cg';
 import { Link } from 'react-router-dom';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -294,6 +296,7 @@ function Navbar() {
 			socket.emit("new_notification", {"sender": current_user.id, "receiver": receiver.id, "notification_type": "F", "notification_text": notification_text})
 		}
 		input.value = ""
+		hideAddFriendInput();
 	}
 
 	async function accept_friendRequest(notification) {
@@ -379,11 +382,27 @@ function Navbar() {
         }
 
     }, [dispatch])
+
+
+	function showAddFriendInput(){
+		let inviteFriend_Separator_div = document.getElementById("inviteFriend-Separator");
+		let inviteFriend_div = document.getElementById("inviteFriend");
+		inviteFriend_div.style.display = "flex";
+		inviteFriend_Separator_div.style.display = "flex";
+	}
+
+	function hideAddFriendInput(){
+		let inviteFriend_Separator_div = document.getElementById("inviteFriend-Separator");
+		let inviteFriend_div = document.getElementById("inviteFriend");
+		inviteFriend_div.style.display = "none";
+		inviteFriend_Separator_div.style.display = "none";
+	}
+	
 	return (
 		<IconContext.Provider value={{color: 'grey'}}>
-			<div id="horizontal_nav_row" className="row sticky-top">
+			<div id="horizontal_nav_row" className="navbar-row sticky-top">
 
-				<div id="row-logo" className="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 d-flex align-items-center">
+				<div id="row-logo" className="logo-bars-section">
 					<div className="nav-logo ml-5">
 						<Link to="/">
 							<img  className="logo" src={process.env.PUBLIC_URL + "/images/logo-light.png"}  alt="logo"/>
@@ -391,12 +410,14 @@ function Navbar() {
 					</div>
 				</div>
 
+				{/* <MdIcons.MdModeEdit size={40} id="edit-icon" className="edit-icon" title="editar" onClick={() => make_fields_editable()}/> */}
+
 				{user_authenticated &&
-				<div className="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8">
-					<div className="row h-100 nav-options float-right">
-						<div title="Notificações" className="col-xl-2 col-lg-2 col-md-2 col-sm-3 col-xs-3 d-flex align-items-center justify-content-center">
+				
+					<div className="navbar-icons-flex">
+						<div title="Notificações" className="d-flex align-items-center justify-content-center">
 							<span id="notifs-number">{ notifications.length }</span>
-							<DropdownButton	menuAlign="right" title={<FaIcons.FaBell size={42}/>} id="notifs-dropdown" className="navbar-dropdown">
+							<DropdownButton	menuAlign="right" title={<FaIcons.FaBell className="navbar-icon"/>} id="notifs-dropdown" className="navbar-dropdown">
 								<Dropdown.ItemText><h4>Notificações</h4></Dropdown.ItemText>
 								<Dropdown.Divider />
 								{ notifications.length > 0 &&
@@ -459,14 +480,39 @@ function Navbar() {
 								}
 							</DropdownButton>
 						</div>
+
+
 						<ExpireModal
 							show={modalConfirmShow}
 							onHide={() => {setConfirmModalShow(false);}}
 						/>
-						<div title="Amigos" className="col-xl-2 col-lg-2 col-md-2 col-sm-3 col-xs-3 d-flex align-items-center justify-content-center">
-							<DropdownButton	menuAlign="right" title={<FaIcons.FaUserFriends size={42}/>} id="friends-dropdown">
-								<Dropdown.ItemText><div className="friends-modal"><h4>Amigos</h4></div></Dropdown.ItemText>
+
+
+
+						<div title="Amigos" className="d-flex align-items-center justify-content-center">
+							<DropdownButton	menuAlign="right" title={<FaIcons.FaUserFriends className="navbar-icon"/>} id="friends-dropdown">
+								<Dropdown.ItemText>
+									<div className="friends-modal">
+										<h4>Amigos</h4>
+										<div onClick={() => showAddFriendInput()} title="Adicionar amigo" className="button-add-friend">
+											<span className="shadow"></span>
+											<span className="front"><FaIcons.FaUserPlus size={24} color={"white"}/></span>
+										</div>
+									</div>
+								</Dropdown.ItemText>
 								<Dropdown.Divider />
+								<Dropdown.ItemText id="inviteFriend" style={{display: "none"}}>
+									<div className="addFriendRow">
+										<input id="inputFriend" type="text" className="inputAddFriend" placeholder="username"></input>
+										<div onClick={() => friendRequest()} title="Enviar pedido" className="invite-friend-button">
+											<span className="shadow"></span>
+											<span className="front">Enviar</span>
+										</div>
+										{/* <button type="button" onClick={() => friendRequest()}>Enviar</button> */}
+									</div>
+								</Dropdown.ItemText>
+								<Dropdown.Divider id="inviteFriend-Separator" style={{display: "none"}} />
+
 								{ friends.length > 0 &&
 								<Dropdown.ItemText>{
 									<>
@@ -495,57 +541,65 @@ function Navbar() {
 								}
 								{ friends.length === 0 &&
 								<Dropdown.ItemText>
-									<div className="row navbar-dropdown-row">
-										<Dropdown.ItemText>Não possui amigos.</Dropdown.ItemText>
+									<div className="row">
+										Não possui amigos.
 									</div>
 								</Dropdown.ItemText>
 								}
-								<Dropdown.Divider />
-								<Dropdown.ItemText>
-									<div className="row navbar-dropdown-row">
-										<Dropdown.ItemText>
-											<input id={"inputFriend"} type={"text"} placeholder={"username"}></input>
-										</Dropdown.ItemText>
-										<button type={"button"} onClick={() => friendRequest()}>Invite</button>
-									</div>
-								</Dropdown.ItemText>
 							</DropdownButton>
 						</div>
-						<GameModal
-							show={modalChooseGame}
-							onHide={() => {setModalChooseGame(false);}}
-						/>
-						<div className="col-xl-6 col-lg-8 col-md-8 col-sm-6 col-xs-6 no-margin">
-							<div className="h-100 d-flex align-items-center ">
-								<div className="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-6">
-									<div title="Perfil" className="round_profile_logo float-right">
-										<Link to="/profile">
-											<Avatar navbar={true} skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser}/>
+
+
+
+						<div>
+							<div title="Perfil" className="round_profile_logo">
+
+								<DropdownButton	menuAlign="left" title={<>
+									<Avatar navbar={true} skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser}/>
+									<MdIcons.MdKeyboardArrowDown color={"rgb(2, 204, 255)"} className="key-down"/>
+								</>}
+								id="user_dropdown">
+									<Dropdown.ItemText>
+										<div className="perfil-info-modal">
+											<h5>{user.username} </h5>
+											<h5>Nivel: {getLevel(user.account_level)} </h5>
+										</div>
+									</Dropdown.ItemText>
+									<Dropdown.Divider />
+									
+									<Dropdown.ItemText>{
+										<Link to="/profile" title="" className="remove-decoration icon-word">
+											<CgIcons.CgProfile/><h4>Perfil</h4>
 										</Link>
-									</div>
-								</div>
-								<div className="col-xl-4 col-lg-4 col-md-4 col-sm-6 col-xs-6 navbar-account-info">
-									<h5>Nome: {user.username} </h5>
-									<h5>Nivel: {getLevel(user.account_level)} </h5>
-								</div>
-								<div className="col-xl-5 col-lg-5 col-md-4 col-sm-6 col-xs-6">
-									<Link to="/">
-										<h2 onClick={run_logout} className="h2-login">Logout</h2>
-										<IconContext.Provider  value={{color: '#007bff'}}><FiIcons.FiLogOut className="icon_notifications"  size={42} onClick={run_logout}/></IconContext.Provider>
-									</Link>
-								</div>
+									}</Dropdown.ItemText>
+
+									<Dropdown.Divider />
+									<Dropdown.ItemText>{ 
+										<Link to="/" title="" className="remove-decoration icon-word">
+											<FiIcons.FiLogOut className="icon_notifications" onClick={run_logout}/>
+											<h4 onClick={run_logout}>Terminar Sessão</h4>
+											
+										</Link>
+									}</Dropdown.ItemText>
+								</DropdownButton>
+
+							
 							</div>
+							<h5 className="user-name">{user.username} </h5>
 						</div>
-					</div>
+						
+					<GameModal
+						show={modalChooseGame}
+						onHide={() => {setModalChooseGame(false);}}
+					/>
 				</div>
 				}
 				
 				{!user_authenticated &&
-				<div className="col d-flex justify-content-end align-items-center mr-5">
-					<hr className="menu-divider-login"></hr>
-					<Link to="/login">
-						<h2 className="h2-login">Login <IconContext.Provider value={{color: '#007bff'}}><FiIcons.FiLogIn className="icon_notifications"  size={42} /></IconContext.Provider>
-						</h2>
+				<div className="navbar-icons-flex login-case">
+					<Link to="/login" className="login-button">
+						<FiIcons.FiLogIn className="navbar-icon" title="login"/>
+						<h2 className="h2-login">Login </h2>
 						
 					</Link>
 				</div>

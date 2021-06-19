@@ -10,8 +10,10 @@ export const gamesInfo =
             description: "Jogadores partilham as peças e efetuam uma corrida com uma “bola”, na tentativa de marcar um “auto-golo” ou de encurralar o adversário.",
             age: 6,
             toBeDone: false,
-            dificulty: 20
-            
+            dificulty: 20,
+            rules:  "- Cada jogador desloca a peça de forma alternada para um dos quadrados adjacentes que não esteja bloqueado.\n" +
+            "- A posição onde estava a peça é boqueada, sendo que a peça branca não se pode deslocar para posições bloqueadas.\n" +
+            "- O jogo começa com a peça na posição e5.",
         },
     
         {
@@ -23,7 +25,12 @@ export const gamesInfo =
             description: "Jogo de estratégia que tem como objetivo colocar por último uma peça no tabuleiro, deixando o adversário sem mais opções de jogada.",
             age: 6,
             toBeDone: false,
-            dificulty: 40
+            dificulty: 40,
+            rules:  "- O jogador 1 corresponde aos gatos, o jogador 2 corresponde aos cães.\n" +
+                    "- Cada jogador coloca, de forma alternada, uma peça numa casa vazia.\n" +
+                    "- Começam os Gatos e o primeiro gato deve ser colocado em uma das quatro posições centrais do tabuleiro (indicada com cruzes). O primeiro cão deve ser colocado fora dessas quatro posições.\n" +
+                    "- Os jogadores não podem colocar um gato ao lado de um cão, nem um cão ao lado de um gato (na horizontal ou na vertical).\n" +
+                    "- O primeiro jogador a ficar sem posições onde colocar uma nova peça, perde o jogo.", 
         },
     
         {
