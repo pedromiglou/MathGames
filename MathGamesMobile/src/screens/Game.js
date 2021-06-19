@@ -91,7 +91,7 @@ function Game({ navigation }) {
                 if (gameMode==="Competitivo") {
                     readData('user_id').then(id=>{
                         user_id = id.slice(1,-1);
-                        socket.emit("user_id", {"user_id": user_id, "game_id": String(game_id)});
+                        socket.emit("enter_matchmaking", {"user_id": user_id, "game_id": String(game_id)});
                         socket.on("match_found", (msg) => {
                             saveData('match_id', String(msg['match_id']));
                             saveData('player1', msg['player1']);

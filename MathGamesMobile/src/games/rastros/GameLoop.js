@@ -77,7 +77,8 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
       });
       socket.on("match_end", (msg) => {
         storage.gameEnded=true;
-        entities.push({visible:true, text: "Game ended by the server", renderer: <GameModal></GameModal>});
+        entities.push({visible:true, storage: storage, endMode: msg.end_mode,
+              winner: msg.match_result, renderer: <GameModal></GameModal>});
       });
     }
 
@@ -144,12 +145,9 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
       }
     } else if (e.type === "gameEnded") {
       storage.gameEnded=true;
-      if (storage.gameMode === "No mesmo computador") {
-        if (e.turn===1) {
-          entities.push({visible:true, text: "Time Ended. "+storage.player2+ " won!", renderer: <GameModal></GameModal>});
-        } else {
-          entities.push({visible:true, text: "Time Ended. "+storage.player1+ " won!", renderer: <GameModal></GameModal>});
-        }
+      if (storage.gameMode === "No mesmo Computador") {
+        entities.push({visible:true, storage: storage, endMode: "timeout",
+            winner: e.turn===1?2:1, renderer: <GameModal></GameModal>});
       }
       
       return entities;
@@ -181,11 +179,12 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
   if (piece.position[0]===0 && piece.position[1]===7) {
     //player 1 won
     storage.gameEnded=true;
-    entities.push({visible:true, text: "Player 1 won", renderer: <GameModal></GameModal>});
+    entities.push({visible:true, storage: storage, endMode: "reached_goal", winner: 1, renderer: <GameModal></GameModal>});
+    
   } else if (piece.position[0]===6 && piece.position[1]===1) {
     //player 2 won
     storage.gameEnded=true;
-    entities.push({visible:true, text: "Player 2 won", renderer: <GameModal></GameModal>});
+    entities.push({visible:true, storage: storage, endMode: "reached_goal", winner: 2, renderer: <GameModal></GameModal>});
   } else {
     storage.gameEnded=true;
     for (var j = piece.position[1]-2; j<=piece.position[1]; j++) {
@@ -198,7 +197,9 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
         }
       }
     }
-    if (storage.gameEnded) entities.push({visible:true, text: "No more plays left", renderer: <GameModal></GameModal>});
+    if (storage.gameEnded) {
+      entities.push({visible:true, storage: storage, endMode: "no_moves", winner: storage.turn===1?2:1, renderer: <GameModal></GameModal>});
+    }
   }
 
   return entities;
