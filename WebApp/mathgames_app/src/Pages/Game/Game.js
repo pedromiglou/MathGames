@@ -107,7 +107,7 @@ function Game()  {
                                 <div id="player2-countdown" className="col d-flex justify-content-end">
                                     {game_mode!=="ai" && <GameTimer ref={gameTimer2Ref} totalGameTime={300000} player="player2" gameId={game_id} gameMode={game_mode} currentMatch={current_match.current} finishMatchMethod={triggerFinishGame} autoStart={false}></GameTimer>}
                                 </div>
-                                <PlayerCard username={current_match.current["player2"]} gameId={game_id} gameMode={game_mode} shouldFindUser={game_mode!=="ai" && game_mode!=="offline"} showReportButton={showReportButton} other_player={current_match.current["player1"]}></PlayerCard>
+                                <PlayerCard username={current_match.current["player2"]} gameId={game_id} gameMode={game_mode} shouldFindUser={game_mode!=="ai" && game_mode!=="offline"} showReportButton={showReportButton} other_player={current_match.current["player1"]} showForfeitFlag={false}></PlayerCard>
                             </div>
                         </div>
                     </div>
@@ -120,7 +120,7 @@ function Game()  {
                                 <div id="player1-countdown" className="col d-flex justify-content-end">
                                     {game_mode!=="ai" && <GameTimer ref={gameTimer1Ref} totalGameTime={300000} player="player1" gameId={game_id} gameMode={game_mode} currentMatch={current_match.current} finishMatchMethod={triggerFinishGame} autoStart={true}></GameTimer>}
                                 </div>
-                                <PlayerCard ref={playerCardRef} username={current_match.current["player1"]} gameId={game_id} gameMode={game_mode} shouldFindUser={game_mode!=="offline"} showReportButton={false} other_player={current_match.current["player2"]}></PlayerCard>
+                                <PlayerCard ref={playerCardRef} username={current_match.current["player1"]} gameId={game_id} gameMode={game_mode} shouldFindUser={game_mode!=="offline"} showReportButton={false} other_player={current_match.current["player2"]} showForfeitFlag={true}></PlayerCard>
                             </div>
                         </div>
                     </div>
@@ -140,7 +140,7 @@ function Game()  {
                                 <div id="player1-countdown" className="col d-flex justify-content-end">
                                     {game_mode!=="ai" && <GameTimer ref={gameTimer1Ref} totalGameTime={300000} player="player1" gameId={game_id} gameMode={game_mode} currentMatch={current_match.current} finishMatchMethod={triggerFinishGame} autoStart={true}></GameTimer>}
                                 </div>
-                                <PlayerCard username={current_match.current["player1"]} gameId={game_id} gameMode={game_mode} shouldFindUser={game_mode!=="ai" && game_mode!=="offline"} showReportButton={showReportButton} other_player={current_match.current["player2"]}></PlayerCard>
+                                <PlayerCard username={current_match.current["player1"]} gameId={game_id} gameMode={game_mode} shouldFindUser={game_mode!=="ai" && game_mode!=="offline"} showReportButton={showReportButton} other_player={current_match.current["player2"]} showForfeitFlag={false}></PlayerCard>
                             </div>
                         </div>
                     </div>
@@ -154,7 +154,7 @@ function Game()  {
                                 <div id="player2-countdown" className="col d-flex justify-content-end">
                                     {game_mode!=="ai" && <GameTimer ref={gameTimer2Ref} totalGameTime={300000} player="player2" gameId={game_id} gameMode={game_mode} currentMatch={current_match.current} finishMatchMethod={triggerFinishGame} autoStart={false}></GameTimer>}
                                 </div>
-                                <PlayerCard ref={playerCardRef} username={current_match.current["player2"]} gameId={game_id} gameMode={game_mode} shouldFindUser={game_mode!=="offline"} showReportButton={false} other_player={current_match.current["player1"]}></PlayerCard>
+                                <PlayerCard ref={playerCardRef} username={current_match.current["player2"]} gameId={game_id} gameMode={game_mode} shouldFindUser={game_mode!=="offline"} showReportButton={false} other_player={current_match.current["player1"]} showForfeitFlag={true}></PlayerCard>
                             </div>
                         </div>
                     </div>

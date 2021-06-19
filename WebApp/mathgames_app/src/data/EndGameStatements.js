@@ -17,7 +17,9 @@ export const EndGameStatements = {
         "invalid_move": "Realizaste um movimento inválido.",
         "forfeit": "Desististe da partida.",
         0: {
-            "no_moves": "Ficaste sem movimentos possíveis!"},
+            "reached_goal": "O teu oponente levou a peça até à sua casa!",
+            "no_moves": "Ficaste sem movimentos possíveis!"
+        },
         1: {
             "no_moves": "Ficaste sem posições onde colocar novas peças."
         }

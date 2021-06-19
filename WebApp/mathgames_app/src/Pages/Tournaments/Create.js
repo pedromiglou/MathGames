@@ -18,6 +18,7 @@ function Create() {
     const [error, setError] = useState(false);
     const [gameError, setGameError] = useState(false);
     const [duplicatedNameError, setDuplicatedNameError] = useState(false)
+    const [nameTooBigError, setNameTooBigError] = useState(false);
     const [fieldsError, setFieldsError] = useState(false);
     const [sucesso, setSucesso] = useState("");
 
@@ -74,9 +75,11 @@ function Create() {
         setGameError(false)
         setError(false)
         setDuplicatedNameError(false)
+        setNameTooBigError(false)
         setFieldsError(false)
         var name = document.getElementById('filter_username').value;
-        if (name === "") {setFieldsError(true); return}
+        if (name === "" || name === undefined || name === null) {setFieldsError(true); return}
+        if (name.length > 45) {setNameTooBigError(true); return}
         var max_users = document.getElementById('capacidade').value;
         if (max_users === "") {setFieldsError(true); return}
         var privado;
@@ -135,6 +138,11 @@ function Create() {
         {duplicatedNameError === true 
             ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
             O nome do torneio deve ser único. Por favor, selecione um novo nome. 
+            </div> : null}
+
+        {nameTooBigError === true 
+            ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
+            O nome do torneio deve ter no máximo 45 caractéres. 
             </div> : null}
 
         <div className="all-create">
