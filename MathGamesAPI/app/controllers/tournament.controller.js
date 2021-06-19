@@ -366,7 +366,6 @@ exports.findAll = (req, res) => {
   var date = new Date();
   var last24hours = new Date(date.getTime() - (24 * 60 * 60 * 1000));
   last24hours.setTime( last24hours.getTime() - new Date().getTimezoneOffset()*60*1000 );
-  console.log(last24hours);
   var condition;
   var lastFinishedTournaments = [ {status: { [Op.ne]: "FINISHED" }}, { [Op.and]: [ {status: "FINISHED"} , {updatedAt: {[Op.gte]: last24hours} }] } ];
   if (req.query.private === "true") {
