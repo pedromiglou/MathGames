@@ -8,6 +8,9 @@ import * as MdIcons from 'react-icons/md';
 import * as FaIcons from 'react-icons/fa';
 import { Modal, Button } from "react-bootstrap";
 
+import socket from "../../index"
+
+
 import AuthService from '../../Services/auth.service';
 import UserService from '../../Services/user.service';
 
@@ -82,12 +85,16 @@ function Podium() {
 	};
 	
 	function friend_request(friend2) {
-		UserService.send_notification_request(current_user.id, friend2, "F");
-		
+		//UserService.send_notification_request(current_user.id, friend2, "F");
+		var notification_text = current_user.username + " enviou-te um pedido de amizade."
+		socket.emit("new_notification", {"sender": current_user.id, "receiver": friend2, "notification_type": "F", "notification_text": notification_text})
+
 	}
 
 	async function remove_friend(friend2) {
 		await UserService.remove_friend(current_user.id, friend2);
+		var notification_text = current_user.username + " removeu-te da sua lista de amigos."
+		socket.emit("new_notification", {"sender": current_user.id, "receiver": friend2, "notification_type": "N", "notification_text": notification_text})
 		window.location.reload();
 	}
 
@@ -500,7 +507,7 @@ function Podium() {
 												} 
 												{ (!friends.some(e => e.id === user.id) && user.id !== current_user.id ) &&
 													<>
-													<i className="subicon pointer"  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("friend_request"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}></i>
+													<i className="subicon pointer"  onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("friend_request"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><IoIcons.IoPersonAdd/></i>
 													<i className="subicon pointer" style={{marginLeft:"10px"}}   onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setModalOperation("report_player"); setConfirmModalShow(true); setFriendRequestSucess(false); setReportSucess(false); setReportAlreadyMade(false); }}><MdIcons.MdReport/></i>
 													</>
 												} 

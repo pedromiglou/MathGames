@@ -28,9 +28,6 @@ import TournamentPage from './Pages/Tournaments/TournamentPage';
 import Bracket from './Pages/Tournaments/Bracket';
 
 
-/* Uuid */
-import { v4 as uuidv4 } from 'uuid';
-
 
 /* Redux */
 import { Provider } from 'react-redux';
@@ -39,9 +36,6 @@ import store from './store';
 
 
 function App() {
-
-    if (sessionStorage.getItem('user_id') === null)
-        sessionStorage.setItem('user_id', "Guest_" + uuidv4());		
 
 
     
