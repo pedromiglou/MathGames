@@ -3,6 +3,7 @@ import {
 	OrbitControls,
 	RoundedBox,
 	PerspectiveCamera,
+	useTexture,
 } from "@react-three/drei";
 import { Canvas, useLoader, useFrame } from "@react-three/fiber";
 
@@ -19,8 +20,6 @@ import SunGlasses from "./Accessories/SunGlasses";
 import AviatorGlasses from "./Accessories/AviatorGlasses";
 import SteamPunkGlasses from "./Accessories/SteamPunkGlasses";
 import PixelGlasses from "./Accessories/PixelGlasses";
-
-
 
 function Camera() {
 	const cam = useRef();
@@ -98,38 +97,26 @@ const Box = ({ position1, position2, args, color, tex, props }) => {
 };
 
 const Body = ({ position, args, color, tex, props }) => {
-	const Camouflage1 = useLoader(
-		THREE.TextureLoader,
-		process.env.PUBLIC_URL + "avatar_assets/texture/Camouflage1.jpg"
-	);
-	const Camouflage2 = useLoader(
-		THREE.TextureLoader,
-		process.env.PUBLIC_URL + "avatar_assets/texture/Camouflage2.jpg"
-	);
-	const Carpet1 = useLoader(
-		THREE.TextureLoader,
-		process.env.PUBLIC_URL + "avatar_assets/texture/Carpet1.jpg"
-	);
-	const GreyFabric = useLoader(
-		THREE.TextureLoader,
-		process.env.PUBLIC_URL + "avatar_assets/texture/GreyFabric.jpg"
-	);
-	const BlueFabric = useLoader(
-		THREE.TextureLoader,
-		process.env.PUBLIC_URL + "avatar_assets/texture/BlueFabric.jpg"
-	);
-	const ShirtWool1 = useLoader(
-		THREE.TextureLoader,
-		process.env.PUBLIC_URL + "avatar_assets/texture/ShirtWool1.jpg"
-	);
-	const ShirtWool2 = useLoader(
-		THREE.TextureLoader,
-		process.env.PUBLIC_URL + "avatar_assets/texture/ShirtWool2.jpg"
-	);
-	const ShirtWool3 = useLoader(
-		THREE.TextureLoader,
-		process.env.PUBLIC_URL + "avatar_assets/texture/ShirtWool3.jpg"
-	);
+
+	const [
+		Camouflage1,
+		Camouflage2,
+		Carpet1,
+		GreyFabric,
+		BlueFabric,
+		ShirtWool1,
+		ShirtWool2,
+		ShirtWool3,
+	] = useTexture([
+		process.env.PUBLIC_URL + "avatar_assets/texture/Camouflage1.jpg",
+		process.env.PUBLIC_URL + "avatar_assets/texture/Camouflage2.jpg",
+		process.env.PUBLIC_URL + "avatar_assets/texture/Carpet1.jpg",
+		process.env.PUBLIC_URL + "avatar_assets/texture/GreyFabric.jpg",
+		process.env.PUBLIC_URL + "avatar_assets/texture/BlueFabric.jpg",
+		process.env.PUBLIC_URL + "avatar_assets/texture/ShirtWool1.jpg",
+		process.env.PUBLIC_URL + "avatar_assets/texture/ShirtWool2.jpg",
+		process.env.PUBLIC_URL + "avatar_assets/texture/ShirtWool3.jpg",
+	]);
 
 	if (tex) {
 		switch (props.shirtName) {
@@ -159,37 +146,21 @@ const Body = ({ position, args, color, tex, props }) => {
 		}
 
 		return (
-			<>
-				<mesh position={position}>
-					<boxBufferGeometry attach="geometry" args={args} />
-					<meshBasicMaterial
-						attach="material"
-						map={textureLoaded}
-						toneMapped={false}
-					/>
-				</mesh>
-				<mesh position={position}>
-					<boxBufferGeometry attach="geometry" args={args} />
-					<meshBasicMaterial
-						attach="material"
-						map={textureLoaded}
-						toneMapped={false}
-					/>
-				</mesh>
-			</>
+			<mesh position={position}>
+				<boxBufferGeometry attach="geometry" args={args} />
+				<meshBasicMaterial
+					attach="material"
+					map={textureLoaded}
+					toneMapped={false}
+				/>
+			</mesh>
 		);
 	} else {
 		return (
-			<>
-				<mesh position={position}>
-					<boxBufferGeometry attach="geometry" args={args} />
-					<meshLambertMaterial attach="material" color={color} />
-				</mesh>
-				<mesh position={position}>
-					<boxBufferGeometry attach="geometry" args={args} />
-					<meshLambertMaterial attach="material" color={color} />
-				</mesh>
-			</>
+			<mesh position={position}>
+				<boxBufferGeometry attach="geometry" args={args} />
+				<meshLambertMaterial attach="material" color={color} />
+			</mesh>
 		);
 	}
 };
@@ -203,27 +174,17 @@ const Legs = ({
 	props,
 	trouserBool,
 }) => {
-	console.log("Entrei legs " + color);
 
-	
-    const TrouserJeans = useLoader(
-        THREE.TextureLoader,
-        process.env.PUBLIC_URL + "avatar_assets/texture/TrouserJeans.jpg"
-    ); 
-    const TrouserBlackJeans = useLoader(
-        THREE.TextureLoader,
-        process.env.PUBLIC_URL + "avatar_assets/texture/TrouserBlackJeans.jpg"
-    );
-    const TrouserGrey = useLoader(
-        THREE.TextureLoader,
-        process.env.PUBLIC_URL + "avatar_assets/texture/TrouserGrey.jpg"
-    );
+	const [TrouserJeans, TrouserBlackJeans, TrouserGrey] = useTexture([
+		process.env.PUBLIC_URL + "avatar_assets/texture/TrouserJeans.jpg",
+		process.env.PUBLIC_URL + "avatar_assets/texture/TrouserBlackJeans.jpg",
+		process.env.PUBLIC_URL + "avatar_assets/texture/TrouserGrey.jpg",
+	]);
 
-    console.log("carreguei");
 
-    if (color !== "none") {
-        if (tex) {
-            switch (props.trouserName) {
+	if (color !== "none") {
+		if (tex) {
+			switch(props.trouserName) {
                 case "TrouserJeans":
                     var textureLoaded = TrouserJeans;
                     break;
@@ -232,90 +193,87 @@ const Legs = ({
                     break;
                 default:
                     textureLoaded = TrouserBlackJeans;
+                    break;
             }
 
-            return (
-                <group>
-                    <mesh position={position1}>
-                        <boxBufferGeometry attach="geometry" args={args} />
-                        <meshBasicMaterial
-                            attach="material"
-                            map={textureLoaded}
-                            toneMapped={false}
-                        />
-                    </mesh>
-                    <mesh position={position2}>
-                        <boxBufferGeometry attach="geometry" args={args} />
-                        <meshBasicMaterial
-                            attach="material"
-                            map={textureLoaded}
-                            toneMapped={false}
-                        />
-                    </mesh>
-                </group>
-            );
-        } else {
-            var corFinal;
-            switch (props.trouserName) {
-                case "Trouser1":
-                    corFinal = "#34495E";
-                    break;
-                case "Trouser2":
-                    corFinal = "#7B7D7D";
-                    break;
-                case "Trouser3":
-                    corFinal = "#EAEDED";
-                    break;
-                default:
-                    corFinal = props.skinColor;
-            }
+			return (
+				<group>
+					<mesh position={position1}>
+						<boxBufferGeometry attach="geometry" args={args} />
+						<meshBasicMaterial
+							attach="material"
+							map={textureLoaded}
+							toneMapped={false}
+						/>
+					</mesh>
+					<mesh position={position2}>
+						<boxBufferGeometry attach="geometry" args={args} />
+						<meshBasicMaterial
+							attach="material"
+							map={textureLoaded}
+							toneMapped={false}
+						/>
+					</mesh>
+				</group>
+			);
+		} else {
+			var corFinal;
+			switch (props.trouserName) {
+				case "Trouser1":
+					corFinal = "#34495E";
+					break;
+				case "Trouser2":
+					corFinal = "#7B7D7D";
+					break;
+				case "Trouser3":
+					corFinal = "#EAEDED";
+					break;
+				default:
+					corFinal = props.skinColor;
+			}
 
-            return (
-                <group>
-                    <mesh position={position1}>
-                        <boxBufferGeometry attach="geometry" args={args} />
-                        <meshLambertMaterial
-                            attach="material"
-                            color={corFinal}
-                        />
-                    </mesh>
-                    <mesh position={position2}>
-                        <boxBufferGeometry attach="geometry" args={args} />
-                        <meshLambertMaterial
-                            attach="material"
-                            color={corFinal}
-                        />
-                    </mesh>
-                </group>
-            );
-        }
-    } else {
-        return (
-            <group>
-                <mesh position={position1}>
-                    <boxBufferGeometry attach="geometry" args={args} />
-                    <meshLambertMaterial
-                        attach="material"
-                        color={props.skinColor}
-                    />
-                </mesh>
-                <mesh position={position2}>
-                    <boxBufferGeometry attach="geometry" args={args} />
-                    <meshLambertMaterial
-                        attach="material"
-                        color={props.skinColor}
-                    />
-                </mesh>
-            </group>
-        );
-    }
-
+			return (
+				<group>
+					<mesh position={position1}>
+						<boxBufferGeometry attach="geometry" args={args} />
+						<meshLambertMaterial
+							attach="material"
+							color={corFinal}
+						/>
+					</mesh>
+					<mesh position={position2}>
+						<boxBufferGeometry attach="geometry" args={args} />
+						<meshLambertMaterial
+							attach="material"
+							color={corFinal}
+						/>
+					</mesh>
+				</group>
+			);
+		}
+	} else {
+		return (
+			<group>
+				<mesh position={position1}>
+					<boxBufferGeometry attach="geometry" args={args} />
+					<meshLambertMaterial
+						attach="material"
+						color={props.skinColor}
+					/>
+				</mesh>
+				<mesh position={position2}>
+					<boxBufferGeometry attach="geometry" args={args} />
+					<meshLambertMaterial
+						attach="material"
+						color={props.skinColor}
+					/>
+				</mesh>
+			</group>
+		);
+	}
 };
 
 function Avatar(props) {
-    
-	//const { nodes, materials } = useGLTF(process.env.PUBLIC_URL + 'avatar_assets/hats/christmasHat.glb')
-	console.log(props);
 
 	switch (props.hatName) {
 		case "MagicianHat":
@@ -405,7 +363,7 @@ function Avatar(props) {
 						trouserBool={noTrouser}
 						props={props}
 						position1={[-1.375, 0, 0]}
-                        position2={[1.375, 0, 0]}
+						position2={[1.375, 0, 0]}
 						color={props.skinColor}
 					/>
 
@@ -438,7 +396,7 @@ function Avatar(props) {
 						args={[0.75, 2, 1]}
 						props={props}
 						position1={[-1.375, 0, 0]}
-                        position2={[1.375, 0, 0]}
+						position2={[1.375, 0, 0]}
 						color={props.skinColor}
 					/>
 
