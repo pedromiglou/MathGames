@@ -278,7 +278,9 @@ function GamePage() {
 
 			var notification_text = current_user.username + " convidou-te para jogares."
 
-		    await userService.send_notification_request(current_user.id, id_outro_jogador, "P", notification_text);
+		    //await userService.send_notification_request(current_user.id, id_outro_jogador, "P", notification_text);
+            socket.emit("new_notification", {"sender": current_user.id, "receiver": id_outro_jogador, "notification_type": "P", "notification_text": notification_text})
+
 			friend_match.current = new_match_id;
 			setInviteFriendMode(true);
 		})
