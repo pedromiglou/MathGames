@@ -363,15 +363,22 @@ exports.findAll = (req, res) => {
 
   const jogos = req.query.jogos
   
+  var date = new Date();
+  var last24hours = new Date(date.getTime() - (24 * 60 * 60 * 1000));
+  last24hours.setTime( last24hours.getTime() - new Date().getTimezoneOffset()*60*1000 );
+  console.log(last24hours);
   var condition;
+  var lastFinishedTournaments = [ {status: { [Op.ne]: "FINISHED" }}, { [Op.and]: [ {status: "FINISHED"} , {updatedAt: {[Op.gte]: last24hours} }] } ];
   if (req.query.private === "true") {
+    condition = { [Op.or]: lastFinishedTournaments};
     condition = {private: true};
   } else if (req.query.private === "false") {
+    condition = { [Op.or]: lastFinishedTournaments};
     condition = {private: false};
   } else {
-    condition = {[Op.or]: [{private: true}, {private: false}] }
+    condition = { [Op.and]: [ {[Op.or]: [{private: true}, {private: false}] }, { [Op.or]: lastFinishedTournaments } ] };
   }
-
+  
   condition["name"] = { [Op.like]: `%${name}` };
   condition["max_users"] = { [Op.like]: `${capacity}` }
   if (jogos !== undefined) {
@@ -381,8 +388,6 @@ exports.findAll = (req, res) => {
     });
     condition["game_id"] = arrayIds 
   }
-  condition["status"] = { [Op.ne] : "FINISHED"}
-
 
   const { limit, offset } = getPagination(page, size);
   Tournament.findAndCountAll({
