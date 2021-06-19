@@ -30,6 +30,7 @@ body,
     /* height: calc(100% - 100px); */
     min-width: 270px;
 }
+
 @keyframes gradient {
     0% {
         background-position: 0% 50%;

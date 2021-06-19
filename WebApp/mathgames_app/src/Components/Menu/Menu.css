@@ -6,6 +6,10 @@
 }
 */
 
+#sidebar {
+    top: 100px;
+}
+
 /* Global horizontal Navbar */
 #horizontal_nav_row.navbar-row{
     background-color: #F1F1F1;

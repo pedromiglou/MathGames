@@ -83,16 +83,18 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
       renderer: <GameText></GameText>});
 
     //configure socket
-    socket.on("move_piece", new_pos=>{
-      dispatch({type: "comp", pos: new_pos});
-    });
-    socket.on("match_end", (msg) => {
-      if (msg.game_id === storage.game_id) {
-        console.log(msg);
-        storage.gameEnded=true;
-        entities.push({visible:true, text: "Game ended by the server", renderer: <GameModal></GameModal>});
-      }
-    });
+    if (gameMode==="Competitivo"||gameMode==="Amigo") {
+      socket.on("move_piece", new_pos=>{
+        dispatch({type: "comp", pos: new_pos});
+      });
+      socket.on("match_end", (msg) => {
+        if (msg.game_id === storage.game_id) {
+          storage.gameEnded=true;
+          entities.push({visible:true, text: "Game ended by the server", renderer: <GameModal></GameModal>});
+        }
+      });
+    }
+    
 
     //create the AI and make it play if not our turn
     if (storage.gameMode==="Contra o Computador") {
@@ -157,8 +159,7 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
         ai.playerPieces[e.y][e.x] = true;
         dispatch({type: "ai"});
         storage.myTurn=false;
-      } else if (storage.gameMode==="Competitivo") {
-        console.log(e.y*8+e.x);
+      } else if (storage.gameMode==="Competitivo"||gameMode==="Amigo") {
         socket.emit("move", String(e.y*8+e.x), storage.user_id, storage.match_id);
         storage.myTurn=false;
       }

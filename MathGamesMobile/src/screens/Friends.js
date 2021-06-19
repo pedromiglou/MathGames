@@ -36,17 +36,22 @@ function Friends({ navigation }) {
 	const [user, setUser] = useState(null);
 
 	useEffect(() => {
+        let mounted = true;
+
 		readData("user").then((user) => {
 			var current_user = JSON.parse(JSON.parse(user));
 			setUser(current_user);
 		});
 
-		let mounted = true;
+        UserService.getFriends().then((res) => {
+            if(res != friends)
+                setFriends(res);
+        });
 
 		const interval = setInterval(() => {
-			console.log("This will run every 5 seconds!");
 			UserService.getFriends().then((res) => {
-				setFriends(res);
+                if(res != friends)
+				    setFriends(res);
 			});
 		}, 5000);
 
@@ -96,9 +101,7 @@ function Friends({ navigation }) {
 					></View>
 				</LinearGradient>
 			</View>
-			<ScrollView>
-				<Text style={styles.title}>Amigos</Text>
-
+			<ScrollView     style={{ minHeight: win.height, minWidth: win.width }}>
 				{friends.length === 0 && (
 					<View>
 						<Text style={styles.noFriends}>

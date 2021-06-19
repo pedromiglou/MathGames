@@ -10,6 +10,7 @@ import "./TournamentPage.css";
 import socket from "../../index"
 
 import { games_info } from "../../data/GamesInfo";
+import { ranks_info } from '../../data/ranksInfo';
 
 import { Modal, Button } from "react-bootstrap";
 
@@ -39,19 +40,95 @@ function TournamentPage() {
 
     const url = new URLSearchParams(window.location.search);
 	let tournament_id = url.get("id");
+
+
+
+    //Used to get players level taking account_level (elo)
+    const getPlayerLevel = (account_level) => {
+        var contador = 1;
+        if (typeof account_level !== "undefined") {
+            while (true) {
+                var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
+                var maximo = 400 * Math.pow(contador, 1.1);
+                if ( (minimo <= account_level) && (account_level < maximo)) {
+                    return contador;
+                }
+                contador++;
+            }
+        } else {
+            return 0;
+        }
+    }
     
     const retrieveInformation = () => {
+
+            //Used to get players ranking
+        const getPlayerRank = (player) => {
+            var game_id = tournament.game_id
+
+            var userRankValue
+            var userRank
+
+            switch (game_id) {
+                case 0:
+                    userRankValue = player.ranks.rastros
+                    break;
+                case 1:
+                    userRankValue = player.ranks.gatos_e_caes
+                    break;
+                default:
+                    userRankValue = 0;
+                    break;
+            }
+
+            if (userRankValue <= 25)
+                userRank = 0
+            else if (userRankValue <= 75)
+                userRank = 1
+            else if (userRankValue <= 175)
+                userRank = 2
+            else if (userRankValue <= 275)
+                userRank = 3
+            else if (userRankValue <= 400)
+                userRank = 4
+            else if (userRankValue <= 550)
+                userRank = 5
+            else if (userRankValue <= 700)
+                userRank = 6
+            else if (userRankValue <= 850)
+                userRank = 7
+            else if (userRankValue <= 1050)
+                userRank = 8
+            else if (userRankValue <= 1250)
+                userRank = 9
+            else if (userRankValue <= 1450)
+                userRank = 10
+            else if (userRankValue <= 1700)
+                userRank = 11
+            else
+                userRank = 12
+
+            return userRank
+        }
         
         async function fetchApiTournament() {
             var response = await TournamentService.getTournamentById(tournament_id)
-            if (!response["message"])
+            if (!response["message"]) 
                 setTournament(response)
+            else
+                history.push("/tournaments")
         }
 
         async function fetchApiTournamentPlayers() {
             var response = await TournamentService.getPlayersByTournament(tournament_id)
-            if (!response["message"]) 
-                setPlayers(response)
+            if (!response["message"]) {
+                let finalArray = []
+                for (let player of response) {
+                    player["finalRank"] = getPlayerRank(player)
+                    finalArray.push(player)
+                }
+                setPlayers(finalArray)
+            }
         }
 
         async function getData() {
@@ -65,7 +142,7 @@ function TournamentPage() {
 
     useEffect(
 		retrieveInformation
-	, [tournament_id]) 
+	, [tournament_id, history, tournament.game_id]) 
 
 
     async function removePlayer(playerId) {
@@ -204,22 +281,6 @@ function TournamentPage() {
         })
     }
     
-    //Used to get players level taking account_level (elo)
-    const getPlayerLevel = (account_level) => {
-		var contador = 1;
-		if (typeof account_level !== "undefined") {
-			while (true) {
-				var minimo = contador === 1 ? 0 : 400 * Math.pow(contador-1, 1.1);
-				var maximo = 400 * Math.pow(contador, 1.1);
-				if ( (minimo <= account_level) && (account_level < maximo)) {
-					return contador;
-				}
-				contador++;
-			}
-		} else {
-			return 0;
-		}
-	}
 
     const [userInTournament, setUserInTournament] = useState(players.some(e => e.username === current_user.username ));
 
@@ -501,8 +562,14 @@ function TournamentPage() {
                                         </div>
                 
                                         <div className="col-lg-3 col-md-3 col-sm-3">
-                                            Rank
+                                            <img title={ranks_info[player.finalRank].name} style={{width: "50px", height:"auto"}}
+                                                src={process.env.PUBLIC_URL +
+                                                    ranks_info[player.finalRank].image}
+                                                alt="Rank"
+                                            />
                                         </div>
+
+    
                                         {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
                                         <div className="col-lg-2 col-md-2 col-sm-2">
                                             <IoIcons.IoBan onClick={() => {setJogadorSelecionado({id: player.id, name: player.username}); setRemovingPlayerModal(true)}}/>

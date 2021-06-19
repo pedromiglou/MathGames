@@ -12,6 +12,7 @@ import LastGames from './screens/LastGames';
 import Inventory from './screens/Inventory';
 import Friends from './screens/Friends';
 import Ranking from './screens/Ranking';
+import AboutUs from './screens/AboutUs';
 
 import { Feather } from '@expo/vector-icons';
 import Constants from 'expo-constants';
@@ -137,17 +138,20 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
 
-  readData('user_id').then(id=>{
-    if (id===null) {
-      saveData('user_id', uuidv4());
+  readData('username').then(username=>{
+    if (username===null) {
+      username = uuidv4();
+      saveData('user_id', username);
+      saveData('username', username);
     } else {
-      setUsername(id.slice(1, -1));
+      setUsername(username.slice(1, -1));
     }
   })
 
   if (!loaded) {
     deleteData("user");
     deleteData("user_id");
+    deleteData("username")
     return <Text>Loading...</Text>;
   } else {
     return (
@@ -195,7 +199,7 @@ function App() {
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Notificações</Text>)}}/>}
             <Drawer.Screen name="Definições" component={Welcome} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Definições</Text>)}}/>
-            <Drawer.Screen name="Sobre Nós" component={Welcome} options={{
+            <Drawer.Screen name="Sobre Nós" component={AboutUs} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Sobre nós</Text>)}}/>
           </Drawer.Navigator>
         }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useHistory } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 import { Card } from "react-bootstrap";
 //import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -20,6 +20,11 @@ import { useDispatch } from 'react-redux';
 import { addMatch } from '../../store/modules/matches/actions';
 
 import { RulesTooltip } from '../../Components/RulesTooltip';
+
+import {urlWeb} from "./../../data/data";
+
+
+import Stopwatch from '../../Components/Stopwatch/Stopwatch';
 
 //vamos ter de arranjar uma maneira de verificar o jogo guardado no useState para quando clicar no jogar ir para o jogo certo
 function GamePage() {
@@ -48,6 +53,7 @@ function GamePage() {
 
 	const [gerarLinkMode, setGerarLinkMode] = useState(false);
 	const [inviteFriendMode, setInviteFriendMode] = useState(false);
+    const [searchingForMatch, setSearchingForMatch] = useState(false);
 
 
 	const url = new URLSearchParams(window.location.search);
@@ -57,26 +63,37 @@ function GamePage() {
 	let new_match_id = url.get("mid");
 	let tournament_id = url.get("tid");
 
-	let history = useHistory()
+	let history = useHistory();
+    const location = useLocation();
+
+    useEffect(() => {
+        return history.listen((location) => {
+            if (!searchingForMatch)
+                socket.emit("leave_matchmaking", {"user_id": AuthService.getCurrentUserId(), "game_id": game_id})
+        }) 
+    }, [history, location, searchingForMatch, game_id]);
+
+    useEffect(() => {
+        if (!searchingForMatch)
+            socket.emit("leave_matchmaking", {"user_id": AuthService.getCurrentUserId(), "game_id": game_id})
+    }, [searchingForMatch, game_id]);
 
     useEffect(() => {
 		var button = document.getElementById("button-play");
-		if (button !== undefined && button !== null) {
-			if (canPlay){
+		if (button !== undefined && button !== null)
+			if (canPlay) {
 				button.disabled = false;
 				button.classList.add("active");
-				if (button.classList.contains("disabled")){
+				if (button.classList.contains("disabled"))
 					button.classList.remove("disabled");
-				}
 			} else {
-				button.disabled = true;
+                button.disabled = true;
 				button.classList.add("disabled");
-				if (button.classList.contains("active")){
+				if (button.classList.contains("active"))
 					button.classList.remove("active")
-				}
 			}
-		}
-	}, [canPlay]);
+
+	}, [canPlay, searchingForMatch]);
 	
 	useEffect(() => {
 		function checkNames(){
@@ -183,7 +200,7 @@ function GamePage() {
     function create_match_found_listener(gameMode) {
         socket.off("match_found");
         socket.once("match_found", (msg) => {
-            console.log("Friend just joined!");
+            setSearchingForMatch(false)
             var match = { match_id: msg['match_id'], player1: msg['player1'], player2: msg['player2'] };
             dispatch( addMatch(match) );
             history.push({
@@ -196,7 +213,6 @@ function GamePage() {
                 } 
             })
         })
-
     }
 	
 	function find_match() {
@@ -223,7 +239,8 @@ function GamePage() {
 			create_match_found_listener("amigo");
 
 		} else if (gameMode === "online") {
-			socket.emit("user_id", {"user_id": AuthService.getCurrentUserId(), "game_id": game_id})
+            setSearchingForMatch(true);
+			socket.emit("enter_matchmaking", {"user_id": AuthService.getCurrentUserId(), "game_id": game_id})
 			create_match_found_listener("online");
 
 		} else {
@@ -249,14 +266,21 @@ function GamePage() {
 		let id_outro_jogador = parseInt(localStorage.getItem("outrojogador"))
 		localStorage.removeItem("outrojogador")
 
-		socket.once("invite_link", (msg) => {
+		socket.once("invite_link", async (msg) => {
 			let new_match_id = msg['match_id'];
 			
 			if ( new_match_id === null ) {
-				alert("Criaste um link recentemente, espera mais um pouco até criares um novo.")
+				alert("Envias-te um convite recentemente. Espera mais um pouco para puderes enviar um novo.")
 				return;
 			}
-			
+
+            var current_user = AuthService.getCurrentUser()
+
+			var notification_text = current_user.username + " convidou-te para jogares."
+
+		    //await userService.send_notification_request(current_user.id, id_outro_jogador, "P", notification_text);
+            socket.emit("new_notification", {"sender": current_user.id, "receiver": id_outro_jogador, "notification_type": "P", "notification_text": notification_text})
+
 			friend_match.current = new_match_id;
 			setInviteFriendMode(true);
 		})
@@ -297,7 +321,7 @@ function GamePage() {
 						<h2>Copia o link para convidar alguém!</h2>
 						<hr className="link-hr"></hr>
 						<div className="bottom-link row">
-							<input readOnly={true} className="link" id="link" value={"http://localhost:3000/gamePage?id="+game_id+"&mid="+friend_match.current}></input>
+							<input readOnly={true} className="link" id="link" value={urlWeb+"gamePage?id="+game_id+"&mid="+friend_match.current}></input>
 							<div className="div-link-button">
 								<button id="button-copy" className="button-copy" onClick={() => copy()}><i className="copy-icon"><FaIcons.FaCopy/></i></button>
 							</div>
@@ -437,74 +461,98 @@ function GamePage() {
                             </div>
 
                             <div className="col-lg-12 game-mode orange bottom-right">
-                                <IconContext.Provider  value={{color: 'white'}}>
-                                    <h2 className="title-gamemode">Escolhe modo de jogo</h2>
-                                    <div className="row">
-                                        <div className="col-lg-6 centered set-padding">
-                                    
-                                            <Card id="online" className="mode-card" onClick={() => changeMode("online")}>
-                                                <div>
-                                                
-                                                    <i className="mode-icon"><RiIcons.RiSwordFill/></i>
-                                                
-                                                    <h2>
-                                                        Competitivo
-                                                    </h2>
-                                                </div>
-                                            </Card>
-                                        </div>
-                                        <div className="col-lg-6 centered set-padding">
-                                            <Card id="offline" className="mode-card" onClick={() => changeMode("offline")}>
-                                                <div>
-                                                    
-                                                    <i className="mode-icon"><FaIcons.FaUserFriends/></i>
-                                                    
-                                                    <h2>
-                                                        No mesmo computador
-                                                    </h2>
-                                                    
-                                                </div>
-                                            </Card>
-                                            <div id="choose_names" className="choose_names" onChange={(e) => changeDif(e)} style={{display: "none"}}>
-                                                <input placeholder="nome jogador 1" className="name" onChange={(e) => setName1(e.target.value)} ></input>
-                                                <input placeholder="nome jogador 2" className="name" onChange={(e) => setName2(e.target.value)}></input>
+                                { searchingForMatch &&
+                                    <div id="searching-game-section" className="DeliveriesSection wait">
+                                        <div>
+                                            <div className="bouncer">
+                                                <div></div>
+                                                <div></div>
+                                                <div></div>
+                                                <div></div>
                                             </div>
+                                            <Stopwatch></Stopwatch>
                                         </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col-lg-6 centered set-padding">
-                                            <Card id="amigo" className="mode-card" onClick={() => changeMode("amigo")}>
-                                                <div>
-                                                    <i className="mode-icon"><FiIcons.FiLink/></i>
-                                                    
-                                                    <h2>
-                                                        Gerar link de convite
-                                                    </h2>
-                                                    
+                                        <div>
+                                            <h1 id="waiting_rider">À procura de jogo competitivo</h1>
+                                            <h5>[Abandonar esta página irá cancelar a procura]</h5>
+                                        </div>
+                                        <div className="div-button">
+                                            <button id="button-play" className="button-stop" onClick={() => {setSearchingForMatch(false); setCanPlay(false)}}>Cancelar Procura   </button>
+                                        </div>
+                                    </div> 
+                                }
+                                { !searchingForMatch &&
+                                    <div id="choose-game-section">
+                                        <IconContext.Provider  value={{color: 'white'}}>
+                                            <h2 className="title-gamemode">Escolhe modo de jogo</h2>
+                                            <div className="row">
+                                                <div className="col-lg-6 centered set-padding top-card-padding">
+                                            
+                                                    <Card id="online" className="mode-card" onClick={() => changeMode("online")}>
+                                                        <div>
+                                                        
+                                                            <i className="mode-icon"><RiIcons.RiSwordFill/></i>
+                                                        
+                                                            <h2>
+                                                                Competitivo
+                                                            </h2>
+                                                        </div>
+                                                    </Card>
                                                 </div>
-                                            </Card>
-                                        </div>
-                                        <div className="col-lg-6 centered set-padding">
-                                            <Card id="ai" className="mode-card" onClick={() => changeMode("ai")}>
-                                                <div>
-                                                    <i className="mode-icon"><FaIcons.FaRobot/></i>
-                                                    
-                                                    <h2>
-                                                        Contra o computador
-                                                    </h2>
+                                                <div className="col-lg-6 centered set-padding top-card-padding">
+                                                    <Card id="offline" className="mode-card" onClick={() => changeMode("offline")}>
+                                                        <div>
+                                                            
+                                                            <i className="mode-icon"><FaIcons.FaUserFriends/></i>
+                                                            
+                                                            <h2>
+                                                                No mesmo computador
+                                                            </h2>
+                                                            
+                                                        </div>
+                                                    </Card>
+                                                    <div id="choose_names" className="choose_names" onChange={(e) => changeDif(e)} style={{display: "none"}}>
+                                                        <input placeholder="nome jogador 1" className="name" onChange={(e) => setName1(e.target.value)} ></input>
+                                                        <input placeholder="nome jogador 2" className="name" onChange={(e) => setName2(e.target.value)}></input>
+                                                    </div>
                                                 </div>
-                                            </Card>
-                                            <select id="sel_dif" className="select-dif" onChange={(e) => changeDif(e)} style={{display: "none"}}>
-                                                {dif_options.map((option) => (
-                                                    <option key={option.label} value={option.value}>{option.label}</option>
-                                                ))}
-                                            </select>
-                                        </div>
+                                            </div>
+                                            <div className="row">
+                                                <div className="col-lg-6 centered set-padding">
+                                                    <Card id="amigo" className="mode-card" onClick={() => changeMode("amigo")}>
+                                                        <div>
+                                                            <i className="mode-icon"><FiIcons.FiLink/></i>
+                                                            
+                                                            <h2>
+                                                                Gerar link de convite
+                                                            </h2>
+                                                            
+                                                        </div>
+                                                    </Card>
+                                                </div>
+                                                <div className="col-lg-6 centered set-padding">
+                                                    <Card id="ai" className="mode-card" onClick={() => changeMode("ai")}>
+                                                        <div>
+                                                            <i className="mode-icon"><FaIcons.FaRobot/></i>
+                                                            
+                                                            <h2>
+                                                                Contra o computador
+                                                            </h2>
+                                                        </div>
+                                                    </Card>
+                                                    <select id="sel_dif" className="select-dif" onChange={(e) => changeDif(e)} style={{display: "none"}}>
+                                                        {dif_options.map((option) => (
+                                                            <option key={option.label} value={option.value}>{option.label}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div className="div-button">
+                                                <button id="button-play" className="button-play disabled" onClick={() => find_match()}>Jogar</button>
+                                            </div>
+                                        </IconContext.Provider>
                                     </div>
-                                    <div className="div-button">
-                                        <button id="button-play" className="button-play disabled" onClick={() => find_match()}>Jogar</button>
-                                    </div>
-                                </IconContext.Provider>
+                                }
                             </div>
                         </div>
                     </div>

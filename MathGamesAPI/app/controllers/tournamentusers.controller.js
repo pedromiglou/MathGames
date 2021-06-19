@@ -2,6 +2,7 @@ const db = require("../models");
 const Tournament = db.tournament;
 const TournamentUser = db.tournament_users;
 const User = db.user;
+const UserRanks = db.user_ranks;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new TournamentUser
@@ -56,12 +57,22 @@ exports.findUsersByTournament = (req, res) => {
     .then(async (data) =>  {
       var finalArray = []
       for (let player of data) {
-        await User.findByPk(player.dataValues.user_id).then(user => {
-
+        await User.findByPk(player.dataValues.user_id).then(async (user) => {
           const { avatar_accessorie, avatar_color, avatar_hat, avatar_shirt, avatar_trouser, banned, createdAt, email, password, updatedAt, ...newUser } = user.dataValues;
 
           newUser["eliminated"] = player.dataValues.eliminated
-          finalArray.push(newUser)
+
+
+          await UserRanks.findByPk(newUser.id).then(ranks => {
+              const { user_id, ...ranksWithoutUserId} = ranks.dataValues;
+              newUser["ranks"] = ranksWithoutUserId
+              finalArray.push(newUser)
+            })
+            .catch(err => {
+              res.status(500).send({
+                message: "Error retrieving User with name=" + name
+              });
+          });
         }).catch(err => {
           res.status(500).send({
             message: "Error retrieving TournamentUser with tournament id=" + id

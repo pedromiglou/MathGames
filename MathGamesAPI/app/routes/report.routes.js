@@ -88,6 +88,23 @@ module.exports = app => {
      *         description: An internal error has occoured
      */
     router.delete("/:id", [authJwt.verifyToken, authJwt.isAdmin], reports.delete);
+
+    /**
+     * @swagger
+     * /api/reports/:
+     *  delete:
+     *    description: Delete all reports 
+     *    responses: 
+     *      '200':
+     *         description: All reports were deleted with success
+     *      '401':
+     *         description: Unauthorized operation
+     *      '403':
+     *         description: No token provided
+     *      '500':
+     *         description: An internal error has occoured
+     */
+     router.delete("/", [authJwt.verifyToken, authJwt.isAdmin], reports.deleteAll);
   
     app.use('/api/reports', router);
   };

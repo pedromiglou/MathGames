@@ -36,11 +36,63 @@ function ChooseGame({ navigation }) {
 			</View>
 			<ScrollView>
 				{gamesInfo.map((X) => {
-					return (
+					return X.toBeDone === true ? (
 						<View key={X.id}>
 							<TouchableHighlight
 								style={styles.gameTile}
-								
+								onPress={() => {
+									saveData("game", X);
+									navigation.navigate("Jogo");
+								}}
+							>
+								<View>
+									<LinearGradient
+										colors={["gray", "gray"]}
+										start={[1, 1]}
+										end={[0, 0]}
+										style={{ flexDirection: "row" }}
+									>
+										<View
+											style={{ width: win.width * 0.6 }}
+										>
+											<View
+												style={{ flexDirection: "row" }}
+											>
+												<Text style={styles.title}>
+													{X.title}
+												</Text>
+												<Text style={styles.title}>
+													{X.age}
+												</Text>
+											</View>
+
+											<Text style={styles.description}>
+												{X.description}
+											</Text>
+											<Text style={styles.description}>
+												Toca para jogar!
+											</Text>
+										</View>
+										<FontAwesome5
+											name="hammer"
+											size={(win.width * 360) / 2000}
+											color="white"
+											//style={styles.icon}
+											style={{
+												marginTop: 'auto',
+                                                marginBottom: 'auto',
+												marginLeft: 'auto',
+                                                marginRight: 'auto',
+											}}
+										/>
+									</LinearGradient>
+								</View>
+							</TouchableHighlight>
+						</View>
+					) : (
+						<View key={X.id}>
+							<TouchableHighlight
+								style={styles.gameTile}
 								onPress={() => {
 									saveData("game", X);
 									navigation.navigate("Jogo");
@@ -74,22 +126,11 @@ function ChooseGame({ navigation }) {
 												Toca para jogar!
 											</Text>
 										</View>
-										{X.toBeDone === true ? (
-											<FontAwesome5
-												name="hammer"
-												size={(win.width * 360) / 1463}
-												color="black"
-                                                //style={styles.icon}
-                                                style={{ marginTop: 25, marginLeft: 10}}
-
-											/>
-										) : (
-											<Image
-												style={styles.image}
-												resizeMode={"contain"}
-												source={X.img}
-											/>
-										)}
+										<Image
+											style={styles.image}
+											resizeMode={"contain"}
+											source={X.img}
+										/>
 									</LinearGradient>
 								</View>
 							</TouchableHighlight>
@@ -119,7 +160,7 @@ const styles = StyleSheet.create({
 		padding: 10,
 		margin: 20,
 	},
-    icon: {
+	icon: {
 		flex: 1,
 		alignSelf: "stretch",
 		padding: 10,

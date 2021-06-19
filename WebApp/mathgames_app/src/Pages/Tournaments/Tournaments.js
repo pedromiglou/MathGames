@@ -41,11 +41,15 @@ function Tournaments() {
     }
         
     const [userTournaments, setUserTournaments] = useState([])
+    const [creatorTournaments, setCreatorTournaments] = useState([])
     const [tournaments, setTournaments] = useState([]);
-    const [tournament_inputs, setTournamentInputs] = useState({name: "", capacity: "", private: null, jogos: "0-1", creator: null});
+    const [tournament_inputs, setTournamentInputs] = useState({name: "", capacity: "", private: null, jogos: null, creator: null});
 
     const [page_tournaments, setPageTournaments] = useState(1);
 	const [count_tournaments, setCountTournaments] = useState(0);
+
+    const [page_personal_tournaments, setPagePersonalTournaments] = useState(1);
+	const [count_personal_tournaments, setCountPersonalTournaments] = useState(0);
 
     const [entrarTorneioModal, setEntrarTorneioModal] = useState(false);
     const [sairTorneioModal, setSairTorneioModal] = useState(false);
@@ -54,9 +58,15 @@ function Tournaments() {
     const [erroJoinningTournament, setErroJoinningTournament] = useState(false)
     const [erroLeavingTournament, setErroLeavingTournament] = useState(false)
 
+    const [filterOption, setfilterOption] = useState("AllTournaments");
+
 
     const handlePageChangeTournaments = (event, value) => {
 		setPageTournaments(value);
+	};
+
+    const handlePageChangePersonalTournaments = (event, value) => {
+		setPagePersonalTournaments(value);
 	};
 
     function submitFunction(event) {
@@ -168,7 +178,7 @@ function Tournaments() {
 
 
     function filtrar() {
-        setTournamentInputs({name: "", capacity: "", private: null, jogos: "0-1", creator: null})
+        setTournamentInputs({name: "", capacity: "", private: null, jogos: null, creator: null})
         var nome = document.getElementById("filter_nome")
         var capacidade = document.getElementById("filter_capacidade")
 
@@ -196,7 +206,7 @@ function Tournaments() {
             arrayJogos.push(1)
         
         if (arrayJogos.length === 0)
-            stringJogos = "0-1"
+            stringJogos = null;
         else {
             for (let game of arrayJogos) {
                 stringJogos=stringJogos + game + "-"
@@ -206,13 +216,6 @@ function Tournaments() {
 
         setTournamentInputs({name: nome.value, capacity: capacidade.value, private: privacidade, jogos: stringJogos, creator: null})
         clearInputs()
-
-    }
-
-    function filtrarByCreator() {
-        tournament_inputs["creator"] = current_user.id
-        clearInputs()
-        retrieveTournaments()
     }
 
     function clearInputs() {
@@ -238,25 +241,29 @@ function Tournaments() {
                 setUserTournaments(response)
         }
 
+        async function fetchApiTournamentsByCreator() {
+            var response = await TournamentService.getTournamentByCreator(current_user.id, parseInt(page_personal_tournaments)-1, 10)  
+            if (!response["message"]) {
+                setCreatorTournaments(response.tournaments);
+                setCountPersonalTournaments(response.totalPages);
+            }
+        }
+
         async function fetchApiTournaments() {
-            var response
-            console.log(tournament_inputs)
-            if (tournament_inputs.creator === null)
-			    response = await TournamentService.getTournamentsWithFilters(tournament_inputs.name, tournament_inputs.capacity, tournament_inputs.private, tournament_inputs.jogos, parseInt(page_tournaments)-1, 10);
-            else
-                response = await TournamentService.getTournamentByCreator(tournament_inputs.creator)    
+            var response = await TournamentService.getTournamentsWithFilters(tournament_inputs.name, tournament_inputs.capacity, tournament_inputs.private, tournament_inputs.jogos, parseInt(page_tournaments)-1, 10);  
             if (!response["message"]) {
                 setTournaments(response.tournaments);
                 setCountTournaments(response.totalPages)
             }
         };
+        fetchApiTournamentsByCreator();
         fetchApiUserTournaments();
         fetchApiTournaments();
 	}
 
     useEffect(
 		retrieveTournaments
-	, [tournament_inputs, page_tournaments, current_user.id])
+	, [tournament_inputs, page_tournaments, page_personal_tournaments, current_user.id])
 
     function goToTournament(id){
         history.push("/tournament?id="+id)
@@ -340,7 +347,7 @@ function Tournaments() {
 
 								</div>
 								
-                                <div id="searchButton" onClick={filtrar} className="button-clicky-tp blue-clicky">
+                                <div id="searchButton" onClick={() => {setfilterOption("AllTournaments"); filtrar();}} className="button-clicky-tp blue-clicky">
                                     <span className="shadow"></span>
                                     <span className="front">Procurar <FaIcons.FaSearch/></span>
                                 </div>
@@ -360,7 +367,7 @@ function Tournaments() {
                             </div>
                         </Link>
 
-                        <div id="myTButton" onClick={filtrarByCreator} className="button-clicky-tp bigger">
+                        <div id="myTButton" onClick={() => {setfilterOption("PersonalTournaments");}} className="button-clicky-tp bigger">
                             <span className="shadow"></span>
                             <span className="front">Os meus torneios <FaIcons.FaSearch/></span>
                         </div>
@@ -370,131 +377,207 @@ function Tournaments() {
 				</div>
                 
                 <hr></hr>
-
-                <ul className="list-group tournament-filter">
-                    <li className="list-group-item-t d-flex justify-content-between align-items-center row">
-                        <div className="col-lg-3 col-md-3 col-sm-3">
-                            Nome
-                        </div>    
-                        <div className="col-lg-3 col-md-3 col-sm-3">
-                            Jogo
-                        </div>
-
-                        <div className="col-lg-3 col-md-3 col-sm-3">
-                            Capacidade
-                        </div>
-                        <div className="col-lg-2 col-md-2 col-sm-2">
-                            Privacidade
-                        </div>
-                        <div className="col-lg-1 col-md-1 col-sm-1 join">
-                            
-                        </div>                                
-                    </li>
-
-                    {tournaments.length === 0 ? 
-                     <li key="mensagem" className="list-group-item-t d-flex justify-content-between align-items-center row">
-                        <div className="col-lg-12 col-md-12 col-sm-12">
-                            <p>Não existem torneios disponíveis!</p>
-                        </div>        
-                     </li>
-                    :
-                
-                    tournaments.map(function(tournament, index) {
-                       return(
-                        <>
-                        {tournament.status !== "FINISHED" &&
-                            
-						 <li key={tournament.id} className="list-group-item-t d-flex justify-content-between align-items-center row">
-                            <div className="col-lg-3 col-md-3 col-sm-3" onClick={() => goToTournament(tournament.id)}>
-                                {tournament.name}
+                {filterOption === "AllTournaments" &&
+                    <>
+                    <ul className="list-group tournament-filter">
+                        <li className="list-group-item-t d-flex justify-content-between align-items-center row">
+                            <div className="col-lg-3 col-md-3 col-sm-3">
+                                Nome
                             </div>    
-                            <div className="col-lg-3 col-md-3 col-sm-3" onClick={() => goToTournament(tournament.id)}>
-                                {games_info[tournament.game_id].title}
-                            </div>
-    
-                            <div className="col-lg-3 col-md-3 col-sm-3" onClick={() => goToTournament(tournament.id)}>
-                                {tournament.usersCount}/{tournament.max_users}
+                            <div className="col-lg-3 col-md-3 col-sm-3">
+                                Jogo
                             </div>
 
-                            {tournament.private 
-                            ?
-                             <div title="Privado" className="col-lg-2 col-md-2 col-sm-2" onClick={() => goToTournament(tournament.id)}>
-                             <BsIcons.BsFillLockFill/>
+                            <div className="col-lg-3 col-md-3 col-sm-3">
+                                Capacidade
                             </div>
-                            : 
-                            <div title="Público" className="col-lg-2 col-md-2 col-sm-2" onClick={() => goToTournament(tournament.id)}>
-                            <BsIcons.BsFillUnlockFill/>
+                            <div className="col-lg-2 col-md-2 col-sm-2">
+                                Privacidade
                             </div>
-                            }
-                            
-                            <div title="Entrar" className="col-lg-1 col-md-1 col-sm-1 join">
+                            <div className="col-lg-1 col-md-1 col-sm-1 join">
+                                
+                            </div>                                
+                        </li>
 
-                            {tournament.status === "PREPARING" && 
-                                <>
-                                {tournament.creator !== current_user.id &&
+                    
+                        {tournaments.length === 0 ? 
+                        <li key="mensagem" className="list-group-item-t d-flex justify-content-between align-items-center row">
+                            <div className="col-lg-12 col-md-12 col-sm-12">
+                                <p>Não existem torneios disponíveis!</p>
+                            </div>        
+                        </li>
+                        :
+                    
+                        tournaments.map(function(tournament, index) {
+                        return(
+                            <li key={tournament.id} className="list-group-item-t d-flex justify-content-between align-items-center row">
+                                <div className="col-lg-3 col-md-3 col-sm-3" onClick={() => goToTournament(tournament.id)}>
+                                    {tournament.name}
+                                </div>    
+                                <div className="col-lg-3 col-md-3 col-sm-3" onClick={() => goToTournament(tournament.id)}>
+                                    {games_info[tournament.game_id].title}
+                                </div>
+        
+                                <div className="col-lg-3 col-md-3 col-sm-3" onClick={() => goToTournament(tournament.id)}>
+                                    {tournament.usersCount}/{tournament.max_users}
+                                </div>
+
+                                {tournament.private 
+                                ?
+                                <div title="Privado" className="col-lg-2 col-md-2 col-sm-2" onClick={() => goToTournament(tournament.id)}>
+                                <BsIcons.BsFillLockFill/>
+                                </div>
+                                : 
+                                <div title="Público" className="col-lg-2 col-md-2 col-sm-2" onClick={() => goToTournament(tournament.id)}>
+                                <BsIcons.BsFillUnlockFill/>
+                                </div>
+                                }
+                                
+                                <div title="Entrar" className="col-lg-1 col-md-1 col-sm-1 join">
+
+                                {tournament.status === "PREPARING" && 
                                     <>
-                                    {userTournaments.length === 0  &&
-                                    <div id="button-join-tournament" title="Entrar no Torneio" onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setEntrarTorneioModal(true); }} className="button-clicky-tp join-tournament">
-                                        <span className="shadow"></span>
-                                        <span className="front"><FaIcons.FaArrowRight/></span>
-                                    </div>
-                                    // <FaIcons.FaArrowAltCircleRight onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setEntrarTorneioModal(true); }}/>
-                                    }
+                                    {tournament.creator !== current_user.id &&
+                                        <>
+                                        {userTournaments.length === 0  &&
+                                            <div id="button-join-tournament" title="Entrar no Torneio" onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setEntrarTorneioModal(true); }} className="button-clicky-tp join-tournament">
+                                                <span className="shadow"></span>
+                                                <span className="front"><FaIcons.FaArrowRight/></span>
+                                            </div>
+                                            // <FaIcons.FaArrowAltCircleRight onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setEntrarTorneioModal(true); }}/>
+                                        }
 
-                                    {userTournaments.length !== 0  && userTournaments.some(e => e.tournament_id === tournament.id) &&
-                                        <div id="button-join-tournament" title="Sair do Torneio" onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setSairTorneioModal(true); }}  className="button-clicky-tp leave-tournament">
-                                            <span className="shadow"></span>
-                                            <span className="front"><ImIcons.ImExit/></span>
-                                        </div>
-                                        
-                                        // <FaIcons.FaArrowAltCircleLeft  onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setSairTorneioModal(true); }}/>
-                                    }
+                                        {userTournaments.length !== 0  && userTournaments.some(e => e.tournament_id === tournament.id) &&
+                                            <div id="button-join-tournament" title="Sair do Torneio" onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setSairTorneioModal(true); }}  className="button-clicky-tp leave-tournament">
+                                                <span className="shadow"></span>
+                                                <span className="front"><ImIcons.ImExit/></span>
+                                            </div>
+                                            
+                                            // <FaIcons.FaArrowAltCircleLeft  onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setSairTorneioModal(true); }}/>
+                                        }
 
-                                    {userTournaments.length !== 0  && !(userTournaments.some(e => e.tournament_id === tournament.id)) &&
-                                    <div id="button-join-tournament" title="Entrar no Torneio" onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setEntrarTorneioModal(true); }}  className="button-clicky-tp join-tournament">
-                                        <span className="shadow"></span>
-                                        <span className="front"><FaIcons.FaArrowRight/></span>
-                                    </div>
-                                        // <FaIcons.FaArrowAltCircleRight onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setEntrarTorneioModal(true); }}/>
+                                        {userTournaments.length !== 0  && !(userTournaments.some(e => e.tournament_id === tournament.id)) &&
+                                             <div id="button-join-tournament" title="Entrar no Torneio" onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setEntrarTorneioModal(true); }}  className="button-clicky-tp join-tournament">
+                                                <span className="shadow"></span>
+                                                <span className="front"><FaIcons.FaArrowRight/></span>
+                                            </div>
+                                            // <FaIcons.FaArrowAltCircleRight onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setEntrarTorneioModal(true); }}/>
+                                        }
+                                        </>
                                     }
                                     </>
                                 }
-                                </>
-                            }
+                                </div>    
+                            </li>
+                    )})}
+
+                    <EntrarTorneioModal
+                            show={entrarTorneioModal}
+                            onHide={() => setEntrarTorneioModal(false)}
+                            torneioid={torneioSelecionado.id}
+                            torneioname={torneioSelecionado.name}
+                            torneioprivate={torneioSelecionado.private === true ? "true" : "false"}
+                        />  
+
+                        <SairTorneioModal
+                            show={sairTorneioModal}
+                            onHide={() => setSairTorneioModal(false)}
+                            torneioid={torneioSelecionado.id}
+                            torneioname={torneioSelecionado.name}
+                        />  
+
+                    </ul>
+                    <div className="row justify-content-center">
+                        <Pagination
+                        className="my-3"
+                        count={count_tournaments}
+                        page={page_tournaments}
+                        siblingCount={1}
+                        boundaryCount={1}
+                        variant="outlined"
+                        shape="rounded"
+                        onChange={handlePageChangeTournaments}
+                        />
+                    </div>
+                    </>
+                }
+
+                {filterOption === "PersonalTournaments" &&
+                    <>
+                    <ul className="list-group">
+                        <li className="list-group-item-t d-flex justify-content-between align-items-center row">
+                            <div className="col-lg-3 col-md-3 col-sm-3">
+                                Nome
                             </div>    
+                            <div className="col-lg-3 col-md-3 col-sm-3">
+                                Jogo
+                            </div>
+
+                            <div className="col-lg-3 col-md-3 col-sm-3">
+                                Capacidade
+                            </div>
+                            <div className="col-lg-2 col-md-2 col-sm-2">
+                                Privacidade
+                            </div>
+                            <div className="col-lg-1 col-md-1 col-sm-1 join">
+                                
+                            </div>                                
                         </li>
-                        }
-                        </>
-                   )})}
 
-                   <EntrarTorneioModal
-                        show={entrarTorneioModal}
-                        onHide={() => setEntrarTorneioModal(false)}
-                        torneioid={torneioSelecionado.id}
-                        torneioname={torneioSelecionado.name}
-                        torneioprivate={torneioSelecionado.private === true ? "true" : "false"}
-                    />  
+                    
+                        {creatorTournaments.length === 0 ? 
+                        <li key="mensagem" className="list-group-item-t d-flex justify-content-between align-items-center row">
+                            <div className="col-lg-12 col-md-12 col-sm-12">
+                                <p>Não possui torneios criados!</p>
+                            </div>        
+                        </li>
+                        :
+                    
+                        creatorTournaments.map(function(tournament, index) {
+                        return(
+                            <li key={tournament.id} className="list-group-item-t d-flex justify-content-between align-items-center row">
+                                <div className="col-lg-3 col-md-3 col-sm-3" onClick={() => goToTournament(tournament.id)}>
+                                    {tournament.name}
+                                </div>    
+                                <div className="col-lg-3 col-md-3 col-sm-3" onClick={() => goToTournament(tournament.id)}>
+                                    {games_info[tournament.game_id].title}
+                                </div>
+        
+                                <div className="col-lg-3 col-md-3 col-sm-3" onClick={() => goToTournament(tournament.id)}>
+                                    {tournament.usersCount}/{tournament.max_users}
+                                </div>
 
-                    <SairTorneioModal
-                        show={sairTorneioModal}
-                        onHide={() => setSairTorneioModal(false)}
-                        torneioid={torneioSelecionado.id}
-                        torneioname={torneioSelecionado.name}
-                    />  
+                                {tournament.private 
+                                ?
+                                <div title="Privado" className="col-lg-2 col-md-2 col-sm-2" onClick={() => goToTournament(tournament.id)}>
+                                <BsIcons.BsFillLockFill/>
+                                </div>
+                                : 
+                                <div title="Público" className="col-lg-2 col-md-2 col-sm-2" onClick={() => goToTournament(tournament.id)}>
+                                <BsIcons.BsFillUnlockFill/>
+                                </div>
+                                }
+                                
+                                <div title="Entrar" className="col-lg-1 col-md-1 col-sm-1 join">
+                                </div>    
+                            </li>
+                    )})}
 
-                </ul>
-                <div className="row justify-content-center">
-                    <Pagination
-                    className="my-3"
-                    count={count_tournaments}
-                    page={page_tournaments}
-                    siblingCount={1}
-                    boundaryCount={1}
-                    variant="outlined"
-                    shape="rounded"
-                    onChange={handlePageChangeTournaments}
-                    />
-                </div>
+                    </ul>
+                    <div className="row justify-content-center">
+                        <Pagination
+                        className="my-3"
+                        count={count_personal_tournaments}
+                        page={page_personal_tournaments}
+                        siblingCount={1}
+                        boundaryCount={1}
+                        variant="outlined"
+                        shape="rounded"
+                        onChange={handlePageChangePersonalTournaments}
+                        />
+                    </div>
+                    </>
+                }
             </div>
 
 

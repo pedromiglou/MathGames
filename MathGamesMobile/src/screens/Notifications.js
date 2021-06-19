@@ -7,8 +7,6 @@ import { Feather } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { readData, saveData } from '../utilities/AsyncStorage';
 import { EvilIcons } from '@expo/vector-icons';
-import {gamesInfo} from "./../data/GamesInfo";
-import socket from "./../utilities/Socket";
 
 const win = Dimensions.get('window');
 
@@ -22,34 +20,35 @@ function Notifications({ navigation }) {
                 console.log(res);
                 setNotifications(res);
             });
-          });
-        
-        return () => {mounted=false}
-      }, []);
+        });
+
+
+        const interval = setInterval(() => {
+            console.log("Notification Interval ...")
+            readData("user").then(loggedUser=>{
+                loggedUser=JSON.parse(JSON.parse(loggedUser));
+                UserService.getNotifications(loggedUser.id, loggedUser.token).then(res=>{
+                    console.log(res)
+                    if( res !== notifications)
+                        setNotifications(res);
+                });
+            });
+        }, 5000);
+
+        return () => {
+            mounted=false
+            clearInterval(interval);
+        }
+    
+    }, []);
     
     function accept_game(notification) {
       readData("user").then(user=>{
         user=JSON.parse(JSON.parse(user));
         UserService.delete(notification.id, user.token);
-        var id_outro_jogador = notification.sender_user.sender_id
-      
-        socket.once("match_link", (msg) => {
-          console.log(msg);
-          if (msg["match_id"]) {
-            saveData("match_id", msg['match_id']);
-            saveData("game", gamesInfo[Number(msg['game_id'])]);
-            saveData("gameMode", "Amigo");
-            saveData("opponent", id_outro_jogador);
-            navigation.navigate("Game");
-
-          } else if (msg["error"]) {
-            console.log("there was an error");
-          }
-        });
-      
-        socket.emit("get_match_id", {"user_id": user.id, "outro_id": id_outro_jogador})
+        saveData("opponent", notification.sender_user.sender_id);
+        saveData("gameMode", "Invited").then(()=>navigation.navigate("Game"));
       })
-      
     }
     
     return (
@@ -59,38 +58,41 @@ function Notifications({ navigation }) {
             <View style={{minHeight: win.height, minWidth: win.width}}></View>
           </LinearGradient>
         </View>
-        <ScrollView>
-            <Text style={styles.title}>Notificações</Text>
+        <ScrollView style={{minHeight: win.height, minWidth: win.width}}>
             {notifications.map(notification => {
               if (notification.notification_type==="F") {
                 return (
-                <View key={notification.id} style={{flexDirection: "row", width: win.width}}>
+                <View key={notification.id} style={{flex: 1, width: win.width, borderColor: 'white', borderBottomWidth: 2}}>
                     <Text style={styles.item} >Pedido de amizade de {notification.sender_user.sender}</Text>
-                    <TouchableOpacity style={styles.button} onPress={()=>{
-                      readData("user").then(user=> {
-                        user = JSON.parse(JSON.parse(user));
+                    <View style={{flex:1 , flexDirection: "row", justifyContent: 'center', paddingBottom: 20}}>
+                        <TouchableOpacity style={styles.button} onPress={()=> {
+                            readData("user").then(user=> {
+                                user = JSON.parse(JSON.parse(user));
 
-                        UserService.accept_friendship(notification, user.token);
-                      })
-                    }} >
-                      <EvilIcons name="check" size={36} color="white" />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={()=>{}}>
-                      <Feather name="x-circle" size={28} color="white" />
-                    </TouchableOpacity>
+                                UserService.accept_friendship(notification, user.token);
+                            })
+                        }}>
+                            <Feather name="check-circle" size={34} color="lime" />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.button} onPress={()=>{}}>
+                            <Feather name="x-circle" size={34} color="red" />
+                        </TouchableOpacity>
+                    </View>
                 </View>
                 );
               }
               if (notification.notification_type==="P") {
                   return (
                   <View key={notification.id} style={{flexDirection: "row", width: win.width}}>
-                      <Text style={styles.item} >Convite de {notification.sender_user.sender}</Text>
-                      <TouchableOpacity style={styles.button} onPress={()=>accept_game(notification)} >
-                        <EvilIcons name="check" size={36} color="white" />
-                      </TouchableOpacity>
-                      <TouchableOpacity style={styles.button} onPress={()=>{}}>
-                        <Feather name="x-circle" size={28} color="white" />
-                      </TouchableOpacity>
+                        <Text style={styles.item} >Convite de {notification.sender_user.sender}</Text>
+                        <View style={{flex:1 , flexDirection: "row", justifyContent: 'center', paddingBottom: 20}}>
+                            <TouchableOpacity style={styles.button} onPress={()=>accept_game(notification)} >
+                                <Feather name="check-circle" size={34} color="lime" />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.button} onPress={()=>{}}>
+                                <Feather name="x-circle" size={34} color="red" />
+                            </TouchableOpacity>
+                        </View>
                   </View>
                   );
               }
@@ -113,13 +115,15 @@ const styles = StyleSheet.create({
   item: {
     fontSize: 30,
     padding: 10,
-    textAlign: 'left',
+    textAlign: 'center',
     fontFamily: 'BubblegumSans',
     color: 'white'
   },
   button: {
     marginLeft:10,
     marginTop:10,
-    borderRadius:30
+    borderRadius:30,
+    paddingLeft: 20,
+    paddingRight: 20
   },
 });

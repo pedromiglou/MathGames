@@ -4,10 +4,13 @@ import {View, ScrollView, Text, Image, Dimensions, StyleSheet, TouchableHighligh
 import {readData, saveData} from "../utilities/AsyncStorage";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-import { Feather } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SimpleLineIcons } from '@expo/vector-icons';
+import RulesModal from "../components/RulesModal";
+import { TouchableOpacity} from 'react-native-gesture-handler'
+import { Feather } from "@expo/vector-icons";
+
 
 const win = Dimensions.get('window');
 
@@ -25,6 +28,11 @@ function GamePage({navigation}) {
 
   }, []);
   const [aiMode, setAIMode] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+
+  function toggleModalVisibility() {
+    setModalVisible(!modalVisible);
+  }
 
   return (
     <View>
@@ -35,6 +43,20 @@ function GamePage({navigation}) {
       </View>
     
       <ScrollView>
+
+        <View style={styles.help}>
+          <TouchableOpacity
+              style={styles.buttonHelp}
+              onPress={() => {
+                setModalVisible(true);
+              }}
+          >
+            <View>
+                <Feather name="help-circle" size={30} color="white" />
+            </View>
+          </TouchableOpacity>
+        </View>
+
         <View style={{flexDirection: "row"}}>
           <View style={{width: win.width/2}}>
             <Text style={styles.characteristics}>Idade: {game.age}</Text>
@@ -143,8 +165,8 @@ function GamePage({navigation}) {
 
         {aiMode==="P" && <View style={styles.buttonView}>
           <TouchableHighlight style={styles.button} onPress = {() => {
-                        readData('user_id').then(id=>{
-                          saveData('player1', id.slice(1,-1));
+                        readData('username').then(username=>{
+                          saveData('player1', username.slice(1,-1));
                           saveData('player2', "AI")
                           navigation.navigate("Game");
                         })
@@ -156,9 +178,9 @@ function GamePage({navigation}) {
             </LinearGradient>
           </TouchableHighlight>
           <TouchableHighlight style={styles.button} onPress = {() => {
-                        readData('user_id').then(id=>{
+                        readData('username').then(username=>{
                           saveData('player1', "AI")
-                          saveData('player2', id.slice(1,-1));
+                          saveData('player2', username.slice(1,-1));
                           navigation.navigate("Game");
                         })
                       }}>
@@ -183,8 +205,13 @@ function GamePage({navigation}) {
             </View>
           </LinearGradient>
         </TouchableHighlight>
+        { modalVisible === true && (
+            <RulesModal toggleModalVisibility={toggleModalVisibility} modalVisible={modalVisible} game={game} />
+        )}
       </ScrollView>
     </View>
+
+    
   );
 }
 
@@ -209,6 +236,11 @@ const styles = StyleSheet.create({
     fontSize: 40,
     textAlign:'center'
   },
+  buttonHelp: {
+    marginLeft: 10,
+    marginTop: 10,
+    borderRadius: 30,
+},
   button: {
     margin: 10,
     backgroundColor: "#CCFFFF",
@@ -271,7 +303,16 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       color: 'white',
       fontFamily: 'BubblegumSans',
-      fontSize: 20,
+      fontSize: 15,
       marginBottom: 25
-  }
+  },
+  help: {
+    position: "absolute",
+    right: 0,
+    top: 14,
+    paddingRight: 20,
+    paddingTop: 10,
+    zIndex: 1,
+},
+
 });

@@ -20,26 +20,26 @@ export const GameOverModal = forwardRef((props, ref) => {
     }));
 
     function processEndGameMessage(endGameMessage) {
-        let gameId = endGameMessage["game_id"];
+        let gameId = parseInt(endGameMessage["game_id"]);
         let result = endGameMessage["match_result"];
         let endMode = endGameMessage["end_mode"];
         
         if ( result === "offline_finish" ) {
             let winner = endGameMessage["winner"];
             if ( endMode === "timeout" || endMode === "invalid_move" )
-                return {game_id: gameId, result: result, winner: winner, message: EndGameStatements["win"][endMode]};
+                return {game_id: gameId, result: result, winner: winner, message: EndGameStatements["win"][endMode], end_mode: endMode};
             
-            return {game_id: gameId, result: result, winner: winner, message: EndGameStatements["win"][gameId][endMode]};
+            return {game_id: gameId, result: result, winner: winner, message: EndGameStatements["win"][gameId][endMode], end_mode: endMode};
         }
         if ( result === "ai_win" || result === "ai_loss" ) {
             let aiDifficulty = endGameMessage["ai_difficulty"];
-            return {game_id: gameId, result: result, ai_difficulty: aiDifficulty};
+            return {game_id: gameId, result: result, ai_difficulty: aiDifficulty, end_mode: endMode};
         }
 
-        if ( endMode === "timeout" || endMode === "invalid_move" )
-            return {game_id: gameId, result: result, message: EndGameStatements[result][endMode]};
+        if ( endMode === "timeout" || endMode === "invalid_move" || endMode === "forfeit" )
+            return {game_id: gameId, result: result, message: EndGameStatements[result][endMode], end_mode: endMode};
 
-        return {game_id: gameId, result: result, message: EndGameStatements[result][gameId][endMode]};
+        return {game_id: gameId, result: result, message: EndGameStatements[result][gameId][endMode], end_mode: endMode};
 
     }
 
@@ -56,12 +56,16 @@ export const GameOverModal = forwardRef((props, ref) => {
                         <span className="result-header">Resultado:</span>
                         { gameOverMessage["result"]==="win" &&
                             <span className="result-text">
-                                Vitória! <span className="emoji smiley-happy"></span>
+                                Vitória!
+                                {gameOverMessage["end_mode"] === "forfeit" && <span className="emoji flag"></span>}
+                                {gameOverMessage["end_mode"] !== "forfeit" && <span className="emoji smiley-happy"></span>}
                             </span>
                         }
                         { gameOverMessage["result"]==="loss" &&
                             <span className="result-text">
-                                Derrota. <span className="emoji smiley-sad"></span>
+                                Derrota. 
+                                {gameOverMessage["end_mode"] === "forfeit" && <span className="emoji flag"></span>}
+                                {gameOverMessage["end_mode"] !== "forfeit" && <span className="emoji smiley-sad"></span>}
                             </span>
                         }
                         { gameOverMessage["result"]==="offline_finish" &&

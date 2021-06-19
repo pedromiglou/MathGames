@@ -56,11 +56,14 @@ function Navbar() {
 	const [linktogame2href, setLinkToGame2Href] = useState("")
 
 	const [modalConfirmShow, setConfirmModalShow] = useState(false);
+	const [modalUsername, setModalUsername] = useState("");
+	const [modalId, setModalUserId] = useState(0);
 
 	const [modalChooseGame, setModalChooseGame] = useState(false);
 	const [InvUser, setInvUser] = useState([]);
 	// const [canPlay, setCanPlay] = useState(false);
 	// const [choosenGameId, setGameId] = useState(-1);
+
 
 	var choosenGame = -1;
 
@@ -133,6 +136,33 @@ function Navbar() {
 		</Modal>
 	);
 	}
+
+
+	function ConfirmOperationModal(props) {
+		let modal_username = props.username;
+
+        return (
+          <Modal
+            {...props}
+            size="md"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header closeButton>
+              <Modal.Title id="contained-modal-title-vcenter" style={{color: "#0056b3", fontSize: 30}}>
+                Remover Amizade com {modal_username}
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p style={{color: "#0056b3", fontSize: 20}}>Tem a certeza que pretende remover a sua amizade com {modal_username}</p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button style={{fontSize: 18}} onClick={() => {remove_friend(props.id); props.onHide();}} className="btn save-btn">Confimar</Button>
+              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Cancelar</Button>
+            </Modal.Footer>
+          </Modal>
+        );
+      }
 
 	function button_confirm(user_id){
 		if (choosenGame === -1){
@@ -214,7 +244,8 @@ function Navbar() {
 	async function invite_for_game(invited_player) {
 		localStorage.setItem("jogoporinvite", true)
 		localStorage.setItem("outrojogador", invited_player)
-		await UserService.send_notification_request(current_user.id, invited_player, "P");
+		//var notification_text = current_user.username + " convidou-te para jogares."
+		//await UserService.send_notification_request(current_user.id, invited_player, "P", notification_text);
 		var elemento = document.getElementById("linktogame")
 		var url = "/gamePage?id=" + choosenGame
 		setLinkToGameHref(url)
@@ -241,7 +272,6 @@ function Navbar() {
 				elemento.click()
 				//window.location.href = "http://localhost:3000/gamePage?id=0&mid=" + new_match_id
 			} else if (msg["error"]) {
-				console.log("tou erro")
 				setConfirmModalShow(true)
 			}
 		})
@@ -250,20 +280,61 @@ function Navbar() {
 	}
 
 
-	function friendRequest() {
-		var input = document.getElementById("inputFriend")
-		var other_username = input.value
-		if (other_username !== undefined && other_username !== null && other_username !== "")
-			UserService.send_notification_request_by_username(current_user.id, other_username, "F");
-		input.value = ""
-		hideAddFriendInput();
-	}
-
 
 	function run_logout() {
 		sessionStorage.removeItem("user");
 		window.location.assign(urlWeb)
 	}
+
+	async function friendRequest() {
+		var input = document.getElementById("inputFriend")
+		var other_username = input.value
+		var notification_text = current_user.username + " enviou-te um pedido de amizade."
+		if (other_username !== undefined && other_username !== null && other_username !== "") {
+			//UserService.send_notification_request_by_username(current_user.id, other_username, "F", notification_text);
+			var receiver = await UserService.getUserByUsername(other_username)
+			socket.emit("new_notification", {"sender": current_user.id, "receiver": receiver.id, "notification_type": "F", "notification_text": notification_text})
+		}
+		input.value = ""
+		hideAddFriendInput();
+	}
+
+	async function accept_friendRequest(notification) {
+		await UserService.accept_friendship(notification);
+		var notification_text = current_user.username + " aceitou o teu pedido de amizade."
+		socket.emit("new_notification", {"sender": current_user.id, "receiver": notification.sender_user.sender_id, "notification_type": "A", "notification_text": notification_text})
+		fetchFriends()
+	}
+
+	async function remove_friend(friend2) {
+		await UserService.remove_friend(current_user.id, friend2);
+		var notification_text = current_user.username + " removeu-te da sua lista de amigos."
+		socket.emit("new_notification", {"sender": current_user.id, "receiver": friend2, "notification_type": "N", "notification_text": notification_text})
+		fetchFriends()
+	}
+
+
+	// Load user notifications
+	async function fetchNotifications() {
+		var response = await UserService.getNotifications(current_user.id);
+		if ( response != null )
+			setNotifications(response);
+	}
+
+	// Load user friends list
+	async function fetchFriends() {
+		var response = await UserService.getFriends(current_user.id);
+		if ( response != null )
+			setFriends(response);
+	}
+
+	socket.off("reload_notifications")
+	
+	socket.on("reload_notifications", (msg) => {
+		fetchNotifications();
+		fetchFriends();
+	})
+
 
     // Tem de colocar no redux o tipo de user
     useEffect(() => {
@@ -309,6 +380,7 @@ function Navbar() {
                 type: 'FREEUSER'
             });
         }
+
     }, [dispatch])
 
 
@@ -360,15 +432,17 @@ function Navbar() {
 											return (
 												<div className="row">
 													<div className="col-9" style={{fontSize: 18}}>
-														{ (notification.notification_type === "F" && 
-															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} enviou-te um pedido de amizade.</p>)
-														|| (notification.notification_type === "T" && 
-															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} convidou-te para participares no seu torneio.</p>)
-														|| (notification.notification_type === "P" && 
-															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} convidou-te para jogares.</p>)
-														|| (notification.notification_type === "R" && 
-															<p style={{marginBottom: "0.3em"}}>{notification.sender_user.sender} iniciou o próximo round do seu torneio.</p>)
+														{
+														/* Notification_Type List:
+															- F -> Enviou pedido de amizade
+															- A -> Aceitou pedido de amizade
+															- N -> Removeu da lista de amigos
+															- T -> Convidou para participar no torneio
+															- P -> Convidou-te para uma partida
+															- R -> Iniciou um novo round do torneio
+														*/
 														}
+														<p style={{marginBottom: "0.3em"}}>{notification.notification_text}</p>
 														{ (difference < 60 &&
 															<p style={{fontSize: 13}}>há { Number.parseInt(difference)} minutos</p>)
 														|| ( 60 <= difference & difference < 60 * 24 &&
@@ -380,7 +454,7 @@ function Navbar() {
 													<div className="col-3" >
 														<div className="text-right text-bottom" style={{marginTop: "20%"}}>
 															{ (notification.notification_type === "F" && 
-																<FaIcons.FaCheckCircle onClick={ () => {UserService.accept_friendship(notification); notifyFriendshipSucess(); deleteNotification(index);}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
+																<FaIcons.FaCheckCircle onClick={ async () => {accept_friendRequest(notification); notifyFriendshipSucess(); deleteNotification(index);}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															|| (notification.notification_type === "T" && 
 																<FaIcons.FaCheckCircle  className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															|| (notification.notification_type === "P" && 
@@ -441,6 +515,7 @@ function Navbar() {
 
 								{ friends.length > 0 &&
 								<Dropdown.ItemText>{
+									<>
 										<ul className="list-friends">
 										{friends.map(function(user, index) {
 											return (
@@ -449,15 +524,20 @@ function Navbar() {
 													<div>
 														{/* <FaIcons.FaEnvelopeSquare title="Convidar para jogo" className="icon_notifications" style={{fontSize: 25}} onClick={() => {invite_for_game(user.id)}} /> */}
 														<FaIcons.FaEnvelopeSquare title="Convidar para jogo" className="icon_notifications" style={{fontSize: 25}} onClick={() => {setModalChooseGame(true); setInvUser([user.id, user.username])}} />
-														<IoIcons.IoPersonRemove title="Remover Amigo" className="icon_notifications" style={{fontSize: 25}} />
+														<IoIcons.IoPersonRemove title="Remover Amigo" className="icon_notifications" style={{fontSize: 25}} onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setConfirmModalShow(true);}} />
 													</div>
 												</li>
 											);
 										})}
 										</ul>
-										}
-									</Dropdown.ItemText>
-								
+										<ConfirmOperationModal
+										show={modalConfirmShow}
+										onHide={() => setConfirmModalShow(false)}
+										username={modalUsername}
+										id={modalId}
+									/>
+									</>
+								}</Dropdown.ItemText>
 								}
 								{ friends.length === 0 &&
 								<Dropdown.ItemText>

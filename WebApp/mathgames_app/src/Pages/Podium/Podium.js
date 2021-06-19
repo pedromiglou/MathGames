@@ -9,6 +9,9 @@ import * as FaIcons from 'react-icons/fa';
 import * as GiIcons from 'react-icons/gi';
 import { Modal, Button } from "react-bootstrap";
 
+import socket from "../../index"
+
+
 import AuthService from '../../Services/auth.service';
 import UserService from '../../Services/user.service';
 
@@ -83,11 +86,16 @@ function Podium() {
 	};
 	
 	function friend_request(friend2) {
-		UserService.send_notification_request(current_user.id, friend2, "F");
+		//UserService.send_notification_request(current_user.id, friend2, "F");
+		var notification_text = current_user.username + " enviou-te um pedido de amizade."
+		socket.emit("new_notification", {"sender": current_user.id, "receiver": friend2, "notification_type": "F", "notification_text": notification_text})
+
 	}
 
 	async function remove_friend(friend2) {
 		await UserService.remove_friend(current_user.id, friend2);
+		var notification_text = current_user.username + " removeu-te da sua lista de amigos."
+		socket.emit("new_notification", {"sender": current_user.id, "receiver": friend2, "notification_type": "N", "notification_text": notification_text})
 		window.location.reload();
 	}
 
@@ -257,8 +265,9 @@ function Podium() {
 			  	<>
 			  	<label style={{color: "#0056b3", fontSize: 20}} for="reason">Motivo: </label>
 			  	<select id="reason" className="form-select" aria-label="Default select example">
-				  <option selected value="Cheats">Cheats</option>
-				  <option value="Bug Abuse">Bug Abuse</option>
+				  <option selected value="Uso Batota">Uso Batota</option>
+				  <option value="Exploração de Bug">Exploração de Bug</option>
+				  <option value="Nome inapropriado">Nome inapropriado</option>
 				</select>
 				</>
 			  }

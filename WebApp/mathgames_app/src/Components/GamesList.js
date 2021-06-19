@@ -37,23 +37,32 @@ const GamesList = ({filter}) => {
 	}
 
 	async function getGamesOrderByMostPlayed() {
-		console.log("im here")
 		var estatisticas = await UserService.getMatchesStatisticsByGame();
+		
 		if (estatisticas) {
 
 			var new_games_info = []
 			var games_not_done_yet = []
-			for (let l = 0; l < estatisticas.matches.length; l++){
-				for (let i = 0; i < Object.keys(games_info).length; i++){
-					if (estatisticas.matches[l].id === games_info[i].id) {
-						new_games_info.push(games_info[i])
-					} else if (games_info[i].toBeDone) {
-						games_not_done_yet.push(games_info[i])
+			var games_by_order = []
+
+			for (let i = 0; i < Object.keys(games_info).length; i++){
+				if (games_info[i].toBeDone === false) {
+					new_games_info.push(games_info[i])
+				} else if (games_info[i].toBeDone) {
+					games_not_done_yet.push(games_info[i])
+				}
+			}
+
+			for (let game of estatisticas.matches) {
+				for (let jogo of new_games_info) {
+					if (game.id === jogo.id) {
+						games_by_order.push(jogo)
 					}
 				}
 			}
-			new_games_info = new_games_info.concat(games_not_done_yet)
-			setGamesToShow(new_games_info)
+
+			games_by_order = games_by_order.concat(games_not_done_yet)
+			setGamesToShow(games_by_order)
 		}
 	}
 
