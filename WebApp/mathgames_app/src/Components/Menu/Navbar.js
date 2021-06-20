@@ -61,7 +61,7 @@ function Navbar() {
 		accessorie: "none",
         trouser: "none",
 	});
-	const [linktogamehref, setLinkToGameHref] = useState("")
+	//const [linktogamehref, setLinkToGameHref] = useState("")
 	const [linktogame2href, setLinkToGame2Href] = useState("")
 	//const [linktotournamenthref, setLinkToTournamentHref] = useState("")
 
@@ -252,14 +252,19 @@ function Navbar() {
 	}
 
 	async function invite_for_game(invited_player) {
+		console.log("tou mandar invite")
 		localStorage.setItem("jogoporinvite", true)
 		localStorage.setItem("outrojogador", invited_player)
 		//var notification_text = current_user.username + " convidou-te para jogares."
 		//await UserService.send_notification_request(current_user.id, invited_player, "P", notification_text);
-		var elemento = document.getElementById("linktogame")
-		var url = "/gamePage?id=" + choosenGame
-		setLinkToGameHref(url)
-		elemento.click()
+		//var elemento = document.getElementById("linktogame")
+		var url = "gamePage?id=" + choosenGame
+		//setLinkToGameHref(url)
+		//console.log(url)
+		//console.log("elemento antes de click")
+		//console.log(elemento)
+		//elemento.click()
+		window.location.assign(urlWeb+url)
 		//window.location.href = "http://localhost:3000/gamePage?id=0"
 		
 	}
@@ -708,9 +713,9 @@ function Navbar() {
             }} /> */}
 
 			<div style={{display:"none", visibility:"hidden"}}>
-				<Link id="linktogame" to={linktogamehref}>
+				{/*<Link id="linktogame" to={linktogamehref}>
 				
-				</Link>
+				</Link>*/}
 	
 				<Link id="linktogame2" to={linktogame2href}>
 					

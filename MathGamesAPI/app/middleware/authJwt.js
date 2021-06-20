@@ -40,7 +40,7 @@ isAdmin = (req, res, next) => {
 
 isTournamentManager = (req, res, next) => {
     User.findByPk(req.userId).then(user => {
-        if (user.account_type == "T") {
+        if (user.account_type == "T" || user.account_type == "A") {
             next();
             return;
         }

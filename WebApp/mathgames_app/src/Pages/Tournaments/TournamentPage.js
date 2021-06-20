@@ -5,6 +5,7 @@ import {useHistory} from 'react-router-dom';
 import * as IoIcons from 'react-icons/io5';
 import * as MdIcons from 'react-icons/md';
 
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./TournamentPage.css";
 import socket from "../../index"
@@ -172,9 +173,16 @@ function TournamentPage() {
         var elemento
         var response = await TournamentService.initializeTournament(tournament_id)
         if (response.error) {
-            elemento = document.getElementById("erroStartingTournament")
-            if (elemento !== undefined && elemento !== null)
-                elemento.style.display = "flex"
+            if (response.message) {
+                elemento = document.getElementById("erroMinimumPlayers")
+                if (elemento !== undefined && elemento !== null)
+                    elemento.style.display = "flex"
+            } else {
+                elemento = document.getElementById("erroStartingTournament")
+                if (elemento !== undefined && elemento !== null)
+                    elemento.style.display = "flex"
+            }
+
         } else {
             retrieveInformation()
         }
@@ -186,6 +194,7 @@ function TournamentPage() {
         socket.off("round_start");
 
         var response = await TournamentService.initializeNextRound(tournament_id)
+        
         var elemento
         if (response.error) {
             elemento = document.getElementById("erroInitializeRound")
@@ -244,8 +253,12 @@ function TournamentPage() {
                 if (message === "Tournament is not active")
                     setErroCheckIn("Este torneio não se encontra ativo.")
             } else {
-                let match_id = msg['match_id']
-                history.push("/gamePage?id="+tournament.game_id+"&tid="+tournament.id+"&mid="+match_id)
+                if (msg["message"]) {
+                    setErroCheckIn("Voçe já esta qualificado para round seguinte. Espere que o próximo round seja iniciado.")
+                } else {
+                    let match_id = msg['match_id']
+                    history.push("/gamePage?id="+tournament.game_id+"&tid="+tournament.id+"&mid="+match_id)
+                }
             }
         })
     }
@@ -434,10 +447,22 @@ function TournamentPage() {
         document.getElementById("erroChangingDescription").style.display = "none"
         document.getElementById("erroInitializeRound").style.display = "none"
         document.getElementById("initializeRoundSuccess").style.display = "none"
+        document.getElementById("erroMinimumPlayers").style.display = "none"
+
     }
 
     function hide_message(id) {
         document.getElementById(id).style.display = "none"
+    }
+
+    function updateInfo(){
+        if (document.getElementById("icon_reload") !== null && document.getElementById("icon_reload") !== undefined)
+            document.getElementById("icon_reload").classList.add("icon-reload")
+        retrieveInformation()
+        setTimeout(() => {
+            if (document.getElementById("icon_reload") !== null && document.getElementById("icon_reload") !== undefined)
+                document.getElementById("icon_reload").classList.remove("icon-reload")
+         }, 1000);
     }
 
 
@@ -461,6 +486,10 @@ function TournamentPage() {
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("successJoiningTournament")}></img>
             </div> 
 
+            <div id={"erroMinimumPlayers"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+                O torneio deve possuir pelo menos 3 jogadores para começar.
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroMinimumPlayers")}></img>
+            </div> 
 
             <div id={"successLeavingTournament"} className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
                 Saiu do torneio com sucesso.
@@ -523,7 +552,11 @@ function TournamentPage() {
             </div>
 
             <div className="tournaments-container">
-            <h1 className="tournament-name-h1">{tournament.name}</h1>
+            <div className="title-reload">
+                <h1 className="tournament-name-h1">{tournament.name}</h1>
+                <IoIcons.IoReloadSharp className="reload-icon" title={"reload"} id={"icon_reload"} size={36} onClick={() => {updateInfo()}}/>
+            </div>
+
                 <div className="tournamentPage_section">
                     <div className="participants_section">
                         <div className="tournament-info-sp">
@@ -547,7 +580,7 @@ function TournamentPage() {
                                 <div className="col-lg-3 col-md-3 col-sm-3">
                                     Rank
                                 </div>   
-                                {tournament.creator === current_user.id && 
+                                {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
                                     <div className="col-lg-2 col-md-2 col-sm-2">
                                     
                                     </div>

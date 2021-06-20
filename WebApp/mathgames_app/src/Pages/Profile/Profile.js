@@ -13,6 +13,7 @@ import UserService from "../../Services/user.service";
 import { Modal, Button } from "react-bootstrap";
 
 const Profile = () => {
+	console.log("--- dentro profile ---")
 	const [menuOption, setMenuOption] = useState("Geral");
 	const [invOption, setInvOption] = useState("Chapeus");
 	const [user, setUser] = useState("");
@@ -80,8 +81,18 @@ const Profile = () => {
 		// Load user games history
         async function fetchApiLastGames() {
             var response = await UserService.getLastGames(current_user.id);
-            if (!response.error)
-                setGames(response);
+            if (!response.error) {
+				console.log("response: ", response)
+				var real_matches = []
+				for (let game of response) {
+					console.log("game: ",game )
+					if (game.player1 !== null && game.player2 !== null) {
+						real_matches.push(game)
+					}
+				}
+				console.log(real_matches)
+				setGames(real_matches);
+			}
             else
                 setGames("erro")
         }
