@@ -6,6 +6,7 @@ import RastrosAI from './RastrosAI';
 import socket from './../../utilities/Socket';
 import GameModal from './Modal';
 import GameText from "./GameText";
+import {saveData} from "./../../utilities/AsyncStorage";
 
 let ai = null;
 

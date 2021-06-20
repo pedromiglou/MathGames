@@ -29,6 +29,8 @@ import Notifications from './screens/Notifications';
 
 import * as ScreenOrientation from 'expo-screen-orientation';
 
+import CustomisableAlert from "react-native-customisable-alert";
+
 export const navigationRef = React.createRef();
 export function openDrawer(routeName, params) {
   navigationRef.current.dispatch(DrawerActions.toggleDrawer());
@@ -160,6 +162,8 @@ function App() {
   } else {
     return (
       <NavigationContainer ref={navigationRef}>
+        {/*this alert needs to be here to be used everywhere*/}
+        <CustomisableAlert/>
         <View style={styles.topView}>
           <TouchableOpacity onPress = {() => login ? setLogin(false) : openDrawer()}>
             <Feather name="menu" size={28} color="grey" style={styles.topIcon}/>
@@ -227,11 +231,12 @@ const styles = StyleSheet.create({
   },
   topIcon: {
     marginTop: Constants.statusBarHeight,
-    marginLeft: 10
+    marginLeft: 5
   },
   logoImage: {
-      width: win.width/5*3,
-      height: win.width*360/1463/5*3,
+      margin: 5,
+      width: win.width/2.1,
+      height: win.width*360/1463/2.1,
       marginTop: Constants.statusBarHeight
   },
   loginImage: {

@@ -47,7 +47,7 @@ function GatosCaesEngine() {
                     readData("dif").then(X=>{
                         dif= X!==null ? X.slice(1,-1) : null;
                         readData('match_id').then(X=>{
-                            match_id=X.slice(1,-1);
+                            match_id= X!==null ? X.slice(1,-1) : null;
                             readData('user_id').then(X=>{
                                 user_id=X.slice(1,-1);
                                 readData('username').then(X=>{

@@ -8,6 +8,8 @@ import {readData, saveData} from './../utilities/AsyncStorage';
 import Loading from './../components/Loading';
 import {gamesInfo} from "./../data/GamesInfo";
 import socket from "./../utilities/Socket";
+import {showAlert, closeAlert} from "react-native-customisable-alert";
+import GiveUpModal from '../components/GiveUpModal';
 
 const win = Dimensions.get("window");
 
@@ -26,8 +28,13 @@ function Game({ navigation }) {
                 if (gameMode.slice(-11,-1)!=="Computador") {
                     readData("user_id").then(user_id=>{
                         user_id = user_id.slice(1,-1);
+                        
                         //at this point ready will have the game_id
-                        socket.emit("leave_matchmaking", {"user_id": user_id, "game_id": ready})
+                        socket.emit("forfeit_match", {"user_id": user_id});
+                        readData("game").then(game => {
+                            game = JSON.parse(game);
+                            socket.emit("leave_matchmaking", {"user_id": user_id, "game_id": game.id});
+                        });
                     });
                 }
             });
@@ -52,28 +59,13 @@ function Game({ navigation }) {
                             navigation.dispatch(e.data.action);
                         } else {
                             saveData("ready",-1);
-                            // Prompt the user before leaving the screen
-                            Alert.alert(
-                                'Tem a certeza que quer voltar para trás?',
-                                'Se progressir irá desistir do jogo',
-                                [
-                                { text: "Ficar", style: 'cancel', onPress: () => {} },
-                                {
-                                    text: 'Sair',
-                                    style: 'destructive',
-                                    // If the user confirmed, then we dispatch the action we blocked earlier
-                                    // This will continue the action that had triggered the removal of the screen
-                                    onPress: () => {
-                                        readData("gameMode").then(gameMode=>{
-                                            if (gameMode.slice(-11,-1)!=="Computador") {
-                                                readData("user_id").then(user_id=>socket.emit("forfeit_match", {"user_id": user_id.slice(1,-1)}));
-                                            }
-                                        });
-                                        navigation.dispatch(e.data.action);
-                                    },
-                                },
-                                ]
-                            );
+                            //put modal inside alert
+                            showAlert({
+                                alertType: "custom",
+                                customAlert: (
+                                    <GiveUpModal closeAlert={closeAlert} leaveGame={()=>navigation.dispatch(e.data.action)}/>
+                                )
+                            });
                         }
                     });
                     
