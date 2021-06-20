@@ -19,7 +19,7 @@ import AuthService from '../../Services/auth.service';
 import UserService from '../../Services/user.service';
 import {urlWeb} from './../../data/data';
 
-import Avatar from "../../Components/Avatar";
+import Avatar from "../../Components/Avatar/Avatar";
 import socket from "../../index"
 
 import { Modal, Button } from "react-bootstrap";
@@ -46,12 +46,19 @@ function Navbar() {
     const [friends, setFriends] = useState([]);
     const [notifications, setNotifications] = useState([]);
 
-	const [hat, setHat] = useState("none");
-    const [shirt, setShirt] = useState("Camouflage1");
+	/* const [hat, setHat] = useState("none");
+    const [shirt, setShirt] = useState("none");
     const [color, setColor] = useState("#FFAF00");
     const [accessorie, setAccessorie] = useState("none");
-    const [trouser, setTrouser] = useState("#808080");
+    const [trouser, setTrouser] = useState("none"); */
 
+    const [avatarCustoms, setAvatarCustoms] = useState({
+		hat: "none",
+		shirt: "none",
+        color: "#FFAF00",
+		accessorie: "none",
+        trouser: "none",
+	});
 	const [linktogamehref, setLinkToGameHref] = useState("")
 	const [linktogame2href, setLinkToGame2Href] = useState("")
 
@@ -359,11 +366,18 @@ function Navbar() {
 		async function fetchApiUserById() {
             var user = await UserService.getUserById(current_user.id);
             setUser(user);
-            setHat(user.avatar_hat);
+            /* setHat(user.avatar_hat);
             setShirt(user.avatar_shirt);
             setColor(user.avatar_color);
             setAccessorie(user.avatar_accessorie);
-            setTrouser(user.avatar_trouser);
+            setTrouser(user.avatar_trouser); */
+            setAvatarCustoms({
+                hat: user.avatar_hat,
+                shirt: user.avatar_shirt,
+                color: user.avatar_color,
+                accessorie: user.avatar_accessorie,
+                trouser: user.avatar_trouser,
+            });
         }
 
 		if (current_user !== null) {
@@ -555,7 +569,7 @@ function Navbar() {
 							<div title="Perfil" className="round_profile_logo">
 
 								<DropdownButton	menuAlign="left" title={<>
-									<Avatar navbar={true} skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser}/>
+									<Avatar navbar={true} skinColor={avatarCustoms.color} hatName={avatarCustoms.hat} shirtName={avatarCustoms.shirt} accesorieName={avatarCustoms.accessorie} trouserName={avatarCustoms.trouser}/>
 									<MdIcons.MdKeyboardArrowDown color={"rgb(2, 204, 255)"} className="key-down"/>
 								</>}
 								id="user_dropdown">
