@@ -18,32 +18,51 @@ import { ranksInfo } from "../data/ranksInfo";
 import { readData } from "../utilities/AsyncStorage";
 import UserService from "../services/user.service";
 
-// import * as Progress from 'react-native-progress';
+import * as Progress from "react-native-progress";
 
 const win = Dimensions.get("window");
 //import { navigationRef } from "../App";
 //import { DrawerActions } from "@react-navigation/native";
 
 function Profile({ navigation }) {
-
 	const [userInfos, setUserInfos] = useState({
 		user: "",
 		dict: [],
+		progress: null,
 	});
+
+	const [progress, setProgress] = useState(0);
 
 	useEffect(() => {
 		readData("user").then((user) => {
-			var current_user = JSON.parse(JSON.parse(user));
+            var current_user = JSON.parse(JSON.parse(user));
 
-			setUserInfos({
-				user: current_user,
-				dict: [],
-			});
-		});
+            UserService.getUserRanksById(current_user.id).then(
+                (response) => {
+                    var ranks_dict = getRanks(response);
+
+                    UserService.getUserById(current_user.id).then(
+                        (response) => {
+                            var userProgress =
+                                getBarProgression(response.account_level) /
+                                100;
+
+                            setProgress(
+                                Math.floor(userProgress * 100) / 100
+                            );
+                            setUserInfos({
+                                user: response,
+                                dict: ranks_dict,
+                            });
+                        }
+                    );
+                }
+            );
+        });
 
 		const interval = setInterval(() => {
 			readData("user").then((user) => {
-                var current_user = JSON.parse(JSON.parse(user));
+				var current_user = JSON.parse(JSON.parse(user));
 
 				UserService.getUserRanksById(current_user.id).then(
 					(response) => {
@@ -54,6 +73,28 @@ function Profile({ navigation }) {
 								user: current_user,
 								dict: ranks_dict,
 							});
+					}
+				);
+
+				UserService.getUserRanksById(current_user.id).then(
+					(response) => {
+						var ranks_dict = getRanks(response);
+
+						UserService.getUserById(current_user.id).then(
+							(response) => {
+								var userProgress =
+									getBarProgression(response.account_level) /
+									100;
+
+								setProgress(
+									Math.floor(userProgress * 100) / 100
+								);
+								setUserInfos({
+									user: response,
+									dict: ranks_dict,
+								});
+							}
+						);
 					}
 				);
 			});
@@ -124,7 +165,7 @@ function Profile({ navigation }) {
 				ranks_dict[value["id"]] = userRank;
 			}
 		}
-        return ranks_dict;
+		return ranks_dict;
 	};
 
 	return (
@@ -174,16 +215,35 @@ function Profile({ navigation }) {
 					</Text>
 				</View>
 
-				<Text style={{ textAlign: "center", color: "white" }}>
-					{getLevel(userInfos.user.account_level)} Nivel{" "}
-					{getLevel(userInfos.user.account_level) + 1}
+				<Text
+					style={{
+						textAlign: "center",
+						color: "white",
+						fontFamily: "BubblegumSans",
+					}}
+				>
+					Nivel
 				</Text>
 				<View style={styles.levelProgress}>
-					{/* <Text style={{flex: 1}}>{getLevel(userInfos.user.account_level)}</Text> */}
-					{/* <View style={styles.progressBar}>
-						<Progress.Bar progress={ getBarProgression(userInfos.user.account_level)/100 } width={200} color={'orange'}/>
-					</View> */}
-					{/* <Text style={{flex: 1}}>{getLevel(userInfos.user.account_level) + 1}</Text> */}
+					<View style={{ flex: 0.3, alignItems: "flex-end" }}>
+						<Text style={styles.levelNum}>
+							{getLevel(userInfos.user.account_level)}
+						</Text>
+					</View>
+					<View style={styles.progressBar}>
+						{progress !== null && progress !== NaN && (
+							<Progress.Bar
+								progress={progress}
+								width={200}
+								color={"orange"}
+							/>
+						)}
+					</View>
+					<View style={{ flex: 0.3, alignItems: "flex-start" }}>
+						<Text style={styles.levelNum}>
+							{getLevel(userInfos.user.account_level) + 1}
+						</Text>
+					</View>
 				</View>
 
 				{Object.entries(gamesInfo).map(
@@ -240,16 +300,31 @@ function Profile({ navigation }) {
 export default Profile;
 
 const styles = StyleSheet.create({
+	levelNum: {
+		color: "white",
+		fontSize: 15,
+		fontFamily: "BubblegumSans",
+	},
 	levelProgress: {
 		flexDirection: "row",
+		width: win.width,
 		marginBottom: 40,
+		justifyContent: "center",
+		alignContent: "center",
+		alignSelf: "center",
+		alignItems: "center",
+		flexWrap: "wrap",
 	},
 
 	progressBar: {
 		marginLeft: "auto",
 		marginRight: "auto",
 		marginBottom: 30,
-		marginTop: 15,
+		flex: 1,
+		justifyContent: "center",
+		alignContent: "center",
+		alignSelf: "center",
+		alignItems: "center",
 	},
 
 	scrollView: {

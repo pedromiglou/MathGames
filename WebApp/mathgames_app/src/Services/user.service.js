@@ -202,14 +202,14 @@ class UserService {
         return;
     }
 
-    accept_friendship(notification) {
+    async accept_friendship(notification) {
         let friends= {
             friend1: notification.sender_user.sender_id,
             friend2: notification.receiver,
         }
 
         var url = urlAPI + 'api/friends/';
-        fetch(url, {
+        await fetch(url, {
             method:'POST',
             headers:{'Content-type':'application/json',
                      'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},

@@ -79,30 +79,46 @@ class Inventory extends React.Component {
 	};
 
 	changeHat = (hatName) => {
-		if (hatName !== undefined) {
-			this.setState({ hatNameState: hatName });
+		if (hatName !== undefined && this.state.hatNameState !== hatName && this.state.changable === true ) {
+			this.setState({ hatNameState: hatName, changable: false });
 			this.forceRemount();
+
+            setTimeout(() => {
+                this.setState({ changable: true });
+            }, 3000);
 		}
-	};
+	}; 
 
 	changeShirt = (shirtName) => {
-		if (shirtName !== undefined) {
+		if (shirtName !== undefined && this.state.shirtNameState !== shirtName && this.state.changable === true) {
 			this.setState({ shirtNameState: shirtName });
 			this.forceRemount();
+
+            setTimeout(() => {
+                this.setState({ changable: true });
+            }, 3000);
 		}
 	};
 
-	changeAccessorie = (accessorieName) => {
-		if (accessorieName !== undefined) {
+	changeAccessorie = (accessorieName ) => {
+		if (accessorieName !== undefined && this.state.accessorieNameState !== accessorieName && this.state.changable === true) {
 			this.setState({ accessorieNameState: accessorieName });
 			this.forceRemount();
+
+            setTimeout(() => {
+                this.setState({ changable: true });
+            }, 3000);
 		}
 	};
 
 	changeTrousers = (trouserName) => {
-		if (trouserName !== undefined) {
+		if (trouserName !== undefined && this.state.trouserNameState !== trouserNameState && this.state.changable === true) {
 			this.setState({ trouserNameState: trouserName });
 			this.forceRemount();
+
+            setTimeout(() => {
+                this.setState({ changable: true });
+            }, 3000);
 		}
 	};
 
@@ -314,6 +330,7 @@ class Inventory extends React.Component {
 			selectedLanguage: "...",
 			userState: null,
 			modalVisible: false,
+            changable: true
 		};
 		//this.pickerRef = useRef();
 	}

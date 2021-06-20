@@ -278,7 +278,9 @@ function GamePage() {
 
 			var notification_text = current_user.username + " convidou-te para jogares."
 
-		    await userService.send_notification_request(current_user.id, id_outro_jogador, "P", notification_text);
+		    //await userService.send_notification_request(current_user.id, id_outro_jogador, "P", notification_text);
+            socket.emit("new_notification", {"sender": current_user.id, "receiver": id_outro_jogador, "notification_type": "P", "notification_text": notification_text})
+
 			friend_match.current = new_match_id;
 			setInviteFriendMode(true);
 		})
@@ -363,7 +365,7 @@ function GamePage() {
                                     <h1 className="game-Name"> {game_info["title"]} </h1>
                                 </div>
                                 <div className="col-2 d-flex justify-content-end">
-                                    <RulesTooltip rules={game_info['rules']} website={game_info['website']}></RulesTooltip>
+                                    <RulesTooltip size="42" title="Regras" rules={game_info['rules']} website={game_info['website']}></RulesTooltip>
                                 </div>
                             </div> 
                             <div className="image">

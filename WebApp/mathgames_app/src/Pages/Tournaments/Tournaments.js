@@ -7,6 +7,7 @@ import "./Tournaments.css";
 import * as FaIcons from 'react-icons/fa';
 import * as RiIcons from 'react-icons/ri';
 import * as BsIcons from 'react-icons/bs';
+import * as ImIcons from 'react-icons/im';
 import Pagination from "@material-ui/lab/Pagination";
 
 import {games_info} from '../../data/GamesInfo';
@@ -287,8 +288,10 @@ function Tournaments() {
 				<div className="filters-t">
 
                     <div className="title-ind-t">
-                         <RulesTooltip rules={tournament_info['rules']}></RulesTooltip>
-                        <i><RiIcons.RiTrophyFill/></i>
+                        <div className="tournament-rules-section">
+                            <i><RiIcons.RiTrophyFill/></i>
+                            <RulesTooltip size="20" title="Regras dos Torneios" className="tournaments" rules={tournament_info['rules']}></RulesTooltip>
+                        </div>
                         <h1>Torneios</h1>
                     </div>
                         
@@ -308,12 +311,12 @@ function Tournaments() {
                                         <div className="checkbox-display">
                                             <div className="inner-checkbox">
                                                 <input className="form-control form-control-lg" id="publico" type="checkbox" name="Público"/>
-                                                <h5>Público</h5>
+                                                <label for="publico">Público</label>
                                             </div>
                                             
                                             <div className="inner-checkbox">
                                                 <input className="form-control form-control-lg" id="privado" type="checkbox" name="Privado"/>
-                                                <h5>Privado</h5>
+                                                <label for="privado">Privado</label>
                                             </div>
                                                 
                                             
@@ -330,11 +333,11 @@ function Tournaments() {
                                         <div className="checkbox-display">
                                             <div className="inner-checkbox">
                                                 <input className="form-control form-control-lg" id="rastros" type="checkbox" name="Público"/>
-                                                <h5>Rastros</h5>
+                                                <label for="rastros">Rastros</label>
                                             </div>
                                             <div className="inner-checkbox">
                                                 <input className="form-control form-control-lg" id="gatoscaes" type="checkbox" name="Privado"/>
-                                                <h5>Gatos&Cães</h5>
+                                                <label for="gatoscaes">Gatos&Cães</label>
                                             </div>
                                             
                                             
@@ -344,7 +347,11 @@ function Tournaments() {
 
 								</div>
 								
-								<button id="searchButton" className="btn btn-lg btn-search" type="button" onClick={() => {setfilterOption("AllTournaments"); filtrar();}}>Procurar <FaIcons.FaSearch/></button>
+                                <div id="searchButton" onClick={() => {setfilterOption("AllTournaments"); filtrar();}} className="button-clicky-tp blue-clicky">
+                                    <span className="shadow"></span>
+                                    <span className="front">Procurar <FaIcons.FaSearch/></span>
+                                </div>
+								{/* <button id="searchButton" className="btn btn-lg btn-search" type="button" onClick={filtrar}>Procurar <FaIcons.FaSearch/></button> */}
 							</form>
                             
 						</div>
@@ -353,10 +360,18 @@ function Tournaments() {
                     {current_user !== null && current_user["account_type"] === "T" &&
                     <div id="gerir" className="shadow-white">
                         <h1>Gerir Torneios</h1>
-                        <Link to="createTournament" className="btn btn-lg btn-search">
-                            Criar Novo Torneio <FaIcons.FaPlus/>
+                        <Link to="createTournament" className="tournament-create-link">  
+                            <div className="button-clicky-tp blue-clicky bigger join-tournament">
+                                <span className="shadow"></span>
+                                <span className="front">Criar Novo Torneio <FaIcons.FaPlus/></span>
+                            </div>
                         </Link>
-                        <button id="myTButton" className="btn btn-lg btn-search" type="button" onClick={() => {setfilterOption("PersonalTournaments");}}>Ver os meus torneios <FaIcons.FaSearch/></button>
+
+                        <div id="myTButton" onClick={() => {setfilterOption("PersonalTournaments");}} className="button-clicky-tp bigger">
+                            <span className="shadow"></span>
+                            <span className="front">Os meus torneios <FaIcons.FaSearch/></span>
+                        </div>
+                        {/* <button id="myTButton" className="btn btn-lg btn-search" type="button" onClick={filtrarByCreator}>Ver os meus torneios <FaIcons.FaSearch/></button> */}
                     </div>
                     }
 				</div>
@@ -364,7 +379,7 @@ function Tournaments() {
                 <hr></hr>
                 {filterOption === "AllTournaments" &&
                     <>
-                    <ul className="list-group">
+                    <ul className="list-group tournament-filter">
                         <li className="list-group-item-t d-flex justify-content-between align-items-center row">
                             <div className="col-lg-3 col-md-3 col-sm-3">
                                 Nome
@@ -425,15 +440,28 @@ function Tournaments() {
                                     {tournament.creator !== current_user.id &&
                                         <>
                                         {userTournaments.length === 0  &&
-                                            <FaIcons.FaArrowAltCircleRight onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setEntrarTorneioModal(true); }}/>
+                                            <div id="button-join-tournament" title="Entrar no Torneio" onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setEntrarTorneioModal(true); }} className="button-clicky-tp join-tournament">
+                                                <span className="shadow"></span>
+                                                <span className="front"><FaIcons.FaArrowRight/></span>
+                                            </div>
+                                            // <FaIcons.FaArrowAltCircleRight onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setEntrarTorneioModal(true); }}/>
                                         }
 
                                         {userTournaments.length !== 0  && userTournaments.some(e => e.tournament_id === tournament.id) &&
-                                            <FaIcons.FaArrowAltCircleLeft  onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setSairTorneioModal(true); }}/>
+                                            <div id="button-join-tournament" title="Sair do Torneio" onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setSairTorneioModal(true); }}  className="button-clicky-tp leave-tournament">
+                                                <span className="shadow"></span>
+                                                <span className="front"><ImIcons.ImExit/></span>
+                                            </div>
+                                            
+                                            // <FaIcons.FaArrowAltCircleLeft  onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setSairTorneioModal(true); }}/>
                                         }
 
                                         {userTournaments.length !== 0  && !(userTournaments.some(e => e.tournament_id === tournament.id)) &&
-                                            <FaIcons.FaArrowAltCircleRight onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setEntrarTorneioModal(true); }}/>
+                                             <div id="button-join-tournament" title="Entrar no Torneio" onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setEntrarTorneioModal(true); }}  className="button-clicky-tp join-tournament">
+                                                <span className="shadow"></span>
+                                                <span className="front"><FaIcons.FaArrowRight/></span>
+                                            </div>
+                                            // <FaIcons.FaArrowAltCircleRight onClick={() => {setTorneioSelecionado({id: tournament.id, name: tournament.name, private: tournament.private}); setEntrarTorneioModal(true); }}/>
                                         }
                                         </>
                                     }
