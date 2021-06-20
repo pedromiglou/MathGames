@@ -567,8 +567,6 @@ io.on("connection", (socket) => {
   //Tournament creator says that he wants to start a new round
   socket.on("tournament_newround", async (msg) => {
 
-    console.log("--------tournament_newround------")
-    console.log(msg)
     var user_id = msg["user_id"];
     var tournament_id = parseInt(msg["tournament_id"]);
 
@@ -588,10 +586,8 @@ io.on("connection", (socket) => {
     active_tournaments[torneio.id]["rooms"] = {}
     active_tournaments[torneio.id]["byes"] = []
 
-    console.log(torneio)
     //Buscar os jogos da proxima rodada (rodada que se vai iniciar) e criar as salas
     await TournamentMatch.findAll({where: {tournament_id: torneio.id, roundNo: torneio.current_round+1}}).then(newmatches => {
-      console.log(newmatches)
       for (let newmatch of newmatches) {
         if (newmatch.dataValues.player1 !== null && newmatch.dataValues.player2 !== null) {
           //match nao é um bye
@@ -632,8 +628,6 @@ io.on("connection", (socket) => {
       io.to( socket.id ).emit("round_start", {"erro": true});
     })
 
-    console.log(active_tournaments)
-
   });
 
 
@@ -641,16 +635,11 @@ io.on("connection", (socket) => {
 
   //Tournament Players checkin for their games
   socket.on("tournament_checkin", async (msg) => {
-    console.log("----- CHECK IN --------")
-    console.log(msg)
     var user_id = msg["user_id"];
     var tournament_id = msg["tournament_id"];
 
     users_info[user_id] = socket.id;
 
-    console.log(user_id)
-    console.log(tournament_id)
-    console.log(active_tournaments)
     if ( Object.keys(active_tournaments).includes(tournament_id) ) {
       if ( Object.keys(active_tournaments[tournament_id]["players"]).includes(String(user_id)) ) {
         var match_id = active_tournaments[tournament_id]["players"][String(user_id)]
@@ -662,9 +651,6 @@ io.on("connection", (socket) => {
         }
         io.to( socket.id ).emit("check_in", {"erro": true, "message": "Game has already started"});
       } else {
-        console.log("vou avaliar byeee")
-        console.log(active_tournaments[tournament_id]["byes"])
-        console.log(String(user_id))
         if ( active_tournaments[tournament_id]["byes"].includes(user_id)) {
           io.to( socket.id ).emit("check_in", {"erro": false, "message": "You are a tournament bye"});
         } else {
