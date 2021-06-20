@@ -171,7 +171,6 @@ function TournamentPage() {
         setErroCheckIn("")
         var elemento
         var response = await TournamentService.initializeTournament(tournament_id)
-        console.log(response)
         if (response.error) {
             if (response.message) {
                 elemento = document.getElementById("erroMinimumPlayers")
