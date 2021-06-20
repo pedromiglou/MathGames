@@ -199,6 +199,14 @@ exports.initialize = (req, res) => {
 
       TournamentUsers.findAll({where: {tournament_id: torneio.dataValues.id}}).then(async (tournament_users) => {
           
+
+        if (tournament_users.length < 3) {
+          res.status(404).send({
+            message: "The tournament should have atleast 3 players."
+          });
+          return
+        }
+
           var array_players_id = []
           for (let player of tournament_users) {
             array_players_id.push(player.dataValues.user_id)
