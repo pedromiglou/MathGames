@@ -129,7 +129,7 @@ class GatosCaesScene extends Phaser.Scene {
         }
 
         this.add.text(624+40, 120, "É a vez do jogador:", {font: "40px Impact", color: "Orange"});
-        this.current_player_text = this.add.text(624+95, 180, "Jogador " + this.current_player, {font: "40px Impact", color: "Orange"});
+        this.current_player_text = this.add.text(624+95, 180, "Jogador " + parseInt(this.current_player + 1), {font: "40px Impact", color: "Orange"});
     }
     
     update() {
@@ -148,8 +148,9 @@ class GatosCaesScene extends Phaser.Scene {
             if ( this.player_1_first_move && this.current_player === 1 && ["27", "28", "35", "36"].includes(clicked_square.name) )
                 return;
             this.move( clicked_square );
-            if ( game_mode === "online" || game_mode === "amigo" )
+            if ( game_mode === "online" || game_mode === "amigo" ) {
                 socket.emit("move", clicked_square.name, AuthService.getCurrentUserId(), current_match['match_id']);
+            }
         }
     }
 

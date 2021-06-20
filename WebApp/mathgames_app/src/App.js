@@ -37,7 +37,26 @@ import store from './store';
 
 function App() {
 
-
+    window.addEventListener("resize", function() {
+        var sidebar = document.getElementById("sidebar");
+        var sidebarBtn = document.getElementById("sidebarCollapse");
+        var main = document.getElementById("content");
+        var icons = document.getElementsByClassName("sidebar-icons");
+        var n;
+        if (window.matchMedia("(max-width: 846px)").matches) {
+            main.style.marginLeft = "65px";
+    
+            sidebar.classList.remove("active");
+            sidebar.classList.add("collapsed");
+    
+            sidebarBtn.classList.remove("active");
+    
+            for (n = icons.length-1; n >= 0; n--) {
+                icons[n].classList.remove("icons-name");
+                icons[n].classList.add("icons-noname");
+            }
+        }
+      })
     
     return(
         <Provider store={store}>
@@ -78,6 +97,7 @@ function App() {
         </Provider>
     )
 }
+
 
 function toggleNav() {
     var sidebar = document.getElementById("sidebar");

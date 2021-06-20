@@ -62,7 +62,7 @@ function Navbar() {
         trouser: "none",
 	});
 	//const [linktogamehref, setLinkToGameHref] = useState("")
-	const [linktogame2href, setLinkToGame2Href] = useState("")
+	//const [linktogame2href, setLinkToGame2Href] = useState("")
 	//const [linktotournamenthref, setLinkToTournamentHref] = useState("")
 
 	const [modalConfirmShow, setConfirmModalShow] = useState(false);
@@ -281,10 +281,11 @@ function Navbar() {
 
 				localStorage.setItem("entreijogoporinvite", true)
 				localStorage.setItem("outrojogador", id_outro_jogador)
-				var elemento = document.getElementById("linktogame2")
-				var url = "/gamePage?id="+game_id+"&mid=" + new_match_id
-				setLinkToGame2Href(url)
-				elemento.click()
+				//var elemento = document.getElementById("linktogame2")
+				var url = "gamePage?id="+game_id+"&mid=" + new_match_id
+				/*setLinkToGame2Href(url)
+				elemento.click()*/
+				window.location.assign(urlWeb+url)
 				//window.location.href = "http://localhost:3000/gamePage?id=0&mid=" + new_match_id
 			} else if (msg["error"]) {
 				setConfirmModalShow(true)
@@ -402,7 +403,12 @@ function Navbar() {
 					if (notify.notification_type === "R") {
 						var nomeTorneio = notify.notification_text.slice(0,-59)
 						var torneio = await TournamentService.getTournamentByName(nomeTorneio)
-						notify["torneio_id"] = torneio.id
+						if (torneio !== null && torneio !== undefined)
+							notify["torneio_id"] = torneio.id
+						else {
+							UserService.delete(notify.id)
+							response.splice(response.indexOf(notify), 1)
+						}
 					}
 				}
 				setNotifications(response);
@@ -715,13 +721,13 @@ function Navbar() {
 			<div style={{display:"none", visibility:"hidden"}}>
 				{/*<Link id="linktogame" to={linktogamehref}>
 				
-				</Link>*/}
+				</Link>
 	
 				<Link id="linktogame2" to={linktogame2href}>
 					
 				</Link>
 
-				{/*<Link id="linktotournament" to={linktotournamenthref}>
+				<Link id="linktotournament" to={linktotournamenthref}>
 					
 				</Link>*/}
 			</div>

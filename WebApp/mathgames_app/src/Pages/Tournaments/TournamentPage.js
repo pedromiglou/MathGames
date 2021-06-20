@@ -10,6 +10,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./TournamentPage.css";
 import socket from "../../index"
 
+import {urlWeb} from "./../../data/data";
+
 import { games_info } from "../../data/GamesInfo";
 import { ranks_info } from '../../data/ranksInfo';
 
@@ -283,11 +285,12 @@ function TournamentPage() {
             if (elemento !== undefined && elemento !== null)
                 elemento.style.display = "flex"
         } else {
-            elemento = document.getElementById("successJoinningTournament")
-            if (elemento !== undefined && elemento !== null)
+            elemento = document.getElementById("successJoiningTournament")
+            if (elemento !== undefined && elemento !== null) {
                 elemento.style.display = "flex"
+            }
             setUserInTournament(true)
-            window.location.reload(false);
+            retrieveInformation()
         }
     }
 
@@ -305,6 +308,7 @@ function TournamentPage() {
             if (elemento !== undefined && elemento !== null)
                 elemento.style.display = "flex"
             setUserInTournament(false)
+            window.location.assign(urlWeb+"tournaments");
         }
     }
 
@@ -364,7 +368,6 @@ function TournamentPage() {
         function confirmar() {
             sairTorneio(props.torneioid)
             props.onHide()
-            history.push("/tournaments");
         }
 
         return (

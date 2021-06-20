@@ -164,8 +164,9 @@ class RastrosScene extends Phaser.Scene {
 
         if ( this.valid_squares.has( parseInt(clicked_square.name) ) ) {
             this.move(clicked_square);
-            if ( game_mode === "online" || game_mode === "amigo" )
+            if ( game_mode === "online" || game_mode === "amigo" ) {
                 socket.emit("move", clicked_square.name, AuthService.getCurrentUserId(), current_match['match_id']);
+            }
         }
         
     }
