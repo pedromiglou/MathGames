@@ -21,7 +21,7 @@ import TournamentService from '../../Services/tournament.service';
 
 import {urlWeb} from './../../data/data';
 
-import Avatar from "../../Components/Avatar";
+import Avatar from "../../Components/Avatar/Avatar";
 import socket from "../../index"
 
 import { Modal, Button } from "react-bootstrap";
@@ -48,12 +48,19 @@ function Navbar() {
     const [friends, setFriends] = useState([]);
     const [notifications, setNotifications] = useState([]);
 
-	const [hat, setHat] = useState("none");
-    const [shirt, setShirt] = useState("Camouflage1");
+	/* const [hat, setHat] = useState("none");
+    const [shirt, setShirt] = useState("none");
     const [color, setColor] = useState("#FFAF00");
     const [accessorie, setAccessorie] = useState("none");
-    const [trouser, setTrouser] = useState("#808080");
+    const [trouser, setTrouser] = useState("none"); */
 
+    const [avatarCustoms, setAvatarCustoms] = useState({
+		hat: "none",
+		shirt: "none",
+        color: "#FFAF00",
+		accessorie: "none",
+        trouser: "none",
+	});
 	const [linktogamehref, setLinkToGameHref] = useState("")
 	const [linktogame2href, setLinkToGame2Href] = useState("")
 	//const [linktotournamenthref, setLinkToTournamentHref] = useState("")
@@ -298,14 +305,17 @@ function Navbar() {
 			var receiver = await UserService.getUserByUsername(other_username)
 			if (receiver !== null && receiver !== undefined) {
 				let inviteFriendSucesso = document.getElementById("sucesso")
-				inviteFriendSucesso.style.display = "flex"
+				if (inviteFriendSucesso !== null && inviteFriendSucesso !== undefined)
+					inviteFriendSucesso.style.display = "flex"
 				socket.emit("new_notification", {"sender": current_user.id, "receiver": receiver.id, "notification_type": "F", "notification_text": notification_text})
 			} else  {
 				let inviteFriendErro = document.getElementById("erro")
-				inviteFriendErro.style.display = "flex"
+				if (inviteFriendErro !== null && inviteFriendErro !== undefined)
+					inviteFriendErro.style.display = "flex"
 			}
 			let inviteFriendMessage = document.getElementById("inviteFriendMessage")
-			inviteFriendMessage.style.display = "flex"
+			if (inviteFriendMessage !== null && inviteFriendMessage !== undefined)
+				inviteFriendMessage.style.display = "flex"
 		}
 		input.value = ""
 		hideAddFriendInput();
@@ -398,11 +408,18 @@ function Navbar() {
 		async function fetchApiUserById() {
             var user = await UserService.getUserById(current_user.id);
             setUser(user);
-            setHat(user.avatar_hat);
+            /* setHat(user.avatar_hat);
             setShirt(user.avatar_shirt);
             setColor(user.avatar_color);
             setAccessorie(user.avatar_accessorie);
-            setTrouser(user.avatar_trouser);
+            setTrouser(user.avatar_trouser); */
+            setAvatarCustoms({
+                hat: user.avatar_hat,
+                shirt: user.avatar_shirt,
+                color: user.avatar_color,
+                accessorie: user.avatar_accessorie,
+                trouser: user.avatar_trouser,
+            });
         }
 
 		if (current_user !== null) {
@@ -429,25 +446,36 @@ function Navbar() {
 		let inviteFriendMessage = document.getElementById("inviteFriendMessage")
 		let inviteFriendSucesso = document.getElementById("sucesso")
 		let inviteFriendErro = document.getElementById("erro")
-		inviteFriend_div.style.display = "flex";
-		inviteFriend_Separator_div.style.display = "flex";
-		inviteFriendMessage.style.display = "flex"
-		inviteFriendSucesso.style.display = "none"
-		inviteFriendErro.style.display = "none"
+		if (inviteFriend_div !== null && inviteFriend_div !== undefined)
+			inviteFriend_div.style.display = "flex"
+		if (inviteFriend_Separator_div !== null && inviteFriend_Separator_div !== undefined)
+			inviteFriend_Separator_div.style.display = "flex";
+		if (inviteFriendMessage !== null && inviteFriendMessage !== undefined)
+			inviteFriendMessage.style.display = "flex"
+		if (inviteFriendSucesso !== null && inviteFriendSucesso !== undefined)
+			inviteFriendSucesso.style.display = "none"
+		if (inviteFriendErro !== null && inviteFriendErro !== undefined)
+			inviteFriendErro.style.display = "none"
 	}
 
 	function hideAddFriendInput(){
 		let inviteFriend_Separator_div = document.getElementById("inviteFriend-Separator");
 		let inviteFriend_div = document.getElementById("inviteFriend");
-		inviteFriend_div.style.display = "none";
-		inviteFriend_Separator_div.style.display = "none";
+		if (inviteFriend_div !== null && inviteFriend_div !== undefined)
+			inviteFriend_div.style.display = "none";		
+		if (inviteFriend_Separator_div !== null && inviteFriend_Separator_div !== undefined)
+			inviteFriend_Separator_div.style.display = "none";
 	}
 
 
 	function hide_message(id) {
 		let inviteFriendMessage = document.getElementById("inviteFriendMessage")
-		inviteFriendMessage.style.display = "none"
-        document.getElementById(id).style.display = "none"
+		if (inviteFriendMessage !== null && inviteFriendMessage !== undefined)
+			inviteFriendMessage.style.display = "none"
+		
+		var elemento = document.getElementById(id)
+		if (elemento !== null && elemento !== undefined)
+        	elemento.style.display = "none"
     }
 	
 	return (
@@ -514,8 +542,7 @@ function Navbar() {
 															|| (notification.notification_type === "R" && 
 																<FaIcons.FaCheckCircle  onClick={ () => {goToTournament(notification, index)}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															}
-															<span> </span>
-															<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {UserService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25}} color="#ff0015" />
+															<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {UserService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25, marginLeft: "5px"}} color="#ff0015" />
 														</div>
 														
 													</div>
@@ -621,7 +648,7 @@ function Navbar() {
 							<div title="Perfil" className="round_profile_logo">
 
 								<DropdownButton	menuAlign="left" title={<>
-									<Avatar navbar={true} skinColor={color} hatName={hat} shirtName={shirt} accesorieName={accessorie} trouserName={trouser}/>
+									<Avatar navbar={true} skinColor={avatarCustoms.color} hatName={avatarCustoms.hat} shirtName={avatarCustoms.shirt} accesorieName={avatarCustoms.accessorie} trouserName={avatarCustoms.trouser}/>
 									<MdIcons.MdKeyboardArrowDown color={"rgb(2, 204, 255)"} className="key-down"/>
 								</>}
 								id="user_dropdown">
