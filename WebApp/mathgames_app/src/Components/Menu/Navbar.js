@@ -294,6 +294,12 @@ function Navbar() {
 		socket.emit("get_match_id", {"user_id": AuthService.getCurrentUserId(), "outro_id": id_outro_jogador})
 	}
 
+	function deny_game(notification) {
+		var receiver = notification.sender_user.sender_id
+		var notification_text = current_user.username + " recusou o seu convite."
+		socket.emit("new_notification", {"sender": current_user.id, "receiver": receiver, "notification_type": "D", "notification_text": notification_text})
+	}
+
 
 
 	function run_logout() {
@@ -413,11 +419,6 @@ function Navbar() {
 		async function fetchApiUserById() {
             var user = await UserService.getUserById(current_user.id);
             setUser(user);
-            /* setHat(user.avatar_hat);
-            setShirt(user.avatar_shirt);
-            setColor(user.avatar_color);
-            setAccessorie(user.avatar_accessorie);
-            setTrouser(user.avatar_trouser); */
             setAvatarCustoms({
                 hat: user.avatar_hat,
                 shirt: user.avatar_shirt,
@@ -524,6 +525,7 @@ function Navbar() {
 															- N -> Removeu da lista de amigos
 															- T -> Convidou para participar no torneio
 															- P -> Convidou-te para uma partida
+															- D -> Recusou convite para partida
 															- R -> Iniciou um novo round do torneio
 														*/
 														}
@@ -547,7 +549,12 @@ function Navbar() {
 															|| (notification.notification_type === "R" && 
 																<FaIcons.FaCheckCircle  onClick={ () => {goToTournament(notification, index)}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															}
-															<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {UserService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25, marginLeft: "5px"}} color="#ff0015" />
+															
+															{ (notification.notification_type === "P") ?
+																	<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {deny_game(notification); UserService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25, marginLeft: "5px"}} color="#ff0015" />
+																: 	<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {UserService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25, marginLeft: "5px"}} color="#ff0015" />
+															}
+
 														</div>
 														
 													</div>
