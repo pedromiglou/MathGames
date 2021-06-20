@@ -23,7 +23,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.CHAR(1),
         validate: {
             winnerValue() {
-                if (!(this.winner == "1" || this.winner == "X" || this.winner == "2")) {
+                if (!(this.winner == "1" || this.winner == "X" || this.winner == "2" || this.winner == "b")) {
                     throw new Error("Winner value error")
                 }
             }
@@ -47,6 +47,7 @@ module.exports = (sequelize, Sequelize) => {
           let player2 = game_match.player2;
 
           if (winner === null) return
+          if (winner === "b") return
 
           if (winner !== "X") {
             //alguem ganhou
@@ -98,6 +99,8 @@ module.exports = (sequelize, Sequelize) => {
         afterBulkUpdate: async (game_match) => {
           if (Object.keys(game_match.attributes).includes("winner") === false) return
           
+          if (winner === "b") return
+
           var res = await sequelize.models.GameMatches.findByPk(game_match.where.id)
 
           let winner = res.dataValues.winner;

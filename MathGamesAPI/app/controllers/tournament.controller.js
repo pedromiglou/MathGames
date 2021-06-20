@@ -198,43 +198,42 @@ exports.initialize = (req, res) => {
       }
 
       TournamentUsers.findAll({where: {tournament_id: torneio.dataValues.id}}).then(async (tournament_users) => {
-
-          if (tournament_users.length !== torneio.dataValues.max_users) {
-            res.status(500).send({
-              message: "The tournament need to be full to start."
-            });
-            return
-          }
           
           var array_players_id = []
           for (let player of tournament_users) {
             array_players_id.push(player.dataValues.user_id)
           }
 
-          var bracket = doBracket(torneio.dataValues.max_users, array_players_id)
+          var bracket = doBracket(tournament_users.length, array_players_id)
+          
           var match_id_translation = {}
 
           for (let game of bracket) {
-            // Create a GameMatch
-            const gameMatch = {
-              player1: game.player1,
-              player2: game.player2,
-              winner: null,
-              game_type: "online",
-              game_id: torneio.dataValues.game_id,
-            };
 
-            // Save GameMatch in the database
-            await GameMatch.create(gameMatch).then(game_match => {
-              match_id_translation[game.matchNo] = game_match.dataValues.id
-            }).catch(err => {
-              res.status(500).send({
-                message: "An error occurred on the server. Operation was not concluded!"
+              // Create a GameMatch
+              const gameMatch = {
+                player1: game.player1,
+                player2: game.player2,
+                winner: null,
+                game_type: "online",
+                game_id: torneio.dataValues.game_id,
+              };
+
+              // Save GameMatch in the database
+              await GameMatch.create(gameMatch).then(game_match => {
+                match_id_translation[game.matchNo] = game_match.dataValues.id
+              }).catch(err => {
+                res.status(500).send({
+                  message: "An error occurred on the server. Operation was not concluded!"
+                });
               });
-            });
+
           }
 
+          var games_with_bye = []
+
           for (let game of bracket) {
+    
             // Create a TournamentMatch
             const tournamentMatch = {
               match_id: match_id_translation[game.matchNo],
@@ -249,15 +248,51 @@ exports.initialize = (req, res) => {
             };
 
             // Save TournamentMatch in the database
-            TournamentMatch.create(tournamentMatch)
-              .catch(err => {
-                res.status(500).send({
-                  message: "An error occurred on the server. Operation was not concluded!"
-                });
+            await TournamentMatch.create(tournamentMatch)
+            .catch(err => {
+              res.status(500).send({
+                message: "An error occurred on the server. Operation was not concluded!"
               });
-          }
-          
+            });
 
+            if (game.bye) {
+              games_with_bye.push(game)
+            }
+          }
+
+          for (let game of games_with_bye) {
+            var winner = (game.player1 === null ? "2" : "1" )
+            var player = (winner === "2" ? game.player2 : game.player1)
+
+            await TournamentMatch.findOne({where: {tournament_id: torneio.dataValues.id, match_id: match_id_translation[game.nextGame]}}).then(async (nextgame) => {
+              if (match_id_translation[game.matchNo] === nextgame.dataValues.lastGame1) {
+                  // Player do bye tem que ser colocado como player1 do proximo jogo no torneio
+                  await TournamentMatch.update({player1 : player}, {where: {tournament_id: torneio.dataValues.id, match_id: match_id_translation[game.nextGame]}}).catch(err => {
+                    console.log(err)
+                  })
+                  await GameMatch.update({player1 : player}, {where: {id: match_id_translation[game.nextGame]}}).catch(err => {
+                    console.log(err)
+                  })
+              } else {
+                  // Player do bye tem que ser colocado como player2 do proximo jogo no torneio
+                  await TournamentMatch.update({player2 : player}, {where: {tournament_id: torneio.dataValues.id, match_id: match_id_translation[game.nextGame]}}).catch(err => {
+                    console.log(err)
+                  })
+                  await GameMatch.update({player2 : player}, {where: {id: match_id_translation[game.nextGame]}}).catch(err => {
+                    console.log(err)
+                  })
+              }
+              
+
+              await GameMatch.update({winner: "b"}, {where: {id: match_id_translation[game.matchNo]}}).catch(err => {
+                console.log(err)
+              })
+
+            }).catch(err => {
+              console.log(err)
+            })
+          }          
+          
           Tournament.update( {status: "STARTED"}, {
             where: { id: torneio.dataValues.id }
           }).then(sucesso => {
@@ -655,9 +690,9 @@ function doBracket(base, players) {
   //bracketCount = 0;
   shuffleArray(players)
 
-  var closest 		= knownBrackets.filter(function (k) { return k>=base; }  ),
+  var closest 		= knownBrackets.find(function (k) { return k>=base; }  ),
   byes 			= closest-base;
-  
+
   if(byes>0)	base = closest;
 
   var brackets 	= [],
@@ -686,10 +721,10 @@ function doBracket(base, players) {
       lastGames2:	round==1 ? null : last[1].game,
       nextGame:	nextInc+i>base-1?null:nextInc+i,
       player1: round==1 ? players[teamMark] : null,
-      player2: round==1 ? players[teamMark+1] : null,
+      player2: round==1 ? (isBye ? null: players[teamMark+1] ): null,
       bye:		isBye
     });
-    teamMark+=2;
+    isBye ? teamMark+=1 : teamMark+=2;
     if(i%2!=0)	nextInc--;
     while(baseR>=1) {
       round++;

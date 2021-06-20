@@ -186,6 +186,7 @@ function TournamentPage() {
         socket.off("round_start");
 
         var response = await TournamentService.initializeNextRound(tournament_id)
+        
         var elemento
         if (response.error) {
             elemento = document.getElementById("erroInitializeRound")
@@ -244,8 +245,12 @@ function TournamentPage() {
                 if (message === "Tournament is not active")
                     setErroCheckIn("Este torneio não se encontra ativo.")
             } else {
-                let match_id = msg['match_id']
-                history.push("/gamePage?id="+tournament.game_id+"&tid="+tournament.id+"&mid="+match_id)
+                if (msg["message"]) {
+                    setErroCheckIn("Voçe já esta qualificado para round seguinte. Espere que o próximo round seja iniciado.")
+                } else {
+                    let match_id = msg['match_id']
+                    history.push("/gamePage?id="+tournament.game_id+"&tid="+tournament.id+"&mid="+match_id)
+                }
             }
         })
     }
