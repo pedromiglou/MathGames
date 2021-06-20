@@ -859,15 +859,15 @@ const Profile = () => {
 				)}
 
                 {menuOption === "lastgames" && (
-                    <div className="col-lg-9 no-margins">
+                    <div className="col-lg-9 no-margins games-history">
                         <div className="last_games_container">
                             <ul className="responsive-table">
                                 <li className="table-header">
-                                    <div className="col col-2">Data</div>
+                                    <div className="col col-3">Data</div>
                                     <div className="col col-2">Jogo</div>
                                     <div className="col col-2">Modo Jogo</div>
                                     <div className="col col-2">Resultado</div>
-                                    <div className="col col-2">Exp. Ganha</div>
+                                    <div className="col col-1">Exp. Ganha</div>
                                 </li>
                                 {
                                 games === "erro" 
@@ -889,7 +889,7 @@ const Profile = () => {
                                             }
                                             key={key}
                                         >
-                                            <div className="col col-2">
+                                            <div className="col col-4">
                                                 {value["updatedAt"]}
                                             </div>
                                             <div className="col col-2">
@@ -909,7 +909,7 @@ const Profile = () => {
                                                             : "Empate"
                                                             }
                                             </div>
-                                            <div className="col col-2">
+                                            <div className="col col-1">
                                                 {/*
                                                 <button
                                                 
