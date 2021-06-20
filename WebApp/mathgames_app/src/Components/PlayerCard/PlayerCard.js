@@ -28,8 +28,9 @@ const PlayerCard = forwardRef(({username, gameId, shouldFindUser, showReportButt
     //const Avatar = React.lazy(() => import('../Avatar'));
 
     useEffect(() => {
-        if (!shouldFindUser)
+        if (!shouldFindUser || username.length > 21)
             return;
+
         userService.getUserByUsername(username).then(value => {
             setUser(value)
         })
@@ -42,7 +43,6 @@ const PlayerCard = forwardRef(({username, gameId, shouldFindUser, showReportButt
     useImperativeHandle(ref, () => ({
 
         setGameOver() {
-            console.log("Setting to true");
             setGameOver(true);
         }
     }));
@@ -84,90 +84,55 @@ const PlayerCard = forwardRef(({username, gameId, shouldFindUser, showReportButt
         socket.emit("forfeit_match", {"user_id": user.id})
     }
 
-    /*function ConfirmOperationModal(props) {
-		let modal_username = props.username;
 
+    function ConfirmOperationModal(props) {
+        let modal_username = props.username;
+        let title = "";
+        let text = "";
+        let modal_function = null;
+        let report = false;
+        if (props.operation === "forfeit") {
+            title = "Desistir Partida";
+            text = "Tem a certeza que pretende desistir da partida?"
+            modal_function = forfeit_match;
+        } else if (props.operation === "report") {
+            title = "Reportar Jogador " + modal_username;
+            text = "Tem a certeza que pretende reportar o seguinte jogador: " + modal_username + "?";
+            modal_function = (userid) => {report_player(userid);};
+            report = true;
+        }
         return (
-          <Modal
+        <Modal
             {...props}
             size="md"
             aria-labelledby="contained-modal-title-vcenter"
             centered
-          >
+        >
             <Modal.Header closeButton>
-              <Modal.Title id="contained-modal-title-vcenter" style={{color: "#0056b3", fontSize: 30}}>
-                Reportar Jogador {modal_username}
-              </Modal.Title>
+            <Modal.Title id="contained-modal-title-vcenter" style={{color: "#0056b3", fontSize: 30}}>
+                {title}
+            </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <p style={{color: "#0056b3", fontSize: 20}}>Tem a certeza que pretende reportar o seguinte jogador: {modal_username}?</p>
-
+            <p style={{color: "#0056b3", fontSize: 20}}>{text}</p>
+            { report && 
+                <>
                 <label style={{color: "#0056b3", fontSize: 20}} for="reason">Motivo: </label>
                 <select defaultValue="Uso Batota" id="reason" className="form-select" aria-label="Default select example">
                     <option value="Uso Batota">Uso Batota</option>
                     <option value="Exploração de Bug">Exploração de Bug</option>
                     <option value="Nome inapropriado">Nome inapropriado</option>
                 </select>
-
+                </>
+            }
             </Modal.Body>
             <Modal.Footer>
-              <Button style={{fontSize: 18}} onClick={() => {report_player(props.id); props.onHide();}} className="btn save-btn">Confimar</Button>
-              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Cancelar</Button>
+            <Button style={{fontSize: 18}} onClick={() => {modal_function(props.id); props.onHide();}} className="btn save-btn">Confimar</Button>
+            <Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Cancelar</Button>
             </Modal.Footer>
-          </Modal>
+        </Modal>
         );
-      }*/
-
-
-      function ConfirmOperationModal(props) {
-		let modal_username = props.username;
-		let title = "";
-		let text = "";
-		let modal_function = null;
-		let report = false;
-		if (props.operation === "forfeit") {
-			title = "Desistir Partida";
-			text = "Tem a certeza que pretende desistir da partida?"
-			modal_function = forfeit_match;
-		} else if (props.operation === "report") {
-			title = "Reportar Jogador " + modal_username;
-			text = "Tem a certeza que pretende reportar o seguinte jogador: " + modal_username + "?";
-			modal_function = (userid) => {report_player(userid);};
-			report = true;
-		}
-        return (
-          <Modal
-            {...props}
-            size="md"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-          >
-            <Modal.Header closeButton>
-              <Modal.Title id="contained-modal-title-vcenter" style={{color: "#0056b3", fontSize: 30}}>
-                {title}
-              </Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <p style={{color: "#0056b3", fontSize: 20}}>{text}</p>
-			  { report && 
-			  	<>
-			  	<label style={{color: "#0056b3", fontSize: 20}} for="reason">Motivo: </label>
-			  	<select defaultValue="Uso Batota" id="reason" className="form-select" aria-label="Default select example">
-                    <option value="Uso Batota">Uso Batota</option>
-                    <option value="Exploração de Bug">Exploração de Bug</option>
-                    <option value="Nome inapropriado">Nome inapropriado</option>
-                </select>
-				</>
-			  }
-            </Modal.Body>
-            <Modal.Footer>
-              <Button style={{fontSize: 18}} onClick={() => {modal_function(props.id); props.onHide();}} className="btn save-btn">Confimar</Button>
-              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Cancelar</Button>
-            </Modal.Footer>
-          </Modal>
-        );
-      }
-
+    }
 
     return (
         <div className="exterior-card rounded">
@@ -186,11 +151,10 @@ const PlayerCard = forwardRef(({username, gameId, shouldFindUser, showReportButt
                                 { showReportButton && 
                                     <i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalOperation("report"); setModalUsername(user.username); setConfirmModalShow(true);}}><MdIcons.MdReport/></i>
                                 }
-
-                                { showForfeitFlag && !gameOver &&
-                                    <i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalOperation("forfeit"); setModalUsername(user.username); setConfirmModalShow(true);}}><CgIcons.CgFlag/></i>
-                                }
                             </div>
+                            { showForfeitFlag && !gameOver &&
+                                <i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalOperation("forfeit"); setModalUsername(user.username); setConfirmModalShow(true);}}><CgIcons.CgFlag/></i>
+                            }
 
                         </div>
                         <div className="row">

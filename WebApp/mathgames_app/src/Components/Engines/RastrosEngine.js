@@ -91,7 +91,6 @@ class RastrosScene extends Phaser.Scene {
     }
 
     create() {
-        console.log("tou create")
         this.squares_group = this.add.group();
     
         // Sound effect played after every move

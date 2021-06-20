@@ -17,6 +17,8 @@ import './Menu.css'
 /* Data and Service */
 import AuthService from '../../Services/auth.service';
 import UserService from '../../Services/user.service';
+import TournamentService from '../../Services/tournament.service';
+
 import {urlWeb} from './../../data/data';
 
 import Avatar from "../../Components/Avatar/Avatar";
@@ -61,6 +63,7 @@ function Navbar() {
 	});
 	const [linktogamehref, setLinkToGameHref] = useState("")
 	const [linktogame2href, setLinkToGame2Href] = useState("")
+	//const [linktotournamenthref, setLinkToTournamentHref] = useState("")
 
 	const [modalConfirmShow, setConfirmModalShow] = useState(false);
 	const [modalUsername, setModalUsername] = useState("");
@@ -300,7 +303,19 @@ function Navbar() {
 		if (other_username !== undefined && other_username !== null && other_username !== "") {
 			//UserService.send_notification_request_by_username(current_user.id, other_username, "F", notification_text);
 			var receiver = await UserService.getUserByUsername(other_username)
-			socket.emit("new_notification", {"sender": current_user.id, "receiver": receiver.id, "notification_type": "F", "notification_text": notification_text})
+			if (receiver !== null && receiver !== undefined) {
+				let inviteFriendSucesso = document.getElementById("sucesso")
+				if (inviteFriendSucesso !== null && inviteFriendSucesso !== undefined)
+					inviteFriendSucesso.style.display = "flex"
+				socket.emit("new_notification", {"sender": current_user.id, "receiver": receiver.id, "notification_type": "F", "notification_text": notification_text})
+			} else  {
+				let inviteFriendErro = document.getElementById("erro")
+				if (inviteFriendErro !== null && inviteFriendErro !== undefined)
+					inviteFriendErro.style.display = "flex"
+			}
+			let inviteFriendMessage = document.getElementById("inviteFriendMessage")
+			if (inviteFriendMessage !== null && inviteFriendMessage !== undefined)
+				inviteFriendMessage.style.display = "flex"
 		}
 		input.value = ""
 		hideAddFriendInput();
@@ -320,12 +335,31 @@ function Navbar() {
 		fetchFriends()
 	}
 
+	function goToTournament(notification, index) {
+		deleteNotification(index);
+		UserService.delete(notification.id);
+		var torneio_id = notification.torneio_id
+		/*var elemento = document.getElementById("linktotournament")
+		var url = "/tournament?id="+torneio_id
+		setLinkToTournamentHref(url)
+		elemento.click()*/
+		window.location.assign(urlWeb+"tournament?id="+torneio_id)
+
+	}
 
 	// Load user notifications
 	async function fetchNotifications() {
 		var response = await UserService.getNotifications(current_user.id);
-		if ( response != null )
+		if ( response != null ) {
+			for (let notify of response) {
+				if (notify.notification_type === "R") {
+					var nomeTorneio = notify.notification_text.slice(0,-59)
+					var torneio = await TournamentService.getTournamentByName(nomeTorneio)
+					notify["torneio_id"] = torneio.id
+				}
+			}
 			setNotifications(response);
+		}
 	}
 
 	// Load user friends list
@@ -358,8 +392,16 @@ function Navbar() {
 		// Load user notifications
         async function fetchApiNotifications() {
             var response = await UserService.getNotifications(current_user.id);
-			if ( response != null )
+			if ( response != null ) {
+				for (let notify of response) {
+					if (notify.notification_type === "R") {
+						var nomeTorneio = notify.notification_text.slice(0,-59)
+						var torneio = await TournamentService.getTournamentByName(nomeTorneio)
+						notify["torneio_id"] = torneio.id
+					}
+				}
 				setNotifications(response);
+			}
         }
 
 		// Load Avatar
@@ -401,16 +443,40 @@ function Navbar() {
 	function showAddFriendInput(){
 		let inviteFriend_Separator_div = document.getElementById("inviteFriend-Separator");
 		let inviteFriend_div = document.getElementById("inviteFriend");
-		inviteFriend_div.style.display = "flex";
-		inviteFriend_Separator_div.style.display = "flex";
+		let inviteFriendMessage = document.getElementById("inviteFriendMessage")
+		let inviteFriendSucesso = document.getElementById("sucesso")
+		let inviteFriendErro = document.getElementById("erro")
+		if (inviteFriend_div !== null && inviteFriend_div !== undefined)
+			inviteFriend_div.style.display = "flex"
+		if (inviteFriend_Separator_div !== null && inviteFriend_Separator_div !== undefined)
+			inviteFriend_Separator_div.style.display = "flex";
+		if (inviteFriendMessage !== null && inviteFriendMessage !== undefined)
+			inviteFriendMessage.style.display = "flex"
+		if (inviteFriendSucesso !== null && inviteFriendSucesso !== undefined)
+			inviteFriendSucesso.style.display = "none"
+		if (inviteFriendErro !== null && inviteFriendErro !== undefined)
+			inviteFriendErro.style.display = "none"
 	}
 
 	function hideAddFriendInput(){
 		let inviteFriend_Separator_div = document.getElementById("inviteFriend-Separator");
 		let inviteFriend_div = document.getElementById("inviteFriend");
-		inviteFriend_div.style.display = "none";
-		inviteFriend_Separator_div.style.display = "none";
+		if (inviteFriend_div !== null && inviteFriend_div !== undefined)
+			inviteFriend_div.style.display = "none";		
+		if (inviteFriend_Separator_div !== null && inviteFriend_Separator_div !== undefined)
+			inviteFriend_Separator_div.style.display = "none";
 	}
+
+
+	function hide_message(id) {
+		let inviteFriendMessage = document.getElementById("inviteFriendMessage")
+		if (inviteFriendMessage !== null && inviteFriendMessage !== undefined)
+			inviteFriendMessage.style.display = "none"
+		
+		var elemento = document.getElementById(id)
+		if (elemento !== null && elemento !== undefined)
+        	elemento.style.display = "none"
+    }
 	
 	return (
 		<IconContext.Provider value={{color: 'grey'}}>
@@ -473,9 +539,10 @@ function Navbar() {
 																<FaIcons.FaCheckCircle  className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															|| (notification.notification_type === "P" && 
 																<FaIcons.FaCheckCircle  onClick={ () => {accept_game(notification, index);}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
+															|| (notification.notification_type === "R" && 
+																<FaIcons.FaCheckCircle  onClick={ () => {goToTournament(notification, index)}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															}
-															<span> </span>
-															<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {UserService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25}} color="#ff0015" />
+															<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {UserService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25, marginLeft: "5px"}} color="#ff0015" />
 														</div>
 														
 													</div>
@@ -504,7 +571,7 @@ function Navbar() {
 
 
 						<div title="Amigos" className="d-flex align-items-center justify-content-center">
-							<DropdownButton	menuAlign="right" title={<FaIcons.FaUserFriends className="navbar-icon"/>} id="friends-dropdown">
+							<DropdownButton	menuAlign="right" title={<FaIcons.FaUserFriends className="navbar-icon" onClick={() => showAddFriendInput()}/>} id="friends-dropdown">
 								<Dropdown.ItemText>
 									<div className="friends-modal">
 										<h4>Amigos</h4>
@@ -524,6 +591,18 @@ function Navbar() {
 										</div>
 										{/* <button type="button" onClick={() => friendRequest()}>Enviar</button> */}
 									</div>
+							
+								</Dropdown.ItemText>
+								<Dropdown.ItemText id="inviteFriendMessage" style={{display: "none"}}t>
+										<div id={"sucesso"} className="alert alert-success" role="alert" style={{margin:"10px auto", width: "95%", textAlign:"center", fontSize:"14px", display:"none"}}> 
+											Pedido enviado com sucesso
+											<img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "10%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("sucesso")}></img>
+										</div> 
+
+										<div id={"erro"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "95%", textAlign:"center", fontSize:"14px", display:"none"}}> 
+											Utilizador não encontrado
+											<img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "10%", height: "auto", marginLeft:"8px", fontSize:"14px"}} alt={"Close Icon"} onClick={() => hide_message("erro")}></img>
+										</div> 
 								</Dropdown.ItemText>
 								<Dropdown.Divider id="inviteFriend-Separator" style={{display: "none"}} />
 
@@ -636,6 +715,10 @@ function Navbar() {
 				<Link id="linktogame2" to={linktogame2href}>
 					
 				</Link>
+
+				{/*<Link id="linktotournament" to={linktotournamenthref}>
+					
+				</Link>*/}
 			</div>
 		</IconContext.Provider>
 	)

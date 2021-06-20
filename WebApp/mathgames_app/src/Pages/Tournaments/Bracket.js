@@ -195,28 +195,6 @@ function Bracket() {
                         round.appendChild(div2)
                     }
                 }
-                /*
-                grouped[g].forEach(function(gg) {
-                    if(gg.bye) {
-                        var newdiv = document.createElement("div")
-                        round.appendChild(newdiv)
-                    }
-                    else {
-                        var span3 = document.createElement("span")
-                        span3.className = "teama"
-                        span3.innerHTML = (gg.player1 === null ? "null" : gg.player1)
-                        var span4 = document.createElement("span")
-                        span4.className = "teamb"
-                        span4.innerHTML = (gg.player2 === null ? "null" : gg.player2)
-                        var div1 = document.createElement("div")
-                        div1.className = "bracketbox"
-                        div1.appendChild(span3)
-                        div1.appendChild(span4)
-                        var div2 = document.createElement("div")
-                        div2.appendChild(div1)
-                        round.appendChild(div2)
-                    }
-                });*/
     
                 group.appendChild(round);
             }

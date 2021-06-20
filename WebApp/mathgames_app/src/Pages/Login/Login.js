@@ -86,12 +86,12 @@ function Login() {
         document.getElementById("sucessoRegisto").style.display = "none"
         document.getElementById("erroUsernameInvalido").style.display = "none"
         document.getElementById("erroEmailInvalido").style.display = "none"
-
-
     }
 
     function hide_message(id) {
-        document.getElementById(id).style.display = "none"
+        var elemento = document.getElementById(id)
+        if (elemento !== undefined && elemento !== null)
+            elemento.style.display = "none"
     }
 
 

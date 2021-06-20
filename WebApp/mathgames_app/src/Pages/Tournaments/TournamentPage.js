@@ -29,15 +29,8 @@ function TournamentPage() {
 
     const [jogadorSelecionado, setJogadorSelecionado] = useState({id: null, name: null})
     const [removingPlayerModal, setRemovingPlayerModal] = useState(false);
-    const [erroRemovingPlayer, setErroRemovingPlayer] = useState(false)
-    const [erroRemovingTournament, setErroRemovingTournament] = useState(false)
-    const [erroTournamentNotFull, setErroTournamentNotFull] = useState(false)
-    const [erroStartingTournament, setErroStartingTournament] = useState(false)
-    const [erroChangingDescription, setErroChangingDescription] = useState(false)
-    const [erroInitializeRound, setErroInitializeRound] = useState(false)
     const [erroCheckIn, setErroCheckIn] = useState("")
-    const [initializeRoundSuccess, setInitializeRoundSuccess] = useState(false)
-
+ 
     const url = new URLSearchParams(window.location.search);
 	let tournament_id = url.get("id");
 
@@ -146,34 +139,26 @@ function TournamentPage() {
 
 
     async function removePlayer(playerId) {
-        setErroRemovingPlayer(false)
-        setErroRemovingTournament(false)
-        setErroTournamentNotFull(false)
-        setErroStartingTournament(false)
-        setErroChangingDescription(false)
-        setErroInitializeRound(false)
+        hide_everything()
         setErroCheckIn("")
-        setInitializeRoundSuccess(false)
         var response = await TournamentService.leaveTournament(tournament_id, playerId)
         if (response.error) {
-            setErroRemovingPlayer(true)
+            var elemento = document.getElementById("erroRemovingPlayer")
+            if (elemento !== undefined && elemento !== null)
+                elemento.style.display = "flex"
         } else {
             retrieveInformation()
         }
     }
 
     async function removeTournament() {
-        setErroRemovingPlayer(false)
-        setErroRemovingTournament(false)
-        setErroTournamentNotFull(false)
-        setErroStartingTournament(false)
-        setErroChangingDescription(false)
-        setErroInitializeRound(false)
+        hide_everything()
         setErroCheckIn("")
-        setInitializeRoundSuccess(false)
         var response = await TournamentService.removeTournament(tournament_id)
         if (response.error) {
-            setErroRemovingTournament(true)
+            var elemento = document.getElementById("erroRemovingTournament")
+            if (elemento !== undefined && elemento !== null)
+                elemento.style.display = "flex"
         } else {
             history.push({
                 "pathname": "/tournaments"
@@ -182,49 +167,43 @@ function TournamentPage() {
     }
 
     async function initializeTournament() {
-        setErroRemovingPlayer(false)
-        setErroRemovingTournament(false)
-        setErroTournamentNotFull(false)
-        setErroStartingTournament(false)
-        setErroChangingDescription(false)
-        setErroInitializeRound(false)
+        hide_everything()
         setErroCheckIn("")
-        setInitializeRoundSuccess(false)
-        if (tournament.max_users !== players.length) {
-            setErroTournamentNotFull(true)
-            return
-        }
+        var elemento
         var response = await TournamentService.initializeTournament(tournament_id)
         if (response.error) {
-            setErroStartingTournament(true)
+            elemento = document.getElementById("erroStartingTournament")
+            if (elemento !== undefined && elemento !== null)
+                elemento.style.display = "flex"
         } else {
             retrieveInformation()
         }
     }
 
     async function initializeNextRound() {
-        setErroRemovingPlayer(false)
-        setErroRemovingTournament(false)
-        setErroTournamentNotFull(false)
-        setErroStartingTournament(false)
-        setErroChangingDescription(false)
-        setErroInitializeRound(false)
+        hide_everything()
         setErroCheckIn("")
-        setInitializeRoundSuccess(false)
         socket.off("round_start");
 
         var response = await TournamentService.initializeNextRound(tournament_id)
+        var elemento
         if (response.error) {
-            setErroInitializeRound(true)
+            elemento = document.getElementById("erroInitializeRound")
+            if (elemento !== undefined && elemento !== null)
+                elemento.style.display = "flex"
         } else {
             socket.emit("tournament_newround", {"user_id": AuthService.getCurrentUserId(), "tournament_id": tournament_id})
 
             socket.once("round_start", (msg) => {
                 let erro = msg['erro'];
                 if ( erro ) {
-                    setErroInitializeRound(true)
+                    elemento = document.getElementById("erroInitializeRound")
+                    if (elemento !== undefined && elemento !== null)
+                        elemento.style.display = "flex"
                 } else {
-                    setInitializeRoundSuccess(true)
+                    elemento = document.getElementById("initializeRoundSuccess")
+                    if (elemento !== undefined && elemento !== null)
+                        elemento.style.display = "flex"
                 }
             })
         }
@@ -232,18 +211,14 @@ function TournamentPage() {
 
 
     async function changeDescription() {
-        setErroRemovingPlayer(false)
-        setErroRemovingTournament(false)
-        setErroTournamentNotFull(false)
-        setErroStartingTournament(false)
-        setErroChangingDescription(false)
-        setErroInitializeRound(false)
+        hide_everything()
         setErroCheckIn("")
-        setInitializeRoundSuccess(false)
         var tournament_details = document.getElementById("tournament-details")
         var response = await TournamentService.changeDescription(tournament_id, tournament_details.value)
         if (response.error) {
-            setErroChangingDescription(true)
+            var elemento = document.getElementById("erroChangingDescription")
+            if (elemento !== undefined && elemento !== null)
+                elemento.style.display = "flex"
         } else {
             retrieveInformation()
             tournament_details.value = "";
@@ -252,14 +227,8 @@ function TournamentPage() {
 
 
     function checkInForGame() {
-        setErroRemovingPlayer(false)
-        setErroRemovingTournament(false)
-        setErroTournamentNotFull(false)
-        setErroStartingTournament(false)
-        setErroChangingDescription(false)
-        setErroInitializeRound(false)
+        hide_everything()
         setErroCheckIn("")
-        setInitializeRoundSuccess(false)
         socket.off("check_in");
 
         socket.emit("tournament_checkin", {"user_id": AuthService.getCurrentUserId(), "tournament_id": tournament_id})
@@ -291,33 +260,37 @@ function TournamentPage() {
     const [entrarTorneioModal, setEntrarTorneioModal] = useState(false);
     const [sairTorneioModal, setSairTorneioModal] = useState(false);
     const [erroPassword, setErroPassword] = useState(false);
-    const [erroJoinningTournament, setErroJoinningTournament] = useState(false)
-    const [erroLeavingTournament, setErroLeavingTournament] = useState(false)
-    const [successJoinningTournament, setSuccessJoinningTournament] = useState(false)
-    const [successLeavingTournament, setSuccessLeavingTournament] = useState(false)
     
     async function entrarTorneio(tournamentId, password) {
-        setErroJoinningTournament(false)
-        setSuccessJoinningTournament(false)
+        hide_everything()
         var response = await TournamentService.jointTournament(tournamentId, current_user.id, password)
+        var elemento
         if (response.error) {
-            setErroJoinningTournament(true)
+            elemento = document.getElementById("erroJoinningTournament")
+            if (elemento !== undefined && elemento !== null)
+                elemento.style.display = "flex"
         } else {
-            setSuccessJoinningTournament(true)
+            elemento = document.getElementById("successJoinningTournament")
+            if (elemento !== undefined && elemento !== null)
+                elemento.style.display = "flex"
             setUserInTournament(true)
             window.location.reload(false);
         }
     }
 
     async function sairTorneio(tournamentId) {
-        setErroLeavingTournament(false)
-        setSuccessLeavingTournament(false)
+        hide_everything()
         var response = await TournamentService.leaveTournament(tournamentId, current_user.id)
+        var elemento
         if (response.error) {
-            setErroLeavingTournament(true)
+            elemento = document.getElementById("erroLeavingTournament")
+            if (elemento !== undefined && elemento !== null)
+                elemento.style.display = "flex"
         } 
         else {
-            setSuccessLeavingTournament(true)
+            elemento = document.getElementById("successLeavingTournament")
+            if (elemento !== undefined && elemento !== null)
+                elemento.style.display = "flex"
             setUserInTournament(false)
         }
     }
@@ -325,12 +298,12 @@ function TournamentPage() {
 
     function EntrarTorneioModal(props) {
         function confirmar() {
-            setErroPassword(false);
+            setErroPassword(false)
             var password = null
             if (props.torneioprivate === "true") {
                 password = document.getElementById("joinpassword").value
                 if (password === null || password === "") {
-                    setErroPassword(true);
+                    setErroPassword(true)
                     return
                 }
             }
@@ -449,6 +422,25 @@ function TournamentPage() {
         }
     }
 
+    function hide_everything() {
+        document.getElementById("successJoiningTournament").style.display = "none"
+        document.getElementById("successLeavingTournament").style.display = "none"
+        document.getElementById("erroJoinningTournament").style.display = "none"
+        document.getElementById("erroLeavingTournament").style.display = "none"
+        document.getElementById("erroRemovingPlayer").style.display = "none"
+        document.getElementById("erroRemovingTournament").style.display = "none"
+        document.getElementById("erroTournamentNotFull").style.display = "none"
+        document.getElementById("erroStartingTournament").style.display = "none"
+        document.getElementById("erroChangingDescription").style.display = "none"
+        document.getElementById("erroInitializeRound").style.display = "none"
+        document.getElementById("initializeRoundSuccess").style.display = "none"
+    }
+
+    function hide_message(id) {
+        document.getElementById(id).style.display = "none"
+    }
+
+
     if (!readyToDisplay) {
         return(
             <>
@@ -463,61 +455,72 @@ function TournamentPage() {
     }
     return(
         <>
-            {successJoinningTournament === true 
-                ? <div className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
-                    Entrou no torneio com sucesso.
-                </div> : null}
-            {successLeavingTournament === true 
-                ? <div className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
-                    Saiu do torneio com sucesso.
-                </div> : null}
-            {erroJoinningTournament === true 
-                    ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
-                        Occoreu um erro ao tentar entrar no torneio. Operação não foi concluída.
-                    </div> : null}
-            {erroLeavingTournament === true 
-                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
-                    Occoreu um erro ao tentar sair do torneio. Operação não foi concluída.
-                </div> : null}
-            {erroRemovingPlayer === true 
-                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
-                    Occoreu um erro ao tentar remover o jogador. Operação não foi concluída.
-                </div> : null}
 
-            {erroRemovingTournament === true 
-                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
-                    Occoreu um erro ao tentar remover o torneio. Operação não foi concluída.
-                </div> : null}
+            <div id={"successJoiningTournament"} className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+                Entrou no torneio com sucesso.
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("successJoiningTournament")}></img>
+            </div> 
 
-            {erroTournamentNotFull === true 
-                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
-                    O Torneio precisa de estar cheio para ser iniciado. Aguarde que mais utilizadores se juntem!
-                </div> : null}
 
-            {erroStartingTournament === true 
-                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
-                    Occoreu um erro ao tentar iniciar o torneio. Operação não foi concluída.
-                </div> : null}
-
-            {erroChangingDescription === true 
-                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
-                    Occoreu um erro ao tentar alterar a descrição do torneio. Operação não foi concluída.
-                </div> : null}
+            <div id={"successLeavingTournament"} className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+                Saiu do torneio com sucesso.
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("successLeavingTournament")}></img>
+            </div> 
             
-            {erroInitializeRound === true 
-                ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
-                    Occoreu um erro ao tentar iniciar a fase seguinte do torneio. Operação não foi concluída.
-                </div> : null}
+
+            <div id={"erroJoinningTournament"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+                Occoreu um erro ao tentar entrar no torneio. Operação não foi concluída.
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroJoinningTournament")}></img>
+            </div> 
+
+
+            <div id={"erroLeavingTournament"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+                Occoreu um erro ao tentar sair do torneio. Operação não foi concluída.
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroLeavingTournament")}></img>
+            </div> 
+
+            <div id={"erroRemovingPlayer"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+                Occoreu um erro ao tentar remover o jogador. Operação não foi concluída.
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroRemovingPlayer")}></img>
+            </div> 
+
+
+            <div id={"erroRemovingTournament"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+                Occoreu um erro ao tentar remover o torneio. Operação não foi concluída.
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroRemovingTournament")}></img>
+            </div> 
+            
+            <div id={"erroTournamentNotFull"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+                O Torneio precisa de estar cheio para ser iniciado. Aguarde que mais utilizadores se juntem!
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroTournamentNotFull")}></img>
+            </div>
+
+            <div id={"erroStartingTournament"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+                Occoreu um erro ao tentar iniciar o torneio. Operação não foi concluída.
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroStartingTournament")}></img>
+            </div>
+
+            <div id={"erroChangingDescription"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+                Occoreu um erro ao tentar alterar a descrição do torneio. Operação não foi concluída.
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroChangingDescription")}></img>
+            </div>
+            
+
+            <div id={"erroInitializeRound"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+                Occoreu um erro ao tentar iniciar a fase seguinte do torneio. Operação não foi concluída.
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroInitializeRound")}></img>
+            </div>
 
             {erroCheckIn !== "" 
                 ? <div className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
                     {erroCheckIn}
                 </div> : null}
             
-            {initializeRoundSuccess === true 
-                ? <div className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px"}}>
-                    Ronda iniciada com sucesso!
-                </div> : null}
+
+            <div id={"initializeRoundSuccess"} className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+                Ronda iniciada com sucesso!
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("initializeRoundSuccess")}></img>
+            </div>
 
             <div className="tournaments-container">
             <h1 className="tournament-name-h1">{tournament.name}</h1>
