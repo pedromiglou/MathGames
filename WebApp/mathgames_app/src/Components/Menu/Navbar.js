@@ -62,7 +62,7 @@ function Navbar() {
         trouser: "none",
 	});
 	//const [linktogamehref, setLinkToGameHref] = useState("")
-	const [linktogame2href, setLinkToGame2Href] = useState("")
+	//const [linktogame2href, setLinkToGame2Href] = useState("")
 	//const [linktotournamenthref, setLinkToTournamentHref] = useState("")
 
 	const [modalConfirmShow, setConfirmModalShow] = useState(false);
@@ -281,10 +281,11 @@ function Navbar() {
 
 				localStorage.setItem("entreijogoporinvite", true)
 				localStorage.setItem("outrojogador", id_outro_jogador)
-				var elemento = document.getElementById("linktogame2")
-				var url = "/gamePage?id="+game_id+"&mid=" + new_match_id
-				setLinkToGame2Href(url)
-				elemento.click()
+				//var elemento = document.getElementById("linktogame2")
+				var url = "gamePage?id="+game_id+"&mid=" + new_match_id
+				/*setLinkToGame2Href(url)
+				elemento.click()*/
+				window.location.assign(urlWeb+url)
 				//window.location.href = "http://localhost:3000/gamePage?id=0&mid=" + new_match_id
 			} else if (msg["error"]) {
 				setConfirmModalShow(true)
@@ -292,6 +293,12 @@ function Navbar() {
 		})
 
 		socket.emit("get_match_id", {"user_id": AuthService.getCurrentUserId(), "outro_id": id_outro_jogador})
+	}
+
+	function deny_game(notification) {
+		var receiver = notification.sender_user.sender_id
+		var notification_text = current_user.username + " recusou o seu convite."
+		socket.emit("new_notification", {"sender": current_user.id, "receiver": receiver, "notification_type": "D", "notification_text": notification_text})
 	}
 
 
@@ -402,7 +409,12 @@ function Navbar() {
 					if (notify.notification_type === "R") {
 						var nomeTorneio = notify.notification_text.slice(0,-59)
 						var torneio = await TournamentService.getTournamentByName(nomeTorneio)
-						notify["torneio_id"] = torneio.id
+						if (torneio !== null && torneio !== undefined)
+							notify["torneio_id"] = torneio.id
+						else {
+							UserService.delete(notify.id)
+							response.splice(response.indexOf(notify), 1)
+						}
 					}
 				}
 				setNotifications(response);
@@ -413,11 +425,6 @@ function Navbar() {
 		async function fetchApiUserById() {
             var user = await UserService.getUserById(current_user.id);
             setUser(user);
-            /* setHat(user.avatar_hat);
-            setShirt(user.avatar_shirt);
-            setColor(user.avatar_color);
-            setAccessorie(user.avatar_accessorie);
-            setTrouser(user.avatar_trouser); */
             setAvatarCustoms({
                 hat: user.avatar_hat,
                 shirt: user.avatar_shirt,
@@ -501,8 +508,8 @@ function Navbar() {
 				
 					<div className="navbar-icons-flex">
 						<div title="Notificações" className="d-flex align-items-center justify-content-center">
-							<span id="notifs-number">{ notifications.length }</span>
-							<DropdownButton	menuAlign="right" title={<FaIcons.FaBell className="navbar-icon"/>} id="notifs-dropdown" className="navbar-dropdown">
+							<span id="notifs-number" style={{ color: notifications.length ? "red" : "rgb(2, 204, 255)" }}>{ notifications.length }</span>
+							<DropdownButton	menuAlign="right" title={<FaIcons.FaBell className={notifications.length ? "navbar-icon-active  notifications-animation" : "navbar-icon"}/>} id="notifs-dropdown" className="navbar-dropdown">
 								<Dropdown.ItemText><h4>Notificações</h4></Dropdown.ItemText>
 								<Dropdown.Divider />
 								{ notifications.length > 0 &&
@@ -524,6 +531,7 @@ function Navbar() {
 															- N -> Removeu da lista de amigos
 															- T -> Convidou para participar no torneio
 															- P -> Convidou-te para uma partida
+															- D -> Recusou convite para partida
 															- R -> Iniciou um novo round do torneio
 														*/
 														}
@@ -547,7 +555,12 @@ function Navbar() {
 															|| (notification.notification_type === "R" && 
 																<FaIcons.FaCheckCircle  onClick={ () => {goToTournament(notification, index)}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															}
-															<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {UserService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25, marginLeft: "5px"}} color="#ff0015" />
+															
+															{ (notification.notification_type === "P") ?
+																	<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {deny_game(notification); UserService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25, marginLeft: "5px"}} color="#ff0015" />
+																: 	<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {UserService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25, marginLeft: "5px"}} color="#ff0015" />
+															}
+
 														</div>
 														
 													</div>
@@ -715,13 +728,13 @@ function Navbar() {
 			<div style={{display:"none", visibility:"hidden"}}>
 				{/*<Link id="linktogame" to={linktogamehref}>
 				
-				</Link>*/}
+				</Link>
 	
 				<Link id="linktogame2" to={linktogame2href}>
 					
 				</Link>
 
-				{/*<Link id="linktotournament" to={linktotournamenthref}>
+				<Link id="linktotournament" to={linktotournamenthref}>
 					
 				</Link>*/}
 			</div>
