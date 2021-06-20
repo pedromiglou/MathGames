@@ -496,8 +496,8 @@ function Navbar() {
 				
 					<div className="navbar-icons-flex">
 						<div title="Notificações" className="d-flex align-items-center justify-content-center">
-							<span id="notifs-number">{ notifications.length }</span>
-							<DropdownButton	menuAlign="right" title={<FaIcons.FaBell className="navbar-icon"/>} id="notifs-dropdown" className="navbar-dropdown">
+							<span id="notifs-number" style={{ color: notifications.length ? "red" : "rgb(2, 204, 255)" }}>{ notifications.length }</span>
+							<DropdownButton	menuAlign="right" title={<FaIcons.FaBell className={notifications.length ? "navbar-icon-active  notifications-animation" : "navbar-icon"}/>} id="notifs-dropdown" className="navbar-dropdown">
 								<Dropdown.ItemText><h4>Notificações</h4></Dropdown.ItemText>
 								<Dropdown.Divider />
 								{ notifications.length > 0 &&
