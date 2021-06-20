@@ -13,14 +13,18 @@ import './InventoryItems.css'
 
 const InventoryItems = (props) => {
 
+    console.log(props.option)
+
 	if( props.option === "Camisolas" ) 
 		var option = listShirts()
 	else if ( props.option === "Acessorios" )
 		option = listAccessories()
 	else if ( props.option === "Chapeus" )
 		option = listHats()
-	else
+	else if ( props.option === "Calcas" )
 		option = listTrousers()
+    else
+        option = comingSoon()
 
 
 	function showItemLevel(id) {
@@ -41,6 +45,11 @@ const InventoryItems = (props) => {
 		itemLevel.style.zIndex = "-10";
 	}
 
+
+    function comingSoon() {
+        console.log("props.option")
+        return <h1 style={{marginTop: "40px"}}>Brevemente</h1>
+    }
 
 
 	function listHats() {
