@@ -48,7 +48,6 @@
     width: min(80%, 350px);
     min-width: 100px;
     height: auto;
-    align-items: center;
 }
 
 .logo{
@@ -447,7 +446,10 @@ span.icons-noname{
         align-items: center;
     }
 
-   
+    .nav-logo{
+        margin: 0 auto !important;
+    }
+       
 }
 
 

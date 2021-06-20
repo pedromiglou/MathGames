@@ -654,13 +654,13 @@ function TournamentPage() {
                         <div className="tournament-rules">
                             <div className="details-edit">
                                 <h1>Descrição do Torneio</h1>
-                                {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
+                                {tournament.creator === current_user.id &&
                                     <MdIcons.MdModeEdit size={40} id="edit-icon" className="edit-icon" title="editar" onClick={() => make_fields_editable()}/>
                                 }
                             </div>
                             <div className="description-t" >
                                 <textarea  className="description-input" id="tournament-details" readOnly placeholder={tournament.description}></textarea>
-                                {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
+                                {tournament.creator === current_user.id &&
                                     <>
                                     <div className="buttons-description-tournament" id="action-buttons" style={{display:"none"}}>
                                         <div id="button-join-tournament" onClick={() => {make_fields_not_editable("add"); changeDescription() } } className="button-clicky join-tournament description-c">

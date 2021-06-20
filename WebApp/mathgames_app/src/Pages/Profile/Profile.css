@@ -1,10 +1,9 @@
 .profile-container {
-    margin: 3em auto 0 auto;
+    margin: 3em;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: flex-start;
-    flex-wrap: wrap;
     gap: 5%;
 }
 
@@ -36,6 +35,7 @@
 
 .side-option h5{
     color: #00d3f8;
+    text-align: center;
 }
 
 .tab{
@@ -66,62 +66,64 @@
     color: white;
 }
 
+@media only screen and (max-width: 995px) {
+    .side{
+        padding: 1em 3em;
+        flex-direction: row;
+        justify-content: center;
+        gap: 10%;
+    }
 
-/* .side-button {
-    position: fixed !important;
-    width: 20%;
-    background-color: rgb(63, 63, 63);
-    padding: 0%;
-    margin: 0%;
-    text-align: left;
-
-    transform: translateY(-500px);
-    animation: slideInL 0.6s ease forwards 0.5s;
+    .profile-container {
+        padding: 1em 0;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
 }
 
-.side-button-2 {
-    position: fixed !important;
-    width: 20%;
-    background-color: rgb(63, 63, 63);
-    padding: 0%;
-    margin: 0%;
-    text-align: left;
-    margin-top: 102.75px;
+@media only screen and (max-width: 835px) {
+    .side{
+        max-width: 80vw;
+    }
 
-    color: white;   
+    .side-option h5{
+        font-size: 1em;
+    }
 
-    transform: translateY(-500px);
-    animation: slideInL 0.8s ease forwards 0.5s;
+    .tab svg{
+        font-size: 1.5em;
+    }
+
+    .tab{
+        padding: 0.5em;
+    }
 }
 
-.side-button-3 {
-    position: fixed !important;
-    width: 20%;
-    background-color: rgb(63, 63, 63);
-    padding: 0%;
-    margin: 0%;
-    text-align: left;
-    margin-top: 205.5px;
+@media only screen and (max-width: 400px) {
+    .side{
+        min-width: 250px;
+        padding: 0;
+    }
 
-    color: white;
+    .side-option h5{
+        font-size: 0.5em;
+    }
 
-    transform: translateY(-500px);
-    animation: slideInL 1s ease forwards 0.5s;
+    .tab{
+        padding: 0.2em;
+    }
+
+    .tab svg{
+        font-size: 1em;
+    }
 }
 
-.side-button:hover {
-    padding: 0%;
-    margin: 0%;
-    color: white;
-} */
 
 hr.solid {
-    margin-top: 50px;
+    margin: 50px auto 0 auto;
     border-top: 3px solid #bbb;
     width: 70%;
-
-    margin-left: auto;
-    margin-right: auto;
 }
 
 hr.solid-pos {
@@ -129,79 +131,104 @@ hr.solid-pos {
 }
 
 .profile {
-    width: 100%;
-    background-color: #394d5e;
+    flex: 1 1 75%;
+    padding: 2em;
+    border-radius: 50px;
+    background-color: #469eeb;
+    border: 2px solid white;
 }
 
 .top-profile {
-    margin-left: 30px;
+    margin: 0 auto;
     width: auto;
 
     transform: translateY(-1000px);
     animation: slideDown 0.8s ease forwards 0.5s;
 }
 
-.top-profile img {
-    margin-top: auto;
-    margin-bottom: auto;
-    height: 200px;
-    width: auto;
-
-    /* transform: translateY(1000px);
-    animation: slideDown 0.8s ease forwards 0.5s; */
+.avatar-geral{
+    position: relative;
+    max-width: 250px;
+    margin: 0 auto;
 }
 
-.account-name {
-    /* margin-top: 70px;*/
-    margin-left: 30px;
-    margin-top: 55px;
-
-    padding-top: 40px;
+.avatar-geral > div{
+    max-width: 250px;
+    margin: 0 auto;
+    height: 250px !important;
+    background-color: white;
+    border-radius: 50%;
+    box-shadow: rgba(255, 255, 255, 0.1) 0px 1px 1px 0px inset, rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
 }
 
-.account-name h1 {
-    font-family: Bubblegum Sans;
-    font-weight: 900;
-    font-size: 400%;
+.edit-avatar-icon{
+    padding: 0.3em;
+    margin-bottom: .5rem;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    right: -10px;
 }
 
-.profile-games {
-    width: auto;
-    padding-top: 70px;
-    padding-bottom: 70px;
-    margin-left: 30px;
-
-    transform: translateY(1000px);
-    animation: slideUp 0.8s ease forwards 0.5s;
+.edit-avatar-icon:hover{
+    color: rgb(255, 175, 2);
+    cursor: pointer;
+    background-color: rgb(245, 245, 245);
+    border-radius: 50%;
 }
 
-.profile-games img {
-    height: 200px;
-    width: auto;
+.account-name h1{
+    text-align: center;
+    font-size: 3rem;
 }
 
-.game-name {
-    /* margin-top: 70px;*/
-    margin-left: 30px;
-    margin-top: auto;
-    margin-bottom: auto;
-}
-
-.game-name p {
-    font-family: Bubblegum Sans;
-    font-weight: 300;
-    font-size: 300%;
-}
 
 .profile-level {
     text-align: center;
-    margin-top: 105px;
-
+    margin: 0 auto;
+    width: 300px !important;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
 
-.profile-level p {
-    font-family: Bubblegum Sans;
+.profile-level h5{
+    margin: 0;
 }
+
+.profile-level .progress{
+    width: 200px;
+}
+
+.profile-games {
+    transform: translateY(1000px);
+    animation: slideUp 0.8s ease forwards 0.5s;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 2em 0;
+}
+
+.profile-games > * {
+    flex: 1 1 50%;
+}
+
+.profile-games img {
+    height: auto;
+    width: 200px;
+}
+
+.profile-games h3, .profile-games h4{
+    text-align: center;
+}
+
+.game-name {
+    font-size: 2em;
+}
+
 
 .lvl {
     margin-bottom: 0;
@@ -227,11 +254,6 @@ hr.solid-pos {
 .inputs {
     transform: translateY(300px);
     animation: slideUp 0.8s ease forwards 0.5s;
-}
-
-.no-margins {
-    padding: 0%;
-    margin: 0%;
 }
 
 .last_games_container {
@@ -311,10 +333,6 @@ hr.solid-pos {
 
 .avatar-display > h1  {
     text-align: center;
-}
-
-.avatar-geral > div{
-    height: 250px !important;
 }
 
 .skin-pallette {
