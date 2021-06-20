@@ -143,7 +143,7 @@ function App() {
 
   readData('username').then(username=>{
     if (username===null) {
-      username = uuidv4();
+      username = "Guest_"+uuidv4();
       saveData('user_id', username);
       saveData('username', username);
     } else {
@@ -201,8 +201,6 @@ function App() {
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Amigos</Text>)}}/>}
             {loggedIn && <Drawer.Screen name="Notificações" component={NotificationsNav} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Notificações</Text>)}}/>}
-            <Drawer.Screen name="Definições" component={Welcome} options={{
-                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Definições</Text>)}}/>
             <Drawer.Screen name="Sobre Nós" component={AboutUs} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Sobre nós</Text>)}}/>
           </Drawer.Navigator>

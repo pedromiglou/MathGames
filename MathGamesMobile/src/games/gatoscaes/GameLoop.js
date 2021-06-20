@@ -6,6 +6,7 @@ import GameModal from './Modal';
 import GameText from "./GameText";
 import Piece from "./Piece";
 import GatosCaesAI from "./../gatoscaes/GatosCaesAI";
+import { saveData } from "../../utilities/AsyncStorage";
 
 let ai = null;
 
@@ -94,6 +95,7 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
       socket.on("match_end", (msg) => {
         if (msg.game_id === storage.game_id) {
           storage.gameEnded=true;
+          saveData("gameEnded", true);
           entities.push({visible:true, storage: storage, endMode: msg.end_mode,
             winner: msg.match_result, renderer: <GameModal></GameModal>});
         }
@@ -169,6 +171,7 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
       }
     } else if (e.type === "gameEnded") {
       storage.gameEnded=true;
+      saveData("gameEnded", true);
       if (storage.gameMode==="No mesmo Computador") {
         entities.push({visible:true, storage: storage, endMode: "timeout",
             winner: e.turn===1?2:1, renderer: <GameModal></GameModal>});
@@ -228,16 +231,20 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
   if (nValidSquaresCats===0&&nValidSquaresDogs>0) {
     entities.push({visible:true, storage: storage, endMode: "no_moves", winner: 2, renderer: <GameModal></GameModal>});
     storage.gameEnded = true;
+    saveData("gameEnded", true);
   } else if (nValidSquaresDogs===0&&nValidSquaresCats>0) {
     entities.push({visible:true, storage: storage, endMode: "no_moves", winner: 1, renderer: <GameModal></GameModal>});
     storage.gameEnded = true;
+    saveData("gameEnded", true);
   } else if (nValidSquaresDogs===0&&nValidSquaresCats===0) {
     if (turn===1) {
       entities.push({visible:true, storage: storage, endMode: "no_moves", winner: 2, renderer: <GameModal></GameModal>});
       storage.gameEnded = true;
+      saveData("gameEnded", true);
     } else {
       entities.push({visible:true, storage: storage, endMode: "no_moves", winner: 1, renderer: <GameModal></GameModal>});
       storage.gameEnded = true;
+      saveData("gameEnded", true);
     }
   }
 

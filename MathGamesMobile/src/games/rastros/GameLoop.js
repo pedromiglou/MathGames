@@ -77,6 +77,7 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
       });
       socket.on("match_end", (msg) => {
         storage.gameEnded=true;
+        saveData("gameEnded", true);
         entities.push({visible:true, storage: storage, endMode: msg.end_mode,
               winner: msg.match_result, renderer: <GameModal></GameModal>});
       });
@@ -144,6 +145,7 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
         storage.myTurn=false;
       }
     } else if (e.type === "gameEnded") {
+      saveData("gameEnded", true);
       storage.gameEnded=true;
       if (storage.gameMode === "No mesmo Computador") {
         entities.push({visible:true, storage: storage, endMode: "timeout",
@@ -178,11 +180,13 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
 
   if (piece.position[0]===0 && piece.position[1]===7) {
     //player 1 won
+    saveData("gameEnded", true);
     storage.gameEnded=true;
     entities.push({visible:true, storage: storage, endMode: "reached_goal", winner: 1, renderer: <GameModal></GameModal>});
     
   } else if (piece.position[0]===6 && piece.position[1]===1) {
     //player 2 won
+    saveData("gameEnded", true);
     storage.gameEnded=true;
     entities.push({visible:true, storage: storage, endMode: "reached_goal", winner: 2, renderer: <GameModal></GameModal>});
   } else {
@@ -198,6 +202,7 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
       }
     }
     if (storage.gameEnded) {
+      saveData("gameEnded", true);
       entities.push({visible:true, storage: storage, endMode: "no_moves", winner: storage.turn===1?2:1, renderer: <GameModal></GameModal>});
     }
   }

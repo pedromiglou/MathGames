@@ -1,6 +1,6 @@
 import * as React from 'react';
-import {useState} from 'react';
-import {ScrollView, Dimensions, View, StyleSheet, TouchableOpacity} from 'react-native';
+import {useState, useEffect} from 'react';
+import {ScrollView, Dimensions, View, StyleSheet, Alert} from 'react-native';
 import RastrosEngine from './../games/rastros/RastrosEngine';
 import GatosCaesEngine from './../games/gatoscaes/GatosCaesEngine';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -18,6 +18,70 @@ function Game({ navigation }) {
 	var game_id;
 	var gameMode;
 	var user_id;
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('blur', () => {
+            //if gameMode online and game has not started leave matchmaking
+            readData("gameMode").then(gameMode=>{
+                if (gameMode.slice(-11,-1)!=="Computador") {
+                    readData("user_id").then(user_id=>{
+                        user_id = user_id.slice(1,-1);
+                        //at this point ready will have the game_id
+                        socket.emit("leave_matchmaking", {"user_id": user_id, "game_id": ready})
+                    });
+                }
+            });
+            saveData("gameEnded", false);
+        });
+    
+        return unsubscribe;
+    }, [navigation]);
+
+    useEffect(() =>
+        navigation.addListener('beforeRemove', (e) => {
+            e.preventDefault();
+
+            readData("gameEnded").then(gameEnded=>{
+                gameEnded = gameEnded==="true";
+                if (gameEnded) {
+                    saveData("ready",-1);
+                    navigation.dispatch(e.data.action);
+                } else {
+                    readData("ready").then(flag=>{
+                        if (flag==="-1") {
+                            navigation.dispatch(e.data.action);
+                        } else {
+                            saveData("ready",-1);
+                            // Prompt the user before leaving the screen
+                            Alert.alert(
+                                'Tem a certeza que quer voltar para trás?',
+                                'Se progressir irá desistir do jogo',
+                                [
+                                { text: "Ficar", style: 'cancel', onPress: () => {} },
+                                {
+                                    text: 'Sair',
+                                    style: 'destructive',
+                                    // If the user confirmed, then we dispatch the action we blocked earlier
+                                    // This will continue the action that had triggered the removal of the screen
+                                    onPress: () => {
+                                        readData("gameMode").then(gameMode=>{
+                                            if (gameMode.slice(-11,-1)!=="Computador") {
+                                                readData("user_id").then(user_id=>socket.emit("forfeit_match", {"user_id": user_id.slice(1,-1)}));
+                                            }
+                                        });
+                                        navigation.dispatch(e.data.action);
+                                    },
+                                },
+                                ]
+                            );
+                        }
+                    });
+                    
+                }
+            });
+            
+        }),
+    [navigation]);
 
     readData('gameMode').then(mode=>{
         gameMode = mode.slice(1,-1);
@@ -48,6 +112,7 @@ function Game({ navigation }) {
                         readData('game').then(game=>{
                             game = JSON.parse(game);
                             setReady(game.id);
+                            saveData("ready", game.id);
                         });
                     });
                 });
@@ -80,6 +145,7 @@ function Game({ navigation }) {
                 readData('game').then(game=>{
                     game = JSON.parse(game);
                     setReady(game.id);
+                    saveData("ready", game.id);
                 });
             });
 
@@ -97,10 +163,12 @@ function Game({ navigation }) {
                             saveData('player1', msg['player1']);
                             saveData('player2', msg['player2']);
                             setReady(game_id);
+                            saveData("ready", game_id);
                         });
                     });
                 } else {
                     setReady(game_id);
+                    saveData("ready", game_id);
                 }
             });
 
