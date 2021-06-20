@@ -251,10 +251,16 @@ exports.findAll = (req, res) => {
     var min_level =  0;
     var max_level = 2147483647;
     if (req.query.min_level) {
-      min_level = req.query.min_level === 1 ? 0 : 400 * Math.pow(req.query.min_level-1, 1.1);
+      if (req.query.min_level < 1)
+        min_level = 0
+      else
+        min_level = req.query.min_level === 1 ? 0 : 400 * Math.pow(req.query.min_level-1, 1.1);
     }
     if (req.query.max_level) {
-      max_level = 400 * Math.pow(req.query.max_level, 1.1);
+      if (req.query.max_level < 1)
+        max_level = 0
+      else 
+        max_level = 400 * Math.pow(req.query.max_level, 1.1);
     }
     const { limit, offset } = getPagination(page, size);
     User.findAndCountAll({attributes: ['id', 'username', 'account_level', 'account_type', 

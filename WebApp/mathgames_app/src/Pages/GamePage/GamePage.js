@@ -197,7 +197,7 @@ function GamePage() {
         alert("O link foi copiado!");
     }
 
-    function create_match_found_listener(gameMode) {
+    function create_match_found_listener(gameMode, tournament) {
         socket.off("match_found");
         socket.once("match_found", (msg) => {
             setSearchingForMatch(false)
@@ -209,7 +209,8 @@ function GamePage() {
                     game_id: game_id,
                     game_mode: gameMode,
                     ai_diff: AIdiff,
-                    match: match
+                    match: match,
+                    tournament: tournament
                 } 
             })
         })
@@ -236,12 +237,12 @@ function GamePage() {
 				setGerarLinkMode(true);
 			})
 
-			create_match_found_listener("amigo");
+			create_match_found_listener("amigo", null);
 
 		} else if (gameMode === "online") {
             setSearchingForMatch(true);
 			socket.emit("enter_matchmaking", {"user_id": AuthService.getCurrentUserId(), "game_id": game_id})
-			create_match_found_listener("online");
+			create_match_found_listener("online", null);
 
 		} else {
 			let curr_username = AuthService.getCurrentUsername();
@@ -284,7 +285,7 @@ function GamePage() {
 			friend_match.current = new_match_id;
 			setInviteFriendMode(true);
 		})
-		create_match_found_listener("amigo");
+		create_match_found_listener("amigo", null);
 
         socket.emit("generate_invite", {"user_id": AuthService.getCurrentUserId(), "outro_id": id_outro_jogador, "game_id": game_id})
 		
@@ -296,19 +297,19 @@ function GamePage() {
 		let id_outro_jogador = parseInt(localStorage.getItem("outrojogador"))
 		localStorage.removeItem("outrojogador")
 
-		create_match_found_listener("amigo");
+		create_match_found_listener("amigo", null);
 
 		socket.emit("entered_invite", {"user_id": AuthService.getCurrentUserId(), "outro_id": id_outro_jogador, "match_id": new_match_id, "game_id": game_id})
 		
 	} else if (tournament_id !== null) {
 		//Tournament section
-		create_match_found_listener("online");
+		create_match_found_listener("online", tournament_id);
 
 		socket.emit("tournament_enteredmatch", {"user_id": AuthService.getCurrentUserId(), "match_id": new_match_id, "tournament_id": tournament_id})
 
 	} else if ( new_match_id !== null ) {
 		//Código executado pelo jogador que entra por link no jogo
-		create_match_found_listener("amigo");
+		create_match_found_listener("amigo", null);
 
 		socket.emit("entered_link", {"user_id": AuthService.getCurrentUserId(), "match_id": new_match_id, "game_id": game_id})
 	} 

@@ -5,7 +5,7 @@ import { Modal } from "react-bootstrap";
 import { EndGameStatements } from '../data/EndGameStatements';
 
 
-export const GameOverModal = forwardRef((props, ref) => {
+export const GameOverModal = forwardRef(({tournament_id}, ref) => {
     const [finishMatchModalShow, setFinishMatchModalShow] = useState(false);
     const [gameOverMessage, setGameOverMessage] = useState({});
     let history = useHistory()
@@ -90,7 +90,7 @@ export const GameOverModal = forwardRef((props, ref) => {
                     </p>
                 </Modal.Body>
                 <Modal.Footer style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-                    <button onClick={() => history.push("/gamePage?id=" + gameOverMessage["game_id"])} className="btn btn-warning" style={{color: "#0056b3", fontSize: 20}}>Voltar à página de jogo</button>
+                    <button onClick={() => {(tournament_id === null || tournament_id === undefined ? history.push("/gamePage?id=" + gameOverMessage["game_id"]) : history.push("/tournament?id=" + tournament_id) )} } className="btn btn-warning" style={{color: "#0056b3", fontSize: 20}}>Voltar à página de jogo</button>
                 </Modal.Footer>
             </Modal>
         );

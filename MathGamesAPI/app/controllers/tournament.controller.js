@@ -455,6 +455,23 @@ exports.findOne = (req, res) => {
 };
 
 
+// Find a single tournament by his name
+exports.findByName = (req, res) => {
+  const name = req.params.name;
+
+  Tournament.findOne( {where: {name: name}})
+    .then(data => {
+      const { password, ...tournamentWithoutPassword } = data.dataValues;
+      res.send(tournamentWithoutPassword);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving Tournament with name=" + name
+      });
+    });
+};
+
+
 // Find a single Tournament with an id
 exports.findByCreator = (req, res) => {
   const creator_id = req.params.id;

@@ -137,9 +137,12 @@ function Podium() {
 			let min_level = allusers_inputs.min_level;
 			let max_level = allusers_inputs.max_level;
 			var response = await UserService.getUsers(username, min_level, max_level, parseInt(page_users)-1, 10);
-			setUsers(response.users);
-			setCountUsers(response.totalPages)
-			setNumberClassificationUsers((parseInt(page_users)-1)*10);
+			console.log(response)
+			if (!response["message"]) {
+				setUsers(response.users);
+				setCountUsers(response.totalPages)
+				setNumberClassificationUsers((parseInt(page_users)-1)*10);
+			}
         };
 
 		async function fetchApiUsersBanned() {
@@ -147,9 +150,11 @@ function Podium() {
 			let min_level = banned_inputs.min_level;
 			let max_level = banned_inputs.max_level;
 			var response = await UserService.getUsersBanned(username, min_level, max_level, parseInt(page_banned_users)-1, 10);
-			setBannedUsers(response.users);
-			setCountBannedUsers(response.totalPages)
-			setNumberClassificationBannedUsers((parseInt(page_banned_users)-1)*10);
+			if (!response["message"]) {
+				setBannedUsers(response.users);
+				setCountBannedUsers(response.totalPages)
+				setNumberClassificationBannedUsers((parseInt(page_banned_users)-1)*10);
+			}
         };
 
 		async function fetchApiUsersNormal() {
@@ -157,9 +162,11 @@ function Podium() {
 			let min_level = normal_inputs.min_level;
 			let max_level = normal_inputs.max_level;
 			var response = await UserService.getUsersNormal(username, min_level, max_level, parseInt(page_normal_users)-1, 10);
-			setNormalUsers(response.users);
-			setCountNormalUsers(response.totalPages)
-			setNumberClassificationNormalUsers((parseInt(page_normal_users)-1)*10);
+			if (!response["message"]) {
+				setNormalUsers(response.users);
+				setCountNormalUsers(response.totalPages)
+				setNumberClassificationNormalUsers((parseInt(page_normal_users)-1)*10);
+			}
         };
 
 		async function fetchApiUsersPrivilege() {
@@ -167,9 +174,11 @@ function Podium() {
 			let min_level = privilege_inputs.min_level;
 			let max_level = privilege_inputs.max_level;
 			var response = await UserService.getUsersPrivilege(username, min_level, max_level, parseInt(page_privilege_users)-1, 10);
-			setPrivilegeUsers(response.users);
-			setCountPrivilegeUsers(response.totalPages)
-			setNumberClassificationPrivilegeUsers((parseInt(page_privilege_users)-1)*10);
+			if (!response["message"]) {
+				setPrivilegeUsers(response.users);
+				setCountPrivilegeUsers(response.totalPages)
+				setNumberClassificationPrivilegeUsers((parseInt(page_privilege_users)-1)*10);
+			}
         };
 
 		async function fetchApiUsersAdmin() {
@@ -177,9 +186,11 @@ function Podium() {
 			let min_level = admin_inputs.min_level;
 			let max_level = admin_inputs.max_level;
 			var response = await UserService.getUsersAdmin(username, min_level, max_level, parseInt(page_admin_users)-1, 10);
-			setAdminUsers(response.users);
-			setCountAdminUsers(response.totalPages);
-			setNumberClassificationAdminUsers((parseInt(page_admin_users)-1)*10);
+			if (!response["message"]) {
+				setAdminUsers(response.users);
+				setCountAdminUsers(response.totalPages);
+				setNumberClassificationAdminUsers((parseInt(page_admin_users)-1)*10);
+			}
         };
 
 		async function fetchApiFriends(userId) {
@@ -482,7 +493,7 @@ function Podium() {
 								contador++;
 							}
 							return (
-								<li className="list-group-item d-flex justify-content-between align-items-center row">
+								<li key={user.id} className="list-group-item d-flex justify-content-between align-items-center row">
 									<div className="col-lg-1 col-md-1 col-sm-1 align-items-center">
 										<span className="badge badge-primary badge-pill">{numberClassificationUsers}</span>
 									</div>

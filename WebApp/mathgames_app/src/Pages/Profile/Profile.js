@@ -77,15 +77,18 @@ const Profile = () => {
         console.log("use effect profile")
 		var current_user = AuthService.getCurrentUser();
 
+		// Load user games history
+        async function fetchApiLastGames() {
+            var response = await UserService.getLastGames(current_user.id);
+            if (!response.error)
+                setGames(response);
+            else
+                setGames("erro")
+        }
 		async function fetchApiUserById() {
 			var user = await UserService.getUserById(current_user.id);
 
 			setUser(user);
-			/*setHat(user.avatar_hat);
-			setShirt(user.avatar_shirt);
-			setColor(user.avatar_color);
-			setAccessorie(user.avatar_accessorie);
-			setTrouser(user.avatar_trouser); */
             setAvatarCustoms({
                 hat: user.avatar_hat,
                 shirt: user.avatar_shirt,
@@ -93,14 +96,6 @@ const Profile = () => {
                 accessorie: user.avatar_accessorie,
                 trouser: user.avatar_trouser,
             });
-		}
-
-		// Load user games history
-		async function fetchApiLastGames() {
-			var response = await UserService.getLastGames(current_user.id);
-
-			if (!response.error) setGames(response);
-			else setGames("erro");
 		}
 
 		if (current_user !== null) {
@@ -872,194 +867,93 @@ const Profile = () => {
 					</div>
 				)}
 
-				{menuOption === "lastgames" && (
-					<div className="col-lg-9 no-margins">
-						<div className="last_games_container">
-							<ul className="responsive-table">
-								<li className="table-header">
-									<div className="col col-2">Data</div>
-									<div className="col col-2">Jogo</div>
-									<div className="col col-2">Resultado</div>
-									<div className="col col-2">Exp. Ganha</div>
-									<div className="col col-2">Detalhes</div>
-								</li>
-								{games === "erro" ? (
-									<p className="no-games-found">
-										Histórico de jogos indisponível!
-									</p>
-								) : Object.entries(games).length === 0 ? (
-									<p className="no-games-found">
-										O seu histório de jogos é vazio!
-									</p>
-								) : (
-									Object.entries(games).map(
-										([key, value]) => (
-											<>
-												{value["winner"] !== null && (
-													<li
-														className={
-															(value["winner"] ===
-																"1" &&
-																value[
-																	"player1"
-																] ===
-																	user.id) ||
-															(value["winner"] ===
-																"2" &&
-																value[
-																	"player2"
-																] === user.id)
-																? "won table-row history-box foo-history-win"
-																: (value[
-																		"winner"
-																  ] === "2" &&
-																		value[
-																			"player1"
-																		] ===
-																			user.id) ||
-																  (value[
-																		"winner"
-																  ] === "1" &&
-																		value[
-																			"player2"
-																		] ===
-																			user.id)
-																? "lost table-row history-box foo-history-lose"
-																: "draw table-row history-box foo-history-draw"
-														}
-														key={key}
-													>
-														<div className="col col-2">
-															{value["updatedAt"]}
-														</div>
-														<div className="col col-2">
-															{value[
-																"game_id"
-															] === 0
-																? "Rastros"
-																: value[
-																		"game_id"
-																  ] === 1
-																? "Gatos&Cães"
-																: "Outro"}
-														</div>
-														<div className="col col-2">
-															{(value[
-																"winner"
-															] === "1" &&
-																value[
-																	"player1"
-																] ===
-																	user.id) ||
-															(value["winner"] ===
-																"2" &&
-																value[
-																	"player2"
-																] === user.id)
-																? "Vitória"
-																: (value[
-																		"winner"
-																  ] === "2" &&
-																		value[
-																			"player1"
-																		] ===
-																			user.id) ||
-																  (value[
-																		"winner"
-																  ] === "1" &&
-																		value[
-																			"player2"
-																		] ===
-																			user.id)
-																? "Derrota"
-																: "Empate"}
-														</div>
-														<div className="col col-2">
-															+
-															{(value[
-																"winner"
-															] === "1" &&
-																value[
-																	"player1"
-																] ===
-																	user.id) ||
-															(value["winner"] ===
-																"2" &&
-																value[
-																	"player2"
-																] === user.id)
-																? "100"
-																: (value[
-																		"winner"
-																  ] === "2" &&
-																		value[
-																			"player1"
-																		] ===
-																			user.id) ||
-																  (value[
-																		"winner"
-																  ] === "1" &&
-																		value[
-																			"player2"
-																		] ===
-																			user.id)
-																? "30"
-																: "45"}
-														</div>
-														<div className="col col-2">
-															<button
-																className={
-																	(value[
-																		"winner"
-																	] === "1" &&
-																		value[
-																			"player1"
-																		] ===
-																			user.id) ||
-																	(value[
-																		"winner"
-																	] === "2" &&
-																		value[
-																			"player2"
-																		] ===
-																			user.id)
-																		? "won-button table-row"
-																		: (value[
-																				"winner"
-																		  ] ===
-																				"2" &&
-																				value[
-																					"player1"
-																				] ===
-																					user.id) ||
-																		  (value[
-																				"winner"
-																		  ] ===
-																				"1" &&
-																				value[
-																					"player2"
-																				] ===
-																					user.id)
-																		? "lost-button table-row"
-																		: "draw-button table-row"
-																}
-															>
-																Detalhes
-															</button>
-														</div>
-													</li>
-												)}
-											</>
-										)
-									)
-								)}
-							</ul>
-						</div>
-					</div>
-				)}
-			</div>
-		</div>
-	);
+                {menuOption === "lastgames" && (
+                    <div className="col-lg-9 no-margins">
+                        <div className="last_games_container">
+                            <ul className="responsive-table">
+                                <li className="table-header">
+                                    <div className="col col-2">Data</div>
+                                    <div className="col col-2">Jogo</div>
+                                    <div className="col col-2">Modo Jogo</div>
+                                    <div className="col col-2">Resultado</div>
+                                    <div className="col col-2">Exp. Ganha</div>
+                                </li>
+                                {
+                                games === "erro" 
+                                ?  <p className="no-games-found">Histórico de jogos indisponível!</p>
+                                : Object.entries(games).length === 0 
+                                    ? <p className="no-games-found">O seu histório de jogos é vazio!</p>
+                                    :
+                                    Object.entries(games).map(([key, value]) => (
+                                        <>
+                                        {value["winner"] !== null && 
+                                            
+                                        <li
+                                            className={
+                                                ((value["winner"] === "1" && value["player1"] === user.id) || (value["winner"] === "2" && value["player2"] === user.id) )
+                                                    ? "won table-row history-box foo-history-win"
+                                                    : ((value["winner"] === "2" && value["player1"] === user.id) || (value["winner"] === "1" && value["player2"] === user.id) ) 
+                                                    ? "lost table-row history-box foo-history-lose"
+                                                    : "draw table-row history-box foo-history-draw"
+                                            }
+                                            key={key}
+                                        >
+                                            <div className="col col-2">
+                                                {value["updatedAt"]}
+                                            </div>
+                                            <div className="col col-2">
+                                                {value["game_id"] === 0
+                                                    ? "Rastros" : value["game_id"] === 1 ?
+                                                        "Gatos&Cães" : "Outro"}
+                                            </div>
+                                            <div className="col col-2">
+                                                {value["game_type"] === "online" ? "Online" 
+                                                    : value["game_type"] === "amigo" ? "Amigo" : "Outro" }
+                                            </div>
+                                            <div className="col col-2">
+                                                 { ((value["winner"] === "1" && value["player1"] === user.id) || (value["winner"] === "2" && value["player2"] === user.id) )
+                                                            ? "Vitória"
+                                                            : ((value["winner"] === "2" && value["player1"] === user.id) || (value["winner"] === "1" && value["player2"] === user.id) ) 
+                                                            ? "Derrota"
+                                                            : "Empate"
+                                                            }
+                                            </div>
+                                            <div className="col col-2">
+                                                {/*
+                                                <button
+                                                
+                                                    className={
+                                                        ((value["winner"] === "1" && value["player1"] === user.id) || (value["winner"] === "2" && value["player2"] === user.id) )
+                                                            ? "won-button table-row"
+                                                            : ((value["winner"] === "2" && value["player1"] === user.id) || (value["winner"] === "1" && value["player2"] === user.id) ) 
+                                                            ? "lost-button table-row"
+                                                            : "draw-button table-row"
+                                                    }
+                                                >
+                                                    Detalhes
+                                                </button>*/}
+                                                 +{((value["winner"] === "1" && value["player1"] === user.id) || (value["winner"] === "2" && value["player2"] === user.id) )
+                                                            ? "100"
+                                                            : ((value["winner"] === "2" && value["player1"] === user.id) || (value["winner"] === "1" && value["player2"] === user.id) ) 
+                                                            ? "30"
+                                                            : "45"
+                                                            }
+                                            </div>
+                                        </li>
+                                    }
+                                    </>
+                                    )
+                                )}
+                            </ul>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+
+
+    
 };
 
 export default Profile;
