@@ -5,6 +5,7 @@ import {useHistory} from 'react-router-dom';
 import * as IoIcons from 'react-icons/io5';
 import * as MdIcons from 'react-icons/md';
 
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./TournamentPage.css";
 import socket from "../../index"
@@ -454,6 +455,16 @@ function TournamentPage() {
         document.getElementById(id).style.display = "none"
     }
 
+    function updateInfo(){
+        if (document.getElementById("icon_reload") !== null && document.getElementById("icon_reload") !== undefined)
+            document.getElementById("icon_reload").classList.add("icon-reload")
+        retrieveInformation()
+        setTimeout(() => {
+            if (document.getElementById("icon_reload") !== null && document.getElementById("icon_reload") !== undefined)
+                document.getElementById("icon_reload").classList.remove("icon-reload")
+         }, 1000);
+    }
+
 
     if (!readyToDisplay) {
         return(
@@ -541,7 +552,11 @@ function TournamentPage() {
             </div>
 
             <div className="tournaments-container">
-            <h1 className="tournament-name-h1">{tournament.name}</h1>
+            <div className="title-reload">
+                <h1 className="tournament-name-h1">{tournament.name}</h1>
+                <IoIcons.IoReloadSharp className="reload-icon" title={"reload"} id={"icon_reload"} size={36} onClick={() => {updateInfo()}}/>
+            </div>
+
                 <div className="tournamentPage_section">
                     <div className="participants_section">
                         <div className="tournament-info-sp">
@@ -565,7 +580,7 @@ function TournamentPage() {
                                 <div className="col-lg-3 col-md-3 col-sm-3">
                                     Rank
                                 </div>   
-                                {tournament.creator === current_user.id && 
+                                {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
                                     <div className="col-lg-2 col-md-2 col-sm-2">
                                     
                                     </div>
