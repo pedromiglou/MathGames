@@ -72,7 +72,7 @@ exports.findAll = (req, res) => {
 exports.findByUserId = (req, res) => {
   const id = req.params.id;
 
-  if (parseInt(req.userId) !== parseInt(id)) {
+  if (parseInt(req.userId) !== parseInt(id) && req.account_type !== "A") {
     res.status(401).send({
       message: "Unauthorized!"
     });

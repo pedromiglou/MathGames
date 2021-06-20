@@ -841,7 +841,7 @@ function create_game(match_id, game_id, user1, user2, game_type, tournament_id) 
 
   current_games[match_id]['state']['current_player'] = user1
   if (game_id === 0) {
-    current_games[match_id]['state']['blocked_pos'] = new Set()
+    current_games[match_id]['state']['blocked_pos'] = new Set([18])
     current_games[match_id]['state']['current_pos'] = 18
     current_games[match_id]['state']['valid_squares'] = new Set([10, 11, 12, 17, 19, 24, 25, 26])
   } else if (game_id === 1) {
@@ -984,30 +984,39 @@ function validate_gatoscaes_move(user_id, match_id, new_pos) {
   if (current_games[match_id]['state']['player_1_first_move'] && current_games[match_id]['state']['player2'] === user_id)
     current_games[match_id]['state']['player_1_first_move'] = false
   
+
   // Get new square's position [0..49]
-  var adjacents = new Set()
-  var current_pos = new_pos;
+
+  var current_pos = parseInt(new_pos);
 
   current_games[match_id]['state']['player_0_valid_squares'].delete(String(current_pos))
   current_games[match_id]['state']['player_1_valid_squares'].delete(String(current_pos))
-  adjacents.add(String(current_pos-1))
-  adjacents.add(String(current_pos+1))
-  adjacents.add(String(current_pos-8))
-  adjacents.add(String(current_pos+8))
+
+  var n1 = current_pos-1
+  var n2 = current_pos+1
+  var n3 = current_pos-8
+  var n4 = current_pos+8
+  var adjacents = new Set([String(n1), String(n2), String(n3), String(n4)]);
 
   // Remove invalid squares (edge cases)
   if ( [0,1,2,3,4,5,6,7].includes(current_pos) )
-    adjacents.delete(String(current_pos-8));
+    adjacents.delete(String(n3));
 
   if ( [56,57,58,59,60,61,62,63].includes(current_pos) )
-    adjacents.delete(String(current_pos+8));
+    adjacents.delete(String(n4));
 
   if ( [0,8,16,24,32,40,48,56].includes(current_pos) )
-    adjacents.delete(String(current_pos-1));
+    adjacents.delete(String(n1));
 
   if ( [7,15,23,31,39,47,55].includes(current_pos) )
-    adjacents.delete(String(current_pos+1));
-    
+    adjacents.delete(String(n2));
+
+
+  // Remove played position from both player's valid squares
+  var set_current_pos = new Set([String(current_pos)])
+  current_games[match_id]['state']['player_1_valid_squares'] = set_diff(current_games[match_id]['state']['player_1_valid_squares'], set_current_pos)
+  current_games[match_id]['state']['player_0_valid_squares'] = set_diff(current_games[match_id]['state']['player_0_valid_squares'], set_current_pos)
+
   // Add player piece to new square
   if (current_games[match_id]['state']['player1'] === user_id) {
     current_games[match_id]['state']['player_1_valid_squares'] = set_diff(current_games[match_id]['state']['player_1_valid_squares'], adjacents)
@@ -1210,15 +1219,24 @@ async function finish_game(match_id, endMode) {
       } else {
         // Last game from tournament
         // Update winner and state from tournament
-        if (winner == 1)
-          await Tournament.update({winner: player1, status: "FINISHED"}, {where: {id: tournament_id}}).catch(err => {
-            console.log(err)
-          })
-        else
-          await Tournament.update({winner: player2, status: "FINISHED"}, {where: {id: tournament_id}}).catch(err => {
-            console.log(err)
-          })
-        
+
+        if (winner == 1) {
+          await Tournament.update({winner: player1, status: "FINISHED"}, {where: {id: tournament_id}}).catch(err => {console.log(err)})
+
+          await User.findOne({where: {id: player1}}).then(async (jogador) => {
+            var new_exp = jogador.dataValues.account_level + 1000
+            await User.update({account_level: new_exp}, {where: {id: player1}}).catch(err => {console.log(err)})
+          }).catch(err => {console.log(err)})
+        }
+        else {
+
+          await Tournament.update({winner: player2, status: "FINISHED"}, {where: {id: tournament_id}}).catch(err => {console.log(err)})
+
+          await User.findOne({where: {id: player2}}).then(async (jogador) => {
+            var new_exp = jogador.dataValues.account_level + 1000
+            await User.update({account_level: new_exp}, {where: {id: player2}}).catch(err => {console.log(err)})
+          }).catch(err => {console.log(err)})
+        }
         delete active_tournaments[tournament_id];
       }
     })

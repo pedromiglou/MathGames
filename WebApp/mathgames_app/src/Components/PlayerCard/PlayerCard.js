@@ -81,7 +81,7 @@ const PlayerCard = forwardRef(({username, gameId, shouldFindUser, showReportButt
 	}
 
     function forfeit_match() {
-        socket.emit("forfeit_match", {"user_id": user.id})
+        socket.emit("forfeit_match", {"user_id":  (isGuest() ? username : user.id )})
     }
 
 
@@ -153,7 +153,7 @@ const PlayerCard = forwardRef(({username, gameId, shouldFindUser, showReportButt
                                 }
                             </div>
                             { showForfeitFlag && !gameOver &&
-                                <i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.id); setModalOperation("forfeit"); setModalUsername(user.username); setConfirmModalShow(true);}}><CgIcons.CgFlag/></i>
+                                <i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId( (isGuest() ? username : user.id ) ) ; setModalOperation("forfeit"); setModalUsername((isGuest() ? username : user.username )); setConfirmModalShow(true);}}><CgIcons.CgFlag/></i>
                             }
 
                         </div>
