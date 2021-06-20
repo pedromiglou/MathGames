@@ -154,7 +154,7 @@ function Bracket() {
         async function renderBrackets(struct) {
             var bracketCount = 0;
             var groupCount = struct.map(function(s) { return s.roundNo; }).filter((v, i, a) => a.indexOf(v) === i).length; 
-    
+
             var group = document.createElement("div");
             group.className = "group"+(groupCount+1);
             group.id = "b"+bracketCount
@@ -168,7 +168,7 @@ function Bracket() {
     
             const groupByRound = groupBy('roundNo');
             var grouped = groupByRound(struct)
-            
+
             for(let g=1;g<=groupCount;g++) {
     
                 var round = document.createElement("div");

@@ -171,10 +171,18 @@ function TournamentPage() {
         setErroCheckIn("")
         var elemento
         var response = await TournamentService.initializeTournament(tournament_id)
+        console.log(response)
         if (response.error) {
-            elemento = document.getElementById("erroStartingTournament")
-            if (elemento !== undefined && elemento !== null)
-                elemento.style.display = "flex"
+            if (response.message) {
+                elemento = document.getElementById("erroMinimumPlayers")
+                if (elemento !== undefined && elemento !== null)
+                    elemento.style.display = "flex"
+            } else {
+                elemento = document.getElementById("erroStartingTournament")
+                if (elemento !== undefined && elemento !== null)
+                    elemento.style.display = "flex"
+            }
+
         } else {
             retrieveInformation()
         }
@@ -186,6 +194,7 @@ function TournamentPage() {
         socket.off("round_start");
 
         var response = await TournamentService.initializeNextRound(tournament_id)
+        
         var elemento
         if (response.error) {
             elemento = document.getElementById("erroInitializeRound")
@@ -244,8 +253,12 @@ function TournamentPage() {
                 if (message === "Tournament is not active")
                     setErroCheckIn("Este torneio não se encontra ativo.")
             } else {
-                let match_id = msg['match_id']
-                history.push("/gamePage?id="+tournament.game_id+"&tid="+tournament.id+"&mid="+match_id)
+                if (msg["message"]) {
+                    setErroCheckIn("Voçe já esta qualificado para round seguinte. Espere que o próximo round seja iniciado.")
+                } else {
+                    let match_id = msg['match_id']
+                    history.push("/gamePage?id="+tournament.game_id+"&tid="+tournament.id+"&mid="+match_id)
+                }
             }
         })
     }
@@ -434,6 +447,8 @@ function TournamentPage() {
         document.getElementById("erroChangingDescription").style.display = "none"
         document.getElementById("erroInitializeRound").style.display = "none"
         document.getElementById("initializeRoundSuccess").style.display = "none"
+        document.getElementById("erroMinimumPlayers").style.display = "none"
+
     }
 
     function hide_message(id) {
@@ -461,6 +476,10 @@ function TournamentPage() {
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("successJoiningTournament")}></img>
             </div> 
 
+            <div id={"erroMinimumPlayers"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+                O torneio deve possuir pelo menos 3 jogadores para começar.
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroMinimumPlayers")}></img>
+            </div> 
 
             <div id={"successLeavingTournament"} className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
                 Saiu do torneio com sucesso.
