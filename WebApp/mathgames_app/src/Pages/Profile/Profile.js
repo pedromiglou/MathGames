@@ -207,6 +207,16 @@ const Profile = () => {
 		});
 	}
 
+    function changeColor(colorCode) {
+        setAvatarCustoms({
+			hat: avatarCustoms.hat,
+			shirt: avatarCustoms.shirt,
+			color: colorCode,
+			accessorie: avatarCustoms.accessorie,
+			trouser: avatarCustoms.trouser,
+		});
+    }
+
 	async function saveAvatar() {
 		var current_user = AuthService.getCurrentUser();
 		await UserService.update_user(
@@ -463,7 +473,7 @@ const Profile = () => {
 									/>
 								</div>
 								<h3 className="centered">Cor de pele</h3>
-								{/* <div className="row">
+								<div className="row">
 									<div className="col-xl-6 col-lg-12 col-md-12 col-sm-12 no-margin">
 										<div
 											className="container skin-pallette-2"
@@ -472,19 +482,19 @@ const Profile = () => {
 											<span
 												className="dot d1"
 												onClick={() =>
-													setColor("#7B241C")
+													changeColor("#7B241C")
 												}
 											></span>
 											<span
 												className="dot d2"
 												onClick={() =>
-													setColor("#C0392B")
+													changeColor("#C0392B")
 												}
 											></span>
 											<span
 												className="dot d3"
 												onClick={() =>
-													setColor("#D98880")
+													changeColor("#D98880")
 												}
 											></span>
 										</div>
@@ -495,19 +505,19 @@ const Profile = () => {
 											<span
 												className="dot d4"
 												onClick={() =>
-													setColor("#512E5F")
+													changeColor("#512E5F")
 												}
 											></span>
 											<span
 												className="dot d5"
 												onClick={() =>
-													setColor("#7D3C98")
+													changeColor("#7D3C98")
 												}
 											></span>
 											<span
 												className="dot d6"
 												onClick={() =>
-													setColor("#A569BD")
+													changeColor("#A569BD")
 												}
 											></span>
 										</div>
@@ -518,19 +528,19 @@ const Profile = () => {
 											<span
 												className="dot d7"
 												onClick={() =>
-													setColor("#1B4F72")
+													changeColor("#1B4F72")
 												}
 											></span>
 											<span
 												className="dot d8"
 												onClick={() =>
-													setColor("#2E86C1")
+													changeColor("#2E86C1")
 												}
 											></span>
 											<span
 												className="dot d9"
 												onClick={() =>
-													setColor("#5DADE2")
+													changeColor("#5DADE2")
 												}
 											></span>
 										</div>
@@ -541,19 +551,19 @@ const Profile = () => {
 											<span
 												className="dot d10"
 												onClick={() =>
-													setColor("#186A3B")
+													changeColor("#186A3B")
 												}
 											></span>
 											<span
 												className="dot d11"
 												onClick={() =>
-													setColor("#28B463")
+													changeColor("#28B463")
 												}
 											></span>
 											<span
 												className="dot d12"
 												onClick={() =>
-													setColor("#58D68D")
+													changeColor("#58D68D")
 												}
 											></span>
 										</div>
@@ -566,19 +576,19 @@ const Profile = () => {
 											<span
 												className="dot d13"
 												onClick={() =>
-													setColor("#7E5109")
+													changeColor("#7E5109")
 												}
 											></span>
 											<span
 												className="dot d14"
 												onClick={() =>
-													setColor("#D68910")
+													changeColor("#D68910")
 												}
 											></span>
 											<span
 												className="dot d15"
 												onClick={() =>
-													setColor("#F5B041")
+													changeColor("#F5B041")
 												}
 											></span>
 										</div>
@@ -589,19 +599,19 @@ const Profile = () => {
 											<span
 												className="dot d16"
 												onClick={() =>
-													setColor("#6E2C00")
+													changeColor("#6E2C00")
 												}
 											></span>
 											<span
 												className="dot d17"
 												onClick={() =>
-													setColor("#BA4A00")
+													changeColor("#BA4A00")
 												}
 											></span>
 											<span
 												className="dot d18"
 												onClick={() =>
-													setColor("#DC7633")
+													changeColor("#DC7633")
 												}
 											></span>
 										</div>
@@ -612,19 +622,19 @@ const Profile = () => {
 											<span
 												className="dot d19"
 												onClick={() =>
-													setColor("#626567")
+													changeColor("#626567")
 												}
 											></span>
 											<span
 												className="dot d20"
 												onClick={() =>
-													setColor("#A6ACAF")
+													changeColor("#A6ACAF")
 												}
 											></span>
 											<span
 												className="dot d21"
 												onClick={() =>
-													setColor("#CACFD2")
+													changeColor("#CACFD2")
 												}
 											></span>
 										</div>
@@ -635,24 +645,24 @@ const Profile = () => {
 											<span
 												className="dot d22"
 												onClick={() =>
-													setColor("#17202A")
+													changeColor("#17202A")
 												}
 											></span>
 											<span
 												className="dot d23"
 												onClick={() =>
-													setColor("#273746")
+													changeColor("#273746")
 												}
 											></span>
 											<span
 												className="dot d24"
 												onClick={() =>
-													setColor("#566573")
+													changeColor("#566573")
 												}
 											></span>
 										</div>
 									</div>
-								</div> */}
+								</div>
 							</div>
 
 							<div className="col-lg-7 invetory-options">
@@ -803,6 +813,20 @@ const Profile = () => {
 												trouserName={changeTrousers}
 												current={avatarCustoms.trouser}
 												lvl={userLevel}
+											/>
+										</div>
+									)}
+                                    {invOption === "Pecas" && (
+										<div>
+											<InventoryItems
+												option={"Pecas"}
+											/>
+										</div>
+									)}
+                                    {invOption === "Tabuleiros" && (
+										<div>
+											<InventoryItems
+												option={"Tabuleiros"}
 											/>
 										</div>
 									)}
