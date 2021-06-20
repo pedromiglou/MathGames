@@ -16,6 +16,9 @@ import * as GiIcons from 'react-icons/gi';
 import * as FaIcons from 'react-icons/fa';
 import * as CgIcons from 'react-icons/cg';
 import * as FiIcons from 'react-icons/fi';
+import * as MdIcons from 'react-icons/md';
+
+import {urlWeb} from './../../data/data';
 
 const Profile = () => {
 	console.log("--- dentro profile ---")
@@ -38,9 +41,6 @@ const Profile = () => {
 	});
 	const [modalSaveShow, setSaveModalShow] = useState(false);
 	const [modalCancelShow, setCancelModalShow] = useState(false);
-	var geral_e;
-	var inventario_e;
-	var last_games_e;
 
 	var current_user = AuthService.getCurrentUser();
 	var ranks_dict = {};
@@ -120,40 +120,29 @@ const Profile = () => {
 		}
 	}, []);
 
-	function geral() {
-		setMenuOption("Geral");
+	function changeTab(new_tab) {
+		setMenuOption(new_tab);
+		console.log(new_tab)
 
-		geral_e = document.getElementById("Geral");
-		inventario_e = document.getElementById("Inventario");
-		last_games_e = document.getElementById("Last_Games");
+		const tabs = ["Geral", "Inventario", "lastgames"];
+		let current_tab;
 
-		geral_e.style.backgroundColor = "#7158e2";
-		inventario_e.style.backgroundColor = "rgb(63, 63, 63)";
-		last_games_e.style.backgroundColor = "rgb(63, 63, 63)";
-	}
-	function inventario() {
-		setMenuOption("Inventario");
-
-		geral_e = document.getElementById("Geral");
-		inventario_e = document.getElementById("Inventario");
-		last_games_e = document.getElementById("Last_Games");
-
-		geral_e.style.backgroundColor = "rgb(63, 63, 63)";
-		inventario_e.style.backgroundColor = "#7158e2";
-		last_games_e.style.backgroundColor = "rgb(63, 63, 63)";
-	}
-	function last_games() {
-		setMenuOption("lastgames");
-
-		geral_e = document.getElementById("Geral");
-		inventario_e = document.getElementById("Inventario");
-		last_games_e = document.getElementById("Last_Games");
-
-		geral_e.style.backgroundColor = "rgb(63, 63, 63)";
-		inventario_e.style.backgroundColor = "rgb(63, 63, 63)";
-		last_games_e.style.backgroundColor = "#7158e2";
+		for (let i=0; i<tabs.length; i++){
+			current_tab = document.getElementById(tabs[i]);
+			console.log(current_tab)
+			if (tabs[i] === new_tab){
+				current_tab.classList.add("active");
+			} else {
+				current_tab.classList.remove("active");
+			}
+		}
 	}
 
+	function run_logout() {
+		sessionStorage.removeItem("user");
+		window.location.assign(urlWeb)
+	}
+	
 	const getLevel = (account_level) => {
 		var contador = 1;
 		if (typeof account_level !== "undefined") {
@@ -340,134 +329,103 @@ const Profile = () => {
 					<div className="cube-profile"></div>
 				</div>
 			</div>
-			<div className="row profile-border profile-container">
+			<div className="profile-border profile-container">
 				<div className="side">
 					<div className="side-option">
-						<div  className="tab active" id="a_pro">
+						<div onClick={() => changeTab("Geral")} className="tab active" id="Geral">
 							<FaIcons.FaUser/>
 						</div>
 						<h5>Geral</h5>
 					</div>	
 					<div className="side-option">
-						<div  className="tab" id="a_pwd">
-							<CgIcons.CgGames/>
-						</div>
-						<h5>Últimos Jogos</h5>
-					</div>
-					<div className="side-option">
-						<div  className="tab" id="a_obj">
+						<div onClick={() => changeTab("Inventario")} className="tab" id="Inventario">
 							<GiIcons.GiLightBackpack/>
 						</div>
 						<h5>Inventário</h5>
 					</div>
 					<div className="side-option">
-						<div  className="tab logout">
+						<div onClick={() => changeTab("lastgames")} className="tab" id="lastgames">
+							<CgIcons.CgGames/>
+						</div>
+						<h5>Últimos Jogos</h5>
+					</div>
+					<div className="side-option">
+						<div onClick={run_logout} className="tab logout">
 							<FiIcons.FiLogOut/>
-							
 						</div>
 						<h5>Terminar Sessão</h5>
 					</div>
 				</div>
 
-				{/* <div className="col-lg-3 side">
-					<button
-						className="side-button box up-1"
-						type="button"
-						onClick={geral}
-						id="Geral"
-						style={{ backgroundColor: "#7158e2", color: "white" }}
-					>
-						Geral
-					</button>
-					<button
-						className="side-button-2 box up-1"
-						type="button"
-						onClick={inventario}
-						id="Inventario"
-					>
-						Inventario
-					</button>
-					<button
-						className="side-button-3 box up-1"
-						type="button"
-						onClick={last_games}
-						id="Last_Games"
-					>
-						Ultimos Jogos
-					</button>
-				</div> */}
 				{menuOption === "Geral" && (
-					<div className="col-lg-9 no-margins profile ">
+					<div className="profile ">
 						{user.message !== undefined ? (
 							<p>Perfil Indisponível</p>
 						) : (
 							<>
-								<div className="container row container-hidden top-profile">
-									<div className="col-lg-8 row">
-										<div className="col-lg-4 avatar-geral">
-											<Suspense
-												fallback={<h1>Loading ...</h1>}
+								<div className="top-profile">
+									
+									<div className="avatar-geral">
+										<Suspense
+											fallback={<h1>Loading ...</h1>}
+										>
+											<Avatar
+												skinColor={avatarCustoms.color}
+												hatName={avatarCustoms.hat}
+												shirtName={avatarCustoms.shirt}
+												accesorieName={avatarCustoms.accessorie}
+												trouserName={avatarCustoms.trouser}
+											/>
+										</Suspense>
+										<MdIcons.MdModeEdit size={40} id="edit-icon" className="edit-avatar-icon" title="editar" onClick={() => setMenuOption("Inventario")}/>
+									</div>
+									
+									<div className="account-name">
+										<h1>{user.username}</h1>
+									</div>
+										
+									
+									<div className="profile-level">
+										
+										<h5>
+											{userLevel}
+										</h5>
+								
+										<div className="progress">
+											<div
+												className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
+												role="progressbar"
+												aria-valuenow="75"
+												aria-valuemin="0"
+												aria-valuemax="100"
+												style={{
+													width:
+														getBarProgression(
+															user.account_level
+														) + "%",
+												}}
 											>
-												<Avatar
-													skinColor={avatarCustoms.color}
-													hatName={avatarCustoms.hat}
-													shirtName={avatarCustoms.shirt}
-													accesorieName={avatarCustoms.accessorie}
-													trouserName={avatarCustoms.trouser}
-												/>
-											</Suspense>
-										</div>
-										<div className="col-lg-8">
-											<div className="account-name">
-												<h1>{user.username}</h1>
 											</div>
 										</div>
+										
+										<h5>
+											{userLevel + 1}
+										</h5>
+										
 									</div>
-									<div className="col-lg-4 profile-level">
-										<p className="lvl"> Nivel </p>
-										<div className="lvl-style row">
-											<div className="col-12 col-sm-12 col-lg-2">
-												<p>{userLevel}</p>
-											</div>
-											<div className="col-12 col-sm-12 col-lg-7">
-												<div className="progress">
-													<div
-														className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
-														role="progressbar"
-														aria-valuenow="75"
-														aria-valuemin="0"
-														aria-valuemax="100"
-														style={{
-															width:
-																getBarProgression(
-																	user.account_level
-																) + "%",
-														}}
-													>
-														{/* <span>Dificuldade</span> */}
-													</div>
-												</div>
-											</div>
-											<div className="col-12 col-sm-12 col-lg-2">
-												<p>{userLevel + 1}</p>
-											</div>
-										</div>
-									</div>
+
 								</div>
 								<hr className="solid" />
-								{Object.entries(games_info).map(
-									([key, value]) =>
-										value["toBeDone"] === false && (
-											<div key={key}>
-												<div className="row profile-games">
-													<img
-														src={value["img"]}
-														alt="Info"
-														id={key}
-													/>
-													<div className="game-name">
-														<p>{value["title"]}</p>
-													</div>
+								<div className="profile-games">
+									{Object.entries(games_info).map(
+										([key, value]) =>
+											value["toBeDone"] === false && (
+												<>
+												<div key={key} className="profile-game">
+													
+													<h3 className="game-name">
+														{value["title"]}
+													</h3>
 
 													<img
 														src={
@@ -479,19 +437,19 @@ const Profile = () => {
 														}
 														alt="Rank"
 													/>
-													<p>
+													<h4>
 														{
 															ranks_info[
 																ranks_dict[key]
 															].name
 														}
-													</p>
+													</h4>
 												</div>
-												<hr className="solid solid-pos" />
-											</div>
-										)
-								)}
-								<br></br>
+												</>
+												
+											)
+									)}
+								</div>
 							</>
 						)}
 					</div>
