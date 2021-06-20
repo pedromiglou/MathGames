@@ -106,6 +106,20 @@ module.exports = app => {
      */
     router.get("/:id", [authJwt.verifyToken], tournaments.findOne);
 
+
+    /**
+     * @swagger
+     * /api/tournaments/name/:name:
+     *  get:
+     *    description: Retrieve a single tournament by name
+     *    responses: 
+     *      '200':
+     *         description: Succesfully returned requested tournament    
+     *      '500':
+     *         description: An internal error has occoured
+     */
+     router.get("/name/:name", [authJwt.verifyToken], tournaments.findByName);
+
     /**
      * @swagger
      * /api/tournaments/creator/:id:

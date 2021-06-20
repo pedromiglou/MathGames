@@ -311,12 +311,12 @@ function Tournaments() {
                                         <div className="checkbox-display">
                                             <div className="inner-checkbox">
                                                 <input className="form-control form-control-lg" id="publico" type="checkbox" name="Público"/>
-                                                <label for="publico">Público</label>
+                                                <label htmlFor="publico">Público</label>
                                             </div>
                                             
                                             <div className="inner-checkbox">
                                                 <input className="form-control form-control-lg" id="privado" type="checkbox" name="Privado"/>
-                                                <label for="privado">Privado</label>
+                                                <label htmlFor="privado">Privado</label>
                                             </div>
                                                 
                                             
@@ -333,11 +333,11 @@ function Tournaments() {
                                         <div className="checkbox-display">
                                             <div className="inner-checkbox">
                                                 <input className="form-control form-control-lg" id="rastros" type="checkbox" name="Público"/>
-                                                <label for="rastros">Rastros</label>
+                                                <label htmlFor="rastros">Rastros</label>
                                             </div>
                                             <div className="inner-checkbox">
                                                 <input className="form-control form-control-lg" id="gatoscaes" type="checkbox" name="Privado"/>
-                                                <label for="gatoscaes">Gatos&Cães</label>
+                                                <label htmlFor="gatoscaes">Gatos&Cães</label>
                                             </div>
                                             
                                             

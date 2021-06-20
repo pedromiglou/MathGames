@@ -203,8 +203,6 @@ function GamePage() {
             setSearchingForMatch(false)
             var match = { match_id: msg['match_id'], player1: msg['player1'], player2: msg['player2'] };
             dispatch( addMatch(match) );
-            console.log("VOU HISTORY")
-            console.log(tournament)
             history.push({
                 pathname: "/game/?g="+game_id, 
                 state: {

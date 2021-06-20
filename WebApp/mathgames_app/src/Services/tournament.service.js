@@ -11,6 +11,17 @@ class TournamentService {
         return res.json();
     }
 
+    async getTournamentByName(name) {
+        var url = urlAPI + 'api/tournaments/name/' + name;
+        var res = await fetch(url, {
+            method:'GET',
+            headers:{'Content-type':'application/json',
+            'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        if (res.status !== 200) 
+            return null;
+        return res.json();
+    }
+
     async getTournamentByCreator(creator_id, page, pageSize) {
         var url = urlAPI + 'api/tournaments/creator/' + creator_id + '?page=' + page + '&size=' + pageSize;
         console.log(url);
