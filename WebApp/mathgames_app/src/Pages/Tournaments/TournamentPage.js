@@ -171,10 +171,18 @@ function TournamentPage() {
         setErroCheckIn("")
         var elemento
         var response = await TournamentService.initializeTournament(tournament_id)
+        console.log(response)
         if (response.error) {
-            elemento = document.getElementById("erroStartingTournament")
-            if (elemento !== undefined && elemento !== null)
-                elemento.style.display = "flex"
+            if (response.message) {
+                elemento = document.getElementById("erroMinimumPlayers")
+                if (elemento !== undefined && elemento !== null)
+                    elemento.style.display = "flex"
+            } else {
+                elemento = document.getElementById("erroStartingTournament")
+                if (elemento !== undefined && elemento !== null)
+                    elemento.style.display = "flex"
+            }
+
         } else {
             retrieveInformation()
         }
@@ -186,6 +194,7 @@ function TournamentPage() {
         socket.off("round_start");
 
         var response = await TournamentService.initializeNextRound(tournament_id)
+        
         var elemento
         if (response.error) {
             elemento = document.getElementById("erroInitializeRound")
@@ -244,8 +253,12 @@ function TournamentPage() {
                 if (message === "Tournament is not active")
                     setErroCheckIn("Este torneio não se encontra ativo.")
             } else {
-                let match_id = msg['match_id']
-                history.push("/gamePage?id="+tournament.game_id+"&tid="+tournament.id+"&mid="+match_id)
+                if (msg["message"]) {
+                    setErroCheckIn("Voçe já esta qualificado para round seguinte. Espere que o próximo round seja iniciado.")
+                } else {
+                    let match_id = msg['match_id']
+                    history.push("/gamePage?id="+tournament.game_id+"&tid="+tournament.id+"&mid="+match_id)
+                }
             }
         })
     }
@@ -434,6 +447,8 @@ function TournamentPage() {
         document.getElementById("erroChangingDescription").style.display = "none"
         document.getElementById("erroInitializeRound").style.display = "none"
         document.getElementById("initializeRoundSuccess").style.display = "none"
+        document.getElementById("erroMinimumPlayers").style.display = "none"
+
     }
 
     function hide_message(id) {
@@ -456,58 +471,62 @@ function TournamentPage() {
     return(
         <>
 
-            <div id={"successJoiningTournament"} className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
-                Entrou no torneio com sucesso.
+            <div id={"successJoiningTournament"} className="alert alert-success row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
+                <h4>Entrou no torneio com sucesso.</h4>
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("successJoiningTournament")}></img>
             </div> 
 
+            <div id={"erroMinimumPlayers"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
+                O torneio deve possuir pelo menos 3 jogadores para começar.
+                <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroMinimumPlayers")}></img>
+            </div> 
 
-            <div id={"successLeavingTournament"} className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+            <div id={"successLeavingTournament"} className="alert alert-success row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
                 Saiu do torneio com sucesso.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("successLeavingTournament")}></img>
             </div> 
             
 
-            <div id={"erroJoinningTournament"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
-                Occoreu um erro ao tentar entrar no torneio. Operação não foi concluída.
+            <div id={"erroJoinningTournament"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
+                Ocoreu um erro ao tentar entrar no torneio. Operação não foi concluída.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroJoinningTournament")}></img>
             </div> 
 
 
-            <div id={"erroLeavingTournament"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
-                Occoreu um erro ao tentar sair do torneio. Operação não foi concluída.
+            <div id={"erroLeavingTournament"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
+                Ocoreu um erro ao tentar sair do torneio. Operação não foi concluída.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroLeavingTournament")}></img>
             </div> 
 
-            <div id={"erroRemovingPlayer"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
-                Occoreu um erro ao tentar remover o jogador. Operação não foi concluída.
+            <div id={"erroRemovingPlayer"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
+                Ocoreu um erro ao tentar remover o jogador. Operação não foi concluída.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroRemovingPlayer")}></img>
             </div> 
 
 
-            <div id={"erroRemovingTournament"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
-                Occoreu um erro ao tentar remover o torneio. Operação não foi concluída.
+            <div id={"erroRemovingTournament"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
+                Ocoreu um erro ao tentar remover o torneio. Operação não foi concluída.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroRemovingTournament")}></img>
             </div> 
             
-            <div id={"erroTournamentNotFull"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+            <div id={"erroTournamentNotFull"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
                 O Torneio precisa de estar cheio para ser iniciado. Aguarde que mais utilizadores se juntem!
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroTournamentNotFull")}></img>
             </div>
 
-            <div id={"erroStartingTournament"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
-                Occoreu um erro ao tentar iniciar o torneio. Operação não foi concluída.
+            <div id={"erroStartingTournament"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
+                Ocoreu um erro ao tentar iniciar o torneio. Operação não foi concluída.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroStartingTournament")}></img>
             </div>
 
-            <div id={"erroChangingDescription"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
-                Occoreu um erro ao tentar alterar a descrição do torneio. Operação não foi concluída.
+            <div id={"erroChangingDescription"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
+                Ocoreu um erro ao tentar alterar a descrição do torneio. Operação não foi concluída.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroChangingDescription")}></img>
             </div>
             
 
-            <div id={"erroInitializeRound"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
-                Occoreu um erro ao tentar iniciar a fase seguinte do torneio. Operação não foi concluída.
+            <div id={"erroInitializeRound"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
+                Ocoreu um erro ao tentar iniciar a fase seguinte do torneio. Operação não foi concluída.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroInitializeRound")}></img>
             </div>
 
@@ -517,7 +536,7 @@ function TournamentPage() {
                 </div> : null}
             
 
-            <div id={"initializeRoundSuccess"} className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+            <div id={"initializeRoundSuccess"} className="alert alert-success row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
                 Ronda iniciada com sucesso!
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("initializeRoundSuccess")}></img>
             </div>

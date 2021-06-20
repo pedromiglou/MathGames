@@ -141,7 +141,10 @@ class TournamentService {
             body: JSON.stringify(tournament)
         });
         if (res.status !== 200) {
-            return {error: true}
+            if (res.status === 404)
+                return {error: true, message: "The tournament should have atleast 3 players"}
+            else
+                return {error: true}
         }
         return {error: false};
 
