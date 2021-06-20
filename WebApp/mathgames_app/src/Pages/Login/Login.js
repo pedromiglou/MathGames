@@ -135,48 +135,48 @@ function Login() {
 
             <div className="container container-login">
 
-            <div id={"erroBan"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}> 
+            <div id={"erroBan"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}> 
                 Esta conta encontra-se banida.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroBan")}></img>
             </div> 
 
-             <div id={"erroLogin"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}> 
+            <div id={"erroLogin"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}> 
                 Ocorreu um erro no seu processo login. As suas credênciais são inválidas. 
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroLogin")}></img>
-             </div> 
+            </div> 
 
-            <div id={"erroRegisto"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}} >
+            <div id={"erroRegisto"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}} >
                 Erro. Por favor efetue novamente.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroRegisto")}></img>
             </div>
 
-            <div id={"erroNamesAlreadyTakenRegisto"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+            <div id={"erroNamesAlreadyTakenRegisto"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
                 Erro. O nome que introduziu já se encontra em utilização.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroNamesAlreadyTakenRegisto")}></img>
             </div>
 
-            <div id={"erroEmailAlreadyTakenRegisto"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+            <div id={"erroEmailAlreadyTakenRegisto"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
                 Erro. O email que introduziu já se encontra em utilização.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroEmailAlreadyTakenRegisto")}></img>
             </div>
             
-            <div id={"erroPasswordRegisto"} className="alert alert-danger" role="alert" style={{margin:"10px auto", textAlign:"center", fontSize:"22px", display:"none"}}>
+            <div id={"erroPasswordRegisto"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
                 Palavra-passe inválida. Palavra-passe tem que ter no mínimo 5 caracteres, um número e uma letra.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroPasswordRegisto")}></img>
             </div> 
 
 
-            <div id={"erroUsernameInvalido"}  className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+            <div id={"erroUsernameInvalido"}  className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
                 Username inválido. Username tem que ter no minimo 3 caracteres, e um maximo de 20.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroUsernameInvalido")}></img>
              </div> 
 
-            <div id={"erroEmailInvalido"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+            <div id={"erroEmailInvalido"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
                 Email inválido. Insira um email válido.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroEmailInvalido")}></img>
             </div>
 
-            <div id={"sucessoRegisto"} className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+            <div id={"sucessoRegisto"} className="alert alert-success row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
                 A sua conta foi criada com sucesso! 
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("sucessoRegisto")}></img>
             </div> 

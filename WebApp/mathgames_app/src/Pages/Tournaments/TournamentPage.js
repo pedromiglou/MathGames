@@ -481,62 +481,62 @@ function TournamentPage() {
     return(
         <>
 
-            <div id={"successJoiningTournament"} className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
-                Entrou no torneio com sucesso.
+            <div id={"successJoiningTournament"} className="alert alert-success row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
+                <h4>Entrou no torneio com sucesso.</h4>
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("successJoiningTournament")}></img>
             </div> 
 
-            <div id={"erroMinimumPlayers"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+            <div id={"erroMinimumPlayers"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
                 O torneio deve possuir pelo menos 3 jogadores para começar.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroMinimumPlayers")}></img>
             </div> 
 
-            <div id={"successLeavingTournament"} className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+            <div id={"successLeavingTournament"} className="alert alert-success row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
                 Saiu do torneio com sucesso.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("successLeavingTournament")}></img>
             </div> 
             
 
-            <div id={"erroJoinningTournament"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
-                Occoreu um erro ao tentar entrar no torneio. Operação não foi concluída.
+            <div id={"erroJoinningTournament"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
+                Ocoreu um erro ao tentar entrar no torneio. Operação não foi concluída.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroJoinningTournament")}></img>
             </div> 
 
 
-            <div id={"erroLeavingTournament"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
-                Occoreu um erro ao tentar sair do torneio. Operação não foi concluída.
+            <div id={"erroLeavingTournament"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
+                Ocoreu um erro ao tentar sair do torneio. Operação não foi concluída.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroLeavingTournament")}></img>
             </div> 
 
-            <div id={"erroRemovingPlayer"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
-                Occoreu um erro ao tentar remover o jogador. Operação não foi concluída.
+            <div id={"erroRemovingPlayer"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
+                Ocoreu um erro ao tentar remover o jogador. Operação não foi concluída.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroRemovingPlayer")}></img>
             </div> 
 
 
-            <div id={"erroRemovingTournament"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
-                Occoreu um erro ao tentar remover o torneio. Operação não foi concluída.
+            <div id={"erroRemovingTournament"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
+                Ocoreu um erro ao tentar remover o torneio. Operação não foi concluída.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroRemovingTournament")}></img>
             </div> 
             
-            <div id={"erroTournamentNotFull"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+            <div id={"erroTournamentNotFull"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
                 O Torneio precisa de estar cheio para ser iniciado. Aguarde que mais utilizadores se juntem!
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroTournamentNotFull")}></img>
             </div>
 
-            <div id={"erroStartingTournament"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
-                Occoreu um erro ao tentar iniciar o torneio. Operação não foi concluída.
+            <div id={"erroStartingTournament"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
+                Ocoreu um erro ao tentar iniciar o torneio. Operação não foi concluída.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroStartingTournament")}></img>
             </div>
 
-            <div id={"erroChangingDescription"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
-                Occoreu um erro ao tentar alterar a descrição do torneio. Operação não foi concluída.
+            <div id={"erroChangingDescription"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
+                Ocoreu um erro ao tentar alterar a descrição do torneio. Operação não foi concluída.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroChangingDescription")}></img>
             </div>
             
 
-            <div id={"erroInitializeRound"} className="alert alert-danger" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
-                Occoreu um erro ao tentar iniciar a fase seguinte do torneio. Operação não foi concluída.
+            <div id={"erroInitializeRound"} className="alert alert-danger row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
+                Ocoreu um erro ao tentar iniciar a fase seguinte do torneio. Operação não foi concluída.
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("erroInitializeRound")}></img>
             </div>
 
@@ -546,7 +546,7 @@ function TournamentPage() {
                 </div> : null}
             
 
-            <div id={"initializeRoundSuccess"} className="alert alert-success" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none"}}>
+            <div id={"initializeRoundSuccess"} className="alert alert-success row" role="alert" style={{margin:"10px auto", width: "90%", textAlign:"center", fontSize:"22px", display:"none", justifyContent: 'center'}}>
                 Ronda iniciada com sucesso!
                 <img src={process.env.PUBLIC_URL + "/images/crossicon.png"}  style={{width: "3%", height: "auto", marginLeft:"8px"}} alt={"Close Icon"} onClick={() => hide_message("initializeRoundSuccess")}></img>
             </div>
@@ -687,13 +687,13 @@ function TournamentPage() {
                         <div className="tournament-rules">
                             <div className="details-edit">
                                 <h1>Descrição do Torneio</h1>
-                                {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
+                                {tournament.creator === current_user.id &&
                                     <MdIcons.MdModeEdit size={40} id="edit-icon" className="edit-icon" title="editar" onClick={() => make_fields_editable()}/>
                                 }
                             </div>
                             <div className="description-t" >
                                 <textarea  className="description-input" id="tournament-details" readOnly placeholder={tournament.description}></textarea>
-                                {tournament.creator === current_user.id && tournament.status === "PREPARING" &&
+                                {tournament.creator === current_user.id &&
                                     <>
                                     <div className="buttons-description-tournament" id="action-buttons" style={{display:"none"}}>
                                         <div id="button-join-tournament" onClick={() => {make_fields_not_editable("add"); changeDescription() } } className="button-clicky join-tournament description-c">
@@ -769,13 +769,20 @@ function TournamentPage() {
 
                             {tournament.creator === current_user.id && tournament.status === "STARTED" &&
                                 <>
-                                <button onClick={() => initializeNextRound()}>Iniciar Fase Seguinte</button>
+                                <div id="button-join-tournament" onClick={() => initializeNextRound()} className="button-clicky join-tournament">
+                                    <span className="shadow"></span>
+                                    <span className="front">Iniciar Fase Seguinte</span>
+                                </div>
+                                {/* <button onClick={() => initializeNextRound()}>Iniciar Fase Seguinte</button> */}
                                 </>
                             }
 
                             {players.some(e => (e.id === current_user.id && e.eliminated === false)) && tournament.status === "STARTED" &&
                                 <>
-                                <button onClick={() => checkInForGame()}>Check In</button>
+                                <div id="button-join-tournament" onClick={() => checkInForGame()} className="button-clicky join-tournament">
+                                    <span className="shadow"></span>
+                                    <span className="front">Check In</span>
+                                </div>
                                 </>
                             }
                         </div>

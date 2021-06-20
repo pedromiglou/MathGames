@@ -48,7 +48,6 @@
     width: min(80%, 350px);
     min-width: 100px;
     height: auto;
-    align-items: center;
 }
 
 .logo{
@@ -68,6 +67,22 @@
     background-color: rgb(255, 255, 255);
     border-radius: 50%;
     padding: 0.2em;
+}
+
+.navbar-icon-active{
+    font-size: 42px;
+    color: rgb(255, 0, 0) !important;
+    cursor: pointer;
+    background-color: rgb(255, 255, 255);
+    border-radius: 50%;
+    padding: 0.2em;
+    border-color: black;
+    border: 2px solid white;
+}
+
+.notifications-animation {
+    -webkit-animation: notification-alert 3s infinite;
+    animation: notification-alert 3s infinite;
 }
 
 .navbar-icon:hover{
@@ -379,7 +394,14 @@ span.icons-noname{
     75%  {opacity: 0.6;}
     100% {opacity: 1;}
 }
-
+@keyframes notification-alert {
+    0% {
+        opacity: 0.1;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 @keyframes change-color-background {
     100%{
         background-color: #075C7A;
@@ -447,7 +469,10 @@ span.icons-noname{
         align-items: center;
     }
 
-   
+    .nav-logo{
+        margin: 0 auto !important;
+    }
+       
 }
 
 
