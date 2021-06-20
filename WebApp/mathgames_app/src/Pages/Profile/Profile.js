@@ -12,6 +12,11 @@ import AuthService from "../../Services/auth.service";
 import UserService from "../../Services/user.service";
 import { Modal, Button } from "react-bootstrap";
 
+import * as GiIcons from 'react-icons/gi';
+import * as FaIcons from 'react-icons/fa';
+import * as CgIcons from 'react-icons/cg';
+import * as FiIcons from 'react-icons/fi';
+
 const Profile = () => {
 	const [menuOption, setMenuOption] = useState("Geral");
 	const [invOption, setInvOption] = useState("Chapeus");
@@ -325,7 +330,35 @@ const Profile = () => {
 				</div>
 			</div>
 			<div className="row profile-border profile-container">
-				<div className="col-lg-3 side">
+				<div className="side">
+					<div className="side-option">
+						<div  className="tab active" id="a_pro">
+							<FaIcons.FaUser/>
+						</div>
+						<h5>Geral</h5>
+					</div>	
+					<div className="side-option">
+						<div  className="tab" id="a_pwd">
+							<CgIcons.CgGames/>
+						</div>
+						<h5>Últimos Jogos</h5>
+					</div>
+					<div className="side-option">
+						<div  className="tab" id="a_obj">
+							<GiIcons.GiLightBackpack/>
+						</div>
+						<h5>Inventário</h5>
+					</div>
+					<div className="side-option">
+						<div  className="tab logout">
+							<FiIcons.FiLogOut/>
+							
+						</div>
+						<h5>Terminar Sessão</h5>
+					</div>
+				</div>
+
+				{/* <div className="col-lg-3 side">
 					<button
 						className="side-button box up-1"
 						type="button"
@@ -351,7 +384,7 @@ const Profile = () => {
 					>
 						Ultimos Jogos
 					</button>
-				</div>
+				</div> */}
 				{menuOption === "Geral" && (
 					<div className="col-lg-9 no-margins profile ">
 						{user.message !== undefined ? (

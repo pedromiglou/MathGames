@@ -1,28 +1,73 @@
 .profile-container {
-    height: 80%;
-    width: 80%;
-    margin-top: 80px;
+    margin: 3em auto 0 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 5%;
 }
 
-.side {
-    padding: 0%;
-    margin: 0%;
-
-/*     transform: translateY(1000px);
+.side{
+    /*     transform: translateY(1000px);
     animation: slideInL 0.8s ease forwards 0.5s;
-  */
+    */
+    flex: 1 1 20%;
+    height: 110%;
+    background: white;
+    box-shadow: 3px 3px 10px rgba(119,119,119,0.5);
+    border: 2px solid #00d3f8;
+    border-radius: 50px;
+    padding: 2em 0;
 
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 2em;
 }
 
-.side-button {
-    /* 	width: 100%;
-	background-color: rgb(63, 63, 63);
-	height: 15%;
-	padding: 0%;
-	margin: 0%;
-	color: white;
-	text-align: left; */
+.side-option{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.side-option h5{
+    color: #00d3f8;
+}
+
+.tab{
+    padding: 1em;
+    transition: all 0.3s ease-in-out;
+    border-radius: 50%;
+}
+
+.tab:hover{
+    cursor: pointer;
+    background-color: #00d3f8;
+}
+
+.tab.active{
+    background-color: #00d3f8;
+}
+
+.tab.active svg{
+    color: white;
+}
+
+.tab svg{
+    color: #00d3f8;
+    font-size: 3em;
+}
+
+.tab:hover svg{
+    color: white;
+}
+
+
+/* .side-button {
     position: fixed !important;
     width: 20%;
     background-color: rgb(63, 63, 63);
@@ -68,7 +113,7 @@
     padding: 0%;
     margin: 0%;
     color: white;
-}
+} */
 
 hr.solid {
     margin-top: 50px;

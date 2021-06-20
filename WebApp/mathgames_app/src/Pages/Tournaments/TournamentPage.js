@@ -736,13 +736,20 @@ function TournamentPage() {
 
                             {tournament.creator === current_user.id && tournament.status === "STARTED" &&
                                 <>
-                                <button onClick={() => initializeNextRound()}>Iniciar Fase Seguinte</button>
+                                <div id="button-join-tournament" onClick={() => initializeNextRound()} className="button-clicky join-tournament">
+                                    <span className="shadow"></span>
+                                    <span className="front">Iniciar Fase Seguinte</span>
+                                </div>
+                                {/* <button onClick={() => initializeNextRound()}>Iniciar Fase Seguinte</button> */}
                                 </>
                             }
 
                             {players.some(e => (e.id === current_user.id && e.eliminated === false)) && tournament.status === "STARTED" &&
                                 <>
-                                <button onClick={() => checkInForGame()}>Check In</button>
+                                <div id="button-join-tournament" onClick={() => checkInForGame()} className="button-clicky join-tournament">
+                                    <span className="shadow"></span>
+                                    <span className="front">Check In</span>
+                                </div>
                                 </>
                             }
                         </div>
