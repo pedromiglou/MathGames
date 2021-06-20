@@ -1,45 +1,31 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
 import {
-	ScrollView,
 	Text,
 	Dimensions,
 	StyleSheet,
 	View,
 	Modal,
-	TextInput,
 	TouchableOpacity
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import UserService from "../services/user.service";
-import { Fontisto } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
-import userService from "../services/user.service";
-import { readData } from "../utilities/AsyncStorage";
-import { Picker } from "@react-native-picker/picker";
-import { Feather } from "@expo/vector-icons";
+import socket from "../utilities/Socket";
 
 const win = Dimensions.get("window");
 
 function AddFriendModal(props) {
 
 	function sendFriendRequest(sender, receiver, not_type) {
-		UserService.send_notification_request(
-			sender,
-			receiver,
-			not_type,
-			props.user.token
-		);
+		var notification_text = props.user.username + " enviou-te um pedido de amizade.";
+		socket.emit("new_notification", {"sender": sender, "receiver": receiver,
+					notification_type: not_type, notification_text: notification_text});
 	}
 
 	return (
 		<Modal
 			animationType="slide"
 			transparent={true}
-			visible={props.modalVisible}
+			visible={props.visible}
 			onRequestClose={() => {
-                props.toggleModalVisibility();
+                props.setVisible(false);
 			}}  
 		>
 			<View style={styles.centeredView}>
@@ -52,14 +38,13 @@ function AddFriendModal(props) {
 					<View
 						style={{
 							flexDirection: "row",
-							justifyContent: "center",
 							alignItems: "center",
 						}}
 					>
 						<TouchableOpacity
 							style={[styles.buttonModal, styles.buttonOpen]}
 							onPress={() => {
-                                props.toggleModalVisibility()
+                                props.setVisible(false);
 								sendFriendRequest(props.user.id, props.modalUserId, "F");
 							}}
 						>
@@ -67,7 +52,7 @@ function AddFriendModal(props) {
 						</TouchableOpacity>
 						<TouchableOpacity
 							style={[styles.buttonModal, styles.buttonCancel]}
-							onPress={() => props.toggleModalVisibility()}
+							onPress={() => props.setVisible(false)}
 						>
 							<Text style={styles.textStyle}>Cancelar</Text>
 						</TouchableOpacity>

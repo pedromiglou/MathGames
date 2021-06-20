@@ -16,30 +16,16 @@ function GiveUpModal(props) {
 			<View style={styles.modalView}>
 				<Text style={styles.modalTitle}>Aviso</Text>
 				<Text style={styles.modalText}>
-					Sair da página irá resultar em derrota imediata. Queres sair?
+					{props.text}
 				</Text>
-				<View
-					style={{
-						flexDirection: "row",
-						alignItems: "center",
-					}}
-				>
+				<View style={{ alignItems: "center" }}>
 					<TouchableOpacity
 						style={[styles.buttonModal, styles.buttonOpen]}
 						onPress={() => {
 							props.closeAlert();
 						}}
 					>
-						<Text style={styles.textStyle}>Cancelar</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						style={[styles.buttonModal, styles.buttonCancel]}
-						onPress={() => {
-							props.leaveGame();
-							props.closeAlert()}
-						}
-					>
-						<Text style={styles.textStyle}>Sair</Text>
+						<Text style={styles.textStyle}>Fechar Aviso</Text>
 					</TouchableOpacity>
 				</View>
 			</View>
@@ -83,12 +69,6 @@ const styles = StyleSheet.create({
 		width: win.width / 3,
 		marginLeft: win.width / 8,
 		marginRight: 20,
-	},
-
-	buttonCancel: {
-		backgroundColor: "red",
-		width: win.width / 3,
-		marginRight: win.width / 8,
 	},
 
 	textStyle: {

@@ -1,24 +1,15 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
-	ScrollView,
 	Text,
 	Dimensions,
 	StyleSheet,
 	View,
 	Modal,
-	TextInput,
 	TouchableOpacity
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import UserService from "../services/user.service";
-import { Fontisto } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
-import userService from "../services/user.service";
-import { readData } from "../utilities/AsyncStorage";
 import { Picker } from "@react-native-picker/picker";
-import { Feather } from "@expo/vector-icons";
 
 const win = Dimensions.get("window");
 
@@ -35,9 +26,9 @@ function ReportUserModal(props) {
 		<Modal
 			animationType="slide"
 			transparent={true}
-			visible={props.modalVisible}
+			visible={props.visible}
 			onRequestClose={() => {
-				props.toggleModalVisibility();
+				props.setVisible(false);
 			}}
 		>
 			<View style={styles.centeredView}>
@@ -63,14 +54,13 @@ function ReportUserModal(props) {
 					<View
 						style={{
 							flexDirection: "row",
-							justifyContent: "center",
 							alignItems: "center",
 						}}
 					>
 						<TouchableOpacity
 							style={[styles.buttonModal, styles.buttonOpen]}
 							onPress={() => {
-								props.toggleModalVisibility();
+								props.setVisible(false);
 								report_player(props.modalUserId);
                                 setSelectedMotive("motivo");
 							}}
@@ -80,7 +70,7 @@ function ReportUserModal(props) {
 						<TouchableOpacity
 							style={[styles.buttonModal, styles.buttonCancel]}
 							onPress={() => {
-								props.toggleModalVisibility();
+								props.setVisible(false);
                                 setSelectedMotive("motivo");
 							}}
 						>

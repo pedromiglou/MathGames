@@ -58,7 +58,7 @@ function ChooseGame({ navigation }) {
 													{X.title}
 												</Text>
 												<Text style={styles.title}>
-													{X.age}
+													+{X.age}
 												</Text>
 											</View>
 
@@ -111,7 +111,7 @@ function ChooseGame({ navigation }) {
 													{X.title}
 												</Text>
 												<Text style={styles.title}>
-													{X.age}
+													+{X.age}
 												</Text>
 											</View>
 

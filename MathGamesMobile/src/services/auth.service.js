@@ -1,6 +1,7 @@
 import {urlAPI} from "./../data/data";
 import {saveData,readData} from "./../utilities/AsyncStorage";
 import { Alert } from 'react-native';
+import socket from "../utilities/Socket";
 
 class AuthService {
     async login(username, password) {
@@ -20,6 +21,7 @@ class AuthService {
 
         if(json.id) {
             saveData("user_id", String(json.id));
+            socket.emit("new_user", {"user_id": json.id});
             saveData("username", String(json.username));
             saveData("user", JSON.stringify(json));
             return json;

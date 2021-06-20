@@ -21,6 +21,7 @@ function Game({ navigation }) {
 	var gameMode;
 	var user_id;
 
+    //evento ao sair do screen
     useEffect(() => {
         const unsubscribe = navigation.addListener('blur', () => {
             //if gameMode online and game has not started leave matchmaking
@@ -44,6 +45,7 @@ function Game({ navigation }) {
         return unsubscribe;
     }, [navigation]);
 
+    //evento para impedir que saia logo do screen
     useEffect(() =>
         navigation.addListener('beforeRemove', (e) => {
             e.preventDefault();
@@ -103,8 +105,8 @@ function Game({ navigation }) {
                         saveData('player2', msg['player2']);
                         readData('game').then(game=>{
                             game = JSON.parse(game);
-                            setReady(game.id);
                             saveData("ready", game.id);
+                            setReady(game.id);
                         });
                     });
                 });
@@ -136,8 +138,8 @@ function Game({ navigation }) {
                 saveData('player2', msg['player2']);
                 readData('game').then(game=>{
                     game = JSON.parse(game);
-                    setReady(game.id);
                     saveData("ready", game.id);
+                    setReady(game.id);
                 });
             });
 
@@ -154,13 +156,13 @@ function Game({ navigation }) {
                             saveData('match_id', String(msg['match_id']));
                             saveData('player1', msg['player1']);
                             saveData('player2', msg['player2']);
-                            setReady(game_id);
                             saveData("ready", game_id);
+                            setReady(game_id);
                         });
                     });
                 } else {
-                    setReady(game_id);
                     saveData("ready", game_id);
+                    setReady(game_id);
                 }
             });
 

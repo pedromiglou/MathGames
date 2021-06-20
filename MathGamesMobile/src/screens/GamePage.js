@@ -57,7 +57,7 @@ function GamePage({navigation}) {
 
         <View style={{flexDirection: "row"}}>
           <View style={{width: win.width/2}}>
-            <Text style={styles.characteristics}>Idade: {game.age}</Text>
+            <Text style={styles.characteristics}>Idade: +{game.age}</Text>
             <Text style={styles.characteristics}>Dificuldade: {game.dificulty_label}</Text>
           </View>
           

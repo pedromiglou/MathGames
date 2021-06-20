@@ -30,6 +30,7 @@ import Notifications from './screens/Notifications';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 import CustomisableAlert from "react-native-customisable-alert";
+import socket from './utilities/Socket';
 
 export const navigationRef = React.createRef();
 export function openDrawer(routeName, params) {
@@ -148,10 +149,11 @@ function App() {
       username = "Guest_"+uuidv4();
       saveData('user_id', username);
       saveData('username', username);
+      socket.emit("new_user", {"user_id": username});
     } else {
       setUsername(username.slice(1, -1));
     }
-  })
+  });
 
   if (!loaded) {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
@@ -206,7 +208,7 @@ function App() {
             {loggedIn && <Drawer.Screen name="Notificações" component={NotificationsNav} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Notificações</Text>)}}/>}
             <Drawer.Screen name="Sobre Nós" component={AboutUs} options={{
-                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Sobre nós</Text>)}}/>
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Quem somos</Text>)}}/>
           </Drawer.Navigator>
         }
       </NavigationContainer>

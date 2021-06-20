@@ -6,49 +6,72 @@ import UserService from "./../services/user.service";
 import { Feather } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { readData, saveData } from '../utilities/AsyncStorage';
-import { EvilIcons } from '@expo/vector-icons';
+import socket from '../utilities/Socket';
 
 const win = Dimensions.get('window');
 
 function Notifications({ navigation }) {
     const [notifications, setNotifications] = useState([]);
-    useEffect(() => {
-        let mounted = true;
-        readData("user").then(loggedUser=>{
-            loggedUser=JSON.parse(JSON.parse(loggedUser));
-            UserService.getNotifications(loggedUser.id, loggedUser.token).then(res=>{
-                console.log(res);
-                setNotifications(res);
-            });
-        });
 
-
-        const interval = setInterval(() => {
-            console.log("Notification Interval ...")
-            readData("user").then(loggedUser=>{
-                loggedUser=JSON.parse(JSON.parse(loggedUser));
-                UserService.getNotifications(loggedUser.id, loggedUser.token).then(res=>{
-                    console.log(res)
-                    if( res !== notifications)
-                        setNotifications(res);
-                });
-            });
-        }, 5000);
-
-        return () => {
-            mounted=false
-            clearInterval(interval);
-        }
-    
-    }, []);
-    
-    function accept_game(notification) {
+    function reloadNotifications() {
       readData("user").then(user=>{
-        user=JSON.parse(JSON.parse(user));
+        user = JSON.parse(JSON.parse(user));
+        UserService.getNotifications(user.id, user.token).then(response=>{
+          if ( response != null ) {
+            setNotifications(response);
+          }
+        });
+      });
+    }
+
+    useEffect(() => {
+      let mounted = true;
+      reloadNotifications();
+
+      return () => {
+        mounted = false;
+      };
+    }, []);
+
+    socket.off("reload_notifications")
+    
+    socket.on("reload_notifications", () => {
+      reloadNotifications();
+    });
+    
+    function process_notification(notification) {
+      readData("user").then(user=> {
+          user = JSON.parse(JSON.parse(user));
+          UserService.delete(notification.id, user.token);
+
+          /* Notification_Type List:
+            - F -> Enviou pedido de amizade
+            - A -> Aceitou pedido de amizade
+            - N -> Removeu da lista de amigos
+            - T -> Convidou para participar no torneio
+            - P -> Convidou-te para uma partida
+            - R -> Iniciou um novo round do torneio
+          */
+          if (notification.notification_type==="F") {
+            UserService.accept_friendship(notification, user.token);
+            var notification_text = user.username + " aceitou o teu pedido de amizade."
+            socket.emit("new_notification", {"sender": user.id, "receiver": notification.sender_user.sender_id, "notification_type": "A", "notification_text": notification_text});
+            
+          } else if (notification.notification_type==="P") {
+            saveData("opponent", notification.sender_user.sender_id);
+            saveData("gameMode", "Invited").then(()=>navigation.navigate("Game"));
+          }
+          reloadNotifications();
+      });
+    }
+
+    function delete_notification(notification) {
+      readData("user").then(user=> {
+        user = JSON.parse(JSON.parse(user));
         UserService.delete(notification.id, user.token);
-        saveData("opponent", notification.sender_user.sender_id);
-        saveData("gameMode", "Invited").then(()=>navigation.navigate("Game"));
-      })
+
+        reloadNotifications();
+    });
     }
     
     return (
@@ -60,42 +83,20 @@ function Notifications({ navigation }) {
         </View>
         <ScrollView style={{minHeight: win.height, minWidth: win.width}}>
             {notifications.map(notification => {
-              if (notification.notification_type==="F") {
-                return (
-                <View key={notification.id} style={{flex: 1, width: win.width, borderColor: 'white', borderBottomWidth: 2}}>
-                    <Text style={styles.item} >Pedido de amizade de {notification.sender_user.sender}</Text>
-                    <View style={{flex:1 , flexDirection: "row", justifyContent: 'center', paddingBottom: 20}}>
-                        <TouchableOpacity style={styles.button} onPress={()=> {
-                            readData("user").then(user=> {
-                                user = JSON.parse(JSON.parse(user));
-
-                                UserService.accept_friendship(notification, user.token);
-                            })
-                        }}>
-                            <Feather name="check-circle" size={34} color="lime" />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.button} onPress={()=>{}}>
-                            <Feather name="x-circle" size={34} color="red" />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                );
-              }
-              if (notification.notification_type==="P") {
-                  return (
-                  <View key={notification.id} style={{flexDirection: "row", width: win.width}}>
-                        <Text style={styles.item} >Convite de {notification.sender_user.sender}</Text>
-                        <View style={{flex:1 , flexDirection: "row", justifyContent: 'center', paddingBottom: 20}}>
-                            <TouchableOpacity style={styles.button} onPress={()=>accept_game(notification)} >
-                                <Feather name="check-circle" size={34} color="lime" />
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.button} onPress={()=>{}}>
-                                <Feather name="x-circle" size={34} color="red" />
-                            </TouchableOpacity>
-                        </View>
+              return (
+              <View key={notification.id} style={{flex: 1, width: win.width, borderColor: 'white', borderBottomWidth: 2}}>
+                  <Text style={styles.item} >{notification.notification_text}</Text>
+                  <View style={{flex:1 , flexDirection: "row", justifyContent: 'center', paddingBottom: 20}}>
+                      {(notification.notification_type==="F"||notification.notification_type==="P")&&
+                      <TouchableOpacity style={styles.button} onPress={()=>process_notification(notification)}>
+                          <Feather name="check-circle" size={34} color="lime" />
+                      </TouchableOpacity>}
+                      <TouchableOpacity style={styles.button} onPress={()=>delete_notification(notification)}>
+                          <Feather name="x-circle" size={34} color="red" />
+                      </TouchableOpacity>
                   </View>
-                  );
-              }
+              </View>
+              );
             })}
         </ScrollView>
       </View>
@@ -105,13 +106,6 @@ function Notifications({ navigation }) {
 export default Notifications;
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 40,
-    padding: 10,
-    textAlign:'center',
-    fontFamily: 'BubblegumSans',
-    color: 'white'
-  },
   item: {
     fontSize: 30,
     padding: 10,

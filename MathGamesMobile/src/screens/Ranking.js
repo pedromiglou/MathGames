@@ -6,18 +6,14 @@ import {
 	Dimensions,
 	StyleSheet,
 	View,
-	Modal,
 	TextInput,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import UserService from "../services/user.service";
-import { Fontisto } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-import userService from "../services/user.service";
 import { readData } from "../utilities/AsyncStorage";
-import { Picker } from "@react-native-picker/picker";
 import { Feather } from "@expo/vector-icons";
 
 import AddFriendModal from "../components/AddFriendModal";
@@ -36,8 +32,6 @@ function Ranking({ navigation }) {
 	const [modalUserId, setModalUserId] = useState("");
 	const [modalUsername, setModalUsername] = useState("");
 	const [modalVisible, setModalVisible] = useState(false);
-
-	const [selectedMotive, setSelectedMotive] = useState(null);
 
 	const [searchVisibility, setSearchVisibility] = useState(false);
 	const [inputText, onChangeInputText] = useState(null);
@@ -95,14 +89,6 @@ function Ranking({ navigation }) {
 			const usersFoundInFecth = result.users;
 			setUsersFound(usersFoundInFecth);
 		});
-	}
-
-	function toggleModalVisibility() {
-		setModalVisible(!modalVisible);
-	}
-
-	function settingFriends(friends) {
-		setFriends(friends);
 	}
 
 	var rankPosition = 1;
@@ -396,31 +382,31 @@ function Ranking({ navigation }) {
 
 				{modalOperation === "report" && (
 					<ReportUserModal
-						toggleModalVisibility={toggleModalVisibility}
+						setVisible={setModalVisible}
 						modalUserId={modalUserId}
 						modalUsername={modalUsername}
 						user={user}
-						modalVisible={modalVisible}
+						visible={modalVisible}
 					/>
 				)}
 				{modalOperation === "add" && (
 					<AddFriendModal
-						toggleModalVisibility={toggleModalVisibility}
+						setVisible={setModalVisible}
 						modalUserId={modalUserId}
 						modalUsername={modalUsername}
 						user={user}
-						modalVisible={modalVisible}
+						visible={modalVisible}
 					/>
 				)}
 				{modalOperation === "remove" && (
 					<RemoveFriendModal
-						toggleModalVisibility={toggleModalVisibility}
-						settingFriends={settingFriends}
+						setVisible={setModalVisible}
+						setFriends={setFriends}
 						modalUserId={modalUserId}
 						modalUsername={modalUsername}
 						friends={friends}
 						user={user}
-						modalVisible={modalVisible}
+						visible={modalVisible}
 					/>
 				)}
 			</ScrollView>
