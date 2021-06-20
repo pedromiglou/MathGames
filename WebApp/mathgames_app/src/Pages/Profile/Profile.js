@@ -309,15 +309,6 @@ const Profile = () => {
 
 	return (
 		<div className="hero-container">
-			<div className="header">
-				<div className="background">
-					<div className="cube-profile"></div>
-					<div className="cube-profile"></div>
-					<div className="cube-profile"></div>
-					<div className="cube-profile"></div>
-					<div className="cube-profile"></div>
-				</div>
-			</div>
 			<div className="profile-border profile-container">
 				<div className="side">
 					<div className="side-option">
@@ -445,7 +436,7 @@ const Profile = () => {
 				)}
 
 				{menuOption === "Inventario" && (
-					<div className="col-lg-9 no-margins inventory">
+					<div className="inventory">
 						<div className="row no-margins">
 							<div className="col-lg-5 container">
 								<div className="avatar-display">
@@ -458,197 +449,6 @@ const Profile = () => {
 										trouserName={avatarCustoms.trouser}
 									/>
 								</div>
-								<h3 className="centered">Cor de pele</h3>
-								<div className="row">
-									<div className="col-xl-6 col-lg-12 col-md-12 col-sm-12 no-margin">
-										<div
-											className="container skin-pallette-2"
-											id="skin-pallette-1"
-										>
-											<span
-												className="dot d1"
-												onClick={() =>
-													changeColor("#7B241C")
-												}
-											></span>
-											<span
-												className="dot d2"
-												onClick={() =>
-													changeColor("#C0392B")
-												}
-											></span>
-											<span
-												className="dot d3"
-												onClick={() =>
-													changeColor("#D98880")
-												}
-											></span>
-										</div>
-										<div
-											className="container skin-pallette-2"
-											id="skin-pallette-1"
-										>
-											<span
-												className="dot d4"
-												onClick={() =>
-													changeColor("#512E5F")
-												}
-											></span>
-											<span
-												className="dot d5"
-												onClick={() =>
-													changeColor("#7D3C98")
-												}
-											></span>
-											<span
-												className="dot d6"
-												onClick={() =>
-													changeColor("#A569BD")
-												}
-											></span>
-										</div>
-										<div
-											className="container skin-pallette-2"
-											id="skin-pallette-1"
-										>
-											<span
-												className="dot d7"
-												onClick={() =>
-													changeColor("#1B4F72")
-												}
-											></span>
-											<span
-												className="dot d8"
-												onClick={() =>
-													changeColor("#2E86C1")
-												}
-											></span>
-											<span
-												className="dot d9"
-												onClick={() =>
-													changeColor("#5DADE2")
-												}
-											></span>
-										</div>
-										<div
-											className="container skin-pallette-2"
-											id="skin-pallette-1"
-										>
-											<span
-												className="dot d10"
-												onClick={() =>
-													changeColor("#186A3B")
-												}
-											></span>
-											<span
-												className="dot d11"
-												onClick={() =>
-													changeColor("#28B463")
-												}
-											></span>
-											<span
-												className="dot d12"
-												onClick={() =>
-													changeColor("#58D68D")
-												}
-											></span>
-										</div>
-									</div>
-									<div className="col-xl-6 col-lg-12 col-md-12 col-sm-12 no-margin">
-										<div
-											className="container skin-pallette-2"
-											id="skin-pallette-1"
-										>
-											<span
-												className="dot d13"
-												onClick={() =>
-													changeColor("#7E5109")
-												}
-											></span>
-											<span
-												className="dot d14"
-												onClick={() =>
-													changeColor("#D68910")
-												}
-											></span>
-											<span
-												className="dot d15"
-												onClick={() =>
-													changeColor("#F5B041")
-												}
-											></span>
-										</div>
-										<div
-											className="container skin-pallette-2"
-											id="skin-pallette-1"
-										>
-											<span
-												className="dot d16"
-												onClick={() =>
-													changeColor("#6E2C00")
-												}
-											></span>
-											<span
-												className="dot d17"
-												onClick={() =>
-													changeColor("#BA4A00")
-												}
-											></span>
-											<span
-												className="dot d18"
-												onClick={() =>
-													changeColor("#DC7633")
-												}
-											></span>
-										</div>
-										<div
-											className="container skin-pallette-2"
-											id="skin-pallette-1"
-										>
-											<span
-												className="dot d19"
-												onClick={() =>
-													changeColor("#626567")
-												}
-											></span>
-											<span
-												className="dot d20"
-												onClick={() =>
-													changeColor("#A6ACAF")
-												}
-											></span>
-											<span
-												className="dot d21"
-												onClick={() =>
-													changeColor("#CACFD2")
-												}
-											></span>
-										</div>
-										<div
-											className="container skin-pallette-2"
-											id="skin-pallette-1"
-										>
-											<span
-												className="dot d22"
-												onClick={() =>
-													changeColor("#17202A")
-												}
-											></span>
-											<span
-												className="dot d23"
-												onClick={() =>
-													changeColor("#273746")
-												}
-											></span>
-											<span
-												className="dot d24"
-												onClick={() =>
-													changeColor("#566573")
-												}
-											></span>
-										</div>
-									</div>
-								</div>
 							</div>
 
 							<div className="col-lg-7 invetory-options">
@@ -658,6 +458,7 @@ const Profile = () => {
 										onClick={() => setInvOption("Chapeus")}
 									>
 										<div className="options-text">
+											<FaIcons.FaRedhat/>
 											<span
 												className={
 													invOption === "Chapeus"
@@ -665,7 +466,7 @@ const Profile = () => {
 														: ""
 												}
 											>
-												Chapeus
+												Chapéus
 											</span>
 										</div>
 									</div>
@@ -676,6 +477,7 @@ const Profile = () => {
 										}
 									>
 										<div className="options-text">
+											<FaIcons.FaTshirt/>
 											<span
 												className={
 													invOption === "Camisolas"
@@ -692,6 +494,7 @@ const Profile = () => {
 										onClick={() => setInvOption("Calcas")}
 									>
 										<div className="options-text">
+											<GiIcons.GiArmoredPants/>
 											<span
 												className={
 													invOption === "Calcas"
@@ -699,7 +502,7 @@ const Profile = () => {
 														: ""
 												}
 											>
-												Calcas
+												Calças
 											</span>
 										</div>
 									</div>
@@ -712,6 +515,7 @@ const Profile = () => {
 										}
 									>
 										<div className="options-text">
+											<GiIcons.GiSunglasses/>
 											<span
 												className={
 													invOption === "Acessorios"
@@ -724,6 +528,26 @@ const Profile = () => {
 										</div>
 									</div>
 									<div
+										className="col-lg-4 options-items"
+										onClick={() =>
+											setInvOption("Pele")
+										}
+									>
+										<div className="options-text">
+											<MdIcons.MdPalette/>
+											<span
+												className={
+													invOption === "Pele"
+														? "option-active"
+														: ""
+												}
+											>
+												Cor da Pele
+											</span>
+										</div>
+									</div>
+
+									{/* <div
 										className="col-lg-4 options-items"
 										onClick={() =>
 											setInvOption("Tabuleiros")
@@ -756,7 +580,7 @@ const Profile = () => {
 												Pecas
 											</span>
 										</div>
-									</div>
+									</div> */}
 								</div>
 
 								<div className="inv-list">
@@ -802,7 +626,173 @@ const Profile = () => {
 											/>
 										</div>
 									)}
-                                    {invOption === "Pecas" && (
+									{invOption === "Pele" && (
+										<div>
+											<h3 className="centered">Cor de pele</h3>
+											
+											
+											<div className="color no-margin">
+												
+													<span
+														className="dot d1"
+														onClick={() =>
+															changeColor("#7B241C")
+														}
+													></span>
+													<span
+														className="dot d2"
+														onClick={() =>
+															changeColor("#C0392B")
+														}
+													></span>
+													<span
+														className="dot d3"
+														onClick={() =>
+															changeColor("#D98880")
+														}
+													></span>
+												
+												
+													<span
+														className="dot d4"
+														onClick={() =>
+															changeColor("#512E5F")
+														}
+													></span>
+													<span
+														className="dot d5"
+														onClick={() =>
+															changeColor("#7D3C98")
+														}
+													></span>
+													<span
+														className="dot d6"
+														onClick={() =>
+															changeColor("#A569BD")
+														}
+													></span>
+												
+													<span
+														className="dot d7"
+														onClick={() =>
+															changeColor("#1B4F72")
+														}
+													></span>
+													<span
+														className="dot d8"
+														onClick={() =>
+															changeColor("#2E86C1")
+														}
+													></span>
+													<span
+														className="dot d9"
+														onClick={() =>
+															changeColor("#5DADE2")
+														}
+													></span>
+												
+													<span
+														className="dot d10"
+														onClick={() =>
+															changeColor("#186A3B")
+														}
+													></span>
+													<span
+														className="dot d11"
+														onClick={() =>
+															changeColor("#28B463")
+														}
+													></span>
+													<span
+														className="dot d12"
+														onClick={() =>
+															changeColor("#58D68D")
+														}
+													></span>
+												
+													<span
+														className="dot d13"
+														onClick={() =>
+															changeColor("#7E5109")
+														}
+													></span>
+													<span
+														className="dot d14"
+														onClick={() =>
+															changeColor("#D68910")
+														}
+													></span>
+													<span
+														className="dot d15"
+														onClick={() =>
+															changeColor("#F5B041")
+														}
+													></span>
+												
+													<span
+														className="dot d16"
+														onClick={() =>
+															changeColor("#6E2C00")
+														}
+													></span>
+													<span
+														className="dot d17"
+														onClick={() =>
+															changeColor("#BA4A00")
+														}
+													></span>
+													<span
+														className="dot d18"
+														onClick={() =>
+															changeColor("#DC7633")
+														}
+													></span>
+												
+													<span
+														className="dot d19"
+														onClick={() =>
+															changeColor("#626567")
+														}
+													></span>
+													<span
+														className="dot d20"
+														onClick={() =>
+															changeColor("#A6ACAF")
+														}
+													></span>
+													<span
+														className="dot d21"
+														onClick={() =>
+															changeColor("#CACFD2")
+														}
+													></span>
+												
+													<span
+														className="dot d22"
+														onClick={() =>
+															changeColor("#17202A")
+														}
+													></span>
+													<span
+														className="dot d23"
+														onClick={() =>
+															changeColor("#273746")
+														}
+													></span>
+													<span
+														className="dot d24"
+														onClick={() =>
+															changeColor("#566573")
+														}
+													></span>
+												
+											</div>
+											
+										</div>
+									)}
+
+
+                                    {/* {invOption === "Pecas" && (
 										<div>
 											<InventoryItems
 												option={"Pecas"}
@@ -815,38 +805,48 @@ const Profile = () => {
 												option={"Tabuleiros"}
 											/>
 										</div>
-									)}
+									)} */}
 								</div>
 
 								<div className="row save-cancel-btns">
-									<div className="col-lg-6 col-sm-12">
-										<button
-											className="btn save-btn"
-											onClick={() =>
-												setSaveModalShow(true)
-											}
-										>
-											Salvar
-										</button>
+									
+									<div id="button-join-tournament" onClick={() => setSaveModalShow(false) } className="button-clicky join-tournament description-c">
+										<span className="shadow"></span>
+										<span className="front">Confirmar</span>
+									</div>
 
-										<SaveChangesModal
-											show={modalSaveShow}
-											onHide={() =>
-												setSaveModalShow(false)
-											}
-										/>
+									
+									{/* <button
+										className="btn save-btn"
+										onClick={() =>
+											setSaveModalShow(true)
+										}
+									>
+										Salvar
+									</button> */}
+
+									<SaveChangesModal
+										show={modalSaveShow}
+										onHide={() =>
+											setSaveModalShow(false)
+										}
+									/>
+									
+									
+									<div id="button-join-tournament" onClick={() => setCancelModalShow(true)} className="button-clicky leave-tournament description-c">
+										<span className="shadow"></span>
+										<span className="front">Cancelar</span>
 									</div>
-									<div className="col-lg-6 col-sm-12">
-										<button
-											className="btn cancel-btn"
-											onClick={() =>
-												setCancelModalShow(true)
-											}
-										>
-											{" "}
-											Cancelar{" "}
-										</button>
-									</div>
+									{/* <button
+										className="btn cancel-btn"
+										onClick={() =>
+											setCancelModalShow(true)
+										}
+									>
+										{" "}
+										Cancelar{" "}
+									</button> */}
+									
 
 									<CancelChangesModal
 										show={modalCancelShow}

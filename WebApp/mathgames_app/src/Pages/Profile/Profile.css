@@ -7,11 +7,14 @@
     gap: 5%;
 }
 
+
+/* Geral */ 
+
 .side{
     /*     transform: translateY(1000px);
     animation: slideInL 0.8s ease forwards 0.5s;
     */
-    flex: 1 1 20%;
+    width: 200px;
     height: 110%;
     background: white;
     box-shadow: 3px 3px 10px rgba(119,119,119,0.5);
@@ -24,6 +27,9 @@
     justify-content: flex-start;
     align-items: center;
     gap: 2em;
+
+    transform: translateY(1000px);
+    animation: slideDown 0.8s ease forwards 0.5s;
 }
 
 .side-option{
@@ -66,62 +72,8 @@
     color: white;
 }
 
-@media only screen and (max-width: 995px) {
-    .side{
-        padding: 1em 3em;
-        flex-direction: row;
-        justify-content: center;
-        gap: 10%;
-    }
-
-    .profile-container {
-        padding: 1em 0;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-}
-
-@media only screen and (max-width: 835px) {
-    .side{
-        max-width: 80vw;
-    }
-
-    .side-option h5{
-        font-size: 1em;
-    }
-
-    .tab svg{
-        font-size: 1.5em;
-    }
-
-    .tab{
-        padding: 0.5em;
-    }
-}
-
-@media only screen and (max-width: 400px) {
-    .side{
-        min-width: 250px;
-        padding: 0;
-    }
-
-    .side-option h5{
-        font-size: 0.5em;
-    }
-
-    .tab{
-        padding: 0.2em;
-    }
-
-    .tab svg{
-        font-size: 1em;
-    }
-}
-
-
 hr.solid {
-    margin: 50px auto 0 auto;
+    margin: 1.5em auto 0 auto;
     border-top: 3px solid #bbb;
     width: 70%;
 }
@@ -134,16 +86,17 @@ hr.solid-pos {
     flex: 1 1 75%;
     padding: 2em;
     border-radius: 50px;
-    background-color: #469eeb;
+    background-color: #15a1e2;
     border: 2px solid white;
+
+    transform: translateY(1000px);
+    animation: slideUp 0.8s ease forwards 0.5s;
 }
 
 .top-profile {
     margin: 0 auto;
     width: auto;
 
-    transform: translateY(-1000px);
-    animation: slideDown 0.8s ease forwards 0.5s;
 }
 
 .avatar-geral{
@@ -186,7 +139,7 @@ hr.solid-pos {
 .profile-level {
     text-align: center;
     margin: 0 auto;
-    width: 300px !important;
+    width: 300px;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -203,13 +156,11 @@ hr.solid-pos {
 }
 
 .profile-games {
-    transform: translateY(1000px);
-    animation: slideUp 0.8s ease forwards 0.5s;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    padding: 2em 0;
+    padding: 2em 0 0 0;
 }
 
 .profile-games > * {
@@ -241,15 +192,102 @@ hr.solid-pos {
     height: 20px;
 }
 
-.lvl-style {
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
+
+@media only screen and (max-width: 995px) {
+    .side{
+        padding: 1em 3em;
+        flex-direction: row;
+        justify-content: center;
+        gap: 10%;
+        width: 80vw;
+    }
+
+    .profile-container {
+        padding: 1em 0;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
 }
 
-.lvl-style p {
-    font-family: Bubblegum Sans;
+@media only screen and (max-width: 835px) {
+    .side-option h5{
+        font-size: 1em;
+    }
+
+    .tab svg{
+        font-size: 1.5em;
+    }
+
+    .tab{
+        padding: 0.5em;
+    }
+    
+    .profile-games{
+        flex-direction: column !important;
+    }
 }
+
+@media only screen and (max-width: 500px) {
+    .side{
+        width: 250px;
+        padding: 0;
+    }
+
+    .side-option h5{
+        font-size: 0.5em;
+    }
+
+    .tab{
+        padding: 0.2em;
+    }
+
+    .tab svg{
+        font-size: 1em;
+    }
+
+    .profile-container{
+        margin: 2em 0.2em;
+    }
+
+    .profile{
+        padding: 2em 0.2em !important;
+    }
+
+    .profile-level{
+        width: 250px !important;
+    }
+
+    .avatar-geral{
+        max-width: 200px !important;
+    }
+
+    .avatar-display > div  {
+        max-width: 250px !important;
+    }
+
+    .inventory{
+        padding: 2em 0.5em !important;
+    }
+    
+}
+
+
+/* -----------------------------------------------------------------------*/
+
+/* Inventory */
+.inventory {
+    flex: 1 1 75%;
+    padding: 2em;
+    padding-bottom: 3em;
+    border-radius: 50px;
+    background-color: #15a1e2;
+    border: 2px solid white;
+
+    transform: translateY(1000px);
+    animation: slideUp 0.8s ease forwards 0.5s;
+}
+
 
 .inputs {
     transform: translateY(300px);
@@ -319,42 +357,33 @@ hr.solid-pos {
     align-items: center;
     list-style: none;
     height: 60px;
-    width: 100%;
+    gap: 10px;
 }
 
-
-.avatar-display {
-    padding-top: 30px;
+.avatar-display{
+    padding-bottom: 1em;
 }
 
 .avatar-display > div  {
-    height: 350px !important;
+    max-width: 300px;
+    margin: 0 auto;
+    height: 500px !important;
+    box-shadow: rgba(255, 255, 255, 0.1) 0px 1px 1px 0px inset, rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    border: 1px solid rgb(174, 159, 177);
 }
 
 .avatar-display > h1  {
     text-align: center;
 }
 
-.skin-pallette {
-    text-align: center;
-    padding-top: 20px;
-
+.color{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
 }
 
-.skin-pallette-2 {
-    margin-top: 15px;
-    text-align: center !important;
-    padding: 0px;
 
-}
-
-#skin-pallette {
-    height: 100px !important;
-}
-
-#skin-pallette-1 {
-    height: 50px !important;
-}
 
 .no-margin {
     padding: 0px;
@@ -459,27 +488,22 @@ hr.solid-pos {
     background-color: #566573;
 }
 
-.inventory {
-    width: 100%;
-    background-color: #394d5e;
-    min-height: 550px;
-}
+
+
 
 .invetory-options {
-    padding-top: 30px;
     text-align: center;
 }
 
 .inv-list {
-    margin-top: 20px;
-    margin-right: 20px;
-    margin-bottom: 20px;
-
-    height: 400px;
-
+    height: 450px;
+    padding: 0 1em;
+    margin-bottom: 1.5em;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 
 }
+
+
 
 .inv-items {
     display: flex;
