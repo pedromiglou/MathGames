@@ -616,8 +616,17 @@ function Navbar() {
 													{user.username}
 													<div>
 														{/* <FaIcons.FaEnvelopeSquare title="Convidar para jogo" className="icon_notifications" style={{fontSize: 25}} onClick={() => {invite_for_game(user.id)}} /> */}
-														<FaIcons.FaEnvelopeSquare title="Convidar para jogo" className="icon_notifications" style={{fontSize: 25}} onClick={() => {setModalChooseGame(true); setInvUser([user.id, user.username])}} />
-														<IoIcons.IoPersonRemove title="Remover Amigo" className="icon_notifications" style={{fontSize: 25}} onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setConfirmModalShow(true);}} />
+														
+														<div onClick={() => {setModalChooseGame(true); setInvUser([user.id, user.username])}} title="Convidar para jogo" className="button-add-friend invite-friend-modal">
+															<span className="shadow"></span>
+															<span className="front"><FaIcons.FaEnvelopeSquare color={"white"} style={{fontSize: 25}}  /></span>
+														</div>
+														<div onClick={() => {setModalUserId(user.id); setModalUsername(user.username); setConfirmModalShow(true);}} title="Remover Amigo" className="button-add-friend remove-friend-modal">
+															<span className="shadow"></span>
+															<span className="front"><IoIcons.IoPersonRemove  className="icon_notifications" color={"white"} style={{fontSize: 25}}  /></span>
+														</div>
+		
+														
 													</div>
 												</li>
 											);
