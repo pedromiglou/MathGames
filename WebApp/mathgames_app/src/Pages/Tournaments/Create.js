@@ -179,8 +179,8 @@ function Create() {
                                 <option value="4">4</option>
                                 <option value="8">8</option>
                                 <option value="16">16</option>
-                                {/* <option value="32">32</option>
-                                <option value="64">64</option> */}
+                                <option value="32">32</option>
+                                <option value="64">64</option>
                             </select>
                             
                         </div>
