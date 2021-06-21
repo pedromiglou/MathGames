@@ -19,7 +19,6 @@ import { Feather } from "@expo/vector-icons";
 import AddFriendModal from "../components/AddFriendModal";
 import ReportUserModal from "../components/ReportUserModal";
 import RemoveFriendModal from "../components/RemoveFriendModal";
-
 const win = Dimensions.get("window");
 
 function Ranking({ navigation }) {
@@ -37,29 +36,28 @@ function Ranking({ navigation }) {
 	const [inputText, onChangeInputText] = useState(null);
 
 	useEffect(() => {
-		readData("user").then((user) => {
-			var current_user = JSON.parse(JSON.parse(user));
-			setUser(current_user);
-		});
-
 		let mounted = true;
+		readData("user").then(user=>setUser(JSON.parse(JSON.parse(user))));
+		reloadFriends();
 		UserService.getUsers("").then((res) => {
 			setUsersFound(res.users);
 		});
-
-		const interval = setInterval(() => {
-			console.log("This will run every 10 seconds!");
-			if (user !== null)
-				UserService.getFriends().then((res) => {
-					setFriends(res);
-				});
-		}, 10000);
-
+  
 		return () => {
-			mounted = false;
-			clearInterval(interval);
+		  	mounted = false;
 		};
 	}, []);
+
+	function reloadFriends() {
+		readData("user").then(user=>{
+			user = JSON.parse(JSON.parse(user));
+			UserService.getFriends(user.id, user.token).then(response=>{
+				if ( response != null ) {
+					setFriends(response);
+				}
+			});
+		});
+	}
 
 	const getLevel = (account_level) => {
 		var contador = 1;

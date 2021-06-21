@@ -47,9 +47,9 @@ function ReportUserModal(props) {
 							setSelectedMotive(itemValue);
 						}}
 					>
-						<Picker.Item label="Motivo" value="motivo" />
-						<Picker.Item label="Cheats" value="Cheats" />
-						<Picker.Item label="Bug Abuse" value="Bug Abuse" />
+						<Picker.Item label="Motivo" value="motivo" fontFamily="BubblegumSans" style={{fontFamily:"BubblegumSans"}} enabled={false}/>
+						<Picker.Item label="Cheats" value="Cheats" fontFamily="BubblegumSans"/>
+						<Picker.Item label="Bug Abuse" value="Bug Abuse" fontFamily="BubblegumSans"/>
 					</Picker>
 					<View
 						style={{
@@ -87,14 +87,13 @@ export default ReportUserModal;
 
 const styles = StyleSheet.create({
 	picker: {
-		width: 100,
+		width: win.width/2,
 	},
 	itemStyle: {
 		fontSize: 15,
 		height: 75,
 		color: "black",
 		textAlign: "center",
-		fontWeight: "bold",
 		fontFamily: "BubblegumSans",
 	},
 
@@ -143,7 +142,6 @@ const styles = StyleSheet.create({
 
 	textStyle: {
 		color: "white",
-		fontWeight: "bold",
 		textAlign: "center",
 		fontFamily: "BubblegumSans",
 	},
