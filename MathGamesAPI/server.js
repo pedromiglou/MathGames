@@ -313,10 +313,16 @@ io.on("connection", (socket) => {
     console.log("New client connected");
     console.log("id: ", socket.id);
 
-
     socket.on("new_user", (msg) => {
       let user_id = String(msg["user_id"])
+
+      if ( Object.keys(users_info).includes(user_id) ) {
+        io.to( users_info[user_id] ).emit("logout", {"logout": true});
+        disconnect_user(user_id);
+      }
+
       users_info[user_id] = socket.id;
+
     })
 
     socket.on("new_notification", (msg) => {
@@ -335,25 +341,7 @@ io.on("connection", (socket) => {
         if (user_id === null)
             return;
 
-        delete users_info[user_id];
-        
-        let user_idx_0 = match_queue[0].indexOf(user_id);
-        let user_idx_1 = match_queue[1].indexOf(user_id);
-
-        if ( user_idx_0 > -1 )
-            match_queue[0].splice( user_idx_0, 1 )
-        if ( user_idx_1 > -1 )
-            match_queue[1].splice( user_idx_1, 1 )
-          
-
-        var in_game_user_match_id = players_in_game[user_id]
-
-        if ( in_game_user_match_id !== undefined ) {
-          let game = current_games[in_game_user_match_id];
-          game['state']['isFinished'] = true;
-          game['state']['winner'] = (user_id === current_games[in_game_user_match_id]['state']['player1']) ? "2" : "1";
-          finish_game(in_game_user_match_id, "forfeit")
-        }
+        disconnect_user(user_id);
 
     })
 
@@ -699,6 +687,27 @@ io.on("connection", (socket) => {
   })
 });
 
+function disconnect_user(user_id) {
+  delete users_info[user_id];
+
+  let user_idx_0 = match_queue[0].indexOf(user_id);
+  let user_idx_1 = match_queue[1].indexOf(user_id);
+
+  if ( user_idx_0 > -1 )
+      match_queue[0].splice( user_idx_0, 1 )
+  if ( user_idx_1 > -1 )
+      match_queue[1].splice( user_idx_1, 1 )
+    
+
+  var in_game_user_match_id = players_in_game[user_id]
+
+  if ( in_game_user_match_id !== undefined ) {
+    let game = current_games[in_game_user_match_id];
+    game['state']['isFinished'] = true;
+    game['state']['winner'] = (user_id === current_games[in_game_user_match_id]['state']['player1']) ? "2" : "1";
+    finish_game(in_game_user_match_id, "forfeit")
+  }
+}
 
 async function check_check_ins(tournament_id) {
 
