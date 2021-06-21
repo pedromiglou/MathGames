@@ -138,8 +138,15 @@ function Tournaments() {
               <p style={{color: "#0056b3", fontSize: 20}}>Tem a certeza que pretende entrar no torneio {props.torneioname}?</p>
             </Modal.Body>
             <Modal.Footer>
-              <Button style={{fontSize: 18}} onClick={() => {confirmar();}} className="btn save-btn">Confirmar</Button>
-              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Cancelar</Button>
+
+              <div id="confirm-b" title="Confirmar" onClick={() => {confirmar();}}   className="button-clicky-modal confirm-modal">
+                    <span className="shadow"></span>
+                    <span className="front">Confirmar</span>
+                </div>
+                <div id="cancel-b" title="Cancelar" onClick={props.onHide}  className="button-clicky-modal cancel-modal">
+                    <span className="shadow"></span>
+                    <span className="front">Cancelar</span>
+                </div>
             </Modal.Footer>
           </Modal>
         );
@@ -168,8 +175,14 @@ function Tournaments() {
               <p style={{color: "#0056b3", fontSize: 20}}>Tem a certeza que pretende sair do torneio {props.torneioname}?</p>
             </Modal.Body>
             <Modal.Footer>
-              <Button style={{fontSize: 18}} onClick={() => {confirmar();}} className="btn save-btn">Confirmar</Button>
-              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Cancelar</Button>
+                <div id="confirm-b" title="Confirmar" onClick={() => {confirmar();}}  className="button-clicky-modal confirm-modal">
+                    <span className="shadow"></span>
+                    <span className="front">Confirmar</span>
+                </div>
+                <div id="cancel-b" title="Cancelar" onClick={props.onHide}  className="button-clicky-modal cancel-modal">
+                    <span className="shadow"></span>
+                    <span className="front">Cancelar</span>
+                </div>
             </Modal.Footer>
           </Modal>
         );

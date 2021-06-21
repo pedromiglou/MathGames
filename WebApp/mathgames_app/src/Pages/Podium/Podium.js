@@ -284,8 +284,14 @@ function Podium() {
 			  }
             </Modal.Body>
             <Modal.Footer>
-              <Button style={{fontSize: 18}} onClick={() => {modal_function(props.id); props.onHide();}} className="btn save-btn">Confimar</Button>
-              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Cancelar</Button>
+			  	<div id="confirm-b" title="Confirmar" onClick={() => {modal_function(props.id); props.onHide();}}  className="button-clicky-modal confirm-modal">
+					<span className="shadow"></span>
+					<span className="front">Confirmar</span>
+				</div>
+				<div id="cancel-b" title="Cancelar" onClick={props.onHide}  className="button-clicky-modal cancel-modal">
+					<span className="shadow"></span>
+					<span className="front">Cancelar</span>
+				</div>
             </Modal.Footer>
           </Modal>
         );

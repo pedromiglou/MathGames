@@ -9,7 +9,6 @@ import * as CgIcons from 'react-icons/cg';
 import { Link } from 'react-router-dom';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
-import toast from 'react-hot-toast';
 
 /* Css */
 import './Menu.css'
@@ -94,7 +93,10 @@ function Navbar() {
               <p style={{color: "#0056b3", fontSize: 20}}>O convite já não está disponível. </p>
             </Modal.Body>
             <Modal.Footer>
-              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Ok</Button>
+				<div id="cancel-b" title="Confirmar" onClick={props.onHide}  className="button-clicky-modal confirm-modal">
+					<span className="shadow"></span>
+					<span className="front">Confirmar</span>
+				</div>
             </Modal.Footer>
           </Modal>
         );
@@ -139,9 +141,14 @@ function Navbar() {
 
 		</Modal.Body>
 		<Modal.Footer>
-			
-			<Button style={{fontSize: 18}} id="confirm-b" onClick={() => {button_confirm(InvUser[0])}} className="btn save-btn">Confirmar</Button>
-			<Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Cancelar</Button>
+			<div id="confirm-b" title="Confirmar" onClick={() => {button_confirm(InvUser[0])}}  className="button-clicky-modal confirm-modal">
+				<span className="shadow"></span>
+				<span className="front">Confirmar</span>
+			</div>
+			<div id="cancel-b" title="Cancelar" onClick={props.onHide}  className="button-clicky-modal cancel-modal">
+				<span className="shadow"></span>
+				<span className="front">Cancelar</span>
+			</div>
 		</Modal.Footer>
 		</Modal>
 	);
@@ -167,8 +174,14 @@ function Navbar() {
               <p style={{color: "#0056b3", fontSize: 20}}>Tem a certeza que pretende remover a sua amizade com {modal_username}</p>
             </Modal.Body>
             <Modal.Footer>
-              <Button style={{fontSize: 18}} onClick={() => {remove_friend(props.id); props.onHide();}} className="btn save-btn">Confimar</Button>
-              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Cancelar</Button>
+				<div title="Confirmar" onClick={() => {remove_friend(props.id); props.onHide();}}  className="button-clicky-modal confirm-modal">
+					<span className="shadow"></span>
+					<span className="front">Confirmar</span>
+				</div>
+				<div title="Cancelar" onClick={props.onHide}  className="button-clicky-modal cancel-modal">
+					<span className="shadow"></span>
+					<span className="front">Cancelar</span>
+				</div>
             </Modal.Footer>
           </Modal>
         );
@@ -217,18 +230,6 @@ function Navbar() {
 
 	var current_user = AuthService.getCurrentUser();
 
-    const notifyFriendshipSucess = () => toast.success('Pedido de amizade aceite!', {
-        icon: <FaIcons.FaCheckCircle />,
-        duration: 3000,
-        style:{fontSize: 20}
-    });
-
-    const notifyNotificationDelete = () => toast.success('Notificação removida com sucesso!', {
-        icon: <FaIcons.FaCheckCircle />,
-        duration: 3000,
-        style:{fontSize: 20}
-    });
-
 	const deleteNotification = (e) => {
         const newNotifications = [...notifications];
         newNotifications.splice(e, 1);
@@ -255,23 +256,14 @@ function Navbar() {
 		console.log("tou mandar invite")
 		localStorage.setItem("jogoporinvite", true)
 		localStorage.setItem("outrojogador", invited_player)
-		//var notification_text = current_user.username + " convidou-te para jogares."
-		//await UserService.send_notification_request(current_user.id, invited_player, "P", notification_text);
-		//var elemento = document.getElementById("linktogame")
 		var url = "gamePage?id=" + choosenGame
-		//setLinkToGameHref(url)
-		//console.log(url)
-		//console.log("elemento antes de click")
-		//console.log(elemento)
-		//elemento.click()
 		window.location.assign(urlWeb+url)
-		//window.location.href = "http://localhost:3000/gamePage?id=0"
 		
 	}
 
-	function accept_game(notification, index) {
+	async function accept_game(notification, index) {
 		deleteNotification(index);
-		UserService.delete(notification.id);
+		await UserService.delete(notification.id);
 		var id_outro_jogador = notification.sender_user.sender_id
 		
 		socket.once("match_link", (msg) => {
@@ -281,12 +273,8 @@ function Navbar() {
 
 				localStorage.setItem("entreijogoporinvite", true)
 				localStorage.setItem("outrojogador", id_outro_jogador)
-				//var elemento = document.getElementById("linktogame2")
 				var url = "gamePage?id="+game_id+"&mid=" + new_match_id
-				/*setLinkToGame2Href(url)
-				elemento.click()*/
 				window.location.assign(urlWeb+url)
-				//window.location.href = "http://localhost:3000/gamePage?id=0&mid=" + new_match_id
 			} else if (msg["error"]) {
 				setConfirmModalShow(true)
 			}
@@ -347,14 +335,10 @@ function Navbar() {
 		fetchFriends()
 	}
 
-	function goToTournament(notification, index) {
+	async function goToTournament(notification, index) {
 		deleteNotification(index);
-		UserService.delete(notification.id);
+		await UserService.delete(notification.id);
 		var torneio_id = notification.torneio_id
-		/*var elemento = document.getElementById("linktotournament")
-		var url = "/tournament?id="+torneio_id
-		setLinkToTournamentHref(url)
-		elemento.click()*/
 		window.location.assign(urlWeb+"tournament?id="+torneio_id)
 
 	}
@@ -517,7 +501,6 @@ function Navbar() {
 									<div className="navbar-dropdown-row">
 										{notifications.map(function(notification, index) {
 											var current_date = new Date();
-											//current_date.setTime(current_date.getTime() - new Date().getTimezoneOffset()*60*1000);
 											current_date = current_date.getTime() / 60000;
 											var notification_date = new Date(notification.createdAt).getTime() / 60000;
 											var difference = current_date - notification_date;
@@ -547,7 +530,7 @@ function Navbar() {
 													<div className="col-3" >
 														<div className="text-right text-bottom" style={{marginTop: "20%"}}>
 															{ (notification.notification_type === "F" && 
-																<FaIcons.FaCheckCircle onClick={ async () => {accept_friendRequest(notification); notifyFriendshipSucess(); deleteNotification(index);}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
+																<FaIcons.FaCheckCircle onClick={ async () => {accept_friendRequest(notification); deleteNotification(index);}} className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															|| (notification.notification_type === "T" && 
 																<FaIcons.FaCheckCircle  className="icon_notifications" style={{fontSize: 25}} color="#03f900" />)
 															|| (notification.notification_type === "P" && 
@@ -557,8 +540,8 @@ function Navbar() {
 															}
 															
 															{ (notification.notification_type === "P") ?
-																	<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {deny_game(notification); UserService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25, marginLeft: "5px"}} color="#ff0015" />
-																: 	<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {UserService.delete(notification.id); notifyNotificationDelete(); deleteNotification(index); }} style={{fontSize: 25, marginLeft: "5px"}} color="#ff0015" />
+																	<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {deny_game(notification); UserService.delete(notification.id); deleteNotification(index); }} style={{fontSize: 25, marginLeft: "5px"}} color="#ff0015" />
+																: 	<FaIcons.FaTimesCircle className="icon_notifications" onClick={ () => {UserService.delete(notification.id); deleteNotification(index); }} style={{fontSize: 25, marginLeft: "5px"}} color="#ff0015" />
 															}
 
 														</div>
@@ -589,7 +572,7 @@ function Navbar() {
 
 
 						<div title="Amigos" className="d-flex align-items-center justify-content-center">
-							<DropdownButton	menuAlign="right" title={<FaIcons.FaUserFriends className="navbar-icon" onClick={() => showAddFriendInput()}/>} id="friends-dropdown">
+							<DropdownButton	menuAlign="right" title={<FaIcons.FaUserFriends className="navbar-icon" onClick={() => hideAddFriendInput()}/>} id="friends-dropdown">
 								<Dropdown.ItemText>
 									<div className="friends-modal">
 										<h4>Amigos</h4>

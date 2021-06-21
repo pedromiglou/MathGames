@@ -253,22 +253,14 @@ const Profile = () => {
 					</p>
 				</Modal.Body>
 				<Modal.Footer>
-					<Button
-						style={{ fontSize: 18 }}
-						onClick={() => {
-							saveAvatar();
-						}}
-						className="btn save-btn"
-					>
-						Guardar
-					</Button>
-					<Button
-						style={{ fontSize: 18 }}
-						onClick={props.onHide}
-						className="btn cancel-btn"
-					>
-						Cancelar
-					</Button>
+					<div id="confirm-b" title="Confirmar" onClick={() => {saveAvatar();}}  className="button-clicky-modal confirm-modal">
+						<span className="shadow"></span>
+						<span className="front">Confirmar</span>
+					</div>
+					<div id="cancel-b" title="Cancelar" onClick={props.onHide}  className="button-clicky-modal cancel-modal">
+						<span className="shadow"></span>
+						<span className="front">Cancelar</span>
+					</div>
 				</Modal.Footer>
 			</Modal>
 		);
@@ -297,20 +289,15 @@ const Profile = () => {
 					</p>
 				</Modal.Body>
 				<Modal.Footer>
-					<Button
-						style={{ fontSize: 18 }}
-						onClick={() => window.location.reload()}
-						className="btn save-btn"
-					>
-						Sim
-					</Button>
-					<Button
-						style={{ fontSize: 18 }}
-						onClick={props.onHide}
-						className="btn cancel-btn"
-					>
-						Não
-					</Button>
+
+					<div id="confirm-b" title="Confirmar" onClick={() => window.location.reload()}  className="button-clicky-modal confirm-modal">
+						<span className="shadow"></span>
+						<span className="front">Confirmar</span>
+					</div>
+					<div id="cancel-b" title="Cancelar" onClick={props.onHide}  className="button-clicky-modal cancel-modal">
+						<span className="shadow"></span>
+						<span className="front">Cancelar</span>
+					</div>
 				</Modal.Footer>
 			</Modal>
 		);
@@ -821,7 +808,7 @@ const Profile = () => {
 
 								<div className="row save-cancel-btns">
 									
-									<div id="button-join-tournament" onClick={() => setSaveModalShow(false) } className="button-clicky join-tournament description-c">
+									<div id="button-join-tournament" onClick={() => setSaveModalShow(true) } className="button-clicky join-tournament description-c">
 										<span className="shadow"></span>
 										<span className="front">Confirmar</span>
 									</div>

@@ -139,6 +139,14 @@ class RastrosScene extends Phaser.Scene {
             }
         }
 
+        if (game_mode !== "offline") {
+            let homeSquare = (this.player.has(1) ? 42 : 6 )
+            this.squares_group.getChildren()[homeSquare].setTint(0xb3940b);
+        } else {
+            this.squares_group.getChildren()[42].setTint(0xb3940b);
+            this.squares_group.getChildren()[6].setTint(0xb3940b);
+        }
+
         // Fill in the moving piece
         this.player_piece = this.add.image(this.INITIAL_BOARD_POS + this.DISTANCE_BETWEEN_SQUARES*4, this.INITIAL_BOARD_POS+this.DISTANCE_BETWEEN_SQUARES*2, 'piece').setName('player_piece').setInteractive();
         this.player_piece.on('pointerup', this.click_piece, this);

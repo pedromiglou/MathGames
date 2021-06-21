@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import * as FaIcons from "react-icons/fa";
 import './RulesTooltip.css';
 
-export const RulesTooltip = ({rules, website, size, title, className }) => {
+export const RulesTooltip = ({rules, goal, website, size, title, className }) => {
     const [show, setShow] = useState(false);
     const target = useRef(null);
   
@@ -20,11 +20,14 @@ export const RulesTooltip = ({rules, website, size, title, className }) => {
                     style={{backgroundColor: 'black', padding: '2px 10px', color: 'white', borderRadius: 10, ...props.style, maxWidth: '20vw'}}
                     className="rules-tooltip"
                 >
-                <p className="text-left">
+                <div className="text-left">
+                    <b>Objetivo:</b>
+                    <br/>
+                    <p style={{paddingLeft: '5px'}}>{goal}</p>
                     <b>Regras:</b>
                     <br/>
                     <p style={{paddingLeft: '5px'}}>{rules}</p>
-                </p>
+                </div>
                 </div>
             )}
             </Overlay>

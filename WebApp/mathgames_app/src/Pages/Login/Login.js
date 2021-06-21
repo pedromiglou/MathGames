@@ -14,7 +14,7 @@ function Login() {
         hide_everything()
 
         var response = await AuthService.login(
-            document.getElementById("nomeUtilizadorLogin").value,
+            document.getElementById("nomeUtilizadorLogin").value.trim(),
             document.getElementById("passwordLogin").value
         )   
 
@@ -38,8 +38,8 @@ function Login() {
                 
                 if (/\S+@\S+\.\S+/.test(document.getElementById("emailRegisto").value)) {
                     var response = await AuthService.register(
-                        document.getElementById("nomeUtilizadorRegisto").value,
-                        document.getElementById("emailRegisto").value,
+                        document.getElementById("nomeUtilizadorRegisto").value.trim(),
+                        document.getElementById("emailRegisto").value.trim(),
                         document.getElementById("passwordRegisto").value
                     )
 

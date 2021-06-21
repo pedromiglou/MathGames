@@ -356,6 +356,7 @@ function GamePage() {
             userRank = userService.convert_user_rank(userRankValue);
         }
 
+
 		return (
 			<>
 				<div className="container choose-game-mode-container">
@@ -366,7 +367,7 @@ function GamePage() {
                                     <h1 className="game-Name"> {game_info["title"]} </h1>
                                 </div>
                                 <div className="col-2 d-flex justify-content-end">
-                                    <RulesTooltip size="42" title="Regras" rules={game_info['rules']} website={game_info['website']}></RulesTooltip>
+                                    <RulesTooltip size="42" title="Regras" rules={game_info['rules']} goal={game_info['goal']} website={game_info['website']}></RulesTooltip>
                                 </div>
                             </div> 
                             <div className="image">

@@ -266,7 +266,7 @@ exports.findAll = (req, res) => {
     User.findAndCountAll({attributes: ['id', 'username', 'account_level', 'account_type', 
                                         'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 
                                         'avatar_trouser'] , 
-                          where: {username: { [Op.like]: `%${username}` }, banned: false, account_level: { [Op.between]: [min_level, max_level - 1]} }, 
+                          where: {username: { [Op.like]: `%${username}` }, banned: false, account_level: { [Op.between]: [min_level, max_level - 1]}, account_type: {[Op.ne]: "A"} }, 
                           order: [[req.query.orderby, 'DESC']], limit, offset})
     .then(data => {
       const response = getPagingData(data, page, limit);

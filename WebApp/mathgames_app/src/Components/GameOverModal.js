@@ -90,7 +90,10 @@ export const GameOverModal = forwardRef(({tournament_id}, ref) => {
                     </p>
                 </Modal.Body>
                 <Modal.Footer style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-                    <button onClick={() => {(tournament_id === null || tournament_id === undefined ? history.push("/gamePage?id=" + gameOverMessage["game_id"]) : history.push("/tournament?id=" + tournament_id) )} } className="btn btn-warning" style={{color: "#0056b3", fontSize: 20}}>Voltar à página de jogo</button>
+                    <div id="confirm-b" title="Confirmar" onClick={() => {(tournament_id === null || tournament_id === undefined ? history.push("/gamePage?id=" + gameOverMessage["game_id"]) : history.push("/tournament?id=" + tournament_id) )} }  className="button-clicky-modal confirm-modal" style={{width: "60%"}}>
+                        <span className="shadow"></span>
+                        <span className="front">Voltar à página do jogo</span>
+                    </div>
                 </Modal.Footer>
             </Modal>
         );
