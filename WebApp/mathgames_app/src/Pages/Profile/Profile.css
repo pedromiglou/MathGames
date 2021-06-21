@@ -371,6 +371,10 @@ hr.solid-pos {
     gap: 10px;
 }
 
+.options-text:hover{
+    cursor: pointer;
+}
+
 .avatar-display{
     padding-bottom: 1em;
 }
