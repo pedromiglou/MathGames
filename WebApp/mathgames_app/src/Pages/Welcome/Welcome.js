@@ -102,20 +102,22 @@ function Welcome() {
 									*/}
                                 </div>
                                 <div className="half container col-xl-6 col-lg-6 col-md-8 col-sm-12">
-                                    <div className="row">
-                                        <div className="align-right">
-                                            <figure>
-                                                <img
-                                                    className="mobile-icons"
-                                                    src={
-                                                        process.env.PUBLIC_URL +
-                                                        "/images/android.png"
-                                                    }
-                                                    alt="android"
-                                                />
-                                            </figure>
+                                    <a href="https://github.com/ricardocruz29/PI_projectWebsite/raw/master/apk/MathGames.apk" role="button">
+                                        <div className="row">
+                                            <div className="align-right">
+                                                <figure>
+                                                    <img
+                                                        className="mobile-icons"
+                                                        src={
+                                                            process.env.PUBLIC_URL +
+                                                            "/images/android.png"
+                                                        }
+                                                        alt="android"
+                                                    />
+                                                </figure>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 </div>
                             </div>
                         </div>

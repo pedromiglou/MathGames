@@ -159,6 +159,10 @@
     margin: 1em auto 0 auto;
 }
 
+.align-right img:hover{
+    cursor: pointer;
+}
+
 .mobile-icons {
     width: 100px;
     height: auto;
