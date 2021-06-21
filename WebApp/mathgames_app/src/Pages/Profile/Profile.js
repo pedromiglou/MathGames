@@ -80,7 +80,6 @@ const Profile = () => {
 
 	// Tem de colocar no redux o tipo de user
 	useEffect(() => {
-        console.log("use effect profile")
 		var current_user = AuthService.getCurrentUser();
 
 		// Load user games history
