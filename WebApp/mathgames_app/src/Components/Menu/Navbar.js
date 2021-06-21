@@ -1,5 +1,6 @@
 /* React and React-Icons */
 import React, { useState, useEffect } from 'react';
+import { withRouter, useHistory } from "react-router-dom";
 import {IconContext} from 'react-icons';
 import * as FaIcons from 'react-icons/fa';
 import * as FiIcons from "react-icons/fi";
@@ -23,7 +24,7 @@ import {urlWeb} from './../../data/data';
 import Avatar from "../../Components/Avatar/Avatar";
 import socket from "../../index"
 
-import { Modal, Button } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 
 import { Card } from "react-bootstrap";
 
@@ -36,22 +37,11 @@ import { games_info } from "../../data/GamesInfo";
 function Navbar() {
 	const dispatch = useDispatch();
 
-	//Talvez se venham a usar estes tambem, dont delete
-    /*
-    const [user, setUser] = useState(false);
-    const [tournament_user, setTournament_user] = useState(false);
-    */
     const [user_authenticated, setUser_authenticated] = useState(true);
     const [user, setUser] = useState("");
 
     const [friends, setFriends] = useState([]);
     const [notifications, setNotifications] = useState([]);
-
-	/* const [hat, setHat] = useState("none");
-    const [shirt, setShirt] = useState("none");
-    const [color, setColor] = useState("#FFAF00");
-    const [accessorie, setAccessorie] = useState("none");
-    const [trouser, setTrouser] = useState("none"); */
 
     const [avatarCustoms, setAvatarCustoms] = useState({
 		hat: "none",
@@ -60,9 +50,6 @@ function Navbar() {
 		accessorie: "none",
         trouser: "none",
 	});
-	//const [linktogamehref, setLinkToGameHref] = useState("")
-	//const [linktogame2href, setLinkToGame2Href] = useState("")
-	//const [linktotournamenthref, setLinkToTournamentHref] = useState("")
 
 	const [modalConfirmShow, setConfirmModalShow] = useState(false);
 	const [modalUsername, setModalUsername] = useState("");
@@ -70,9 +57,8 @@ function Navbar() {
 
 	const [modalChooseGame, setModalChooseGame] = useState(false);
 	const [InvUser, setInvUser] = useState([]);
-	// const [canPlay, setCanPlay] = useState(false);
-	// const [choosenGameId, setGameId] = useState(-1);
 
+	let history = useHistory();
 
 	var choosenGame = -1;
 
@@ -256,8 +242,9 @@ function Navbar() {
 		console.log("tou mandar invite")
 		localStorage.setItem("jogoporinvite", true)
 		localStorage.setItem("outrojogador", invited_player)
-		var url = "gamePage?id=" + choosenGame
-		window.location.assign(urlWeb+url)
+		var url = "/gamePage?id=" + choosenGame
+		history.push(url)
+		//window.location.assign(urlWeb+url)
 		
 	}
 
@@ -273,8 +260,9 @@ function Navbar() {
 
 				localStorage.setItem("entreijogoporinvite", true)
 				localStorage.setItem("outrojogador", id_outro_jogador)
-				var url = "gamePage?id="+game_id+"&mid=" + new_match_id
-				window.location.assign(urlWeb+url)
+				var url = "/gamePage?id="+game_id+"&mid=" + new_match_id
+				history.push(url)
+				//window.location.assign(urlWeb+url)
 			} else if (msg["error"]) {
 				setConfirmModalShow(true)
 			}
@@ -725,4 +713,4 @@ function Navbar() {
 	)
 }
 
-export default Navbar;
+export default withRouter(Navbar);

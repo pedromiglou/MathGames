@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useLocation, useHistory } from "react-router-dom";
+import { useLocation, useHistory, Redirect } from "react-router-dom";
 import { Card } from "react-bootstrap";
 //import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -66,6 +66,8 @@ function GamePage() {
 	let history = useHistory();
     const location = useLocation();
 
+        
+
     useEffect(() => {
         return history.listen((location) => {
             if (!searchingForMatch)
@@ -108,6 +110,10 @@ function GamePage() {
 		}
 
 	}, [name1,name2]);
+
+    if (game_id > 1 || game_id < 0) {
+        return <Redirect to='/'/>
+    }
 
     function changeMode(val) {
 		var card_comp = document.getElementById("online");
@@ -223,7 +229,7 @@ function GamePage() {
 		socket.off("match_found");
 
 		if (gameMode === "amigo") {
-			socket.emit("generate_link", {"user_id": AuthService.getCurrentUserId()})
+			socket.emit("generate_link", {"user_id": AuthService.getCurrentUserId(), "game_id": game_id})
 
 			socket.once("invite_link", (msg) => {
 				let new_match_id = msg['match_id'];
@@ -355,7 +361,6 @@ function GamePage() {
 
             userRank = userService.convert_user_rank(userRankValue);
         }
-
 
 		return (
 			<>

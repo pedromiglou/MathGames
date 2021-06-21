@@ -421,9 +421,10 @@ io.on("connection", (socket) => {
   //User sends user_id and wants to play with a friend through a link
   socket.on("generate_link", (msg) => {
     let user_id = msg["user_id"]
+    let game_id = parseInt(msg["game_id"])
 
     // If the user still has an active link, return null match_id
-    if ( Object.values(active_friend_link).includes(user_id) ) {
+    if ( Object.values(active_friend_link).find(elemento => elemento["user_id"] === user_id) ) {
       io.to(socket.id).emit("invite_link", {"match_id": null});
       return;
     }
@@ -431,12 +432,12 @@ io.on("connection", (socket) => {
     users_info[user_id] = socket.id;
 
     let new_match_id = uuid.v4();
-    active_friend_link[new_match_id] = user_id;
+    active_friend_link[new_match_id] = {"user_id": user_id, "game_id": game_id};
+
 
     io.to(socket.id).emit("invite_link", {"match_id": new_match_id});
     // After 2 minutes, the links expires
     setTimeout(() => { delete active_friend_link[new_match_id]; }, 120000);
-    console.log("Active friend link:", active_friend_link)
   })
 
   socket.on("entered_link", (msg) => {
@@ -448,9 +449,9 @@ io.on("connection", (socket) => {
       var game_id = parseInt(msg["game_id"])
       users_info[user_id] = socket.id
 
-      if ( Object.keys(active_friend_link).includes(match_id) ) {
-        create_game(match_id, game_id, user_id, active_friend_link[match_id], "amigo", null)
-        io.to( users_info[active_friend_link[match_id]] ).emit("friend_joined", {"match_id": match_id, "player1": user_id, "player2": active_friend_link[match_id]})
+      if ( Object.keys(active_friend_link).includes(match_id) && active_friend_link[match_id]["game_id"] === game_id ) {
+        create_game(match_id, game_id, user_id, active_friend_link[match_id]["user_id"], "amigo", null)
+        io.to( users_info[active_friend_link[match_id]["user_id"]] ).emit("friend_joined", {"match_id": match_id, "player1": user_id, "player2": active_friend_link[match_id]["user_id"]})
       }
     }
   })
@@ -490,9 +491,14 @@ io.on("connection", (socket) => {
 
   socket.on("leave_matchmaking", (msg) => {
     
+    
     var user_id = String(msg["user_id"]);
     console.log("Leaving matchmaking: ", user_id)
     var game_id = parseInt(msg["game_id"]);
+
+    if (match_queue[game_id] === undefined || match_queue[game_id] === null) {
+      return
+    }
 
     let user_idx = match_queue[game_id].indexOf(user_id);
 

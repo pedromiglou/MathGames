@@ -10,7 +10,7 @@ import { ranks_info } from "../../data/ranksInfo";
 
 import AuthService from "../../Services/auth.service";
 import UserService from "../../Services/user.service";
-import { Modal, Button } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 
 import * as GiIcons from 'react-icons/gi';
 import * as FaIcons from 'react-icons/fa';

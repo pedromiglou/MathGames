@@ -1,6 +1,6 @@
 import React , {useEffect , useState} from "react";
 
-import {useHistory} from 'react-router-dom';
+import {useHistory } from 'react-router-dom';
 
 import * as IoIcons from 'react-icons/io5';
 import * as MdIcons from 'react-icons/md';
@@ -15,7 +15,7 @@ import {urlWeb} from "./../../data/data";
 import { games_info } from "../../data/GamesInfo";
 import { ranks_info } from '../../data/ranksInfo';
 
-import { Modal, Button } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 
 
 import AuthService from '../../Services/auth.service';
@@ -36,6 +36,7 @@ function TournamentPage() {
  
     const url = new URLSearchParams(window.location.search);
 	let tournament_id = url.get("id");
+
 
 
 
@@ -713,7 +714,7 @@ function TournamentPage() {
                                 }
                             </div>
                             <div className="description-t" >
-                                <textarea  className="description-input" id="tournament-details" readOnly placeholder={tournament.description}></textarea>
+                                <textarea  className="description-input" id="tournament-details" readOnly placeholder={tournament.description} style={{resize:"none"}}></textarea>
                                 {tournament.creator === current_user.id &&
                                     <>
                                     <div className="buttons-description-tournament" id="action-buttons" style={{display:"none"}}>
@@ -726,9 +727,6 @@ function TournamentPage() {
                                             <span className="shadow"></span>
                                             <span className="front">Cancelar</span>
                                         </div>
-
-                                        {/* <button onClick={() => {make_fields_not_editable(); changeDescription() } }>Confirmar</button>
-                                        <button onClick={() => make_fields_not_editable()}>Cancelar</button> */}
                                     </div>
                                     
                                     </>

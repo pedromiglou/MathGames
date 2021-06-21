@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import UserService from '../../../Services/user.service';
 import './Statistics.css';
-import { Modal, Button } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import Pagination from "@material-ui/lab/Pagination";
 import * as IoIcons from 'react-icons/io5';
 //import {Line} from 'react-chartjs-2';

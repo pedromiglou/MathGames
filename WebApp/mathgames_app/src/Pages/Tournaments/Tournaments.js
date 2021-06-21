@@ -12,7 +12,7 @@ import Pagination from "@material-ui/lab/Pagination";
 
 import {games_info} from '../../data/GamesInfo';
 
-import { Modal, Button } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 
 import {urlWeb} from "./../../data/data";
 

@@ -7,7 +7,7 @@ import * as IoIcons from 'react-icons/io5';
 import * as MdIcons from 'react-icons/md';
 import * as FaIcons from 'react-icons/fa';
 import * as GiIcons from 'react-icons/gi';
-import { Modal, Button } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 
 import socket from "../../index"
 
