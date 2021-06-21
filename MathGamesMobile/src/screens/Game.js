@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useState, useEffect} from 'react';
-import {ScrollView, Dimensions, View, StyleSheet, Alert} from 'react-native';
+import {ScrollView, Dimensions, View, StyleSheet} from 'react-native';
 import RastrosEngine from './../games/rastros/RastrosEngine';
 import GatosCaesEngine from './../games/gatoscaes/GatosCaesEngine';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,6 +10,7 @@ import {gamesInfo} from "./../data/GamesInfo";
 import socket from "./../utilities/Socket";
 import {showAlert, closeAlert} from "react-native-customisable-alert";
 import GiveUpModal from '../components/GiveUpModal';
+import InfoModal from "../components/InfoModal";
 
 const win = Dimensions.get("window");
 
@@ -93,7 +94,15 @@ function Game({ navigation }) {
                             socket.emit("entered_invite", {"user_id": user_id, "outro_id": opponent,
                                 "match_id": msg['match_id'], "game_id": Number(msg['game_id'])});
                         } else if (msg["error"]) {
-                            Alert.alert("Error inviting player", "there was an error");
+                            showAlert({
+                                alertType: "custom",
+                                customAlert: (
+                                    <InfoModal closeAlert={closeAlert}
+                                        title="Não foi possível aceitar o convite"
+                                        text="O convite expirou"
+                                    />
+                                )
+                            });
                         }
                     });
                     
@@ -117,9 +126,17 @@ function Game({ navigation }) {
             saveData("gameMode", "Amigo");
             socket.once("invite_link", (msg) => {
                 if (msg["match_id"]) {
-                  saveData("match_id", msg['match_id']);
+                    saveData("match_id", msg['match_id']);
                 } else {
-                  Alert.alert("Não foi possível convidar", "Criaste um link recentemente, espera mais um pouco até criares um novo.")
+                    showAlert({
+                        alertType: "custom",
+                        customAlert: (
+                            <InfoModal closeAlert={closeAlert}
+                                title="Não foi possível convidar"
+                                text="Criaste um link recentemente, espera mais um pouco até criares um novo."
+                            />
+                        )
+                    });
                 }
             });
             readData("user_id").then(user_id=>{

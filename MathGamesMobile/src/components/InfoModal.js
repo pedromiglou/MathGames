@@ -14,7 +14,7 @@ function GiveUpModal(props) {
 	return (
 		<View style={styles.centeredView}>
 			<View style={styles.modalView}>
-				<Text style={styles.modalTitle}>Aviso</Text>
+				<Text style={styles.modalTitle}>{props.title}</Text>
 				<Text style={styles.modalText}>
 					{props.text}
 				</Text>
@@ -67,13 +67,10 @@ const styles = StyleSheet.create({
 	buttonOpen: {
 		backgroundColor: "#2196F3",
 		width: win.width / 3,
-		marginLeft: win.width / 8,
-		marginRight: 20,
 	},
 
 	textStyle: {
 		color: "white",
-		fontWeight: "bold",
 		textAlign: "center",
 		fontFamily: "BubblegumSans",
 	},

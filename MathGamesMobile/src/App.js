@@ -177,17 +177,23 @@ function App() {
               source={require('./../public/images/logo-light.png')}
             />
           
-          {loggedIn ?
+          {loggedIn &&
             <TouchableOpacity style={styles.loginImage} onPress={()=>navigationRef.current.dispatch(DrawerActions.jumpTo('Perfil'))}>
               <Text style={styles.username} numberOfLines={1}>{username}</Text>
+            </TouchableOpacity>
+          }
+
+          {(!loggedIn&&login) ?
+            <TouchableOpacity onPress = {() => setLogin(!login)} style={styles.loginImage}>
+              <Text style={styles.username}>Voltar</Text>
             </TouchableOpacity>
             :
             <TouchableOpacity onPress = {() => setLogin(!login)}>
               <Image
-                  style={styles.loginImage}
-                  resizeMode = {'contain'}
-                  source={require('./../public/images/Login.png')}
-                />
+                style={styles.loginImage}
+                resizeMode = {'contain'}
+                source={require('./../public/images/Login.png')}
+              />
             </TouchableOpacity>
           }
         </View>
