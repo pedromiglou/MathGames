@@ -472,6 +472,16 @@ span.icons-noname{
     .nav-logo{
         margin: 0 auto !important;
     }
+
+    #sidebar{
+        top: 190px;
+    }
+
+    .content{
+        height: calc(100% - 190px);
+    }
+
+
        
 }
 
