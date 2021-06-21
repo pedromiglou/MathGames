@@ -27,11 +27,11 @@ function Tournaments() {
 
     const tournament_info = {
         rules:  "- Os torneios são criados por contas certificadas. Organizadores são responsáveis pela sua gestão.\n" +
-                "- Os torneios iniciam apenas por indicação do seu organizador e apenas quando a sua capacidade está cheia.\n" +
-                "- Os torneios são divididos em rounds. Cada round é iniciado manualmente pelo organizador. Os rounds só podem ser iniciados quando todas as partidas do round anterior terminam\n" +
+                "- Os torneios iniciam apenas por indicação do seu organizador.\n" +
+                "- Os torneios são divididos em rounds. Cada round é iniciado manualmente pelo organizador. Os rounds só podem ser iniciados quando todas as partidas do round anterior terminarem\n" +
                 "- A bracket do torneio é atualizada de forma automática e pode ser acedida através do interior da página do torneio.\n" +
                 "- Cada jogador deve efetuar o check in para aceder ao jogo do torneio no início de TODOS os rounds. Caso o check in não seja efetuado, o jogador é eliminado." +
-                "- Apenas quando os dois jogadores efetuar o check in é que o jogo começa.\n" +
+                "- Apenas quando os dois jogadores efetuam o check in é que o jogo começa.\n" +
                 "- Boa sorte a todos os participantes. Que vença o melhor.\n" ,
     };
 
