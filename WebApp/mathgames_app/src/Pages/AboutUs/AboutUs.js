@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./AboutUs.css";
@@ -220,7 +219,7 @@ function AboutUs() {
                         </div>
                         
                         <div className="img-box">
-                           <img src={process.env.PUBLIC_URL + "/images/Team/ua.jpeg"}/>
+                           <img src={process.env.PUBLIC_URL + "/images/Team/ua.jpeg"} alt="Universidade de Aveiro"/>
                         </div>
                      </div>
                      <div className="collaborator fccva">

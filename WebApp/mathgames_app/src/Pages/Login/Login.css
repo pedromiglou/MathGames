@@ -1,5 +1,118 @@
+.login-section{
+	padding: 5em 2em;
+}
+
+.form-login-register{
+	background-color: #5995fd;
+	position: relative;
+	width: 40%;
+	min-width: 300px;
+	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+	border-radius: 50px;
+}
+
+.form-content{
+	height: 650px;
+}
+
+.custom-shape-divider-bottom-1624243004 {
+    position: absolute;
+	border-radius: 50px;
+    bottom: 0;
+    left: -10%;
+    width: 120%;
+    overflow: hidden;
+    line-height: 0;
+    transform: rotate(180deg);
+}
+
+.custom-shape-divider-bottom-1624243004 svg {
+    position: relative;
+    display: block;
+    width: calc(100% + 1.3px);
+    height: 300px;
+}
+
+.custom-shape-divider-bottom-1624243004 .shape-fill {
+    fill: #ffffff;
+}
+
+.login-input-field {
+	width: 100%;
+	background-color: #ffffff;
+	margin: 10px auto;
+	height: 55px;
+	border-radius: 55px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 1em;
+}
+
+.login-input-field svg {
+	text-align: center;
+	color: #3074e2;
+	transition: 0.5s;
+	font-size: 1.8rem;
+	margin-left: 0.5em;
+}
+
+.login-input-field input {
+	background: none;
+	outline: none;
+	border: none;
+	line-height: 1;
+	font-weight: 600;
+	font-size: 1rem;
+	color: #3074e2;
+	height: 100%;
+}
+
+.login-input-field input::placeholder {
+	color: #aaa;
+	font-weight: 500;
+}
+
+.form-content h6 {
+	font-size: 0.9em;
+	text-align: center;
+}
+
+.switch-logins:hover{
+	cursor: pointer;
+}
+
+.button-section{
+	width: 100px;
+	margin: 1em auto;
+}
+
+.button-login-confirm{
+	width: 100%;
+	font-size: 1.5em;
+	padding: 0.3em;
+	border: 3px solid #3074e2;
+	background-color: white;
+	color: #3074e2;
+	border-radius: 40px;
+	transition: all 0.3s ease-in-out;
+}
+
+.button-login-confirm:hover{
+	border: 3px solid white;
+	background-color: #3074e2;
+	color: white;
+}
+
+
+/*
+
 .container-login {
-	
 	width: 50%;
 	height: 60%;
 
@@ -170,3 +283,5 @@
 	font-weight: 600;
 	font-size: 0.8rem;
   }  
+
+*/
