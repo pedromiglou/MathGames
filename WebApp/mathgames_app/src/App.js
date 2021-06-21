@@ -88,6 +88,7 @@ function toggleNav() {
 
     if ( sidebar.classList.contains("active") ) {
         main.style.marginLeft = "65px";
+        main.style.transition = "700ms";
 
         sidebar.classList.remove("active");
         sidebar.classList.add("collapsed");
@@ -100,6 +101,7 @@ function toggleNav() {
         }
     } else {
         main.style.marginLeft = "300px";
+        main.style.transition = "600ms";
 
         sidebar.classList.add("active");
         sidebar.classList.remove("collapsed");
