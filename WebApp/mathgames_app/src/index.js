@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App.js';
 import reportWebVitals from './reportWebVitals';
+import { urlWeb } from './data/data';
 
 
 /* Services */
@@ -22,7 +23,12 @@ if (sessionStorage.getItem('user_id') === null)
 
 var current_user_id = AuthService.getCurrentUserId();
 
-socket.emit("new_user", {"user_id": current_user_id})
+socket.emit("new_user", {"user_id": current_user_id});
+
+socket.on("logout", (msg) => {
+    sessionStorage.removeItem("user");
+    window.location.assign(urlWeb);
+});
 
 export default socket;
 
