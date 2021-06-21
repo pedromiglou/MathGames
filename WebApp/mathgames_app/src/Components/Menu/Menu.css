@@ -666,6 +666,22 @@ span.icons-noname{
 
 /* Clicky button */
 
+.invite-friend-modal{
+    background: hsl(54, 53%, 53%) !important;
+}
+
+.invite-friend-modal span.front{
+    background: hsl(46, 86%, 58%) !important;
+}
+
+.remove-friend-modal{
+    background: hsl(0, 53%, 53%) !important;
+}
+
+.remove-friend-modal span.front{
+    background: hsl(0, 86%, 58%) !important;
+}
+
 .button-add-friend {
 	color: white;
 	background: hsl(120, 53%, 53%);
