@@ -73,7 +73,7 @@ function Welcome() {
 											
 										</a>
 									</div> */}
-                                    <div id="container">
+                                    <div className="align-right">
                                         <Link to="/gamesDashboard">
                                             <button className="learn-more slide-up-btn">
                                                 <span
@@ -103,7 +103,7 @@ function Welcome() {
                                 </div>
                                 <div className="half container col-xl-6 col-lg-6 col-md-8 col-sm-12">
                                     <div className="row">
-                                        <div className="half container align-right">
+                                        <div className="align-right">
                                             <figure>
                                                 <img
                                                     className="mobile-icons"
@@ -112,18 +112,6 @@ function Welcome() {
                                                         "/images/android.png"
                                                     }
                                                     alt="android"
-                                                />
-                                            </figure>
-                                        </div>
-                                        <div className="half container">
-                                            <figure>
-                                                <img
-                                                    className="mobile-icons"
-                                                    src={
-                                                        process.env.PUBLIC_URL +
-                                                        "/images/ios.png"
-                                                    }
-                                                    alt="ios"
                                                 />
                                             </figure>
                                         </div>
