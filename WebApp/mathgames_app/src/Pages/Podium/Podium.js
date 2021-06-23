@@ -15,13 +15,6 @@ import socket from "../../index"
 import AuthService from '../../Services/auth.service';
 import UserService from '../../Services/user.service';
 
-
-/*O que falta fazer aqui:
-	-Quando se muda entre abas, o resultado dos filtros deve ser resetado
-	-Fazer a lógica para os outros tipos de conta (jogadores normais, com privilégios e administradores)
-	-Meter os filtros de nivel e nome a funcionarem em conjunto
-*/
-
 function Podium() {
 	var current_user = AuthService.getCurrentUser();
 
@@ -429,8 +422,8 @@ function Podium() {
 									<div className="level-section">
 										<h2>Nivel</h2>
 										<div className="search-level">
-											<input className="form-control form-control-lg" id="filter_allusers_min_level" type="number" placeholder="minimo"/>
-											<input className="form-control form-control-lg" id="filter_allusers_max_level" type="number" placeholder="máximo"/>
+											<input className="form-control form-control-lg" id="filter_allusers_min_level" type="number" placeholder="Mínimo" min="1"/>
+											<input className="form-control form-control-lg" id="filter_allusers_max_level" type="number" placeholder="Máximo" min="1"/>
 										</div>
 									</div>
 								</div>
@@ -666,8 +659,8 @@ function Podium() {
 										<div className="level-section">
 											<h2>Nivel</h2>
 											<div className="search-level">
-												<input className="form-control form-control-lg" id="filter_normal_min_level" type="number" placeholder="minimo"/>
-												<input className="form-control form-control-lg" id="filter_normal_max_level" type="number" placeholder="máximo"/>
+												<input className="form-control form-control-lg" id="filter_normal_min_level" type="number" placeholder="Mínimo" min="1"/>
+												<input className="form-control form-control-lg" id="filter_normal_max_level" type="number" placeholder="Máximo" min="1"/>
 											</div>
 										</div>
 									</div>
@@ -817,8 +810,8 @@ function Podium() {
 										<div className="level-section">
 											<h2>Nivel</h2>
 											<div className="search-level">
-												<input className="form-control form-control-lg" id="filter_privilege_min_level" type="number" placeholder="minimo"/>
-												<input className="form-control form-control-lg" id="filter_privilege_max_level" type="number" placeholder="máximo"/>
+												<input className="form-control form-control-lg" id="filter_privilege_min_level" type="number" placeholder="Mínimo" min="1"/>
+												<input className="form-control form-control-lg" id="filter_privilege_max_level" type="number" placeholder="Máximo" min="1"/>
 											</div>
 										</div>
 									</div>
@@ -968,8 +961,8 @@ function Podium() {
 										<div className="level-section">
 											<h2>Nivel</h2>
 											<div className="search-level">
-												<input className="form-control form-control-lg" id="filter_admin_min_level" type="number" placeholder="minimo"/>
-												<input className="form-control form-control-lg" id="filter_admin_max_level" type="number" placeholder="máximo"/>
+												<input className="form-control form-control-lg" id="filter_admin_min_level" type="number" placeholder="Minimo" min="1"/>
+												<input className="form-control form-control-lg" id="filter_admin_max_level" type="number" placeholder="Máximo" min="1"/>
 											</div>
 										</div>
 									</div>
@@ -1118,8 +1111,8 @@ function Podium() {
 										<div className="level-section">
 											<h2>Nivel</h2>
 											<div className="search-level">
-												<input className="form-control form-control-lg" id="filter_banned_min_level" type="number" placeholder="minimo"/>
-												<input className="form-control form-control-lg" id="filter_banned_max_level" type="number" placeholder="máximo"/>
+												<input className="form-control form-control-lg" id="filter_banned_min_level" type="number" placeholder="Minimo" min="1"/>
+												<input className="form-control form-control-lg" id="filter_banned_max_level" type="number" placeholder="Máximo" min="1"/>
 											</div>
 										</div>
 									</div>

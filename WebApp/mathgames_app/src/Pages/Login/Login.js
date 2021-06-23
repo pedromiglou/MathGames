@@ -9,6 +9,9 @@ import * as FaIcons from 'react-icons/fa';
 import * as MdIcons from "react-icons/md";
 
 function Login() {
+
+    const [id, setId] = useState("login");
+
     // const [signIn, setSignIn] = useState(true);
 
     async function login(event) {
@@ -33,8 +36,8 @@ function Login() {
     
 
     async function register(event) {
-        event.preventDefault();
         hide_everything()
+        event.preventDefault();
         if (document.getElementById("passwordRegisto").value.match(/^(?=.*\d)(?=.*[a-zA-Z]).{5,25}$/)) {
 
             if (20 >= document.getElementById("nomeUtilizadorRegisto").value.length && document.getElementById("nomeUtilizadorRegisto").value.length >= 3) {
@@ -50,8 +53,10 @@ function Login() {
                         document.getElementById('nomeUtilizadorRegisto').value = ''
                         document.getElementById('emailRegisto').value = ''
                         document.getElementById('passwordRegisto').value = ''
-                        document.getElementById('change_button').click()
+                        
                         document.getElementById("sucessoRegisto").style.display = "block"
+                        setId("login")
+                        
                         }
                     else {
                         if (response.error === "username")
@@ -97,7 +102,6 @@ function Login() {
             elemento.style.display = "none"
     }
 
-    const [id, setId] = useState("login");
     
     useEffect( () => {
         if (id === "login"){
