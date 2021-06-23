@@ -294,7 +294,18 @@ function Podium() {
 		retrieveUsers
 	, [page_users, page_banned_users, page_normal_users, page_privilege_users, page_admin_users, allusers_inputs, banned_inputs, normal_inputs, privilege_inputs, admin_inputs])
 
+	function checkNumber(event){
+		var charCode = (event.which) ? event.which : event.keyCode;
 	
+		if (charCode > 31 && (charCode < 48 || charCode > 57)){
+			event.target.style.border = "4px solid red";
+			event.preventDefault();
+		}
+		else {
+			event.target.style.border = "4px solid green";
+		}
+	}
+
 	return (
 		<div>
 			<br></br>
@@ -422,8 +433,8 @@ function Podium() {
 									<div className="level-section">
 										<h2>Nivel</h2>
 										<div className="search-level">
-											<input className="form-control form-control-lg" id="filter_allusers_min_level" type="number" placeholder="Mínimo" min="1"/>
-											<input className="form-control form-control-lg" id="filter_allusers_max_level" type="number" placeholder="Máximo" min="1"/>
+											<input className="form-control form-control-lg" id="filter_allusers_min_level" type="number" placeholder="Mínimo" min="1" onKeyPress={(e) => checkNumber(e)}/>
+											<input className="form-control form-control-lg" id="filter_allusers_max_level" type="number" placeholder="Máximo" min="1" onKeyPress={(e) => checkNumber(e)}/>
 										</div>
 									</div>
 								</div>
@@ -659,8 +670,8 @@ function Podium() {
 										<div className="level-section">
 											<h2>Nivel</h2>
 											<div className="search-level">
-												<input className="form-control form-control-lg" id="filter_normal_min_level" type="number" placeholder="Mínimo" min="1"/>
-												<input className="form-control form-control-lg" id="filter_normal_max_level" type="number" placeholder="Máximo" min="1"/>
+												<input className="form-control form-control-lg" id="filter_normal_min_level" type="number" placeholder="Mínimo" min="1" onKeyPress={(e) => checkNumber(e)}/>
+												<input className="form-control form-control-lg" id="filter_normal_max_level" type="number" placeholder="Máximo" min="1" onKeyPress={(e) => checkNumber(e)}/>
 											</div>
 										</div>
 									</div>
@@ -810,8 +821,8 @@ function Podium() {
 										<div className="level-section">
 											<h2>Nivel</h2>
 											<div className="search-level">
-												<input className="form-control form-control-lg" id="filter_privilege_min_level" type="number" placeholder="Mínimo" min="1"/>
-												<input className="form-control form-control-lg" id="filter_privilege_max_level" type="number" placeholder="Máximo" min="1"/>
+												<input className="form-control form-control-lg" id="filter_privilege_min_level" type="number" placeholder="Mínimo" min="1" onKeyPress={(e) => checkNumber(e)}/>
+												<input className="form-control form-control-lg" id="filter_privilege_max_level" type="number" placeholder="Máximo" min="1" onKeyPress={(e) => checkNumber(e)}/>
 											</div>
 										</div>
 									</div>
@@ -961,8 +972,8 @@ function Podium() {
 										<div className="level-section">
 											<h2>Nivel</h2>
 											<div className="search-level">
-												<input className="form-control form-control-lg" id="filter_admin_min_level" type="number" placeholder="Minimo" min="1"/>
-												<input className="form-control form-control-lg" id="filter_admin_max_level" type="number" placeholder="Máximo" min="1"/>
+												<input className="form-control form-control-lg" id="filter_admin_min_level" type="number" placeholder="Minimo" min="1" onKeyPress={(e) => checkNumber(e)}/>
+												<input className="form-control form-control-lg" id="filter_admin_max_level" type="number" placeholder="Máximo" min="1" onKeyPress={(e) => checkNumber(e)}/>
 											</div>
 										</div>
 									</div>
@@ -1111,8 +1122,8 @@ function Podium() {
 										<div className="level-section">
 											<h2>Nivel</h2>
 											<div className="search-level">
-												<input className="form-control form-control-lg" id="filter_banned_min_level" type="number" placeholder="Minimo" min="1"/>
-												<input className="form-control form-control-lg" id="filter_banned_max_level" type="number" placeholder="Máximo" min="1"/>
+												<input className="form-control form-control-lg" id="filter_banned_min_level" type="number" placeholder="Minimo" min="1" onKeyPress={(e) => checkNumber(e)}/>
+												<input className="form-control form-control-lg" id="filter_banned_max_level" type="number" placeholder="Máximo" min="1" onKeyPress={(e) => checkNumber(e)}/>
 											</div>
 										</div>
 									</div>
