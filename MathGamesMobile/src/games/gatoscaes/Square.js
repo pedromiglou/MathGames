@@ -17,12 +17,16 @@ function Square(props) {
     if ((x==3 && y==4)||(x==4 && y==4)||(x==3 && y==5)||(x==4 && y==5)) {
         if (props.valid&&!props.blocked) {
             source = require("./../../../public/game_assets/gatos_caes/valid_center_square.png");
+        } else if (props.last) {
+            source = require("./../../../public/game_assets/gatos_caes/last_move_center_square.png");
         } else {
             source = require("./../../../public/game_assets/gatos_caes/center_square.png");
         }
     } else {
         if (props.valid&&!props.blocked) {
             source = require("./../../../public/game_assets/gatos_caes/valid_square.png");
+        } else if (props.last) {
+            source = require("./../../../public/game_assets/gatos_caes/last_move_square.png");
         } else {
             source = require("./../../../public/game_assets/gatos_caes/square.png");
         }

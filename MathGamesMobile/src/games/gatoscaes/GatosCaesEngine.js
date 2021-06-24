@@ -8,6 +8,7 @@ import {GameLoop} from './GameLoop';
 import {readData} from './../../utilities/AsyncStorage';
 import Storage from "./Storage";
 import GameText from './GameText';
+import Help from './Help';
 
 function GatosCaesEngine() {
     const boardHeight = (Constants.GRID_SIZE+3) * Constants.CELL_SIZE;
@@ -27,7 +28,7 @@ function GatosCaesEngine() {
 
     squares.forEach(square=>{
         entities.push({position: square, size: Constants.CELL_SIZE, valid: false, blockedG:false,
-            blockedC: false, renderer: <Square></Square>});
+            blockedC: false, last: false, renderer: <Square></Square>});
     });
     
     useEffect(() => {
@@ -42,10 +43,11 @@ function GatosCaesEngine() {
                         dispatch: this.engine.dispatch, gameMode: gameMode, renderer: <GameText></GameText>});
                     entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "Jogador 1: "+p1, turn: 1,
                         dispatch: this.engine.dispatch, gameMode: gameMode, renderer: <GameText></GameText>});
+                    entities.push({position: [0, 10], size: Constants.CELL_SIZE, renderer: <Help></Help>});
                     readData("dif").then(X=>{
                         dif= X!==null ? X.slice(1,-1) : null;
                         readData('match_id').then(X=>{
-                            match_id=X.slice(1,-1);
+                            match_id= X!==null ? X.slice(1,-1) : null;
                             readData('user_id').then(X=>{
                                 user_id=X.slice(1,-1);
                                 readData('username').then(X=>{

@@ -5,7 +5,7 @@ import {
 	StyleSheet,
 	View,
 	Modal,
-    TouchableOpacity
+	TouchableOpacity
 } from "react-native";
 
 
@@ -19,7 +19,7 @@ function RulesModal(props) {
 			transparent={true}
 			visible={props.modalVisible}
 			onRequestClose={() => {
-				props.toggleModalVisibility();
+				props.setModalVisible(false);
 			}}
 		>
 			<View style={styles.centeredView}>
@@ -40,7 +40,7 @@ function RulesModal(props) {
 						<TouchableOpacity
 							style={[styles.buttonModal, styles.buttonOpen]}
 							onPress={() => {
-								props.toggleModalVisibility();
+								props.setModalVisible(false);
 							}}
 						>
 							<Text style={styles.textStyle}>Ok!</Text>

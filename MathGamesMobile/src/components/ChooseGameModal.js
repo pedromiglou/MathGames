@@ -4,8 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import {gamesInfo} from './../data/GamesInfo';
 import { LinearGradient } from 'expo-linear-gradient';
 import { readData, saveData } from '../utilities/AsyncStorage';
-import UserService from "./../services/user.service";
-import socket from "./../utilities/Socket";
+import socket from '../utilities/Socket';
 
 const win = Dimensions.get('window');
 
@@ -17,17 +16,18 @@ function ChooseGameModal(props) {
             <View style={styles.modalView}>
                 <Text style={styles.text}>Escolhe o jogo que queres jogar</Text>
                 <ScrollView style={{backgroundColor: "#dcdfe4"}}>
-                    {gamesInfo.map(X => 
+                    {gamesInfo.filter(game=>!game.toBeDone).map(X => 
                     <TouchableHighlight style={styles.gameTile} key={X.id} onPress = {() => {
                           readData("user").then(user=>{
                             user = JSON.parse(JSON.parse(user));
-                            UserService.send_notification_request(user.id, props.opponent, "P", user.token).then(()=>{
-                              saveData("opponent", props.opponent);
-                              saveData("gameMode", "Inviter");
-                              saveData("game", X);
-                              props.setVisible(false);
-                              navigation.navigate("Game");
-                            });
+                            var notification_text = user.username + " convidou-te para jogares."
+                            socket.emit("new_notification", {"sender": user.id, "receiver": props.opponent, notification_type: "P", notification_text: notification_text});
+
+                            saveData("opponent", props.opponent);
+                            saveData("gameMode", "Inviter");
+                            saveData("game", X);
+                            props.setVisible(false);
+                            navigation.navigate("Game");
                             
                           });
                         }

@@ -17,18 +17,24 @@ function Square(props) {
     if (x===6 && y===1) {
         if (props.valid&&!props.blocked) {
             source = require("./../../../public/game_assets/rastros/valid_p2.png");
+        } else if (props.last) {
+            source = require("./../../../public/game_assets/rastros/last_move_p2.png");
         } else {
             source = require("./../../../public/game_assets/rastros/p2.png");
         }
     } else if (x===0 && y===7) {
         if (props.valid&&!props.blocked) {
             source = require("./../../../public/game_assets/rastros/valid_p1.png");
+        } else if (props.last) {
+            source = require("./../../../public/game_assets/rastros/last_move_p1.png");
         } else {
             source = require("./../../../public/game_assets/rastros/p1.png");
         }
     } else {
         if (props.valid&&!props.blocked) {
             source = require("./../../../public/game_assets/rastros/valid_square.png");
+        } else if (props.last) {
+            source = require("./../../../public/game_assets/rastros/last_move_square.png");
         } else {
             source = require("./../../../public/game_assets/rastros/square.png");
         }

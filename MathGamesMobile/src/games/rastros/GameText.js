@@ -66,7 +66,7 @@ function GameText(props) {
         player=0;
         styles = StyleSheet.create({
             row: {
-                width: props.size*7,
+                width: props.size*6,
                 height: props.size,
                 position: 'absolute',
                 left: x * props.size,
@@ -92,7 +92,7 @@ function GameText(props) {
             {player>0 && props.gameMode !== "Contra o Computador" && <CountDown
                 style={{alignSelf: "flex-start", width: 70, position: "absolute"}}
                 until={300}
-                onFinish={() => {props.dispatch({type: "gameEnded", turn: props.turn})}}
+                onFinish={() => props.dispatch({type: "gameEnded", turn: props.turn})}
                 size={15}
                 timeToShow={["M","S"]}
                 timeLabelStyle={{fontFamily: "BubblegumSans"}}

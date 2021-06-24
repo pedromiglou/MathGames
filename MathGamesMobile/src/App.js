@@ -26,6 +26,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { DrawerActions } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Notifications from './screens/Notifications';
+
+import * as ScreenOrientation from 'expo-screen-orientation';
+
+import CustomisableAlert from "react-native-customisable-alert";
+import socket from './utilities/Socket';
+
 export const navigationRef = React.createRef();
 export function openDrawer(routeName, params) {
   navigationRef.current.dispatch(DrawerActions.toggleDrawer());
@@ -140,15 +146,17 @@ function App() {
 
   readData('username').then(username=>{
     if (username===null) {
-      username = uuidv4();
+      username = "Guest_"+uuidv4();
       saveData('user_id', username);
       saveData('username', username);
+      socket.emit("new_user", {"user_id": username});
     } else {
       setUsername(username.slice(1, -1));
     }
-  })
+  });
 
   if (!loaded) {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
     deleteData("user");
     deleteData("user_id");
     deleteData("username")
@@ -156,6 +164,8 @@ function App() {
   } else {
     return (
       <NavigationContainer ref={navigationRef}>
+        {/*this alert needs to be here to be used everywhere*/}
+        <CustomisableAlert/>
         <View style={styles.topView}>
           <TouchableOpacity onPress = {() => login ? setLogin(false) : openDrawer()}>
             <Feather name="menu" size={28} color="grey" style={styles.topIcon}/>
@@ -167,17 +177,23 @@ function App() {
               source={require('./../public/images/logo-light.png')}
             />
           
-          {loggedIn ?
+          {loggedIn &&
             <TouchableOpacity style={styles.loginImage} onPress={()=>navigationRef.current.dispatch(DrawerActions.jumpTo('Perfil'))}>
               <Text style={styles.username} numberOfLines={1}>{username}</Text>
+            </TouchableOpacity>
+          }
+
+          {(!loggedIn&&login) ?
+            <TouchableOpacity onPress = {() => setLogin(!login)} style={styles.loginImage}>
+              <Text style={styles.username}>Voltar</Text>
             </TouchableOpacity>
             :
             <TouchableOpacity onPress = {() => setLogin(!login)}>
               <Image
-                  style={styles.loginImage}
-                  resizeMode = {'contain'}
-                  source={require('./../public/images/Login.png')}
-                />
+                style={styles.loginImage}
+                resizeMode = {'contain'}
+                source={require('./../public/images/Login.png')}
+              />
             </TouchableOpacity>
           }
         </View>
@@ -197,10 +213,8 @@ function App() {
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Amigos</Text>)}}/>}
             {loggedIn && <Drawer.Screen name="Notificações" component={NotificationsNav} options={{
                 drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Notificações</Text>)}}/>}
-            <Drawer.Screen name="Definições" component={Welcome} options={{
-                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Definições</Text>)}}/>
             <Drawer.Screen name="Sobre Nós" component={AboutUs} options={{
-                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Sobre nós</Text>)}}/>
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Quem somos</Text>)}}/>
           </Drawer.Navigator>
         }
       </NavigationContainer>
@@ -225,11 +239,12 @@ const styles = StyleSheet.create({
   },
   topIcon: {
     marginTop: Constants.statusBarHeight,
-    marginLeft: 10
+    marginLeft: 5
   },
   logoImage: {
-      width: win.width/5*3,
-      height: win.width*360/1463/5*3,
+      margin: 5,
+      width: win.width/2.1,
+      height: win.width*360/1463/2.1,
       marginTop: Constants.statusBarHeight
   },
   loginImage: {

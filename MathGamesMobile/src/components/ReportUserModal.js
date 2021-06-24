@@ -1,24 +1,15 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
-	ScrollView,
 	Text,
 	Dimensions,
 	StyleSheet,
 	View,
 	Modal,
-	TextInput,
+	TouchableOpacity
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import UserService from "../services/user.service";
-import { Fontisto } from "@expo/vector-icons";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { MaterialIcons } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
-import userService from "../services/user.service";
-import { readData } from "../utilities/AsyncStorage";
 import { Picker } from "@react-native-picker/picker";
-import { Feather } from "@expo/vector-icons";
 
 const win = Dimensions.get("window");
 
@@ -35,9 +26,9 @@ function ReportUserModal(props) {
 		<Modal
 			animationType="slide"
 			transparent={true}
-			visible={props.modalVisible}
+			visible={props.visible}
 			onRequestClose={() => {
-				props.toggleModalVisibility();
+				props.setVisible(false);
 			}}
 		>
 			<View style={styles.centeredView}>
@@ -56,21 +47,20 @@ function ReportUserModal(props) {
 							setSelectedMotive(itemValue);
 						}}
 					>
-						<Picker.Item label="Motivo" value="motivo" />
-						<Picker.Item label="Cheats" value="Cheats" />
-						<Picker.Item label="Bug Abuse" value="Bug Abuse" />
+						<Picker.Item label="Motivo" value="motivo" fontFamily="BubblegumSans" style={{fontFamily:"BubblegumSans"}} enabled={false}/>
+						<Picker.Item label="Cheats" value="Cheats" fontFamily="BubblegumSans"/>
+						<Picker.Item label="Bug Abuse" value="Bug Abuse" fontFamily="BubblegumSans"/>
 					</Picker>
 					<View
 						style={{
 							flexDirection: "row",
-							justifyContent: "center",
 							alignItems: "center",
 						}}
 					>
 						<TouchableOpacity
 							style={[styles.buttonModal, styles.buttonOpen]}
 							onPress={() => {
-								props.toggleModalVisibility();
+								props.setVisible(false);
 								report_player(props.modalUserId);
                                 setSelectedMotive("motivo");
 							}}
@@ -80,7 +70,7 @@ function ReportUserModal(props) {
 						<TouchableOpacity
 							style={[styles.buttonModal, styles.buttonCancel]}
 							onPress={() => {
-								props.toggleModalVisibility();
+								props.setVisible(false);
                                 setSelectedMotive("motivo");
 							}}
 						>
@@ -97,14 +87,13 @@ export default ReportUserModal;
 
 const styles = StyleSheet.create({
 	picker: {
-		width: 100,
+		width: win.width/2,
 	},
 	itemStyle: {
 		fontSize: 15,
 		height: 75,
 		color: "black",
 		textAlign: "center",
-		fontWeight: "bold",
 		fontFamily: "BubblegumSans",
 	},
 
@@ -153,7 +142,6 @@ const styles = StyleSheet.create({
 
 	textStyle: {
 		color: "white",
-		fontWeight: "bold",
 		textAlign: "center",
 		fontFamily: "BubblegumSans",
 	},
