@@ -325,3 +325,38 @@
 	text-align: center;
 	padding: 0.5em 0 1em 0;
 }
+
+
+.ban-button{
+	color: white;
+	background: hsl(187, 53%, 53%) !important;
+	border: none;
+	border-radius: 12px !important;
+	padding: 0;
+	cursor: pointer !important;
+	position: relative !important;
+}
+
+
+.ban-button span.front {
+	display: block;
+	padding: 5px 10px;
+	border-radius: 12px;
+	background: hsl(189, 86%, 49%) !important;
+	color: white;
+	transform: translateY(-8px);
+	text-align: center;
+}
+
+
+.ban-button:hover span.front{
+	transform: translateY(-4px);
+	transition: filter 250ms;
+  	filter: brightness(110%);
+}
+
+.ban-button:active span.front{
+	transform: translateY(-1px);
+	transition: filter 250ms;
+  	filter: brightness(110%);
+}
