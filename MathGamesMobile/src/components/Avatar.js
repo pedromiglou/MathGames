@@ -72,12 +72,6 @@ export default function Avatar(props) {
 				//spotLight.lookAt(scene.position);
 				//scene.add(spotLight);
 
-				const cube = new IconMesh();
-				cube.position.set(3, 0, 1);
-				scene.add(cube);
-
-				//camera.lookAt(cube.position);
-
 				switch (props.hatName) {
 					case "MagicianHat":
 						const MagicianHat = await loadModelsAsync_MagicianHat();
@@ -341,10 +335,7 @@ export default function Avatar(props) {
 				// ************************** //
 				// Render
 				// ************************** //
-				function update() {
-					cube.rotation.y += 0.05;
-					cube.rotation.x += 0.025;
-				}
+				function update() { }
 
 				// Setup an animation loop
 				const render = () => {
@@ -359,17 +350,6 @@ export default function Avatar(props) {
 	);
 }
 
-class IconMesh extends Mesh {
-	constructor() {
-		super(
-			new BoxBufferGeometry(1.0, 1.0, 1.0),
-			new MeshStandardMaterial({
-				// map: new TextureLoader().load(require('./assets/icon.png')),
-				color: 0xff0000,
-			})
-		);
-	}
-}
 
 // ************************** //
 // Hats
