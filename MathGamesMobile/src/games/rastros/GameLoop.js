@@ -27,10 +27,10 @@ function makePlay(entities, storage, piece, newPos) {
 
   //move piece to new position and update highlight
   entities.slice(1, 51).forEach(entity=>entity.last=false);
-  entities[piece.position[0]*7+piece.position[1]].last=true;
+  entities[piece.position[0]*7+piece.position[1]+1].last=true;
   piece.position = [newPos[0], newPos[1]];
-  entities[piece.position[0]*7+piece.position[1]].blocked=true;
-  entities[piece.position[0]*7+piece.position[1]].last=true;
+  entities[piece.position[0]*7+piece.position[1]+1].blocked=true;
+  entities[piece.position[0]*7+piece.position[1]+1].last=true;
   
   //switch timers
   storage.turn = storage.turn===1 ? 2 : 1;
@@ -126,27 +126,32 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
     
     //jogada do jogador
     } else if (e.type === "move") {
-      //clean green squares
-      for (var x = piece.position[0]-1; x<=piece.position[0]+1; x++) {
-        for (var y = piece.position[1]-1; y<=piece.position[1]+1; y++) {
-          if (x>=0 && x<=6 && y>=0 && y<=6) {
-            entities[x*7+y+1].valid = false;
+      if (e.x>=0 && e.x<=6 && e.y>=0 && e.y<=6) {
+        if (entities[e.x*7+e.y+1].valid && !entities[e.x*7+e.y+1].blocked) {
+          //clean green squares
+          for (var x = piece.position[0]-1; x<=piece.position[0]+1; x++) {
+            for (var y = piece.position[1]-1; y<=piece.position[1]+1; y++) {
+              if (x>=0 && x<=6 && y>=0 && y<=6) {
+                entities[x*7+y+1].valid = false;
+              }
+            }
+          }
+
+          newPos = [e.x, e.y];
+
+          makePlay(entities, storage, piece, newPos);
+
+          if (gameMode==="Contra o Computador") {
+            ai.AI_blocked_squares[e.y][e.x] = true;
+            dispatch({type: "ai"});
+            storage.myTurn=false;
+          } else if (gameMode==="Competitivo"||gameMode==="Amigo") {
+            socket.emit("move", e.y*7+e.x, storage.user_id, storage.match_id);
+            storage.myTurn=false;
           }
         }
       }
-
-      newPos = [e.x, e.y];
-
-      makePlay(entities, storage, piece, newPos);
-
-      if (gameMode==="Contra o Computador") {
-        ai.AI_blocked_squares[e.y][e.x] = true;
-        dispatch({type: "ai"});
-        storage.myTurn=false;
-      } else if (gameMode==="Competitivo"||gameMode==="Amigo") {
-        socket.emit("move", e.y*7+e.x, storage.user_id, storage.match_id);
-        storage.myTurn=false;
-      }
+      
     } else if (e.type === "gameEnded") {
       saveData("gameEnded", true);
       storage.gameEnded=true;

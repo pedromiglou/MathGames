@@ -1,20 +1,26 @@
 import * as React from "react";
-import {Image, TouchableOpacity} from 'react-native';
+import {Image, TouchableOpacity, StyleSheet} from 'react-native';
 
 function Square(props) {
     const x = props.position[0];
     const y = props.position[1];
 
-    const imageStyle = {
-        width: props.size,
-        height: props.size,
-        position: 'absolute',
-        left: x * props.size,
-        top: y * props.size
-    }
+    const styles = StyleSheet.create({
+        button: {
+            width: props.size,
+            height: props.size,
+            position: 'absolute',
+            left: x * props.size,
+            top: (y+1) * props.size
+        },
+        image: {
+            width: props.size,
+            height: props.size,
+        }
+    });
 
     var source;
-    if ((x==3 && y==4)||(x==4 && y==4)||(x==3 && y==5)||(x==4 && y==5)) {
+    if ((x==3 && y==3)||(x==4 && y==3)||(x==3 && y==4)||(x==4 && y==4)) {
         if (props.valid&&!props.blocked) {
             source = require("./../../../public/game_assets/gatos_caes/valid_center_square.png");
         } else if (props.last) {
@@ -33,9 +39,9 @@ function Square(props) {
     }
     
     return (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=>props.dispatch({type: "move", x: x, y: y})} style={styles.button}>
             <Image
-                style={imageStyle}
+                style={styles.image}
                 resizeMode = {'contain'}
                 source={source}
             />

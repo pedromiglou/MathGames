@@ -22,13 +22,13 @@ function GatosCaesEngine() {
     var squares = [];
     for (let x = 0; x<8; x++) {
         for (let y=0; y<8; y++) {
-            squares.push([x, y+1]);
+            squares.push([x, y]);
         }
     }
 
     squares.forEach(square=>{
         entities.push({position: square, size: Constants.CELL_SIZE, valid: false, blockedG:false,
-            blockedC: false, last: false, renderer: <Square></Square>});
+            blockedC: false, last: false, dispatch: ()=>{}, renderer: <Square></Square>});
     });
     
     useEffect(() => {
