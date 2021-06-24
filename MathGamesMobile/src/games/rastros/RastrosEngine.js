@@ -23,16 +23,16 @@ function RastrosEngine() {
     var squares = [];
     for (let x = 0; x<7; x++) {
         for (let y=0; y<7; y++) {
-            squares.push([x, y+1]);
+            squares.push([x, y]);
         }
     }
     squares.forEach(square => {
         entities.push({position: square, size: Constants.CELL_SIZE, valid: false, blocked:false,
-            last: false, renderer: <Square></Square>});
+            last: false, dispatch: ()=>{}, renderer: <Square></Square>});
     })
 
     entities[31].blocked = true;
-    entities.push({position: [4,3], size: Constants.CELL_SIZE, renderer: <Piece></Piece>});
+    entities.push({position: [4,2], size: Constants.CELL_SIZE, renderer: <Piece></Piece>});
 
     useEffect(() => {
         let mounted = true;

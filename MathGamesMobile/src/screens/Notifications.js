@@ -32,8 +32,6 @@ function Notifications({ navigation }) {
         mounted = false;
       };
     }, []);
-
-    socket.off("reload_notifications")
     
     socket.on("reload_notifications", () => {
       reloadNotifications();
