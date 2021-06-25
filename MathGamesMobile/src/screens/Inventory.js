@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import * as React from "react";
 import {
 	View,
 	ScrollView,
@@ -6,7 +6,6 @@ import {
 	Image,
 	Dimensions,
 	StyleSheet,
-	TouchableHighlight,
 	SafeAreaView,
 	Modal,
 	Pressable,
@@ -458,11 +457,11 @@ class Inventory extends React.Component {
 						style={styles.picker}
 						itemStyle={styles.pickerItem}
 					>
-						<Picker.Item label="Escolhe uma opcao" value="none" />
-						<Picker.Item label="Chapeus" value="chapeus" />
+						<Picker.Item label="Escolhe uma opção" value="none" />
+						<Picker.Item label="Chapéus" value="chapeus" />
 						<Picker.Item label="Camisolas" value="camisolas" />
-						<Picker.Item label="Acessorios" value="acessorios" />
-						<Picker.Item label="Calcas" value="calcas" />
+						<Picker.Item label="Acessórios" value="acessorios" />
+						<Picker.Item label="Calças" value="calcas" />
 						<Picker.Item label="Cor de Pele" value="color" />
 					</Picker>
 
@@ -535,7 +534,6 @@ class Inventory extends React.Component {
 								<View
 									style={{
 										flexDirection: "row",
-										justifyContent: "center",
 										alignItems: "center",
 									}}
 								>
@@ -611,8 +609,7 @@ const styles = StyleSheet.create({
 	buttonOpen: {
 		backgroundColor: "green",
 		width: win.width / 3,
-		marginLeft: win.width / 8,
-		marginRight: 20,
+		marginRight: 10,
 	},
 	buttonClose: {
 		backgroundColor: "#2196F3",
@@ -621,22 +618,24 @@ const styles = StyleSheet.create({
 	buttonCancel: {
 		backgroundColor: "red",
 		width: win.width / 3,
-		marginRight: win.width / 8,
+		marginLeft: 10,
 	},
 
 	textStyle: {
 		color: "white",
-		fontWeight: "bold",
 		textAlign: "center",
+		fontFamily: "BubblegumSans"
 	},
 	modalTitle: {
 		marginBottom: 15,
 		textAlign: "center",
 		fontSize: 30,
+		fontFamily: "BubblegumSans"
 	},
 	modalText: {
 		marginBottom: 15,
 		textAlign: "center",
+		fontFamily: "BubblegumSans"
 	},
 
 	//---------------

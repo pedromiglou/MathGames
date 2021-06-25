@@ -210,51 +210,39 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
         }
       }
     }
+  }
 
-    //when the player performs a play dispatch an event
-    /*
-    touches.filter(t => t.type === "press").forEach(t => {
-      let x = Math.floor(t.event.locationX/Constants.CELL_SIZE);
-      let y = Math.floor(t.event.locationY/Constants.CELL_SIZE)-1;
-      if (x>=0 && x<=7 && y>=0 && y<=7) {
-        if (entities[x*8+y+1].valid && (storage.turn===2 || !entities[x*8+y+1].blockedG) ||
-                        (storage.turn===1 || !entities[x*8+y+1].blockedC)) {
-          dispatch({type: "move", x: x, y: y});
+  if (storage.gameMode.slice(-10)==="Computador") {
+    var nValidSquaresCats = 0;
+    var nValidSquaresDogs = 0;
+
+    for (var j = 0; j<=7; j++) {
+      for (var i = 0; i<=7; i++) {
+        if (j>=0 && j<=7 && i>=0 && i<=7) {
+          if (!entities[i*7+j+1].blockedG) nValidSquaresCats++;
+          if (!entities[i*7+j+1].blockedC) nValidSquaresDogs++;
         }
       }
-      
-    });*/
-  }
-
-  var nValidSquaresCats = 0;
-  var nValidSquaresDogs = 0;
-
-  for (var j = 0; j<=7; j++) {
-    for (var i = 0; i<=7; i++) {
-      if (j>=0 && j<=7 && i>=0 && i<=7) {
-        if (!entities[i*7+j+1].blockedG) nValidSquaresCats++;
-        if (!entities[i*7+j+1].blockedC) nValidSquaresDogs++;
-      }
     }
-  }
 
-  if (nValidSquaresCats===0&&nValidSquaresDogs>0) {
-    entities.push({visible:true, storage: storage, endMode: "no_moves", winner: 2, renderer: <GameModal></GameModal>});
-    storage.gameEnded = true;
-    saveData("gameEnded", true);
-  } else if (nValidSquaresDogs===0&&nValidSquaresCats>0) {
-    entities.push({visible:true, storage: storage, endMode: "no_moves", winner: 1, renderer: <GameModal></GameModal>});
-    storage.gameEnded = true;
-    saveData("gameEnded", true);
-  } else if (nValidSquaresDogs===0&&nValidSquaresCats===0) {
-    if (turn===1) {
+    if (nValidSquaresCats===0&&nValidSquaresDogs>0) {
       entities.push({visible:true, storage: storage, endMode: "no_moves", winner: 2, renderer: <GameModal></GameModal>});
       storage.gameEnded = true;
       saveData("gameEnded", true);
-    } else {
+    } else if (nValidSquaresDogs===0&&nValidSquaresCats>0) {
       entities.push({visible:true, storage: storage, endMode: "no_moves", winner: 1, renderer: <GameModal></GameModal>});
       storage.gameEnded = true;
       saveData("gameEnded", true);
+    } else if (nValidSquaresDogs===0&&nValidSquaresCats===0) {
+      if (turn===1) {
+        entities.push({visible:true, storage: storage, endMode: "no_moves", winner: 2, renderer: <GameModal></GameModal>});
+        storage.gameEnded = true;
+        saveData("gameEnded", true);
+      } else {
+        entities.push({visible:true, storage: storage, endMode: "no_moves", winner: 1, renderer: <GameModal></GameModal>});
+        storage.gameEnded = true;
+        saveData("gameEnded", true);
+      }
     }
   }
 

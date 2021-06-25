@@ -19,6 +19,7 @@ import { Feather } from "@expo/vector-icons";
 import AddFriendModal from "../components/AddFriendModal";
 import ReportUserModal from "../components/ReportUserModal";
 import RemoveFriendModal from "../components/RemoveFriendModal";
+
 const win = Dimensions.get("window");
 
 function Ranking({ navigation }) {
@@ -35,11 +36,26 @@ function Ranking({ navigation }) {
 	const [searchVisibility, setSearchVisibility] = useState(false);
 	const [inputText, onChangeInputText] = useState(null);
 
+	function reloadFriends() {
+		readData("user").then(user=>{
+			if (user!==null) {
+				user = JSON.parse(JSON.parse(user));
+				UserService.getFriends(user.id, user.token).then(response=>{
+					if ( response != null ) {
+						setFriends(response);
+					}
+				});
+			}
+		});
+	}
+
 	useEffect(() => {
 		let mounted = true;
-		readData("user").then(user=>setUser(JSON.parse(JSON.parse(user))));
+		readData("user").then(user=>{
+			setUser(JSON.parse(JSON.parse(user)));
+		})
 		reloadFriends();
-		UserService.getUsers("").then((res) => {
+		UserService.getUsers("", "", "", 0, 10).then((res) => {
 			setUsersFound(res.users);
 		});
   
@@ -48,16 +64,17 @@ function Ranking({ navigation }) {
 		};
 	}, []);
 
-	function reloadFriends() {
-		readData("user").then(user=>{
-			user = JSON.parse(JSON.parse(user));
-			UserService.getFriends(user.id, user.token).then(response=>{
-				if ( response != null ) {
-					setFriends(response);
-				}
+	useEffect(()=>{
+		const unsubscribe = navigation.addListener('focus', () => {
+			reloadFriends();
+			UserService.getUsers("", "", "", 0, 10).then((res) => {
+				setUsersFound(res.users);
 			});
 		});
-	}
+  
+		return unsubscribe;
+  
+	}, [navigation])
 
 	const getLevel = (account_level) => {
 		var contador = 1;
@@ -394,6 +411,7 @@ function Ranking({ navigation }) {
 						modalUsername={modalUsername}
 						user={user}
 						visible={modalVisible}
+						reloadFriends={reloadFriends}
 					/>
 				)}
 				{modalOperation === "remove" && (
@@ -405,6 +423,7 @@ function Ranking({ navigation }) {
 						friends={friends}
 						user={user}
 						visible={modalVisible}
+						reloadFriends={reloadFriends}
 					/>
 				)}
 			</ScrollView>

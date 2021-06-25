@@ -173,46 +173,36 @@ const GameLoop = (entities, {touches, events, dispatch }) => {
         }
       }
     }
-
-    //when the player performs a play dispatch an event
-    /*
-    touches.filter(t => t.type === "press").forEach(t => {
-      let x = Math.floor(t.event.locationX/Constants.CELL_SIZE);
-      let y = Math.floor(t.event.locationY/Constants.CELL_SIZE);
-      if (x>=0 && x<=6 && y>=0 && y<=6) {
-        if (entities[x*7+y+1].valid && !entities[x*7+y+1].blocked) {
-          dispatch({type: "move", x: x, y: y});
-        }
-      }
-    });*/
   }
 
-  if (piece.position[0]===0 && piece.position[1]===6) {
-    //player 1 won
-    saveData("gameEnded", true);
-    storage.gameEnded=true;
-    entities.push({visible:true, storage: storage, endMode: "reached_goal", winner: 1, renderer: <GameModal></GameModal>});
-    
-  } else if (piece.position[0]===6 && piece.position[1]===0) {
-    //player 2 won
-    saveData("gameEnded", true);
-    storage.gameEnded=true;
-    entities.push({visible:true, storage: storage, endMode: "reached_goal", winner: 2, renderer: <GameModal></GameModal>});
-  } else {
-    storage.gameEnded=true;
-    for (var j = piece.position[1]-1; j<=piece.position[1]+1; j++) {
-      for (var i = piece.position[0]-1; i<=piece.position[0]+1; i++) {
-        if (j>=0 && j<=6 && i>=0 && i<=6) {
-          if (!entities[i*7+j+1].blocked) {
-            storage.gameEnded=false;
-            return entities;
+  if (storage.gameMode.slice(-10)==="Computador") {
+    if (piece.position[0]===0 && piece.position[1]===6) {
+      //player 1 won
+      saveData("gameEnded", true);
+      storage.gameEnded=true;
+      entities.push({visible:true, storage: storage, endMode: "reached_goal", winner: 1, renderer: <GameModal></GameModal>});
+      
+    } else if (piece.position[0]===6 && piece.position[1]===0) {
+      //player 2 won
+      saveData("gameEnded", true);
+      storage.gameEnded=true;
+      entities.push({visible:true, storage: storage, endMode: "reached_goal", winner: 2, renderer: <GameModal></GameModal>});
+    } else {
+      storage.gameEnded=true;
+      for (var j = piece.position[1]-1; j<=piece.position[1]+1; j++) {
+        for (var i = piece.position[0]-1; i<=piece.position[0]+1; i++) {
+          if (j>=0 && j<=6 && i>=0 && i<=6) {
+            if (!entities[i*7+j+1].blocked) {
+              storage.gameEnded=false;
+              return entities;
+            }
           }
         }
       }
-    }
-    if (storage.gameEnded) {
-      saveData("gameEnded", true);
-      entities.push({visible:true, storage: storage, endMode: "no_moves", winner: storage.turn===1?2:1, renderer: <GameModal></GameModal>});
+      if (storage.gameEnded) {
+        saveData("gameEnded", true);
+        entities.push({visible:true, storage: storage, endMode: "no_moves", winner: storage.turn===1?2:1, renderer: <GameModal></GameModal>});
+      }
     }
   }
 
