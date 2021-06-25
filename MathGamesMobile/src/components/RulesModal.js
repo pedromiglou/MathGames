@@ -105,8 +105,6 @@ const styles = StyleSheet.create({
 	buttonOpen: {
 		backgroundColor: "green",
 		width: win.width / 3,
-		marginLeft: win.width / 8,
-		marginRight: 20,
 	},
 	buttonClose: {
 		backgroundColor: "#2196F3",
@@ -115,7 +113,6 @@ const styles = StyleSheet.create({
 	buttonCancel: {
 		backgroundColor: "red",
 		width: win.width / 3,
-		marginRight: win.width / 8,
 	},
 
 	textStyle: {

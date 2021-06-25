@@ -9,15 +9,15 @@ import {
 	TouchableOpacity
 } from "react-native";
 import UserService from "../services/user.service";
-import { Picker } from "@react-native-picker/picker";
 
 const win = Dimensions.get("window");
 
 function ReportUserModal(props) {
-	const [selectedMotive, setSelectedMotive] = useState(null);
+	const reasons = ["Uso Batota", "Exploração de Bug", "Nome inapropriado"];
+	const [selectedMotive, setSelectedMotive] = useState("");
 
 	async function report_player(player) {
-		if (selectedMotive !== "motivo") {
+		if (selectedMotive !== "") {
 			UserService.report_player(props.user.id, player, selectedMotive);
 		}
 	}
@@ -38,41 +38,42 @@ function ReportUserModal(props) {
 						Tem a certeza que pretende reportar o jogador{" "}
 						{props.modalUsername} ?
 					</Text>
-					<Picker
-						style={styles.picker}
-						//mode="dropdown"
-						itemStyle={{fontFamily:"BubblegumSans"}}
-						selectedValue={selectedMotive}
-						onValueChange={(itemValue, itemIndex) => {
-							setSelectedMotive(itemValue);
-						}}
-					>
-						<Picker.Item label="Motivo" value="motivo" enabled={false}/>
-						<Picker.Item label="Uso Batota" value="Uso Batota" fontFamily="BubblegumSans"/>
-						<Picker.Item label="Exploração de Bug" value="Exploração de Bug" fontFamily="BubblegumSans"/>
-						<Picker.Item label="Nome inapropriado" value="Nome inapropriado" fontFamily="BubblegumSans"/>
-					</Picker>
+
+					{reasons.map((reason, index)=>
+						<TouchableOpacity key={index}
+							style={selectedMotive===reason ? styles.buttonReason : styles.buttonReasonUnselected}
+							onPress={()=>setSelectedMotive(reason)}
+						>
+							<Text style={selectedMotive===reason ? styles.textStyle : styles.textStyleUnselected}>{reason}</Text>
+						</TouchableOpacity>
+					)}
+
 					<View
 						style={{
 							flexDirection: "row",
 							alignItems: "center",
+							marginTop: 15
 						}}
 					>
-						<TouchableOpacity
-							style={[styles.buttonModal, styles.buttonOpen]}
-							onPress={() => {
-								props.setVisible(false);
-								report_player(props.modalUserId);
-                                setSelectedMotive("motivo");
-							}}
-						>
-							<Text style={styles.textStyle}>Reportar</Text>
-						</TouchableOpacity>
+						{selectedMotive==="" ? <View style={{width: win.width / 3,
+							marginLeft: win.width / 8,
+							marginRight: 20}}></View> :
+							<TouchableOpacity
+								style={[styles.buttonModal, styles.buttonOpen]}
+								onPress={() => {
+									props.setVisible(false);
+									report_player(props.modalUserId);
+									setSelectedMotive("");
+								}}
+							>
+								<Text style={styles.textStyle}>Confirmar</Text>
+							</TouchableOpacity>
+						}
 						<TouchableOpacity
 							style={[styles.buttonModal, styles.buttonCancel]}
 							onPress={() => {
 								props.setVisible(false);
-                                setSelectedMotive("motivo");
+                                setSelectedMotive("");
 							}}
 						>
 							<Text style={styles.textStyle}>Cancelar</Text>
@@ -87,22 +88,11 @@ function ReportUserModal(props) {
 export default ReportUserModal;
 
 const styles = StyleSheet.create({
-	picker: {
-		width: win.width/2,
-	},
-	itemStyle: {
-		fontSize: 15,
-		color: "black",
-		textAlign: "center",
-		fontFamily: "BubblegumSans",
-	},
-
 	// Model
 	centeredView: {
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		//marginTop: 22,
 	},
 	modalView: {
 		margin: 20,
@@ -130,9 +120,6 @@ const styles = StyleSheet.create({
 		marginLeft: win.width / 8,
 		marginRight: 20,
 	},
-	buttonClose: {
-		backgroundColor: "#2196F3",
-	},
 
 	buttonCancel: {
 		backgroundColor: "red",
@@ -140,11 +127,38 @@ const styles = StyleSheet.create({
 		marginRight: win.width / 8,
 	},
 
+	buttonReason: {
+		borderRadius: 20,
+		padding: 5,
+		elevation: 2,
+		backgroundColor: "grey",
+		width: win.width / 2,
+		margin: 1
+	},
 	textStyle: {
 		color: "white",
 		textAlign: "center",
 		fontFamily: "BubblegumSans",
+		fontSize: 15
 	},
+
+	buttonReasonUnselected: {
+		borderRadius: 20,
+		padding: 5,
+		elevation: 2,
+		backgroundColor: "white",
+		width: win.width / 2,
+		margin: 1,
+		borderWidth: 1,
+		borderColor: "grey"
+	},
+	textStyleUnselected: {
+		color: "grey",
+		textAlign: "center",
+		fontFamily: "BubblegumSans",
+		fontSize: 15
+	},
+
 	modalTitle: {
 		marginBottom: 15,
 		textAlign: "center",
@@ -155,5 +169,6 @@ const styles = StyleSheet.create({
 		marginBottom: 15,
 		textAlign: "center",
 		fontFamily: "BubblegumSans",
+		fontSize: 15
 	},
 });

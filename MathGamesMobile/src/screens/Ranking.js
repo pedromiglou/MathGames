@@ -549,10 +549,6 @@ const styles = StyleSheet.create({
 		color: "white",
 	},
 
-	picker: {
-		width: 100,
-	},
-
 	topBoxName: {
 		flex: 1.5,
 	},

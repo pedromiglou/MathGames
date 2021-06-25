@@ -11,7 +11,6 @@ import {
 	Pressable,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Picker } from "@react-native-picker/picker";
 
 import Avatar from "../components/Avatar";
 import { hatItems } from "../data/hatItems";
@@ -25,6 +24,7 @@ import UserService from "./../services/user.service";
 import { readData } from "../utilities/AsyncStorage";
 
 import { Entypo } from "@expo/vector-icons";
+import { withSafeAreaInsets } from "react-native-safe-area-context";
 
 const win = Dimensions.get("window");
 
@@ -385,7 +385,12 @@ class Inventory extends React.Component {
 			modalVisible: false,
 			changable: true,
 		};
-		//this.pickerRef = useRef();
+		this.options = [{id: 0, label :"Chapéus", value: "chapeus"},
+			{id:1, label: "Camisolas", value: "camisolas"},
+			{id:2, label: "Acessórios", value: "acessorios"},
+			{id:3, label: "Calças", value: "calcas"},
+			{id:4, label: "Cor de Pele", value: "color"}
+		];
 	}
 
 	render() {
@@ -443,27 +448,34 @@ class Inventory extends React.Component {
 						</Pressable>
 					</View>
 
-					<Picker
-						//ref={this.pickerRef}
-						selectedValue={this.state.selectedLanguage}
-						onValueChange={
-							(itemValue, itemIndex) =>
-								this.setState({
-									selectedLanguage: itemValue,
-									option: itemValue,
-								})
-							//(value) => this.showItem(value)
-						}
-						style={styles.picker}
-						itemStyle={styles.pickerItem}
-					>
-						<Picker.Item label="Escolhe uma opção" value="none" />
-						<Picker.Item label="Chapéus" value="chapeus" />
-						<Picker.Item label="Camisolas" value="camisolas" />
-						<Picker.Item label="Acessórios" value="acessorios" />
-						<Picker.Item label="Calças" value="calcas" />
-						<Picker.Item label="Cor de Pele" value="color" />
-					</Picker>
+					<View style={{flexDirection: "row", flexWrap: "wrap", marginTop: 15, alignItems: "center", justifyContent: "center"}}>
+						{this.options.map(option=>
+							<TouchableOpacity key={option.id}
+								style={{
+									width: win.width/3-10,
+									height: 40,
+									alignItems: "center",
+									margin: 5,
+									borderColor: option.value===this.state.option ? "rgb(21, 161, 226)" : "white",
+									borderWidth: 1,
+									borderRadius: 1,
+									backgroundColor: option.value===this.state.option ? "white" : "rgb(21, 161, 226)"
+								}}
+								onPress={()=>this.setState({
+									selectedLanguage: option.value,
+									option: option.value,
+								})}
+							>
+								<Text style={{
+									color: option.value===this.state.option ? "rgb(21, 161, 226)" : "white",
+									fontFamily: "BubblegumSans",
+									textAlign: "center",
+									fontSize: 22,
+									padding: 5
+								}}>{option.label}</Text>
+							</TouchableOpacity>
+						)}
+					</View>
 
 					{this.state.option === "chapeus" && (
 						<View style={styles.imgsContainer}>
@@ -584,7 +596,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		//marginTop: 22,
 	},
 	modalView: {
 		margin: 20,
@@ -611,9 +622,6 @@ const styles = StyleSheet.create({
 		width: win.width / 3,
 		marginRight: 10,
 	},
-	buttonClose: {
-		backgroundColor: "#2196F3",
-	},
 
 	buttonCancel: {
 		backgroundColor: "red",
@@ -624,7 +632,8 @@ const styles = StyleSheet.create({
 	textStyle: {
 		color: "white",
 		textAlign: "center",
-		fontFamily: "BubblegumSans"
+		fontFamily: "BubblegumSans",
+		fontSize: 20
 	},
 	modalTitle: {
 		marginBottom: 15,
@@ -637,47 +646,6 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 		fontFamily: "BubblegumSans"
 	},
-
-	//---------------
-
-	picker: {
-		// flex: 1,
-		width: "80%",
-		height: 140,
-		color: "white",
-		marginLeft: "10%",
-	},
-
-	pickerItem: {
-		height: 136,
-		color: "white",
-		borderColor: "white",
-	},
-
-	buttonDownL: {
-		paddingTop: 3,
-		paddingBottom: 1,
-		backgroundColor: "green",
-		width: win.width / 3,
-		marginLeft: win.width / 10,
-	},
-
-	buttonDownR: {
-		paddingTop: 3,
-		paddingBottom: 1,
-		backgroundColor: "red",
-		width: win.width / 3,
-		marginLeft: win.width / 10,
-	},
-
-	/*
-	picker: {
-		flex: 1,
-		backgroundColor: "red",
-		color: "white",
-		textAlign: "center",
-		justifyContent: "center",
-	},*/
 
 	imgView: {
 		//flex: 1,
@@ -729,27 +697,11 @@ const styles = StyleSheet.create({
 		alignSelf: "center",
 	},
 
-	pageTitle: {
-		fontSize: 40,
-		textAlign: "center",
-		fontFamily: "BubblegumSans",
-		color: "white",
-		padding: 10,
-	},
-
 	button: {
 		paddingTop: 10,
 		paddingBottom: 10,
 		backgroundColor: "#3a4e60",
 		width: win.width / 2,
-	},
-
-	buttonText: {
-		color: "#fff",
-		textAlign: "center",
-		fontFamily: "BubblegumSans",
-		fontSize: 18,
-		padding: 10,
 	},
 
 	container: {
