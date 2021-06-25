@@ -79,46 +79,62 @@ class Inventory extends React.Component {
 	};
 
 	changeHat = (hatName) => {
-		if (hatName !== undefined && this.state.hatNameState !== hatName && this.state.changable === true ) {
+		if (
+			hatName !== undefined &&
+			this.state.hatNameState !== hatName &&
+			this.state.changable === true
+		) {
 			this.setState({ hatNameState: hatName, changable: false });
 			this.forceRemount();
 
-            setTimeout(() => {
-                this.setState({ changable: true });
-            }, 3000);
-		}
-	}; 
-
-	changeShirt = (shirtName) => {
-		if (shirtName !== undefined && this.state.shirtNameState !== shirtName && this.state.changable === true) {
-			this.setState({ shirtNameState: shirtName });
-			this.forceRemount();
-
-            setTimeout(() => {
-                this.setState({ changable: true });
-            }, 3000);
+			setTimeout(() => {
+				this.setState({ changable: true });
+			}, 3000);
 		}
 	};
 
-	changeAccessorie = (accessorieName ) => {
-		if (accessorieName !== undefined && this.state.accessorieNameState !== accessorieName && this.state.changable === true) {
+	changeShirt = (shirtName) => {
+		if (
+			shirtName !== undefined &&
+			this.state.shirtNameState !== shirtName &&
+			this.state.changable === true
+		) {
+			this.setState({ shirtNameState: shirtName });
+			this.forceRemount();
+
+			setTimeout(() => {
+				this.setState({ changable: true });
+			}, 3000);
+		}
+	};
+
+	changeAccessorie = (accessorieName) => {
+		if (
+			accessorieName !== undefined &&
+			this.state.accessorieNameState !== accessorieName &&
+			this.state.changable === true
+		) {
 			this.setState({ accessorieNameState: accessorieName });
 			this.forceRemount();
 
-            setTimeout(() => {
-                this.setState({ changable: true });
-            }, 3000);
+			setTimeout(() => {
+				this.setState({ changable: true });
+			}, 3000);
 		}
 	};
 
 	changeTrousers = (trouserName) => {
-		if (trouserName !== undefined && this.state.trouserNameState !== trouserNameState && this.state.changable === true) {
+		if (
+			trouserName !== undefined &&
+			this.state.trouserNameState !== trouserName &&
+			this.state.changable === true
+		) {
 			this.setState({ trouserNameState: trouserName });
 			this.forceRemount();
 
-            setTimeout(() => {
-                this.setState({ changable: true });
-            }, 3000);
+			setTimeout(() => {
+				this.setState({ changable: true });
+			}, 3000);
 		}
 	};
 
@@ -277,38 +293,76 @@ class Inventory extends React.Component {
 	listTrousers = () => {
 		return trouserItems.map((x) => {
 			if (this.getLevel(this.state.userState.account_level) >= x.lvl) {
-				return (
-					<TouchableOpacity
-						onPress={() => this.changeTrousers(x.name)}
-						key={x.id}
-					>
-						<View style={styles.imgView}>
-							<Image
-								style={styles.itemImg}
-								resizeMode={"contain"}
-								source={x.img}
-							/>
-						</View>
-					</TouchableOpacity>
-				);
+				if (x.color[0] === "#") {
+					return (
+						<TouchableOpacity
+							onPress={() => this.changeTrousers(x.name)}
+							key={x.id}
+							style={{
+								backgroundColor: x.color,
+								height: 70,
+								width: 70,
+								margin: 10,
+							}}
+						>
+							<View>
+								<Text> </Text>
+							</View>
+						</TouchableOpacity>
+					);
+				} else {
+					return (
+						<TouchableOpacity
+							onPress={() => this.changeTrousers(x.name)}
+							key={x.id}
+						>
+							<View style={styles.imgView}>
+								<Image
+									style={styles.itemImg}
+									resizeMode={"contain"}
+									source={x.img}
+								/>
+							</View>
+						</TouchableOpacity>
+					);
+				}
 			} else {
-				return (
-					<TouchableOpacity key={x.id}>
-						<View style={styles.imgView}>
-							<Image
-								style={styles.itemLockedImg}
-								resizeMode={"contain"}
-								source={x.img}
-							/>
-							<Entypo
-								name="lock"
-								size={24}
-								color="black"
-								style={styles.lockIcon}
-							/>
-						</View>
-					</TouchableOpacity>
-				);
+				if (x.color[0] === "#") {
+					return (
+						<TouchableOpacity
+							onPress={() => this.changeTrousers(x.name)}
+							key={x.id}
+							style={{
+								backgroundColor: x.color,
+								height: 70,
+								width: 70,
+								margin: 10,
+							}}
+						>
+							<View>
+								<Text> </Text>
+							</View>
+						</TouchableOpacity>
+					);
+				} else {
+					return (
+						<TouchableOpacity key={x.id}>
+							<View style={styles.imgView}>
+								<Image
+									style={styles.itemLockedImg}
+									resizeMode={"contain"}
+									source={x.img}
+								/>
+								<Entypo
+									name="lock"
+									size={24}
+									color="black"
+									style={styles.lockIcon}
+								/>
+							</View>
+						</TouchableOpacity>
+					);
+				}
 			}
 		});
 	};
@@ -330,7 +384,7 @@ class Inventory extends React.Component {
 			selectedLanguage: "...",
 			userState: null,
 			modalVisible: false,
-            changable: true
+			changable: true,
 		};
 		//this.pickerRef = useRef();
 	}
@@ -365,6 +419,30 @@ class Inventory extends React.Component {
 							profileCam={false}
 						/>
 					</SafeAreaView>
+
+                    <View
+						style={{
+							flexDirection: "row",
+							justifyContent: "center",
+							alignItems: "center",
+                            marginTop: 25
+						}}
+					>
+						<Pressable
+							style={[styles.button, styles.buttonOpen]}
+							onPress={() => {
+								this.setModalVisible(true);
+							}}
+						>
+							<Text style={styles.textStyle}>Guardar</Text>
+						</Pressable>
+						<Pressable
+							style={[styles.button, styles.buttonCancel]}
+							onPress={() => navigation.navigate("Perfil")}
+						>
+							<Text style={styles.textStyle}>Cancelar</Text>
+						</Pressable>
+					</View>
 
 					<Picker
 						//ref={this.pickerRef}
@@ -494,28 +572,6 @@ class Inventory extends React.Component {
 							</View>
 						</View>
 					</Modal>
-					<View
-						style={{
-							flexDirection: "row",
-							justifyContent: "center",
-							alignItems: "center",
-						}}
-					>
-						<Pressable
-							style={[styles.button, styles.buttonOpen]}
-							onPress={() => {
-								this.setModalVisible(true);
-							}}
-						>
-							<Text style={styles.textStyle}>Guardar</Text>
-						</Pressable>
-						<Pressable
-							style={[styles.button, styles.buttonCancel]}
-							onPress={() => navigation.navigate("Perfil")}
-						>
-							<Text style={styles.textStyle}>Cancelar</Text>
-						</Pressable>
-					</View>
 				</LinearGradient>
 			</ScrollView>
 		);
@@ -576,7 +632,7 @@ const styles = StyleSheet.create({
 	modalTitle: {
 		marginBottom: 15,
 		textAlign: "center",
-		fontSize: 30
+		fontSize: 30,
 	},
 	modalText: {
 		marginBottom: 15,
