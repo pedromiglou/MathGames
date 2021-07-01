@@ -39,14 +39,12 @@ function App() {
     const [mobile, setMobile] = useState(window.innerWidth < 500);
 
     window.addEventListener("resize", function() {
-        if (mobile){
-            if (window.innerWidth < 500){
-                setMobile(true)
-                return
-            }
-            setMobile(false)
+        if (window.innerWidth < 500){
+            setMobile(true)
             return
         }
+        setMobile(false)
+        
         var sidebar = document.getElementById("sidebar");
         var sidebarBtn = document.getElementById("sidebarCollapse");
         var main = document.getElementById("content");

@@ -255,7 +255,15 @@ function GamePage() {
 		} else {
 			let curr_username = AuthService.getCurrentUsername();
 			var username1 = gameMode==="ai" ? curr_username : name1;
-			var username2 = gameMode==="ai" ? "AI " + AIdiff + " difficulty" : name2;
+            let AiPt;
+            if (AIdiff === "easy"){
+                AiPt = "fácil"
+            } else if (AIdiff === "medium"){
+                AiPt = "média"
+            } else {
+                AiPt = "difícil"
+            }
+			var username2 = gameMode==="ai" ? "pc dificuldade " + AiPt : name2;
 
 			history.push({
 				pathname: "/game/?g="+game_id, 

@@ -286,3 +286,23 @@ ul.list-group{
 		margin-top: 1em;
 	}
 }
+
+.highlight{
+	background: linear-gradient(90deg, rgb(5, 49, 66) 0%, rgb(48, 106, 230) 34%, rgb(53, 61, 165) 100%); 
+	-webkit-animation: changeBrightness 10s infinite;
+    animation: changeBrightness 10s infinite;
+}
+
+@keyframes changeBrightness {
+    0%   {filter: brightness(110%);}
+	10%   {filter: brightness(120%);}
+	20%   {filter: brightness(130%);}
+	30%   {filter: brightness(140%);}
+	40%   {filter: brightness(150%);}
+	50%   {filter: brightness(160%);}
+    60%  {filter: brightness(150%);}
+    70%  {filter: brightness(140%);}
+    80%  {filter: brightness(130%);} 
+    90% {filter: brightness(120%);}
+	100% {filter: brightness(110%);}
+}
