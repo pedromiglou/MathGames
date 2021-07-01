@@ -576,7 +576,10 @@ function TournamentPage() {
             <div className="tournaments-container">
             <div className="title-reload">
                 <h1 className="tournament-name-h1">{tournament.name}</h1>
-                <IoIcons.IoReloadSharp className="reload-icon" title={"reload"} id={"icon_reload"} size={36} onClick={() => {updateInfo()}}/>
+
+                { tournament.status !== "FINISHED"  &&
+                    <IoIcons.IoReloadSharp className="reload-icon" title={"reload"} id={"icon_reload"} size={36} onClick={() => {updateInfo()}}/>
+                }
             </div>
 
                 <div className="tournamentPage_section">

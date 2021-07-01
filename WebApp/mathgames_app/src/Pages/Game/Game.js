@@ -10,6 +10,10 @@ import { GameTimer } from '../../Components/GameTimer';
 import PlayerCard from "../../Components/PlayerCard/PlayerCard";
 import authService from "../../Services/auth.service";
 
+import { RulesTooltip } from '../../Components/RulesTooltip';
+import { games_info } from "../../data/GamesInfo";
+
+
 function Game()  {
     // Clear listeners to make sure there are no repeated events
     socket.off("match_end");
@@ -31,6 +35,8 @@ function Game()  {
     ai_diff = params.ai_diff;
     current_match.current = params.match;
     tournament_id = params.tournament
+
+	const game_info = games_info[game_id];
 
     useEffect(() => {
 
@@ -105,6 +111,9 @@ function Game()  {
         if ( current_match.current["player1"]===authService.getCurrentUsername() || game_mode==="offline" )
             return(
                 <div className="col-3 mt-4">
+                     <div style={{textAlign:"center"}}>
+                        <RulesTooltip size="42" title="Regras" rules={game_info['rules']} goal={game_info['goal']} website={game_info['website']}></RulesTooltip>
+                    </div>
                     <div className="row h-50 d-flex justify-content-center">
                         <div className="col">
                             <div id="player2-info" className="row d-flex justify-content-center">
@@ -137,6 +146,9 @@ function Game()  {
         if ( current_match.current["player2"]===authService.getCurrentUsername() )
             return (
                 <div className="col-3 mt-4">
+                    <div style={{textAlign:"center"}}>
+                        <RulesTooltip size="42" title="Regras" rules={game_info['rules']} goal={game_info['goal']} website={game_info['website']}></RulesTooltip>
+                    </div>
                     <div className="row h-50 d-flex justify-content-center">
                         <div className="col">
                             <div id="player1-info" className="row d-flex justify-content-center">

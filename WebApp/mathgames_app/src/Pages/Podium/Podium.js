@@ -429,8 +429,8 @@ function Podium() {
 									<div className="level-section">
 										<h2>Nivel</h2>
 										<div className="search-level">
-											<input className="form-control form-control-lg" id="filter_allusers_min_level" type="number" placeholder="minimo"/>
-											<input className="form-control form-control-lg" id="filter_allusers_max_level" type="number" placeholder="máximo"/>
+											<input className="form-control form-control-lg" id="filter_allusers_min_level" type="number" min="1" placeholder="minimo"/>
+											<input className="form-control form-control-lg" id="filter_allusers_max_level" type="number" min="1" placeholder="máximo"/>
 										</div>
 									</div>
 								</div>

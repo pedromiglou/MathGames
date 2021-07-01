@@ -10,7 +10,7 @@ export const RulesTooltip = ({rules, goal, website, size, title, className }) =>
   
     return (
         <>
-            <Button ref={target} onClick={() => setShow(!show)} className={"rule-button align-self-center " + className}>
+            <Button ref={target} onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)} className={"rule-button align-self-center " + className}>
                 <FaIcons.FaQuestionCircle title={title} size={size}/>
             </Button>
             <Overlay target={target.current} show={show} placement="bottom">
