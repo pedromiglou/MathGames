@@ -13,6 +13,8 @@ import userService from '../../Services/user.service';
 import * as RiIcons from "react-icons/ri";
 import * as FaIcons from "react-icons/fa";
 import * as FiIcons from "react-icons/fi";
+import * as IoIcons from "react-icons/io";
+
 import {IconContext} from 'react-icons';
 import { ranks_info } from '../../data/ranksInfo';
 
@@ -409,61 +411,72 @@ function GamePage() {
                             <div className="col-lg-12 player-rank container-hidden orange top-right">
                                 <h2 className="rank-gamemode">Rank</h2>
                                 <div className="col-lg-12 ranks-section">
-                                    <div className="col-lg-3 ant-next centered">
-                                        <div className="a-n-div">
-                                            
-                                        { (userRank-1) >= 0 &&	
-                                            <>
-                                            <img
-                                                src={
-                                                    process.env.PUBLIC_URL +
-                                                    ranks_info[userRank-1].image
-                                                }
-                                                alt="Rank"
-                                                className="a-n-rank-img"
-                                            />
 
-                                            <h4>{ranks_info[userRank-1].name}</h4>
-                                            </>
-                                        }
+                                    { user !== null &&
+                                        <>
+                                        <div className="col-lg-3 ant-next centered">
+                                            <div className="a-n-div">
+                                                
+                                            { (userRank-1) >= 0 &&	
+                                                <>
+                                                <img
+                                                    src={
+                                                        process.env.PUBLIC_URL +
+                                                        ranks_info[userRank-1].image
+                                                    }
+                                                    alt="Rank"
+                                                    className="a-n-rank-img"
+                                                />
+
+                                                <h4>{ranks_info[userRank-1].name}</h4>
+                                                </>
+                                            }
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="col-lg-1 updo-icon centered">
-                                        <FaIcons.FaAngleDoubleDown/>
-                                    </div>
-                                    <div className="col-lg-3 centered">
-                                        <div>
-                                            <img
-                                                src={
-                                                    process.env.PUBLIC_URL +
-                                                    ranks_info[userRank].image
-                                                }
-                                                alt="Rank Anterior"
-                                                className="rank-img"
-                                            />
-                                            <h4>{ranks_info[userRank].name}</h4>
+                                        <div className="col-lg-1 updo-icon centered">
+                                            <FaIcons.FaAngleDoubleDown/>
                                         </div>
-                                    </div>
-                                    <div className="col-lg-1 updo-icon centered">
-                                        <FaIcons.FaAngleDoubleUp/>
-                                    </div>
-                                    <div className="col-lg-3 ant-next centered">
-                                        <div className="a-n-div">
-                                        { (userRank+1) <= 12 &&	
-                                            <>
-                                            <img
-                                                src={
-                                                    process.env.PUBLIC_URL +
-                                                    ranks_info[userRank+1].image
-                                                }
-                                                alt="Rank Seguinte"
-                                                className="a-n-rank-img"
-                                            />
-                                            <h4>{ranks_info[userRank+1].name}</h4>
-                                            </>
-                                        }
+                                        <div className="col-lg-3 centered">
+                                            <div>
+                                                <img
+                                                    src={
+                                                        process.env.PUBLIC_URL +
+                                                        ranks_info[userRank].image
+                                                    }
+                                                    alt="Rank Anterior"
+                                                    className="rank-img"
+                                                />
+                                                <h4>{ranks_info[userRank].name}</h4>
+                                            </div>
                                         </div>
-                                    </div>
+                                        <div className="col-lg-1 updo-icon centered">
+                                            <FaIcons.FaAngleDoubleUp/>
+                                        </div>
+                                        <div className="col-lg-3 ant-next centered">
+                                            <div className="a-n-div">
+                                            { (userRank+1) <= 12 &&	
+                                                <>
+                                                <img
+                                                    src={
+                                                        process.env.PUBLIC_URL +
+                                                        ranks_info[userRank+1].image
+                                                    }
+                                                    alt="Rank Seguinte"
+                                                    className="a-n-rank-img"
+                                                />
+                                                <h4>{ranks_info[userRank+1].name}</h4>
+                                                </>
+                                            }
+                                            </div>
+                                        </div>
+                                        </>
+                                    }
+                                    {user === null &&
+                                        <>
+                                            <IoIcons.IoIosLock size={48}/>
+                                            <p>Regista-te na nossa plataforma para desbloquear rankings e outros conteúdos extra.</p>
+                                        </>
+                                    }
                                 </div>
                             </div>
 

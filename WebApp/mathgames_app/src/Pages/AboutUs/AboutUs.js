@@ -202,8 +202,10 @@ function AboutUs() {
 
                 </div>
 
+               <hr style={{borderStyle: "none", borderTopStyle: "dotted", "borderWidth": "8px", "width": "6%", "borderColor": "#30e3ca", "opacity": "0.4", "margin": "80px auto"}}></hr>
+
                <div className="collaborators-section">
-                  <h1>Colaboradores</h1>
+                  <h1 style={{textAlign: "center"}}>Colaboradores</h1>
                   <div className="collaborators-flex">
                      <div className="collaborator uni">
                         <div>
@@ -241,10 +243,12 @@ function AboutUs() {
                   </div>
                </div>
 
+               <hr style={{borderStyle: "none", borderTopStyle: "dotted", "borderWidth": "8px", "width": "6%", "borderColor": "#30e3ca", "opacity": "0.4", "margin": "80px auto"}}></hr>
+
                <div className="Credits-section">
-                  <h1>Avatar Créditos</h1>
+                  <h1 style={{textAlign: "center"}}>Avatar Créditos</h1>
                   <div className="credits-flex">
-                     <div className="credit-item">
+                     <div className="credit-item" style={{"height": "265px"}}>
                         <h3>Christmas Hat</h3>
                         <img src={process.env.PUBLIC_URL + "/avatar_assets/hats/christmasHat.png"} alt="christmas hat"></img>
                         <div onClick={() => seeMoreInfo("https://sketchfab.com/3d-models/christmas-hat-b44d66b16ba543c9825af6f95bd3d678")} className="button-clicky seeSource">
@@ -252,7 +256,7 @@ function AboutUs() {
                            <span className="front">Ver Source</span>
                         </div>
                      </div>
-                     <div className="credit-item">
+                     <div className="credit-item" style={{"height": "265px"}}>
                         <h3>Sombrero Hat</h3>
                         <img src={process.env.PUBLIC_URL + "/avatar_assets/hats/cowboyHat.png"} alt="christmas hat"></img>
                         <div onClick={() => seeMoreInfo("https://sketchfab.com/models/e8d5a5d300024a7fa981cd294e97ce60")} className="button-clicky seeSource">
@@ -260,7 +264,7 @@ function AboutUs() {
                            <span className="front">Ver Source</span>
                         </div>
                      </div>
-                     <div className="credit-item">
+                     <div className="credit-item" style={{"height": "265px"}}>
                         <h3>Top Hat</h3>
                         <img src={process.env.PUBLIC_URL + "/avatar_assets/hats/magicianHat.png"} alt="christmas hat"></img>
                         <div onClick={() => seeMoreInfo("https://sketchfab.com/models/689cd0d635cf4906920dd3ba435d991e")} className="button-clicky seeSource">
@@ -268,7 +272,7 @@ function AboutUs() {
                            <span className="front">Ver Source</span>
                         </div>
                      </div>
-                     <div className="credit-item">
+                     <div className="credit-item" style={{"height": "265px"}}>
                         <h3>Trapper Hat</h3>
                         <img src={process.env.PUBLIC_URL + "/avatar_assets/hats/ushanka.png"} alt="ushanka hat"></img>
                         <div onClick={() => seeMoreInfo("https://sketchfab.com/models/1046cd56a67d4b79902e47aa0daf3ccb")} className="button-clicky seeSource">
@@ -276,7 +280,7 @@ function AboutUs() {
                            <span className="front">Ver Source</span>
                         </div>
                      </div>
-                     <div className="credit-item">
+                     <div className="credit-item" style={{"height": "265px"}}>
                         <h3>Witch Hat</h3>
                         <img src={process.env.PUBLIC_URL + "/avatar_assets/hats/witchHat.png"} alt="witch hat"></img>
                         <div onClick={() => seeMoreInfo("https://sketchfab.com/3d-models/witch-hat-444a0c2f7ed449be9f127341b4eb2137")} className="button-clicky seeSource">
@@ -284,7 +288,7 @@ function AboutUs() {
                            <span className="front">Ver Source</span>
                         </div>
                      </div>
-                     <div className="credit-item">
+                     <div className="credit-item" style={{"height": "265px"}}>
                         <h3>Deal With It Glasses</h3>
                         <img src={process.env.PUBLIC_URL + "/avatar_assets/accessories/pixelGlasses.png"} alt="pixel glasses"></img>
                         <div onClick={() => seeMoreInfo("https://sketchfab.com/models/53dd57e2352f45128f26e41eadd36699")} className="button-clicky seeSource">
@@ -292,7 +296,7 @@ function AboutUs() {
                            <span className="front">Ver Source</span>
                         </div>
                      </div>
-                     <div className="credit-item">
+                     <div className="credit-item" style={{"height": "265px"}}>
                         <h3>Steampunk glasses</h3>
                         <img src={process.env.PUBLIC_URL + "/avatar_assets/accessories/steamPunkGlasses.png"} alt="steam punk glasses"></img>
                         <div onClick={() => seeMoreInfo("https://sketchfab.com/3d-models/steampunk-glasses-808866ce78a24354ae871c0f8721097f")} className="button-clicky seeSource">
@@ -300,7 +304,7 @@ function AboutUs() {
                            <span className="front">Ver Source</span>
                         </div>
                      </div>
-                     <div className="credit-item">
+                     <div className="credit-item" style={{"height": "265px"}}>
                         <h3>Glasses</h3>
                         <img src={process.env.PUBLIC_URL + "/avatar_assets/accessories/sunGlasses.png"} alt="sun glasses"></img>
                         <div onClick={() => seeMoreInfo("https://sketchfab.com/models/5c78f100eea749c895d69fe2ed728197")} className="button-clicky seeSource">
@@ -310,6 +314,8 @@ function AboutUs() {
                      </div>
                   </div>
                </div>
+
+               <hr style={{borderStyle: "none", borderTopStyle: "dotted", "borderWidth": "8px", "width": "6%", "borderColor": "#30e3ca", "opacity": "0.4", "margin": "80px auto"}}></hr>
 
                <div className="contact_us">
                   <div className="contact-flex">

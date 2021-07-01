@@ -159,6 +159,7 @@ class RastrosScene extends Phaser.Scene {
 
     update() {
         this.mycount += 1;
+
         if ( this.mycount >= 2 && !this.game_over && game_mode === "ai" && !this.player.has(this.current_player) )
             this.move( this.squares_group.getChildren()[ this.rastrosAI.randomPlay(ai_diff, this.valid_squares, this.player_piece) ] );
     }
