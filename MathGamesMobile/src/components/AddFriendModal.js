@@ -17,6 +17,7 @@ function AddFriendModal(props) {
 		var notification_text = props.user.username + " enviou-te um pedido de amizade.";
 		socket.emit("new_notification", {"sender": sender, "receiver": receiver,
 					notification_type: not_type, notification_text: notification_text});
+		props.reloadFriends();
 	}
 
 	return (
@@ -127,7 +128,6 @@ const styles = StyleSheet.create({
 
 	textStyle: {
 		color: "white",
-		fontWeight: "bold",
 		textAlign: "center",
 		fontFamily: "BubblegumSans",
 	},

@@ -1,14 +1,23 @@
 import * as React from "react";
-import {Image, TouchableOpacity} from 'react-native';
+import {Image, TouchableOpacity, StyleSheet} from 'react-native';
 
 function Piece(props) {
-    const imageStyle = {
-        width: props.size,
-        height: props.size,
-        position: 'absolute',
-        left: props.position[0] * props.size,
-        top: props.position[1] * props.size
-    }
+    const x = props.position[0];
+    const y = props.position[1];
+
+    const styles = StyleSheet.create({
+        button: {
+            width: props.size,
+            height: props.size,
+            position: 'absolute',
+            left: x * props.size,
+            top: (y+1) * props.size
+        },
+        image: {
+            width: props.size,
+            height: props.size,
+        }
+    });
 
     var source;
     if (props.type === 1) {
@@ -18,9 +27,9 @@ function Piece(props) {
     }
 
     return (
-        <TouchableOpacity>
+        <TouchableOpacity style={styles.button}>
             <Image
-                style={imageStyle}
+                style={styles.image}
                 resizeMode = {'contain'}
                 source={source}
             />

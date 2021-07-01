@@ -18,7 +18,9 @@ function GamePage({navigation}) {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    readData("game").then(value => {if (value !== null) {setGame(JSON.parse(value));}})
+    readData("game").then(value => {if (value !== null) {
+      setGame(JSON.parse(value));
+    }})
 
     readData("user").then((user) => {
         var current_user = JSON.parse(JSON.parse(user));

@@ -22,13 +22,13 @@ function GatosCaesEngine() {
     var squares = [];
     for (let x = 0; x<8; x++) {
         for (let y=0; y<8; y++) {
-            squares.push([x, y+1]);
+            squares.push([x, y]);
         }
     }
 
     squares.forEach(square=>{
         entities.push({position: square, size: Constants.CELL_SIZE, valid: false, blockedG:false,
-            blockedC: false, last: false, renderer: <Square></Square>});
+            blockedC: false, last: false, dispatch: ()=>{}, renderer: <Square></Square>});
     });
     
     useEffect(() => {
@@ -37,8 +37,10 @@ function GatosCaesEngine() {
             gameMode=X.slice(1,-1);
             readData('player1').then(p1=>{
                 p1=p1.slice(1,-1);
+                if (p1==="") p1 = "Jogador 1";
                 readData('player2').then(p2=>{
                     p2=p2.slice(1,-1);
+                    if (p2==="") p2 = "Jogador 2";
                     entities.push({position: [0, 0], size: Constants.CELL_SIZE, text: "Jogador 2: "+p2, turn: 1,
                         dispatch: this.engine.dispatch, gameMode: gameMode, renderer: <GameText></GameText>});
                     entities.push({position: [0, 9], size: Constants.CELL_SIZE, text: "Jogador 1: "+p1, turn: 1,

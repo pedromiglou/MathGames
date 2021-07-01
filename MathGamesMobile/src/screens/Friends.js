@@ -57,19 +57,25 @@ function Friends({ navigation }) {
 	useEffect(() => {
 		let mounted = true;
 		readData("user").then(user=>setUser(JSON.parse(JSON.parse(user))));
+
 		reloadFriends();
   
+		socket.on("reload_notifications", () => {
+			reloadFriends();
+		});
 		return () => {
 		  	mounted = false;
 		};
 	}, []);
 
-	socket.off("reload_notifications")
-    
-    socket.on("reload_notifications", () => {
-      reloadFriends();
-    });
+	useEffect(()=>{
+		const unsubscribe = navigation.addListener('focus', () => {
+			reloadFriends();
+		});
 
+		return unsubscribe;
+	}, [navigation]);
+    
 	return (
 		<View>
 			<View style={{ position: "absolute", x: 0, y: 0 }}>
@@ -162,6 +168,7 @@ function Friends({ navigation }) {
 						friends={friends}
 						user={user}
 						visible={modalVisible}
+						reloadFriends={reloadFriends}
 					/>
 				)}
 				{modalOperation === "add" && (
@@ -171,6 +178,7 @@ function Friends({ navigation }) {
 						modalUsername={modalUsername}
 						user={user}
 						visible={modalVisible}
+						reloadFriends={reloadFriends}
 					/>
 				)}
 				{modalOperation === "invite" && (

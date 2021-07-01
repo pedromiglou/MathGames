@@ -31,6 +31,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 
 import CustomisableAlert from "react-native-customisable-alert";
 import socket from './utilities/Socket';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export const navigationRef = React.createRef();
 export function openDrawer(routeName, params) {
@@ -176,18 +177,23 @@ function App() {
               resizeMode = {'contain'}
               source={require('./../public/images/logo-light.png')}
             />
-          
+
+          <TouchableOpacity onPress={()=>loggedIn && navigationRef.current.dispatch(DrawerActions.jumpTo('Notificações'))}>
+            <MaterialIcons name="notifications" size={28} color={loggedIn ? "#FFD300":"grey"} style={styles.topIcon}/>
+          </TouchableOpacity>
+
           {loggedIn &&
             <TouchableOpacity style={styles.loginImage} onPress={()=>navigationRef.current.dispatch(DrawerActions.jumpTo('Perfil'))}>
               <Text style={styles.username} numberOfLines={1}>{username}</Text>
             </TouchableOpacity>
           }
 
-          {(!loggedIn&&login) ?
+          {(!loggedIn&&login) &&
             <TouchableOpacity onPress = {() => setLogin(!login)} style={styles.loginImage}>
               <Text style={styles.username}>Voltar</Text>
             </TouchableOpacity>
-            :
+          }
+          {(!loggedIn&&!login) &&
             <TouchableOpacity onPress = {() => setLogin(!login)}>
               <Image
                 style={styles.loginImage}
@@ -239,7 +245,7 @@ const styles = StyleSheet.create({
   },
   topIcon: {
     marginTop: Constants.statusBarHeight,
-    marginLeft: 5
+    marginLeft: 10
   },
   logoImage: {
       margin: 5,

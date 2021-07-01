@@ -277,7 +277,7 @@ function GamePage() {
 			let new_match_id = msg['match_id'];
 			
 			if ( new_match_id === null ) {
-				alert("Envias-te um convite recentemente. Espera mais um pouco para puderes enviar um novo.")
+				alert("Enviaste um convite recentemente. Espera mais um pouco para puderes enviar um novo.")
 				return;
 			}
 

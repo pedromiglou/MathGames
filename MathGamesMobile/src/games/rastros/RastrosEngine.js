@@ -23,16 +23,16 @@ function RastrosEngine() {
     var squares = [];
     for (let x = 0; x<7; x++) {
         for (let y=0; y<7; y++) {
-            squares.push([x, y+1]);
+            squares.push([x, y]);
         }
     }
     squares.forEach(square => {
         entities.push({position: square, size: Constants.CELL_SIZE, valid: false, blocked:false,
-            last: false, renderer: <Square></Square>});
+            last: false, dispatch: ()=>{}, renderer: <Square></Square>});
     })
 
     entities[31].blocked = true;
-    entities.push({position: [4,3], size: Constants.CELL_SIZE, renderer: <Piece></Piece>});
+    entities.push({position: [4,2], size: Constants.CELL_SIZE, renderer: <Piece></Piece>});
 
     useEffect(() => {
         let mounted = true;
@@ -40,8 +40,10 @@ function RastrosEngine() {
             gameMode=X.slice(1,-1);
             readData('player1').then(p1=>{
                 p1=p1.slice(1,-1);
+                if (p1==="") p1 = "Jogador 1";
                 readData('player2').then(p2=>{
                     p2=p2.slice(1,-1);
+                    if (p2==="") p2 = "Jogador 2";
                     entities.push({position: [0, 0], size: Constants.CELL_SIZE, text: "Jogador 2: "+p2, turn: 1,
                         dispatch: this.engine.dispatch, gameMode: gameMode, renderer: <GameText></GameText>});
                     entities.push({position: [0, 8], size: Constants.CELL_SIZE, text: "Jogador 1: "+p1, turn: 1,

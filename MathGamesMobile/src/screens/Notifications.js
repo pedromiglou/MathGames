@@ -26,18 +26,26 @@ function Notifications({ navigation }) {
 
     useEffect(() => {
       let mounted = true;
+
       reloadNotifications();
+
+      socket.on("reload_notifications", () => {
+        reloadNotifications();
+      });
 
       return () => {
         mounted = false;
       };
     }, []);
 
-    socket.off("reload_notifications")
-    
-    socket.on("reload_notifications", () => {
-      reloadNotifications();
-    });
+    useEffect(()=>{
+      const unsubscribe = navigation.addListener('focus', () => {
+        reloadNotifications();
+      });
+
+      return unsubscribe;
+
+    }, [navigation])
     
     function process_notification(notification) {
       readData("user").then(user=> {
@@ -50,6 +58,7 @@ function Notifications({ navigation }) {
             - N -> Removeu da lista de amigos
             - T -> Convidou para participar no torneio
             - P -> Convidou-te para uma partida
+            - D -> Recusou convite para partida
             - R -> Iniciou um novo round do torneio
           */
           if (notification.notification_type==="F") {
@@ -91,7 +100,16 @@ function Notifications({ navigation }) {
                       <TouchableOpacity style={styles.button} onPress={()=>process_notification(notification)}>
                           <Feather name="check-circle" size={34} color="lime" />
                       </TouchableOpacity>}
-                      <TouchableOpacity style={styles.button} onPress={()=>delete_notification(notification)}>
+                      <TouchableOpacity style={styles.button} onPress={()=>{
+                        delete_notification(notification);
+                        if (notification.notification_type==="P") {
+                          readData("user").then(user=>{
+                            user = JSON.parse(JSON.parse(user));
+                            var notification_text = user.username + " recusou o seu convite.";
+                            socket.emit("new_notification", {"sender": user.id, "receiver": notification.sender_user.sender_id, "notification_type": "D", "notification_text": notification_text});
+                          });
+                        }
+                      }}>
                           <Feather name="x-circle" size={34} color="red" />
                       </TouchableOpacity>
                   </View>

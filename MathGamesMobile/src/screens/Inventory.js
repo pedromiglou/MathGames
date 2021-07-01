@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import * as React from "react";
 import {
 	View,
 	ScrollView,
@@ -6,13 +6,11 @@ import {
 	Image,
 	Dimensions,
 	StyleSheet,
-	TouchableHighlight,
 	SafeAreaView,
 	Modal,
 	Pressable,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Picker } from "@react-native-picker/picker";
 
 import Avatar from "../components/Avatar";
 import { hatItems } from "../data/hatItems";
@@ -26,6 +24,7 @@ import UserService from "./../services/user.service";
 import { readData } from "../utilities/AsyncStorage";
 
 import { Entypo } from "@expo/vector-icons";
+import { withSafeAreaInsets } from "react-native-safe-area-context";
 
 const win = Dimensions.get("window");
 
@@ -79,46 +78,62 @@ class Inventory extends React.Component {
 	};
 
 	changeHat = (hatName) => {
-		if (hatName !== undefined && this.state.hatNameState !== hatName && this.state.changable === true ) {
+		if (
+			hatName !== undefined &&
+			this.state.hatNameState !== hatName &&
+			this.state.changable === true
+		) {
 			this.setState({ hatNameState: hatName, changable: false });
 			this.forceRemount();
 
-            setTimeout(() => {
-                this.setState({ changable: true });
-            }, 3000);
-		}
-	}; 
-
-	changeShirt = (shirtName) => {
-		if (shirtName !== undefined && this.state.shirtNameState !== shirtName && this.state.changable === true) {
-			this.setState({ shirtNameState: shirtName });
-			this.forceRemount();
-
-            setTimeout(() => {
-                this.setState({ changable: true });
-            }, 3000);
+			setTimeout(() => {
+				this.setState({ changable: true });
+			}, 3000);
 		}
 	};
 
-	changeAccessorie = (accessorieName ) => {
-		if (accessorieName !== undefined && this.state.accessorieNameState !== accessorieName && this.state.changable === true) {
+	changeShirt = (shirtName) => {
+		if (
+			shirtName !== undefined &&
+			this.state.shirtNameState !== shirtName &&
+			this.state.changable === true
+		) {
+			this.setState({ shirtNameState: shirtName });
+			this.forceRemount();
+
+			setTimeout(() => {
+				this.setState({ changable: true });
+			}, 3000);
+		}
+	};
+
+	changeAccessorie = (accessorieName) => {
+		if (
+			accessorieName !== undefined &&
+			this.state.accessorieNameState !== accessorieName &&
+			this.state.changable === true
+		) {
 			this.setState({ accessorieNameState: accessorieName });
 			this.forceRemount();
 
-            setTimeout(() => {
-                this.setState({ changable: true });
-            }, 3000);
+			setTimeout(() => {
+				this.setState({ changable: true });
+			}, 3000);
 		}
 	};
 
 	changeTrousers = (trouserName) => {
-		if (trouserName !== undefined && this.state.trouserNameState !== trouserNameState && this.state.changable === true) {
+		if (
+			trouserName !== undefined &&
+			this.state.trouserNameState !== trouserName &&
+			this.state.changable === true
+		) {
 			this.setState({ trouserNameState: trouserName });
 			this.forceRemount();
 
-            setTimeout(() => {
-                this.setState({ changable: true });
-            }, 3000);
+			setTimeout(() => {
+				this.setState({ changable: true });
+			}, 3000);
 		}
 	};
 
@@ -277,38 +292,76 @@ class Inventory extends React.Component {
 	listTrousers = () => {
 		return trouserItems.map((x) => {
 			if (this.getLevel(this.state.userState.account_level) >= x.lvl) {
-				return (
-					<TouchableOpacity
-						onPress={() => this.changeTrousers(x.name)}
-						key={x.id}
-					>
-						<View style={styles.imgView}>
-							<Image
-								style={styles.itemImg}
-								resizeMode={"contain"}
-								source={x.img}
-							/>
-						</View>
-					</TouchableOpacity>
-				);
+				if (x.color[0] === "#") {
+					return (
+						<TouchableOpacity
+							onPress={() => this.changeTrousers(x.name)}
+							key={x.id}
+							style={{
+								backgroundColor: x.color,
+								height: 70,
+								width: 70,
+								margin: 10,
+							}}
+						>
+							<View>
+								<Text> </Text>
+							</View>
+						</TouchableOpacity>
+					);
+				} else {
+					return (
+						<TouchableOpacity
+							onPress={() => this.changeTrousers(x.name)}
+							key={x.id}
+						>
+							<View style={styles.imgView}>
+								<Image
+									style={styles.itemImg}
+									resizeMode={"contain"}
+									source={x.img}
+								/>
+							</View>
+						</TouchableOpacity>
+					);
+				}
 			} else {
-				return (
-					<TouchableOpacity key={x.id}>
-						<View style={styles.imgView}>
-							<Image
-								style={styles.itemLockedImg}
-								resizeMode={"contain"}
-								source={x.img}
-							/>
-							<Entypo
-								name="lock"
-								size={24}
-								color="black"
-								style={styles.lockIcon}
-							/>
-						</View>
-					</TouchableOpacity>
-				);
+				if (x.color[0] === "#") {
+					return (
+						<TouchableOpacity
+							onPress={() => this.changeTrousers(x.name)}
+							key={x.id}
+							style={{
+								backgroundColor: x.color,
+								height: 70,
+								width: 70,
+								margin: 10,
+							}}
+						>
+							<View>
+								<Text> </Text>
+							</View>
+						</TouchableOpacity>
+					);
+				} else {
+					return (
+						<TouchableOpacity key={x.id}>
+							<View style={styles.imgView}>
+								<Image
+									style={styles.itemLockedImg}
+									resizeMode={"contain"}
+									source={x.img}
+								/>
+								<Entypo
+									name="lock"
+									size={24}
+									color="black"
+									style={styles.lockIcon}
+								/>
+							</View>
+						</TouchableOpacity>
+					);
+				}
 			}
 		});
 	};
@@ -330,9 +383,14 @@ class Inventory extends React.Component {
 			selectedLanguage: "...",
 			userState: null,
 			modalVisible: false,
-            changable: true
+			changable: true,
 		};
-		//this.pickerRef = useRef();
+		this.options = [{id: 0, label :"Chapéus", value: "chapeus"},
+			{id:1, label: "Camisolas", value: "camisolas"},
+			{id:2, label: "Acessórios", value: "acessorios"},
+			{id:3, label: "Calças", value: "calcas"},
+			{id:4, label: "Cor de Pele", value: "color"}
+		];
 	}
 
 	render() {
@@ -366,27 +424,58 @@ class Inventory extends React.Component {
 						/>
 					</SafeAreaView>
 
-					<Picker
-						//ref={this.pickerRef}
-						selectedValue={this.state.selectedLanguage}
-						onValueChange={
-							(itemValue, itemIndex) =>
-								this.setState({
-									selectedLanguage: itemValue,
-									option: itemValue,
-								})
-							//(value) => this.showItem(value)
-						}
-						style={styles.picker}
-						itemStyle={styles.pickerItem}
+                    <View
+						style={{
+							flexDirection: "row",
+							justifyContent: "center",
+							alignItems: "center",
+                            marginTop: 25
+						}}
 					>
-						<Picker.Item label="Escolhe uma opcao" value="none" />
-						<Picker.Item label="Chapeus" value="chapeus" />
-						<Picker.Item label="Camisolas" value="camisolas" />
-						<Picker.Item label="Acessorios" value="acessorios" />
-						<Picker.Item label="Calcas" value="calcas" />
-						<Picker.Item label="Cor de Pele" value="color" />
-					</Picker>
+						<Pressable
+							style={[styles.button, styles.buttonOpen]}
+							onPress={() => {
+								this.setModalVisible(true);
+							}}
+						>
+							<Text style={styles.textStyle}>Guardar</Text>
+						</Pressable>
+						<Pressable
+							style={[styles.button, styles.buttonCancel]}
+							onPress={() => navigation.navigate("Perfil")}
+						>
+							<Text style={styles.textStyle}>Cancelar</Text>
+						</Pressable>
+					</View>
+
+					<View style={{flexDirection: "row", flexWrap: "wrap", marginTop: 15, alignItems: "center", justifyContent: "center"}}>
+						{this.options.map(option=>
+							<TouchableOpacity key={option.id}
+								style={{
+									width: win.width/3-10,
+									height: 40,
+									alignItems: "center",
+									margin: 5,
+									borderColor: option.value===this.state.option ? "rgb(21, 161, 226)" : "white",
+									borderWidth: 1,
+									borderRadius: 1,
+									backgroundColor: option.value===this.state.option ? "white" : "rgb(21, 161, 226)"
+								}}
+								onPress={()=>this.setState({
+									selectedLanguage: option.value,
+									option: option.value,
+								})}
+							>
+								<Text style={{
+									color: option.value===this.state.option ? "rgb(21, 161, 226)" : "white",
+									fontFamily: "BubblegumSans",
+									textAlign: "center",
+									fontSize: 22,
+									padding: 5
+								}}>{option.label}</Text>
+							</TouchableOpacity>
+						)}
+					</View>
 
 					{this.state.option === "chapeus" && (
 						<View style={styles.imgsContainer}>
@@ -457,7 +546,6 @@ class Inventory extends React.Component {
 								<View
 									style={{
 										flexDirection: "row",
-										justifyContent: "center",
 										alignItems: "center",
 									}}
 								>
@@ -494,28 +582,6 @@ class Inventory extends React.Component {
 							</View>
 						</View>
 					</Modal>
-					<View
-						style={{
-							flexDirection: "row",
-							justifyContent: "center",
-							alignItems: "center",
-						}}
-					>
-						<Pressable
-							style={[styles.button, styles.buttonOpen]}
-							onPress={() => {
-								this.setModalVisible(true);
-							}}
-						>
-							<Text style={styles.textStyle}>Guardar</Text>
-						</Pressable>
-						<Pressable
-							style={[styles.button, styles.buttonCancel]}
-							onPress={() => navigation.navigate("Perfil")}
-						>
-							<Text style={styles.textStyle}>Cancelar</Text>
-						</Pressable>
-					</View>
 				</LinearGradient>
 			</ScrollView>
 		);
@@ -530,7 +596,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		//marginTop: 22,
 	},
 	modalView: {
 		margin: 20,
@@ -555,74 +620,32 @@ const styles = StyleSheet.create({
 	buttonOpen: {
 		backgroundColor: "green",
 		width: win.width / 3,
-		marginLeft: win.width / 8,
-		marginRight: 20,
-	},
-	buttonClose: {
-		backgroundColor: "#2196F3",
+		marginRight: 10,
 	},
 
 	buttonCancel: {
 		backgroundColor: "red",
 		width: win.width / 3,
-		marginRight: win.width / 8,
+		marginLeft: 10,
 	},
 
 	textStyle: {
 		color: "white",
-		fontWeight: "bold",
 		textAlign: "center",
+		fontFamily: "BubblegumSans",
+		fontSize: 20
 	},
 	modalTitle: {
 		marginBottom: 15,
 		textAlign: "center",
-		fontSize: 30
+		fontSize: 30,
+		fontFamily: "BubblegumSans"
 	},
 	modalText: {
 		marginBottom: 15,
 		textAlign: "center",
+		fontFamily: "BubblegumSans"
 	},
-
-	//---------------
-
-	picker: {
-		// flex: 1,
-		width: "80%",
-		height: 140,
-		color: "white",
-		marginLeft: "10%",
-	},
-
-	pickerItem: {
-		height: 136,
-		color: "white",
-		borderColor: "white",
-	},
-
-	buttonDownL: {
-		paddingTop: 3,
-		paddingBottom: 1,
-		backgroundColor: "green",
-		width: win.width / 3,
-		marginLeft: win.width / 10,
-	},
-
-	buttonDownR: {
-		paddingTop: 3,
-		paddingBottom: 1,
-		backgroundColor: "red",
-		width: win.width / 3,
-		marginLeft: win.width / 10,
-	},
-
-	/*
-	picker: {
-		flex: 1,
-		backgroundColor: "red",
-		color: "white",
-		textAlign: "center",
-		justifyContent: "center",
-	},*/
 
 	imgView: {
 		//flex: 1,
@@ -674,27 +697,11 @@ const styles = StyleSheet.create({
 		alignSelf: "center",
 	},
 
-	pageTitle: {
-		fontSize: 40,
-		textAlign: "center",
-		fontFamily: "BubblegumSans",
-		color: "white",
-		padding: 10,
-	},
-
 	button: {
 		paddingTop: 10,
 		paddingBottom: 10,
 		backgroundColor: "#3a4e60",
 		width: win.width / 2,
-	},
-
-	buttonText: {
-		color: "#fff",
-		textAlign: "center",
-		fontFamily: "BubblegumSans",
-		fontSize: 18,
-		padding: 10,
 	},
 
 	container: {

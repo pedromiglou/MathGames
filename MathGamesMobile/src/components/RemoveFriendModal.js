@@ -8,6 +8,7 @@ import {
 	TouchableOpacity
 } from "react-native";
 import UserService from "../services/user.service";
+import socket from "../utilities/Socket";
 
 const win = Dimensions.get("window");
 
@@ -15,9 +16,9 @@ function RemoveFriendModal(props) {
 
 	function remove_friend(friendId) {
 		UserService.remove_friend(props.user.id, friendId).then((result) => {
-			if (result != "error") {
-				props.setFriends(props.friends.filter(user => user.id !== friendId));
-			}
+			var notification_text = props.user.username + " removeu-te da sua lista de amigos.";
+			socket.emit("new_notification", {"sender": props.user.id, "receiver": friendId, "notification_type": "N", "notification_text": notification_text});
+			props.reloadFriends();
 		});
 	}
 
