@@ -42,7 +42,7 @@ function Sidemenu() {
 					<li className="nav-text">
 						<Link to="/"> 
 							<i className="subicon"><AiIcons.AiFillHome/></i>
-							<span className="sidebar-icons icons-name">Inicio</span>
+							<span className="sidebar-icons icons-noname">Inicio</span>
 							{/* <span className={sidebar ? "icons-name" : "icons-noname"}>Inicio</span> */}
 						</Link>
 					</li>
@@ -58,7 +58,7 @@ function Sidemenu() {
 								<li  className={item.cName}>
 									<Link to={item.path}> 
 										<i className="subicon">{item.icon}</i>
-										<span className="sidebar-icons icons-name">{item.title}</span>
+										<span className="sidebar-icons icons-noname">{item.title}</span>
 										{/* <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span> */}
 									</Link>
 								</li>
@@ -76,7 +76,7 @@ function Sidemenu() {
 								<li className={item.cName}>
 									<Link to={item.path}> 
 										<i className="subicon">{item.icon}</i>
-										<span className="sidebar-icons icons-name">{item.title}</span>
+										<span className="sidebar-icons icons-noname">{item.title}</span>
 										{/* <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span> */} 
 										
 									</Link>
@@ -95,7 +95,7 @@ function Sidemenu() {
 								<li className={item.cName}>
 									<Link to={item.path}> 
 										<i className="subicon">{item.icon}</i>
-										<span className="sidebar-icons icons-name">{item.title}</span>
+										<span className="sidebar-icons icons-noname">{item.title}</span>
 										{/* <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span> */} 
 										
 									</Link>
@@ -115,7 +115,7 @@ function Sidemenu() {
 							<li  className={item.cName}>
 								<Link to={item.path}> 
 									<i className="subicon">{item.icon}</i>
-									<span className="sidebar-icons icons-name">{item.title}</span>
+									<span className="sidebar-icons icons-noname">{item.title}</span>
 									{/* <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span> */}
 								</Link>
 							</li>

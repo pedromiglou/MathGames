@@ -40,10 +40,6 @@ function ChooseGame({ navigation }) {
 						<View key={X.id}>
 							<TouchableHighlight
 								style={styles.gameTile}
-								onPress={() => {
-									saveData("game", X);
-									navigation.navigate("Jogo");
-								}}
 							>
 								<View>
 									<LinearGradient
@@ -62,7 +58,7 @@ function ChooseGame({ navigation }) {
 													{X.title}
 												</Text>
 												<Text style={styles.title}>
-													{X.age}
+													+{X.age}
 												</Text>
 											</View>
 
@@ -115,7 +111,7 @@ function ChooseGame({ navigation }) {
 													{X.title}
 												</Text>
 												<Text style={styles.title}>
-													{X.age}
+													+{X.age}
 												</Text>
 											</View>
 

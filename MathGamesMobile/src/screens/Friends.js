@@ -7,7 +7,6 @@ import {
 	StyleSheet,
 	View,
 	TextInput,
-	Modal,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import UserService from "./../services/user.service";
@@ -18,70 +17,65 @@ import { readData } from "../utilities/AsyncStorage";
 import ChooseGameModal from './../components/ChooseGameModal';
 import RemoveFriendModal from "../components/RemoveFriendModal";
 import AddFriendModal from "../components/AddFriendModal";
+import socket from "../utilities/Socket";
 
 const win = Dimensions.get("window");
 
 function Friends({ navigation }) {
 	const [friends, setFriends] = useState([]);
-
+	const [user, setUser] = useState("");
 	const [modalUserId, setModalUserId] = useState("");
 	const [modalUsername, setModalUsername] = useState("");
 	const [modalOperation, setModalOperation] = useState("");
 	const [modalVisible, setModalVisible] = useState(false);
-	const [ChooseGameModalVisible, setChooseGameModalVisible] = useState(false);
 
-	const [usersFound, setUsersFound] = useState([]);
-	const [inputText, onChangeInputText] = useState(null);
+	const [inputText, onChangeInputText] = useState("");
 
-	const [user, setUser] = useState(null);
+	function reloadFriends() {
+		readData("user").then(user=>{
+			user = JSON.parse(JSON.parse(user));
+			UserService.getFriends(user.id, user.token).then(response=>{
+				if ( response != null ) {
+					setFriends(response);
+				}
+			});
+		});
+	}
+
+	function friendRequest(username) {
+		UserService.getUserByUsername(username).then(friend=>{
+			onChangeInputText("");
+			if (friend!==null) {
+				setModalUserId(friend.id);
+				setModalUsername(friend.username);
+				setModalOperation("add");
+				setModalVisible(true);
+			}
+		});
+	}
 
 	useEffect(() => {
-        let mounted = true;
+		let mounted = true;
+		readData("user").then(user=>setUser(JSON.parse(JSON.parse(user))));
 
-		readData("user").then((user) => {
-			var current_user = JSON.parse(JSON.parse(user));
-			setUser(current_user);
+		reloadFriends();
+  
+		socket.on("reload_notifications", () => {
+			reloadFriends();
 		});
-
-        UserService.getFriends().then((res) => {
-            if(res != friends)
-                setFriends(res);
-        });
-
-		const interval = setInterval(() => {
-			UserService.getFriends().then((res) => {
-                if(res != friends)
-				    setFriends(res);
-			});
-		}, 5000);
-
 		return () => {
-			mounted = false;
-			clearInterval(interval);
+		  	mounted = false;
 		};
 	}, []);
 
-	function toggleModalVisibility() {
-		setModalVisible(!modalVisible);
-	}
-
-	function fetchUserByUsername(username) {
-		UserService.getUsers(username, "", "", 0, 10).then((result) => {
-			const usersFoundInFecth = result.users;
-			setUsersFound(usersFoundInFecth);
+	useEffect(()=>{
+		const unsubscribe = navigation.addListener('focus', () => {
+			reloadFriends();
 		});
-	}
 
-	function reloadFriends() {
-		UserService.getFriends().then((res) => {
-			setFriends(res);
-		});
-	}
-
-	function settingFriends(friends) {
-		setFriends(friends);
-	}
-
+		return unsubscribe;
+	}, [navigation]);
+    
 	return (
 		<View>
 			<View style={{ position: "absolute", x: 0, y: 0 }}>
@@ -105,7 +99,7 @@ function Friends({ navigation }) {
 				{friends.length === 0 && (
 					<View>
 						<Text style={styles.noFriends}>
-							Ainda nao tem amigos
+							Ainda não tem amigos
 						</Text>
 					</View>
 				)}
@@ -125,7 +119,8 @@ function Friends({ navigation }) {
 							onPress={() => {
 								setModalUserId(friend.id);
 								setModalUsername(friend.username);
-								setChooseGameModalVisible(true);
+								setModalOperation("invite");
+								setModalVisible(true);
 							}}
 						>
 							<FontAwesome
@@ -155,95 +150,46 @@ function Friends({ navigation }) {
 					style={styles.input}
 					placeholder="Escreva o nome do amigo para o adicionar"
 					onChangeText={onChangeInputText}
+					value={inputText}
 				/>
 				<TouchableOpacity
 					style={styles.addButton}
-					onPress={() => {
-						fetchUserByUsername(inputText);
-					}}
+					onPress={() => friendRequest(inputText)}
 				>
-					<View
-						style={{
-							flexDirection: "row",
-						}}
-					>
-						<View>
-							<Feather name="search" size={30} color="white" />
-						</View>
-						<View style={{ marginLeft: 10 }}>
-							<Text style={styles.addButtonText}>Pesquisar</Text>
-						</View>
-					</View>
+					<Text style={styles.addButtonText}>Enviar pedido de amizade</Text>
 				</TouchableOpacity>
-
-				{usersFound.length !== 0 &&
-					usersFound.map((found) => {
-						return (
-							found.username !== user.username && (
-								<View key={found.id}>
-									{friends.some(
-										(element) =>
-											element.username === found.username
-									) === false && (
-										<View
-											style={{
-												flexDirection: "row",
-												flex: 1,
-												borderBottomWidth: 2,
-												borderBottomColor: "white",
-											}}
-										>
-											<Text style={styles.item}>
-												{found.username}
-											</Text>
-
-											<TouchableOpacity
-												style={styles.button}
-												onPress={() => {
-													setModalOperation("add");
-													setModalVisible(true);
-													setModalUserId(found.id);
-													setModalUsername(
-														found.username
-													);
-												}}
-											>
-												<Feather
-													name="user-plus"
-													size={30}
-													color="white"
-												/>
-											</TouchableOpacity>
-										</View>
-									)}
-								</View>
-							)
-						);
-					})}
 
 				{modalOperation === "remove" && (
 					<RemoveFriendModal
-						toggleModalVisibility={toggleModalVisibility}
-						settingFriends={settingFriends}
+						setVisible={setModalVisible}
+						setFriends={setFriends}
 						modalUserId={modalUserId}
 						modalUsername={modalUsername}
 						friends={friends}
 						user={user}
-						modalVisible={modalVisible}
+						visible={modalVisible}
+						reloadFriends={reloadFriends}
 					/>
 				)}
 				{modalOperation === "add" && (
 					<AddFriendModal
-						toggleModalVisibility={toggleModalVisibility}
+						setVisible={setModalVisible}
 						modalUserId={modalUserId}
 						modalUsername={modalUsername}
 						user={user}
-						modalVisible={modalVisible}
+						visible={modalVisible}
+						reloadFriends={reloadFriends}
+					/>
+				)}
+				{modalOperation === "invite" && (
+					<ChooseGameModal
+						visible={modalVisible}
+						setVisible={setModalVisible}
+						opponent={modalUserId}
 					/>
 				)}
 			</ScrollView>
-			<ChooseGameModal visible={ChooseGameModalVisible} setVisible={setChooseGameModalVisible}
-				opponent={modalUserId}></ChooseGameModal>
+			
 		</View>
 	);
 }
@@ -319,16 +265,15 @@ const styles = StyleSheet.create({
 		color: "black",
 		marginTop: 70,
 		textAlign: "center",
+		fontFamily: "BubblegumSans"
 	},
 	noFriends: {
-		fontSize: 20,
+		fontSize: 30,
 		padding: 20,
 		paddingTop: 50,
 		textAlign: "center",
 		fontFamily: "BubblegumSans",
-		color: "white",
-		fontWeight: "bold",
-		textDecorationLine: "underline",
+		color: "white"
 	},
 	title: {
 		fontSize: 40,
@@ -356,9 +301,14 @@ const styles = StyleSheet.create({
 		marginLeft: "auto",
 		marginRight: "auto",
 		marginTop: 10,
+		borderWidth: 2,
+		borderColor: "white",
+		borderRadius: 5
 	},
 	addButtonText: {
 		fontSize: 25,
 		color: "white",
+		fontFamily: "BubblegumSans",
+		margin: 5
 	},
 });

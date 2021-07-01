@@ -163,7 +163,19 @@ function StatisticsPlayers(props){
                             <ul className="list-group">
                                 {/* Cabeçalho. Se não quiserem por, deixem estar assim vazio. */}
                                 <li className="list-group-item d-flex justify-content-between align-items-center row">
-                                
+                                    <div className="col-lg-2 col-md-2 col-sm-2">
+                                        
+                                    </div>
+
+                                    <div className="col-lg-4 col-md-4 col-sm-4">
+                                        Nome
+                                    </div>
+                                    <div className="col-lg-3 col-md-3 col-sm-3">
+                                        Reports
+                                    </div>
+                                    <div className="col-lg-3 col-md-3 col-sm-3">
+                                        
+                                    </div>
                                 </li>
 
                                 {users.map(function(user, index) {
@@ -174,14 +186,17 @@ function StatisticsPlayers(props){
                                                 <span className="badge badge-primary badge-pill">{numberClassificationUsers}</span>
                                             </div>
 
-                                            <div className="col-lg-5 col-md-5 col-sm-5">
+                                            <div className="col-lg-4 col-md-4 col-sm-4">
                                                 {user.receiver_user.username}
                                             </div>
-                                            <div className="col-lg-4 col-md-4 col-sm-4">
-                                                {user.reportCount} reports
+                                            <div className="col-lg-3 col-md-3 col-sm-3">
+                                                {user.reportCount}
                                             </div>
-                                            <div className="col-lg-1 col-md-1 col-sm-1">
-                                                <i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.receiver_user.id); setModalUsername(user.receiver_user.username); setModalOperation("ban"); setConfirmModalShow(true) }}><IoIcons.IoBan/></i>
+                                            <div className="col-lg-3 col-md-3 col-sm-3">
+                                                <div title="banir" onClick={() => {setModalUserId(user.receiver_user.id); setModalUsername(user.receiver_user.username); setModalOperation("ban"); setConfirmModalShow(true) }} className="ban-button">
+                                                    <span className="shadow"></span>
+                                                    <span className="front"><IoIcons.IoBan/></span>
+                                                </div>
                                             </div>
                                         </li>
                                     )

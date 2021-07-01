@@ -1,24 +1,14 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
 import {
-	ScrollView,
 	Text,
 	Dimensions,
 	StyleSheet,
 	View,
 	Modal,
-	TextInput,
+	TouchableOpacity
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import UserService from "../services/user.service";
-import { Fontisto } from "@expo/vector-icons";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { MaterialIcons } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
-import userService from "../services/user.service";
-import { readData } from "../utilities/AsyncStorage";
-import { Picker } from "@react-native-picker/picker";
-import { Feather } from "@expo/vector-icons";
+import socket from "../utilities/Socket";
 
 const win = Dimensions.get("window");
 
@@ -26,14 +16,9 @@ function RemoveFriendModal(props) {
 
 	function remove_friend(friendId) {
 		UserService.remove_friend(props.user.id, friendId).then((result) => {
-			if (result != "error") {
-				const newFriends = props.friends.filter(
-					(user) => user.id !== friendId
-				);
-
-
-				props.settingFriends(newFriends);
-			}
+			var notification_text = props.user.username + " removeu-te da sua lista de amigos.";
+			socket.emit("new_notification", {"sender": props.user.id, "receiver": friendId, "notification_type": "N", "notification_text": notification_text});
+			props.reloadFriends();
 		});
 	}
 
@@ -41,9 +26,9 @@ function RemoveFriendModal(props) {
 		<Modal
 			animationType="slide"
 			transparent={true}
-			visible={props.modalVisible}
+			visible={props.visible}
 			onRequestClose={() => {
-				props.toggleModalVisibility();
+				props.setVisible(false);
 			}}
 		>
 			<View style={styles.centeredView}>
@@ -56,14 +41,13 @@ function RemoveFriendModal(props) {
 					<View
 						style={{
 							flexDirection: "row",
-							justifyContent: "center",
 							alignItems: "center",
 						}}
 					>
 						<TouchableOpacity
 							style={[styles.buttonModal, styles.buttonOpen]}
 							onPress={() => {
-								props.toggleModalVisibility();
+								props.setVisible(false);
 								remove_friend(props.modalUserId);
 							}}
 						>
@@ -71,7 +55,7 @@ function RemoveFriendModal(props) {
 						</TouchableOpacity>
 						<TouchableOpacity
 							style={[styles.buttonModal, styles.buttonCancel]}
-							onPress={() => props.toggleModalVisibility()}
+							onPress={() => props.setVisible(false)}
 						>
 							<Text style={styles.textStyle}>Cancelar</Text>
 						</TouchableOpacity>
@@ -146,7 +130,6 @@ const styles = StyleSheet.create({
 
 	textStyle: {
 		color: "white",
-		fontWeight: "bold",
 		textAlign: "center",
 		fontFamily: "BubblegumSans",
 	},

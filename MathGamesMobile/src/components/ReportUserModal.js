@@ -1,32 +1,23 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
-	ScrollView,
 	Text,
 	Dimensions,
 	StyleSheet,
 	View,
 	Modal,
-	TextInput,
+	TouchableOpacity
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import UserService from "../services/user.service";
-import { Fontisto } from "@expo/vector-icons";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { MaterialIcons } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
-import userService from "../services/user.service";
-import { readData } from "../utilities/AsyncStorage";
-import { Picker } from "@react-native-picker/picker";
-import { Feather } from "@expo/vector-icons";
 
 const win = Dimensions.get("window");
 
 function ReportUserModal(props) {
-	const [selectedMotive, setSelectedMotive] = useState(null);
+	const reasons = ["Uso Batota", "Exploração de Bug", "Nome inapropriado"];
+	const [selectedMotive, setSelectedMotive] = useState("");
 
 	async function report_player(player) {
-		if (selectedMotive !== "motivo") {
+		if (selectedMotive !== "") {
 			UserService.report_player(props.user.id, player, selectedMotive);
 		}
 	}
@@ -35,9 +26,9 @@ function ReportUserModal(props) {
 		<Modal
 			animationType="slide"
 			transparent={true}
-			visible={props.modalVisible}
+			visible={props.visible}
 			onRequestClose={() => {
-				props.toggleModalVisibility();
+				props.setVisible(false);
 			}}
 		>
 			<View style={styles.centeredView}>
@@ -47,41 +38,42 @@ function ReportUserModal(props) {
 						Tem a certeza que pretende reportar o jogador{" "}
 						{props.modalUsername} ?
 					</Text>
-					<Picker
-						style={styles.picker}
-						//mode="dropdown"
-						itemStyle={styles.itemStyle}
-						selectedValue={selectedMotive}
-						onValueChange={(itemValue, itemIndex) => {
-							setSelectedMotive(itemValue);
-						}}
-					>
-						<Picker.Item label="Motivo" value="motivo" />
-						<Picker.Item label="Cheats" value="Cheats" />
-						<Picker.Item label="Bug Abuse" value="Bug Abuse" />
-					</Picker>
+
+					{reasons.map((reason, index)=>
+						<TouchableOpacity key={index}
+							style={selectedMotive===reason ? styles.buttonReason : styles.buttonReasonUnselected}
+							onPress={()=>setSelectedMotive(reason)}
+						>
+							<Text style={selectedMotive===reason ? styles.textStyle : styles.textStyleUnselected}>{reason}</Text>
+						</TouchableOpacity>
+					)}
+
 					<View
 						style={{
 							flexDirection: "row",
-							justifyContent: "center",
 							alignItems: "center",
+							marginTop: 15
 						}}
 					>
-						<TouchableOpacity
-							style={[styles.buttonModal, styles.buttonOpen]}
-							onPress={() => {
-								props.toggleModalVisibility();
-								report_player(props.modalUserId);
-                                setSelectedMotive("motivo");
-							}}
-						>
-							<Text style={styles.textStyle}>Reportar</Text>
-						</TouchableOpacity>
+						{selectedMotive==="" ? <View style={{width: win.width / 3,
+							marginLeft: win.width / 8,
+							marginRight: 20}}></View> :
+							<TouchableOpacity
+								style={[styles.buttonModal, styles.buttonOpen]}
+								onPress={() => {
+									props.setVisible(false);
+									report_player(props.modalUserId);
+									setSelectedMotive("");
+								}}
+							>
+								<Text style={styles.textStyle}>Confirmar</Text>
+							</TouchableOpacity>
+						}
 						<TouchableOpacity
 							style={[styles.buttonModal, styles.buttonCancel]}
 							onPress={() => {
-								props.toggleModalVisibility();
-                                setSelectedMotive("motivo");
+								props.setVisible(false);
+                                setSelectedMotive("");
 							}}
 						>
 							<Text style={styles.textStyle}>Cancelar</Text>
@@ -96,24 +88,11 @@ function ReportUserModal(props) {
 export default ReportUserModal;
 
 const styles = StyleSheet.create({
-	picker: {
-		width: 100,
-	},
-	itemStyle: {
-		fontSize: 15,
-		height: 75,
-		color: "black",
-		textAlign: "center",
-		fontWeight: "bold",
-		fontFamily: "BubblegumSans",
-	},
-
 	// Model
 	centeredView: {
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		//marginTop: 22,
 	},
 	modalView: {
 		margin: 20,
@@ -141,9 +120,6 @@ const styles = StyleSheet.create({
 		marginLeft: win.width / 8,
 		marginRight: 20,
 	},
-	buttonClose: {
-		backgroundColor: "#2196F3",
-	},
 
 	buttonCancel: {
 		backgroundColor: "red",
@@ -151,12 +127,38 @@ const styles = StyleSheet.create({
 		marginRight: win.width / 8,
 	},
 
+	buttonReason: {
+		borderRadius: 20,
+		padding: 5,
+		elevation: 2,
+		backgroundColor: "grey",
+		width: win.width / 2,
+		margin: 1
+	},
 	textStyle: {
 		color: "white",
-		fontWeight: "bold",
 		textAlign: "center",
 		fontFamily: "BubblegumSans",
+		fontSize: 15
 	},
+
+	buttonReasonUnselected: {
+		borderRadius: 20,
+		padding: 5,
+		elevation: 2,
+		backgroundColor: "white",
+		width: win.width / 2,
+		margin: 1,
+		borderWidth: 1,
+		borderColor: "grey"
+	},
+	textStyleUnselected: {
+		color: "grey",
+		textAlign: "center",
+		fontFamily: "BubblegumSans",
+		fontSize: 15
+	},
+
 	modalTitle: {
 		marginBottom: 15,
 		textAlign: "center",
@@ -167,5 +169,6 @@ const styles = StyleSheet.create({
 		marginBottom: 15,
 		textAlign: "center",
 		fontFamily: "BubblegumSans",
+		fontSize: 15
 	},
 });

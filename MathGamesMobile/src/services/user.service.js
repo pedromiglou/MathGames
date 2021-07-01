@@ -18,10 +18,16 @@ class UserService {
         return res.json();
     }
 
-	async getFriends() {
-		var user = JSON.parse(JSON.parse(await readData("user")));
-		var url = urlAPI + "api/friends/" + user.id;
-		var token = user.token;
+    async getUserByUsername(username) {
+        var url = urlAPI + 'api/users/username/' + username;
+        var res = await fetch(url);
+        if (res.status !== 200) 
+            return null;
+        return res.json();
+    }
+
+	async getFriends(user_id, token) {
+		var url = urlAPI + "api/friends/" + user_id;
 
 		var res = await fetch(url, { headers: { "x-access-token": token } });
 		if (res.status !== 200) return { error: true };
@@ -53,36 +59,6 @@ class UserService {
         var res = await fetch(url);
         return res.json();
     }
-
-
-    /* async send_notification_request(sender, receiver, not_type) {
-        var user = JSON.parse(JSON.parse(await readData("user")));
-		var token = user.token;
-
-        let request= {
-            sender: sender,
-            receiver: receiver,
-            notification_type: not_type
-        }
-
-        console.log(sender)
-        console.log(receiver)
-        console.log(not_type)
-
-        var url = urlAPI + 'api/notifications/';
-        
-        var xx = await fetch(url, {
-            method:'POST',
-            headers:{'Content-type':'application/json',
-                     'x-access-token': token},
-            body: JSON.stringify(request)
-        });
-
-        console.log(xx)
-
-        return;        
-    } */
-
 
     async getLastGames(userId) {
         var user = JSON.parse(JSON.parse(await readData("user")));

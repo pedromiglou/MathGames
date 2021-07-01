@@ -4,8 +4,9 @@ import {
 	Dimensions,
 	StyleSheet,
 	View,
+	ScrollView,
 	Modal,
-    TouchableOpacity
+	TouchableOpacity
 } from "react-native";
 
 
@@ -19,17 +20,19 @@ function RulesModal(props) {
 			transparent={true}
 			visible={props.modalVisible}
 			onRequestClose={() => {
-				props.toggleModalVisibility();
+				props.setModalVisible(false);
 			}}
 		>
 			<View style={styles.centeredView}>
 				<View style={styles.modalView}>
-					<Text style={styles.modalTitle}>
-						Regras {props.game.title}
-					</Text>
-					<Text style={styles.modalText}>
-						{props.game.rules}
-					</Text>
+					<ScrollView style={{padding: 2}}>
+						<Text style={styles.modalTitle}>Objetivo:</Text>
+						<Text style={styles.modalText}>{props.game.goal}</Text>
+
+						<Text style={styles.modalTitle}>Regras:</Text>
+						<Text style={styles.modalText}>{props.game.rules}</Text>
+					</ScrollView>
+
 					<View
 						style={{
 							flexDirection: "row",
@@ -40,7 +43,7 @@ function RulesModal(props) {
 						<TouchableOpacity
 							style={[styles.buttonModal, styles.buttonOpen]}
 							onPress={() => {
-								props.toggleModalVisibility();
+								props.setModalVisible(false);
 							}}
 						>
 							<Text style={styles.textStyle}>Ok!</Text>
@@ -76,10 +79,11 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		//marginTop: 22,
 	},
 	modalView: {
-		margin: 20,
+		height: win.height*0.8,
+		marginLeft: win.width/20,
+		marginRight: win.width/20,
 		backgroundColor: "white",
 		borderRadius: 20,
 		padding: 35,
@@ -101,8 +105,6 @@ const styles = StyleSheet.create({
 	buttonOpen: {
 		backgroundColor: "green",
 		width: win.width / 3,
-		marginLeft: win.width / 8,
-		marginRight: 20,
 	},
 	buttonClose: {
 		backgroundColor: "#2196F3",
@@ -111,7 +113,6 @@ const styles = StyleSheet.create({
 	buttonCancel: {
 		backgroundColor: "red",
 		width: win.width / 3,
-		marginRight: win.width / 8,
 	},
 
 	textStyle: {

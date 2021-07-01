@@ -22,6 +22,7 @@ function LastGames({ navigation }) {
 			setUser(user);
             UserService.getLastGames(user.id, user.token).then(
                 (response) => {
+                    console.log(response)
                     if (!response.error) setGames(response);
                 }
             );
@@ -76,7 +77,7 @@ function LastGames({ navigation }) {
 							<Text style={styles.dataColText}>Jogo</Text>
 						</View>
 						<View style={styles.dataCol}>
-							<Text style={styles.dataColText}>Detalhes</Text>
+							<Text style={styles.dataColText}>Modo Jogo</Text>
 						</View>
 					</View>
 
@@ -118,7 +119,9 @@ function LastGames({ navigation }) {
 												: styles.loseText
 										}
 									>
-										Rastros
+										{value["game_id"] === 0
+                                                    ? "Rastros" : value["game_id"] === 1 ?
+                                                        "Gatos&Cães" : "Outro"}
 									</Text>
 								</View>
 								<View style={styles.infoCol}>
@@ -132,7 +135,8 @@ function LastGames({ navigation }) {
 												: styles.loseText
 										}
 									>
-										Detalhes
+										{value["game_type"] === "online" ? "Online" 
+                                                    : value["game_type"] === "amigo" ? "Amigo" : "Outro" }
 									</Text>
 								</View>
 							</View>

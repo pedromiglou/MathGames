@@ -1,6 +1,6 @@
 import * as React from 'react';
-import {useState} from 'react';
-import {ScrollView, Dimensions, View, StyleSheet, TouchableOpacity} from 'react-native';
+import {useState, useEffect} from 'react';
+import {ScrollView, Dimensions, View, StyleSheet} from 'react-native';
 import RastrosEngine from './../games/rastros/RastrosEngine';
 import GatosCaesEngine from './../games/gatoscaes/GatosCaesEngine';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -8,21 +8,75 @@ import {readData, saveData} from './../utilities/AsyncStorage';
 import Loading from './../components/Loading';
 import {gamesInfo} from "./../data/GamesInfo";
 import socket from "./../utilities/Socket";
-import { Feather } from "@expo/vector-icons";
-import RulesModal from "../components/RulesModal";
+import {showAlert, closeAlert} from "react-native-customisable-alert";
+import GiveUpModal from '../components/GiveUpModal';
+import InfoModal from "../components/InfoModal";
 
 const win = Dimensions.get("window");
 
 function Game({ navigation }) {
 	//wait until everything is ready
 	const [ready, setReady] = useState(-1);
-	const [modalVisible, setModalVisible] = useState(false);
-    const [game, setGame] = useState({name: ""});
 
 	var game_id;
 	var gameMode;
 	var user_id;
-    readData("game").then(value => {if (value !== null) {setGame(JSON.parse(value));}})
+
+    //evento ao sair do screen
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('blur', () => {
+            //if gameMode online and game has not started leave matchmaking
+            readData("gameMode").then(gameMode=>{
+                if (gameMode.slice(-11,-1)!=="Computador") {
+                    readData("user_id").then(user_id=>{
+                        user_id = user_id.slice(1,-1);
+                        
+                        //at this point ready will have the game_id
+                        socket.emit("forfeit_match", {"user_id": user_id});
+                        readData("game").then(game => {
+                            game = JSON.parse(game);
+                            socket.emit("leave_matchmaking", {"user_id": user_id, "game_id": game.id});
+                        });
+                    });
+                }
+            });
+            saveData("gameEnded", false);
+        });
+    
+        return unsubscribe;
+    }, [navigation]);
+
+    //evento para impedir que saia logo do screen
+    useEffect(() =>
+        navigation.addListener('beforeRemove', (e) => {
+            e.preventDefault();
+
+            readData("gameEnded").then(gameEnded=>{
+                gameEnded = gameEnded==="true";
+                if (gameEnded) {
+                    saveData("ready",-1);
+                    navigation.dispatch(e.data.action);
+                } else {
+                    readData("ready").then(flag=>{
+                        if (flag==="-1") {
+                            navigation.dispatch(e.data.action);
+                        } else {
+                            saveData("ready",-1);
+                            //put modal inside alert
+                            showAlert({
+                                alertType: "custom",
+                                customAlert: (
+                                    <GiveUpModal closeAlert={closeAlert} leaveGame={()=>navigation.dispatch(e.data.action)}/>
+                                )
+                            });
+                        }
+                    });
+                    
+                }
+            });
+            
+        }),
+    [navigation]);
 
     readData('gameMode').then(mode=>{
         gameMode = mode.slice(1,-1);
@@ -40,7 +94,15 @@ function Game({ navigation }) {
                             socket.emit("entered_invite", {"user_id": user_id, "outro_id": opponent,
                                 "match_id": msg['match_id'], "game_id": Number(msg['game_id'])});
                         } else if (msg["error"]) {
-                            Alert.alert("Error inviting player", "there was an error");
+                            showAlert({
+                                alertType: "custom",
+                                customAlert: (
+                                    <InfoModal closeAlert={closeAlert}
+                                        title="Não foi possível aceitar o convite"
+                                        text="O convite expirou"
+                                    />
+                                )
+                            });
                         }
                     });
                     
@@ -52,6 +114,7 @@ function Game({ navigation }) {
                         saveData('player2', msg['player2']);
                         readData('game').then(game=>{
                             game = JSON.parse(game);
+                            saveData("ready", game.id);
                             setReady(game.id);
                         });
                     });
@@ -63,9 +126,17 @@ function Game({ navigation }) {
             saveData("gameMode", "Amigo");
             socket.once("invite_link", (msg) => {
                 if (msg["match_id"]) {
-                  saveData("match_id", msg['match_id']);
+                    saveData("match_id", msg['match_id']);
                 } else {
-                  Alert.alert("Não foi possível convidar", "Criaste um link recentemente, espera mais um pouco até criares um novo.")
+                    showAlert({
+                        alertType: "custom",
+                        customAlert: (
+                            <InfoModal closeAlert={closeAlert}
+                                title="Não foi possível convidar"
+                                text="Criaste um link recentemente, espera mais um pouco até criares um novo."
+                            />
+                        )
+                    });
                 }
             });
             readData("user_id").then(user_id=>{
@@ -84,6 +155,7 @@ function Game({ navigation }) {
                 saveData('player2', msg['player2']);
                 readData('game').then(game=>{
                     game = JSON.parse(game);
+                    saveData("ready", game.id);
                     setReady(game.id);
                 });
             });
@@ -96,26 +168,23 @@ function Game({ navigation }) {
                 if (gameMode==="Competitivo") {
                     readData('user_id').then(id=>{
                         user_id = id.slice(1,-1);
-                        socket.emit("user_id", {"user_id": user_id, "game_id": String(game_id)});
+                        socket.emit("enter_matchmaking", {"user_id": user_id, "game_id": String(game_id)});
                         socket.on("match_found", (msg) => {
                             saveData('match_id', String(msg['match_id']));
                             saveData('player1', msg['player1']);
                             saveData('player2', msg['player2']);
+                            saveData("ready", game_id);
                             setReady(game_id);
                         });
                     });
                 } else {
+                    saveData("ready", game_id);
                     setReady(game_id);
                 }
             });
 
         }
     });
-
-
-	function toggleModalVisibility() {
-		setModalVisible(!modalVisible);
-	}
 
 	return (
 		<View>
@@ -137,18 +206,7 @@ function Game({ navigation }) {
 				</LinearGradient>
 			</View>
 
-			<View style={styles.help}>
-				<TouchableOpacity
-					style={styles.buttonHelp}
-					onPress={() => {
-						//setModalVisible(true);
-					}}
-				>
-					<View>
-						<Feather name="help-circle" size={30} color="white" />
-					</View>
-				</TouchableOpacity>
-			</View>
+			
 
 			{ready === -1 && <Loading />}
 
@@ -162,14 +220,6 @@ function Game({ navigation }) {
 				<ScrollView>
 					<GatosCaesEngine></GatosCaesEngine>
 				</ScrollView>
-			)}
-
-			{modalVisible === true && (
-				{/* <RulesModal
-					toggleModalVisibility={toggleModalVisibility}
-					modalVisible={modalVisible}
-					game={game}
-				/> */}
 			)}
 		</View>
 	);

@@ -270,13 +270,6 @@
 }
 
 /* Vertical Menu */
-
-#content {
-    margin-left: 300px;
-}
-
-
-
 .nav-menu{
     background-color: #F9F9F9;
     height: 100%;
@@ -445,10 +438,6 @@ span.icons-noname{
         height: 190px;
     }
 
-    .menu-bars{
-        display: none;
-    }
-
     #horizontal_nav_row.navbar-row{
         flex-direction: column;
     }
@@ -479,10 +468,14 @@ span.icons-noname{
 
     .content{
         height: calc(100% - 190px);
+    } 
+}
+
+
+@media only screen and (max-width: 950px) {
+    .menu-bars{
+        display: none;
     }
-
-
-       
 }
 
 

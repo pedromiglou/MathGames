@@ -2,6 +2,8 @@ import * as React from 'react';
 import { Text, StyleSheet, ScrollView, TextInput, TouchableHighlight, Dimensions} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AuthService from "./../services/auth.service";
+import InfoModal from "./../components/InfoModal";
+import { closeAlert, showAlert } from 'react-native-customisable-alert';
 
 const win = Dimensions.get('window');
 
@@ -21,6 +23,8 @@ function Login(props) {
                     onChangeText={onChangeUsername}
                     value={username}
                     placeholder="Nome de Utilizador"
+                    autoCompleteType="username"
+                    textContentType="username"
                 />                      
                 <TextInput
                     style={styles.input}
@@ -28,13 +32,36 @@ function Login(props) {
                     value={password}
                     secureTextEntry={true}
                     placeholder="Palavra-chave"
+                    autoCompleteType="password"
+                    textContentType="password"
                 />
-                <TouchableHighlight onPress={()=>AuthService.login(username, password).then(res =>{if (res) props.login(true); props.return(false);})}
-                    style={styles.button}>
+                <TouchableHighlight onPress={()=>
+                    AuthService.login(username, password).then(res =>{
+                        if (res) {
+                            props.login(true);
+                            props.return(false);
+                        } else {
+                            showAlert({
+                                alertType: "custom",
+                                customAlert: (
+                                    <InfoModal closeAlert={closeAlert}
+                                        title="Falha no Login"
+                                        text="Nome de utilizador ou palavra-passe inválida"
+                                    />
+                                )
+                            });
+                        }
+                    })
+                } style={styles.button}>
                     <Text style={styles.buttonText}>Entrar</Text>
                 </TouchableHighlight>
                 <TouchableHighlight
-                    onPress={() => setLogin(false)}
+                    onPress={() => {
+                        onChangeUsername("");
+                        onChangeEmail("");
+                        onChangePassword("");
+                        setLogin(false)
+                    }}
                     style={styles.button}>
                     <Text style={styles.buttonText}>Ainda não tem conta?</Text>
                 </TouchableHighlight>
@@ -49,6 +76,8 @@ function Login(props) {
                     onChangeText={onChangeUsername}
                     value={username}
                     placeholder="Nome de Utilizador"
+                    autoCompleteType="username"
+                    textContentType="username"
                 />
                 <TextInput
                     style={styles.input}
@@ -56,6 +85,8 @@ function Login(props) {
                     value={email}
                     secureTextEntry={false}
                     placeholder="Email"
+                    autoCompleteType="email"
+                    textContentType="emailAddress"
                 />
                 <TextInput
                     style={styles.input}
@@ -63,13 +94,47 @@ function Login(props) {
                     value={password}
                     secureTextEntry={true}
                     placeholder="Palavra-chave"
+                    autoCompleteType="password"
+                    textContentType="password"
                 />
-                <TouchableHighlight onPress={()=>AuthService.register(username, email, password).then(res =>{if (res) setLogin(true)})}
-                    style={styles.button}>
+                <TouchableHighlight onPress={()=>AuthService.register(username, email, password).then(res =>{
+                    if (!res) {
+                        onChangeUsername("");
+                        onChangeEmail("");
+                        onChangePassword("");
+                        setLogin(true);
+                    } else {
+                        let alertText = "";
+                        if(res === "Failed! Username is already in use!")
+                            alertText = "O Username já existe";
+                        else if(res === "Failed! Email is already in use!")
+                            alertText = "O Email já existe";
+                        else if(res === "Password invalid")
+                            alertText = "Palavra-passe demasiado fraca.";
+                        else
+                            alertText = "Ocorreu um problema no registo";
+
+                        showAlert({
+                            alertType: "custom",
+                            customAlert: (
+                                <InfoModal closeAlert={closeAlert}
+                                    title="Não foi possível registar"
+                                    text={alertText}
+                                />
+                            )
+                        });
+                    }
+
+                })} style={styles.button}>
                     <Text style={styles.buttonText}>Criar Conta</Text>
                 </TouchableHighlight>
                 <TouchableHighlight
-                    onPress={() => setLogin(true)}
+                    onPress={() => {
+                        onChangeUsername("");
+                        onChangeEmail("");
+                        onChangePassword("");
+                        setLogin(true)
+                    }}
                     style={styles.button}>
                     <Text style={styles.buttonText}>Já tem conta?</Text>
                 </TouchableHighlight>

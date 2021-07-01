@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import {View, ScrollView, Text, Image, Dimensions, StyleSheet, TouchableHighlight} from 'react-native';
+import {View, ScrollView, Text, Image, Dimensions, StyleSheet, TouchableHighlight, TouchableOpacity, TextInput} from 'react-native';
 import {readData, saveData} from "../utilities/AsyncStorage";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,7 +8,6 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import RulesModal from "../components/RulesModal";
-import { TouchableOpacity} from 'react-native-gesture-handler'
 import { Feather } from "@expo/vector-icons";
 
 
@@ -19,7 +18,9 @@ function GamePage({navigation}) {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    readData("game").then(value => {if (value !== null) {setGame(JSON.parse(value));}})
+    readData("game").then(value => {if (value !== null) {
+      setGame(JSON.parse(value));
+    }})
 
     readData("user").then((user) => {
         var current_user = JSON.parse(JSON.parse(user));
@@ -29,10 +30,9 @@ function GamePage({navigation}) {
   }, []);
   const [aiMode, setAIMode] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-
-  function toggleModalVisibility() {
-    setModalVisible(!modalVisible);
-  }
+  const [player1, setPlayer1] = useState("");
+  const [player2, setPlayer2] = useState("");
+  const [naming, setNaming] = useState(false);
 
   return (
     <View>
@@ -59,8 +59,8 @@ function GamePage({navigation}) {
 
         <View style={{flexDirection: "row"}}>
           <View style={{width: win.width/2}}>
-            <Text style={styles.characteristics}>Idade: {game.age}</Text>
-            <Text style={styles.characteristics}>Dificuldade: Fácil</Text>
+            <Text style={styles.characteristics}>Idade: +{game.age}</Text>
+            <Text style={styles.characteristics}>Dificuldade: {game.dificulty_label}</Text>
           </View>
           
           <Image
@@ -106,6 +106,8 @@ function GamePage({navigation}) {
         
         <TouchableHighlight style={styles.button} onPress = {() => {
                       saveData("gameMode", "Competitivo");
+                      setNaming(false);
+                      setAIMode("");
                       navigation.navigate("Game");
                     }}>
           <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
@@ -120,6 +122,7 @@ function GamePage({navigation}) {
 
         <TouchableHighlight style={styles.button} onPress = {() => {
                       saveData("gameMode", "Contra o Computador");
+                      setNaming(false);
                       setAIMode("D");
                     }}>
           <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
@@ -194,9 +197,8 @@ function GamePage({navigation}) {
 
         <TouchableHighlight style={styles.button} onPress = {() => {
                       saveData("gameMode", "No mesmo Computador");
-                      saveData("player1", "Miglou");
-                      saveData("player2", "Rafiky");
-                      navigation.navigate("Game");
+                      setAIMode("");
+                      setNaming(true);
                     }}>
           <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
             <View style={styles.buttonView}>
@@ -205,29 +207,42 @@ function GamePage({navigation}) {
             </View>
           </LinearGradient>
         </TouchableHighlight>
-        { modalVisible === true && (
-            <RulesModal toggleModalVisibility={toggleModalVisibility} modalVisible={modalVisible} game={game} />
-        )}
+        {naming &&
+          <View style={{flexDirection: "row", alignSelf: "center"}}>
+            <TextInput
+              style={styles.input}
+              placeholder="Jogador 1"
+              onChangeText={setPlayer1}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Jogador 2"
+              onChangeText={setPlayer2}
+            />
+
+            <TouchableHighlight style={styles.button} onPress = {() => {
+                          saveData('player1', player1);
+                          saveData('player2', player2);
+                          setPlayer1("");
+                          setPlayer2("");
+                          navigation.navigate("Game");
+                        }}>
+              <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
+                <View style={styles.buttonView}>
+                  <Text style={styles.modeName}>Jogar</Text>
+                </View>
+              </LinearGradient>
+            </TouchableHighlight>
+          </View>
+        }
+        
+        <RulesModal setModalVisible={setModalVisible} modalVisible={modalVisible} game={game} />
       </ScrollView>
     </View>
 
     
   );
 }
-
-/* convidar por link
-<TouchableHighlight style={styles.button} onPress = {() => {
-              saveData("gameMode", "Gerar link de convite");
-              navigation.navigate("Game");
-            }}>
-  <LinearGradient colors={['#faad06', '#b1310a']} start={[1,1]} end={[0,0]} style={{flexDirection: "row"}}>
-    <View style={styles.buttonView}>
-      <Feather name="link" size={22} color="black" style={styles.icon} />
-      <Text style={styles.modeName}>Gerar link de convite</Text>
-    </View>
-  </LinearGradient>
-</TouchableHighlight>
-*/
 
 export default GamePage;
 
@@ -240,7 +255,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginTop: 10,
     borderRadius: 30,
-},
+  },
   button: {
     margin: 10,
     backgroundColor: "#CCFFFF",
@@ -313,6 +328,15 @@ const styles = StyleSheet.create({
     paddingRight: 20,
     paddingTop: 10,
     zIndex: 1,
-},
-
+  },
+  input: {
+		margin: 10,
+		borderWidth: 2,
+		borderColor: "#D66F08",
+		backgroundColor: "white",
+		color: "black",
+		textAlign: "center",
+    width: win.width/3 - 20,
+    fontFamily: 'BubblegumSans'
+	},
 });

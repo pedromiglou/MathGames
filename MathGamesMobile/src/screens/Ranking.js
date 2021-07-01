@@ -6,18 +6,14 @@ import {
 	Dimensions,
 	StyleSheet,
 	View,
-	Modal,
 	TextInput,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import UserService from "../services/user.service";
-import { Fontisto } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-import userService from "../services/user.service";
 import { readData } from "../utilities/AsyncStorage";
-import { Picker } from "@react-native-picker/picker";
 import { Feather } from "@expo/vector-icons";
 
 import AddFriendModal from "../components/AddFriendModal";
@@ -37,35 +33,48 @@ function Ranking({ navigation }) {
 	const [modalUsername, setModalUsername] = useState("");
 	const [modalVisible, setModalVisible] = useState(false);
 
-	const [selectedMotive, setSelectedMotive] = useState(null);
-
 	const [searchVisibility, setSearchVisibility] = useState(false);
 	const [inputText, onChangeInputText] = useState(null);
 
-	useEffect(() => {
-		readData("user").then((user) => {
-			var current_user = JSON.parse(JSON.parse(user));
-			setUser(current_user);
+	function reloadFriends() {
+		readData("user").then(user=>{
+			if (user!==null) {
+				user = JSON.parse(JSON.parse(user));
+				UserService.getFriends(user.id, user.token).then(response=>{
+					if ( response != null ) {
+						setFriends(response);
+					}
+				});
+			}
 		});
+	}
 
+	useEffect(() => {
 		let mounted = true;
-		UserService.getUsers("").then((res) => {
+		readData("user").then(user=>{
+			setUser(JSON.parse(JSON.parse(user)));
+		})
+		reloadFriends();
+		UserService.getUsers("", "", "", 0, 10).then((res) => {
 			setUsersFound(res.users);
 		});
-
-		const interval = setInterval(() => {
-			console.log("This will run every 10 seconds!");
-			if (user !== null)
-				UserService.getFriends().then((res) => {
-					setFriends(res);
-				});
-		}, 10000);
-
+  
 		return () => {
-			mounted = false;
-			clearInterval(interval);
+		  	mounted = false;
 		};
 	}, []);
+
+	useEffect(()=>{
+		const unsubscribe = navigation.addListener('focus', () => {
+			reloadFriends();
+			UserService.getUsers("", "", "", 0, 10).then((res) => {
+				setUsersFound(res.users);
+			});
+		});
+  
+		return unsubscribe;
+  
+	}, [navigation])
 
 	const getLevel = (account_level) => {
 		var contador = 1;
@@ -95,14 +104,6 @@ function Ranking({ navigation }) {
 			const usersFoundInFecth = result.users;
 			setUsersFound(usersFoundInFecth);
 		});
-	}
-
-	function toggleModalVisibility() {
-		setModalVisible(!modalVisible);
-	}
-
-	function settingFriends(friends) {
-		setFriends(friends);
 	}
 
 	var rankPosition = 1;
@@ -396,31 +397,33 @@ function Ranking({ navigation }) {
 
 				{modalOperation === "report" && (
 					<ReportUserModal
-						toggleModalVisibility={toggleModalVisibility}
+						setVisible={setModalVisible}
 						modalUserId={modalUserId}
 						modalUsername={modalUsername}
 						user={user}
-						modalVisible={modalVisible}
+						visible={modalVisible}
 					/>
 				)}
 				{modalOperation === "add" && (
 					<AddFriendModal
-						toggleModalVisibility={toggleModalVisibility}
+						setVisible={setModalVisible}
 						modalUserId={modalUserId}
 						modalUsername={modalUsername}
 						user={user}
-						modalVisible={modalVisible}
+						visible={modalVisible}
+						reloadFriends={reloadFriends}
 					/>
 				)}
 				{modalOperation === "remove" && (
 					<RemoveFriendModal
-						toggleModalVisibility={toggleModalVisibility}
-						settingFriends={settingFriends}
+						setVisible={setModalVisible}
+						setFriends={setFriends}
 						modalUserId={modalUserId}
 						modalUsername={modalUsername}
 						friends={friends}
 						user={user}
-						modalVisible={modalVisible}
+						visible={modalVisible}
+						reloadFriends={reloadFriends}
 					/>
 				)}
 			</ScrollView>
@@ -544,10 +547,6 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 		fontFamily: "BubblegumSans",
 		color: "white",
-	},
-
-	picker: {
-		width: 100,
 	},
 
 	topBoxName: {
