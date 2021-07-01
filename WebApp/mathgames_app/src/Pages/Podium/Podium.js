@@ -290,6 +290,8 @@ function Podium() {
         );
       }
 
+	console.log(current_user)
+
 	useEffect(
 		retrieveUsers
 	, [page_users, page_banned_users, page_normal_users, page_privilege_users, page_admin_users, allusers_inputs, banned_inputs, normal_inputs, privilege_inputs, admin_inputs])
@@ -503,7 +505,7 @@ function Podium() {
 								contador++;
 							}
 							return (
-								<li key={user.id} className="list-group-item d-flex justify-content-between align-items-center row">
+								<li key={user.id} className={(current_user !== null && current_user["username"] === user.username ) ? "list-group-item d-flex justify-content-between align-items-center row highlight" : "list-group-item d-flex justify-content-between align-items-center row"} >
 									<div className="col-lg-1 col-md-1 col-sm-1 align-items-center">
 										<span className="badge badge-primary badge-pill">{numberClassificationUsers}</span>
 									</div>
