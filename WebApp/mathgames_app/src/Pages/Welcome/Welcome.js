@@ -6,6 +6,11 @@ import "./Welcome.css";
 import "./Welcome.scss";
 
 function Welcome() {
+    function checkMobile(){
+        if (window.innerWidth < 500){
+            alert("Infelizmente o nosso website não está disponivel para telemóveis. Faz download da nossa aplicação para telemóvel através do botão mais a baixo!")
+        }
+    }
     return (
         <>
             <div className="header">
@@ -74,7 +79,7 @@ function Welcome() {
 										</a>
 									</div> */}
                                     <div className="align-right">
-                                        <Link to="/gamesDashboard">
+                                        <Link to="/gamesDashboard" onClick={() => checkMobile()}>
                                             <button className="learn-more slide-up-btn">
                                                 <span
                                                     className="circle"
