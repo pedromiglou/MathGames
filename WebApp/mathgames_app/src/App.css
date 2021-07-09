@@ -24,6 +24,7 @@ body,
     background: linear-gradient(130deg, #78c9ff, #6699f8, #5379f7, #5867f7, #8a54ee);
     background-size: 300% 100%;
     animation: gradient 7s ease infinite !important;
+    min-width: 350px;
 }
 
 .wrapper{
@@ -32,7 +33,9 @@ body,
 
 .content{
     height: calc(100% - 100px);
+    margin-left: 65px;
 }
+
 @keyframes gradient {
     0% {
         background-position: 0% 50%;
@@ -79,3 +82,58 @@ body,
     }
 }
 */
+
+
+/* Buttons */
+
+
+.confirm-modal{
+    background: hsl(135, 53%, 53%) !important;
+}
+
+.confirm-modal span.front{
+    background: hsl(125, 74%, 43%) !important;
+}
+
+.cancel-modal{
+    background: hsl(0, 47%, 51%) !important;
+}
+
+.cancel-modal span.front{
+    background: hsl(0, 74%, 43%) !important;
+}
+
+
+.button-clicky-modal {
+    width: 30%;
+    min-width: 200px;
+	color: white;
+	border: none;
+	border-radius: 12px !important;
+	padding: 0;
+	cursor: pointer !important;
+	position: relative !important;
+    margin: 2em auto 0 auto;
+}
+
+.button-clicky-modal span.front {
+	display: block;
+	padding: 5px 10px;
+	border-radius: 12px !important;
+	color: white;
+	transform: translateY(-8px);
+	text-align: center;
+    font-size: 1.5em;
+}
+
+.button-clicky-modal:hover span.front{
+	transform: translateY(-4px);
+	transition: filter 250ms;
+  	filter: brightness(110%);
+}
+
+.button-clicky-modal:active span.front{
+	transform: translateY(-1px);
+	transition: filter 250ms;
+  	filter: brightness(110%);
+}

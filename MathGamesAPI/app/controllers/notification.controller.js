@@ -4,7 +4,7 @@ const User = db.user;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Notification
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   // Validate request
   if (!req.body) {
     res.status(400).send({
@@ -24,35 +24,35 @@ exports.create = (req, res) => {
   const notification = {
     sender: req.body.sender,
     receiver: req.body.receiver,
-    notification_type: req.body.notification_type
+    notification_type: req.body.notification_type,
+    notification_text: req.body.notification_text
   };
 
-  Notification.findOne({where: {
-    sender: notification.sender,
-    receiver: notification.receiver,
-    notification_type: notification.notification_type
-  }}).then(response => {
-    if (response !== null) {
-      res.status(405).send({
-        message: "Friend Request already made."
-      });
-    } else {
-      Notification.create(notification)
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send({
-          message: err.message || "Some error occurred while creating the Notification."
-        });
-      });
-    }
-  }).catch(err => {
-    res.status(500).send({
-      message: err.message || "Some error occurred while searching for Notification Duplication."
-    });
-  })
+  
+  if (req.body.notification_type === "F" || req.body.notification_type === "P" || req.body.notification_type === "T") {
+    var result = await Notification.findOne({where: {
+      sender: notification.sender,
+      receiver: notification.receiver,
+      notification_type: notification.notification_type
+    }})
 
+    if (result !== null) {
+      res.status(405).send({
+        message: "Duplicated notification is not allowed."
+      });
+      return
+    }
+  }
+  
+  Notification.create(notification)
+  .then(data => {
+    res.send(data);
+  })
+  .catch(err => {
+    res.status(500).send({
+      message: err.message || "Some error occurred while creating the Notification."
+    });
+  });
 };
 
 // Retrieve all Notifications from the database.
@@ -72,14 +72,14 @@ exports.findAll = (req, res) => {
 exports.findByUserId = (req, res) => {
   const id = req.params.id;
 
-  if (parseInt(req.userId) !== parseInt(id)) {
+  if (parseInt(req.userId) !== parseInt(id) && req.account_type !== "A") {
     res.status(401).send({
       message: "Unauthorized!"
     });
     return;
   }
 
-  Notification.findAll({attributes: ['id', 'receiver', 'notification_type', 'createdAt' ], 
+  Notification.findAll({attributes: ['id', 'receiver', 'notification_type', 'notification_text', 'createdAt' ], 
                         where: {receiver: id}, include: [{model: User, as: 'sender_user', attributes: [['id', 'sender_id'], ['username', 'sender']], 
                         order: [["createdAt", 'DESC']] }]})
     .then(data => {

@@ -15,7 +15,9 @@ exports.create = (req, res) => {
   // Create a TournamentMatch
   const tournamentMatch = {
     match_id: req.body.match_id,
-    tournament_id: req.body.tournament_id
+    tournament_id: req.body.tournament_id,
+    roundNo: req.body.roundNo,
+    bye: req.body.bye
   };
 
   // Save TournamentMatch in the database
@@ -46,7 +48,7 @@ exports.findAll = (req, res) => {
 };
 
 // Find a single TournamentMatch with an id
-exports.findByTournament = (req, res) => {
+exports.findMatchesByTournament = (req, res) => {
   const id = req.params.id;
 
   TournamentMatch.findAll({where: {tournament_id: id} })

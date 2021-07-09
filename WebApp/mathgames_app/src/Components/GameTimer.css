@@ -1,0 +1,7 @@
+.game-timer {
+    font-size: larger;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin-bottom: 3px;
+    /* border: 3px double black */
+}

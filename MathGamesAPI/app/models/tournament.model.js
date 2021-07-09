@@ -8,8 +8,13 @@ module.exports = (sequelize, Sequelize) => {
         primaryKey: true
       },
       name: {
-        type: Sequelize.STRING(30),
+        type: Sequelize.STRING(45),
+        unique: true,
         allowNull: false
+      },
+      description: {
+        type: Sequelize.STRING(500),
+        allowNull: true
       },
       max_users: {
         type: Sequelize.INTEGER,
@@ -39,9 +44,17 @@ module.exports = (sequelize, Sequelize) => {
       creator: {
         type: Sequelize.INTEGER,
         allowNull: false
+      },
+      current_round: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      status: {
+        type: Sequelize.STRING(30),
+        allowNull: false
       }
     }, {
-      timestamps: false
+      timestamps: true
     });
     return Tournament;
   };

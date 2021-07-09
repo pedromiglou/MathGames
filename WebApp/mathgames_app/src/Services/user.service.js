@@ -8,6 +8,14 @@ class UserService {
         return res.json();
     }
 
+    async getUserByUsername(username) {
+        var url = urlAPI + 'api/users/username/' + username;
+        var res = await fetch(url);
+        if (res.status !== 200) 
+            return null;
+        return res.json();
+    }
+
     async getUserRanksById(userId) {
         var url = urlAPI + 'api/userranks/' + userId;
         var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
@@ -70,47 +78,97 @@ class UserService {
 
     async getReportUsers(page, pageSize) {
         var url = urlAPI + 'api/reports/top?page=' + page + '&size=' + pageSize;
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
-        return res.json();
+        try {
+            var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+            if (res.status !== 200) {
+                return {"error": true};
+            }
+            return res.json();
+        }
+        catch {
+            return {"error": true};
+        }
     }
 
 
     //Statistics Requests
     async getNumberOfBans() {
         var url = urlAPI + 'api/bans/statistics/';
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
-        return res.json();
+        try {
+            var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+            if (res.status !== 200) {
+                return {"error": true};
+            }
+            return res.json();
+        } catch {
+            return {"error": true};
+        }
     }
 
     async getNumberOfNewPlayers() {
         var url = urlAPI + 'api/users/statistics/';
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
-        return res.json();
+        try {
+            var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+            if (res.status !== 200) {
+                return {"error": true};
+            }
+            return res.json();
+        } catch {
+            return {"error": true};
+        }
     }
 
 
     async getMatchesStatistics() {
         var url = urlAPI + 'api/matches/statistics/';
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
-        return res.json();
+        try {
+            var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+            if (res.status !== 200) {
+                return {"error": true};
+            }
+            return res.json();
+        } catch {
+            return {"error": true};
+        }
     }
 
     async getMatchesStatistics7Days(game) {
         var url = urlAPI + 'api/matches/statistics?game=' + game;
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
-        return res.json();
+        try {
+            var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+            if (res.status !== 200) {
+                return {"error": true};
+            }
+            return res.json();
+        } catch {
+            return {"error": true};
+        }
     }
 
     async getMatchesStatisticsByGame() {
         var url = urlAPI + 'api/matches/statisticsbygame/';
-        var res = await fetch(url);
-        return res.json();
+        try {
+            var res = await fetch(url);
+            if (res.status !== 200) {
+                return {"error": true};
+            }
+            return res.json();
+        } catch {
+            return {"error": true};
+        }
     }
 
     async getRanksStatisticsByGame(name) {
         var url = urlAPI + 'api/userranks/statistics/' + name;
-        var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
-        return res.json();
+        try {
+            var res = await fetch(url, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+            if (res.status !== 200) {
+                return {"error": true};
+            }
+            return res.json();
+        } catch {
+            return {"error": true};
+        }
     }
     
     //Save avatar function
@@ -144,14 +202,14 @@ class UserService {
         return;
     }
 
-    accept_friendship(notification) {
+    async accept_friendship(notification) {
         let friends= {
             friend1: notification.sender_user.sender_id,
             friend2: notification.receiver,
         }
 
         var url = urlAPI + 'api/friends/';
-        fetch(url, {
+        await fetch(url, {
             method:'POST',
             headers:{'Content-type':'application/json',
                      'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
@@ -161,11 +219,12 @@ class UserService {
         return;
     }
 
-    async send_notification_request(sender, receiver, not_type) {
+    async send_notification_request(sender, receiver, not_type, not_text) {
         let request= {
             sender: sender,
             receiver: receiver,
-            notification_type: not_type
+            notification_type: not_type,
+            notification_text: not_text
         }
 
         var url = urlAPI + 'api/notifications/';
@@ -177,9 +236,36 @@ class UserService {
             body: JSON.stringify(request)
         });
 
-        return;        
     }
 
+
+
+    async send_notification_request_by_username(sender, receiver, not_type, not_text) {
+        var url1 = urlAPI + 'api/users/username/'+receiver
+        fetch(url1, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}}).then(res => {
+            if (res.status !== 200) {
+                return {"error": true};
+            }
+            res.json().then( async (result) => {
+                let request= {
+                    sender: sender,
+                    receiver: result.id,
+                    notification_type: not_type,
+                    notification_text: not_text
+                }
+        
+                var url = urlAPI + 'api/notifications/';
+                
+                await fetch(url, {
+                    method:'POST',
+                    headers:{'Content-type':'application/json',
+                             'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
+                    body: JSON.stringify(request)
+                });
+        
+            });
+        });
+    }
 
 
     async remove_friend(friend1, friend2) {
@@ -191,7 +277,6 @@ class UserService {
                      'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
         });
 
-        return;    
     }
     
     async report_player(sender, receiver, reason) {
@@ -233,7 +318,6 @@ class UserService {
             body: JSON.stringify(ban)
         });
 
-        return;    
     }
 
     async remove_ban(player) {
@@ -245,7 +329,6 @@ class UserService {
                      'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
         });
 
-        return;    
     }
 
     async upgrade_account(player) {
@@ -257,7 +340,6 @@ class UserService {
                         'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
         });
 
-        return;    
     }
 
     async downgrade_account(player) {
@@ -269,7 +351,35 @@ class UserService {
                         'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
         });
 
-        return;  
+    }
+
+    convert_user_rank(accountRank) {
+        if (accountRank <= 25)
+			return 0
+		else if (accountRank <= 75)
+			return 1
+		else if (accountRank <= 175)
+			return 2
+		else if (accountRank <= 275)
+			return 3
+		else if (accountRank <= 400)
+			return 4
+		else if (accountRank <= 550)
+			return 5
+		else if (accountRank <= 700)
+			return 6
+		else if (accountRank <= 850)
+			return 7
+		else if (accountRank <= 1050)
+			return 8
+		else if (accountRank <= 1250)
+			return 9
+		else if (accountRank <= 1450)
+			return 10
+		else if (accountRank <= 1700)
+			return 11
+		else
+			return 12
     }
  
 }

@@ -1,20 +1,22 @@
-import  React, { useEffect } from "react";
+import  React, { useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import Phaser from "phaser";
 import socket from "../../index"
 import AuthService from '../../Services/auth.service';
 import UserService from '../../Services/user.service';
 import RastrosAI from "../AI/RastrosAI";
 
-var game_mode, ai_diff, auth_user, current_match, processGameOver;
+var game_mode, ai_diff, auth_user, current_match, processGameOver, triggerTimerSwitch;
 
-export const RastrosEngine = ({process_game_over, arg_game_mode, arg_ai_diff, curr_match}) => {
+export const RastrosEngine = forwardRef(({trigger_timer_switch, process_game_over, arg_game_mode, arg_ai_diff, curr_match}, ref) => {
+    var gameInstance = useRef();
+
     useEffect(() => {
         // Clear listeners to make sure there are no repeated events
-        socket.off("match_end");
         socket.off("move_piece");
 
         current_match = curr_match;
         processGameOver = process_game_over;
+        triggerTimerSwitch = trigger_timer_switch;
         game_mode = arg_game_mode;
         auth_user = AuthService.getCurrentUser();
 
@@ -25,6 +27,7 @@ export const RastrosEngine = ({process_game_over, arg_game_mode, arg_ai_diff, cu
         else
             ai_diff = 0.8
 
+        let newScene = new RastrosScene();
         const config = {
             parent: document.getElementById("my_div_game"),
             transparent: true,
@@ -32,12 +35,25 @@ export const RastrosEngine = ({process_game_over, arg_game_mode, arg_ai_diff, cu
             scale: {
                 mode: Phaser.Scale.RESIZE
             },
-            scene: [RastrosScene]
+            scene: [newScene]
         }
-        new Phaser.Game(config);
-    }, [process_game_over, arg_game_mode, arg_ai_diff, curr_match]);
+        gameInstance.current = new Phaser.Game(config);
+
+    }, [trigger_timer_switch, process_game_over, arg_game_mode, arg_ai_diff, curr_match]);
+
+    useImperativeHandle(ref, () => ({
+
+        isFinished() {
+            return gameInstance.current.scene.getScene("RastrosScene").game_over;
+        },
+
+        getGame() {
+            return gameInstance.current;
+        }
+    }));
+
     return (<></>);
-}
+});
 
 class RastrosScene extends Phaser.Scene {
 	constructor() {
@@ -75,7 +91,6 @@ class RastrosScene extends Phaser.Scene {
     }
 
     create() {
-        console.log("tou create")
         this.squares_group = this.add.group();
     
         // Sound effect played after every move
@@ -91,7 +106,6 @@ class RastrosScene extends Phaser.Scene {
             this.player.add(1);
 
         if ( game_mode === "online" || game_mode === "amigo" ) {
-            console.log("tou criar listeners")
             if ( AuthService.getCurrentUsername() === current_match['player1'] )
                 this.player.add(1);
             else
@@ -106,7 +120,6 @@ class RastrosScene extends Phaser.Scene {
                 console.log("Game Over Received")
                 if (this.game_over === false)
                     this.finish_game(msg)
-                atualizarUserInfo();
             })
         }
 
@@ -126,6 +139,14 @@ class RastrosScene extends Phaser.Scene {
             }
         }
 
+        if (game_mode !== "offline") {
+            let homeSquare = (this.player.has(1) ? 42 : 6 )
+            this.squares_group.getChildren()[homeSquare].setTint(0xb3940b);
+        } else {
+            this.squares_group.getChildren()[42].setTint(0xb3940b);
+            this.squares_group.getChildren()[6].setTint(0xb3940b);
+        }
+
         // Fill in the moving piece
         this.player_piece = this.add.image(this.INITIAL_BOARD_POS + this.DISTANCE_BETWEEN_SQUARES*4, this.INITIAL_BOARD_POS+this.DISTANCE_BETWEEN_SQUARES*2, 'piece').setName('player_piece').setInteractive();
         this.player_piece.on('pointerup', this.click_piece, this);
@@ -138,8 +159,9 @@ class RastrosScene extends Phaser.Scene {
 
     update() {
         this.mycount += 1;
+
         if ( this.mycount >= 2 && !this.game_over && game_mode === "ai" && !this.player.has(this.current_player) )
-            this.move( this.squares_group.getChildren()[ this.rastrosAI.randomPlay(ai_diff, this.valid_squares, this.player_piece) ] );
+        this.move( this.squares_group.getChildren()[ this.rastrosAI.randomPlay(ai_diff, this.valid_squares, this.player_piece) ] );
     }
 
     click_square(clicked_square) {
@@ -151,8 +173,9 @@ class RastrosScene extends Phaser.Scene {
 
         if ( this.valid_squares.has( parseInt(clicked_square.name) ) ) {
             this.move(clicked_square);
-            if ( game_mode === "online" || game_mode === "amigo" )
+            if ( game_mode === "online" || game_mode === "amigo" ) {
                 socket.emit("move", clicked_square.name, AuthService.getCurrentUserId(), current_match['match_id']);
+            }
         }
         
     }
@@ -215,20 +238,34 @@ class RastrosScene extends Phaser.Scene {
         // Check for win conditions
         if ( game_mode === "offline" || game_mode === "ai" ) {
             let winner = "";
+            let endMode = "";
 
-            if ( current_pos === 6 )
-                winner = "player2"
-            if ( current_pos === 42 )
-                winner = "player1"
-            if ( set_diff(this.valid_squares, this.blocked_squares).size === 0 )
-                winner = "player" + String(this.current_player);
+            if ( current_pos === 6 ) {
+                winner = current_match["player2"];
+                endMode = "reached_goal";
+            }
+            else if ( current_pos === 42 ) {
+                winner = current_match["player1"];
+                endMode = "reached_goal";
+            }
+            else if ( set_diff(this.valid_squares, this.blocked_squares).size === 0 ) {
+                winner = current_match["player" + String(this.current_player)];
+                endMode = "no_moves";
+            }
 
             if ( winner !== "" ) {
-                this.finish_game( {match_id: current_match['match_id'], match_result: winner, end_mode: "valid_move"} );
+                if ( game_mode === "ai" ) {
+                    let ai_result = winner === current_match["player1"] ? "ai_win" : "ai_loss";
+                    let aiDifficulty = ai_diff === 0.2 ? "fácil" : ai_diff === 0.5 ? "média" : "difícil";
+                    this.finish_game( {game_id: 0, match_id: current_match['match_id'], match_result: ai_result, ai_difficulty: aiDifficulty} );
+                    return;
+                }
+                this.finish_game( {game_id: 0, match_id: current_match['match_id'], match_result: "offline_finish", end_mode: endMode, winner: winner} );
                 return;
             }
         }
-
+        if (game_mode!=="ai")
+            triggerTimerSwitch(this.current_player);
         this.current_player = this.current_player===1 ? 2 : 1
         this.current_player_text.setText("Jogador " + this.current_player);
 
@@ -244,9 +281,9 @@ class RastrosScene extends Phaser.Scene {
         this.squares_group.getChildren().forEach(x => x.disableInteractive());
 
         processGameOver(end_message);
+        atualizarUserInfo();
     }
 }
-
 
 async function atualizarUserInfo() {
     if (!AuthService.isAuthenticated())

@@ -1,25 +1,47 @@
 import React, { forwardRef, useState, useImperativeHandle } from "react";
+import './GameOverModal.css';
 import { useHistory } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import { EndGameStatements } from '../data/EndGameStatements';
 
 
-export const GameOverModal = forwardRef((props, ref) => {
+export const GameOverModal = forwardRef(({tournament_id}, ref) => {
     const [finishMatchModalShow, setFinishMatchModalShow] = useState(false);
-    const [endGameMessage, setEndGameMessage] = useState("");
-    const [gameId, setGameId] = useState(-1);
+    const [gameOverMessage, setGameOverMessage] = useState({});
     let history = useHistory()
 
     useImperativeHandle(ref, () => ({
 
-        processGameOver(msg, game_id) {
-            console.log("Id: ", game_id)
-            setGameId(game_id);
-            setEndGameMessage(msg);
+        processGameOver(msg) {
+            setGameOverMessage( processEndGameMessage(msg) );
             setFinishMatchModalShow(true);
         }
 
     }));
+
+    function processEndGameMessage(endGameMessage) {
+        let gameId = parseInt(endGameMessage["game_id"]);
+        let result = endGameMessage["match_result"];
+        let endMode = endGameMessage["end_mode"];
+        
+        if ( result === "offline_finish" ) {
+            let winner = endGameMessage["winner"];
+            if ( endMode === "timeout" || endMode === "invalid_move" )
+                return {game_id: gameId, result: result, winner: winner, message: EndGameStatements["win"][endMode], end_mode: endMode};
+            
+            return {game_id: gameId, result: result, winner: winner, message: EndGameStatements["win"][gameId][endMode], end_mode: endMode};
+        }
+        if ( result === "ai_win" || result === "ai_loss" ) {
+            let aiDifficulty = endGameMessage["ai_difficulty"];
+            return {game_id: gameId, result: result, ai_difficulty: aiDifficulty, end_mode: endMode};
+        }
+
+        if ( endMode === "timeout" || endMode === "invalid_move" || endMode === "forfeit" )
+            return {game_id: gameId, result: result, message: EndGameStatements[result][endMode], end_mode: endMode};
+
+        return {game_id: gameId, result: result, message: EndGameStatements[result][gameId][endMode], end_mode: endMode};
+
+    }
 
     function FinishMatchModal(props) {
         return (
@@ -30,30 +52,48 @@ export const GameOverModal = forwardRef((props, ref) => {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p style={{color: "#0056b3", fontSize: 20}}>
-                        Resultado: 
-                        { endGameMessage["match_result"]==="win" &&
-                            <span>
-                                Vitória! <span className="smiley-happy"></span>
-                                <br/>
-                                { endGameMessage["end_mode"]==="timeout" && EndGameStatements["win"]["timeout"] }
-                                { endGameMessage["end_mode"]==="valid_move" && EndGameStatements["win"][gameId][endGameMessage["extra"]] }
-                                { endGameMessage["end_mode"]==="invalid_move" && EndGameStatements["win"]["invalidMove"] }
+                    <p className="result-body">
+                        <span className="result-header">Resultado:</span>
+                        { gameOverMessage["result"]==="win" &&
+                            <span className="result-text">
+                                Vitória!
+                                {gameOverMessage["end_mode"] === "forfeit" && <span className="emoji flag"></span>}
+                                {gameOverMessage["end_mode"] !== "forfeit" && <span className="emoji smiley-happy"></span>}
                             </span>
                         }
-                        { endGameMessage["match_result"]==="loss" &&
-                            <span>
-                                Derrota. <span className="smiley-sad"></span>
-                                <br/>
-                                { endGameMessage["end_mode"]==="timeout" && EndGameStatements["loss"]["timeout"] }
-                                { endGameMessage["end_mode"]==="valid_move" && EndGameStatements["loss"][gameId][endGameMessage["extra"]] }
-                                { endGameMessage["end_mode"]==="invalid_move" && EndGameStatements["loss"]["invalidMove"] }
+                        { gameOverMessage["result"]==="loss" &&
+                            <span className="result-text">
+                                Derrota. 
+                                {gameOverMessage["end_mode"] === "forfeit" && <span className="emoji flag"></span>}
+                                {gameOverMessage["end_mode"] !== "forfeit" && <span className="emoji smiley-sad"></span>}
                             </span>
                         }
+                        { gameOverMessage["result"]==="offline_finish" &&
+                            <span className="result-text">
+                                Parabéns { gameOverMessage["winner"] }! Venceste o jogo! <span className="emoji clap"></span>
+                            </span>
+                        }
+                        { gameOverMessage["result"]==="ai_win" &&
+                            <span className="result-text">
+                                Parabéns! Conseguiste derrotar o computador em dificuldade { gameOverMessage["ai_difficulty"] }! <span className="emoji clap"></span>
+                            </span>
+                        }
+                        { gameOverMessage["result"]==="ai_loss" &&
+                            <span className="result-text">
+                                Perdeste contra o computador em dificuldade { gameOverMessage["ai_difficulty"] }. <span className="emoji robot"></span>
+                                <br/>
+                                Melhor sorte para a próxima!
+                            </span>
+                        }
+                        <br/>
+                        { gameOverMessage["result"]!=="ai_win" && gameOverMessage["result"]!=="ai_loss" && gameOverMessage["message"] }
                     </p>
                 </Modal.Body>
                 <Modal.Footer style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-                    <button onClick={() => history.push("/gamePage?id=" + gameId)} className="btn btn-warning" style={{color: "#0056b3", fontSize: 20}}>Voltar à página de jogo</button>
+                    <div id="confirm-b" title="Confirmar" onClick={() => {(tournament_id === null || tournament_id === undefined ? history.push("/gamePage?id=" + gameOverMessage["game_id"]) : history.push("/tournament?id=" + tournament_id) )} }  className="button-clicky-modal confirm-modal" style={{width: "60%"}}>
+                        <span className="shadow"></span>
+                        <span className="front">Voltar à página do jogo</span>
+                    </div>
                 </Modal.Footer>
             </Modal>
         );

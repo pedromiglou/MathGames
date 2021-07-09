@@ -1,5 +1,6 @@
 export default class RastrosAI {
 	constructor(){
+		this.turnCount = 0;
 		this.AI_blocked_squares = [
 			[false,false,false,false,false,false,false],
 			[false,false,false,false,false,false,false],
@@ -13,6 +14,7 @@ export default class RastrosAI {
 
 	//make a play using the AI
 	randomPlay(ai_diff, valid_squares, piece) {
+		this.turnCount++;
 		var chosen = null;
 		var INITIAL_BOARD_POS = 37 + 20;
         var DISTANCE_BETWEEN_SQUARES = 75 + 2;
@@ -52,7 +54,7 @@ export default class RastrosAI {
 					}
 				}
 
-				var newScore = this.minimax(validSquares, element, 13, -100, 100, false);
+				var newScore = this.minimax(validSquares, element, 8 + Math.floor(this.turnCount/2), -100, 100, false);
 				if (newScore >= score) {
 					chosen = element;
 					score = newScore;

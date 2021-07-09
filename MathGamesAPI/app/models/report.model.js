@@ -28,7 +28,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING(200),
         validate: {
             isValid() {
-                if (!["Cheats", "Bug Abuse"].includes(this.reason)) {
+                if (!["Uso Batota", "Exploração de Bug", "Nome inapropriado"].includes(this.reason)) {
                     throw new Error("Invalid Reason.")
                 }
             }
