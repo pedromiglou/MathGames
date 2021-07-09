@@ -3,10 +3,33 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App.js';
 import reportWebVitals from './reportWebVitals';
+import { urlWeb } from './data/data';
 
+
+/* Services */
+import AuthService from "./Services/auth.service"
+
+
+/* Uuid */
+import { v4 as uuidv4 } from 'uuid';
+
+/* Socket */
 import {urlAPI} from "./data/data";
 import io from "socket.io-client";
 let socket = io(urlAPI);
+
+if (sessionStorage.getItem('user_id') === null)
+    sessionStorage.setItem('user_id', "Guest_" + uuidv4());	
+
+var current_user_id = AuthService.getCurrentUserId();
+
+socket.emit("new_user", {"user_id": current_user_id});
+
+socket.on("logout", (msg) => {
+    sessionStorage.removeItem("user");
+    window.location.assign(urlWeb);
+});
+
 export default socket;
 
 ReactDOM.render(<App />, document.getElementById('root'));

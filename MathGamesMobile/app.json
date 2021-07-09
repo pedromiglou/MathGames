@@ -1,7 +1,7 @@
 {
   "name": "MathGamesMobile",
   "displayName": "MathGamesMobile",
-  "icon": "./../public/images/mathGames.png",
+  "icon": "./public/images/mathGames.png",
   "version": "1.0.0",
   "slug": "MathGames",
   "expo": {

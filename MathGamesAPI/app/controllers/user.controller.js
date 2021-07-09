@@ -251,16 +251,22 @@ exports.findAll = (req, res) => {
     var min_level =  0;
     var max_level = 2147483647;
     if (req.query.min_level) {
-      min_level = req.query.min_level === 1 ? 0 : 400 * Math.pow(req.query.min_level-1, 1.1);
+      if (req.query.min_level < 1)
+        min_level = 0
+      else
+        min_level = req.query.min_level === 1 ? 0 : 400 * Math.pow(req.query.min_level-1, 1.1);
     }
     if (req.query.max_level) {
-      max_level = 400 * Math.pow(req.query.max_level, 1.1);
+      if (req.query.max_level < 1)
+        max_level = 0
+      else 
+        max_level = 400 * Math.pow(req.query.max_level, 1.1);
     }
     const { limit, offset } = getPagination(page, size);
     User.findAndCountAll({attributes: ['id', 'username', 'account_level', 'account_type', 
                                         'avatar_color', 'avatar_hat', 'avatar_shirt', 'avatar_accessorie', 
                                         'avatar_trouser'] , 
-                          where: {username: { [Op.like]: `%${username}` }, banned: false, account_level: { [Op.between]: [min_level, max_level - 1]} }, 
+                          where: {username: { [Op.like]: `%${username}` }, banned: false, account_level: { [Op.between]: [min_level, max_level - 1]}, account_type: {[Op.ne]: "A"} }, 
                           order: [[req.query.orderby, 'DESC']], limit, offset})
     .then(data => {
       const response = getPagingData(data, page, limit);
@@ -291,9 +297,10 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
+
   User.findByPk(id)
     .then(data => {
-      const { password, ...userWithoutPassword } = data.dataValues;
+      const { password, email, createdAt, updatedAt, ...userWithoutPassword } = data.dataValues;
       res.send(userWithoutPassword);
     })
     .catch(err => {
@@ -303,12 +310,44 @@ exports.findOne = (req, res) => {
     });
 };
 
+
+// Find a single User by his username
+exports.findByName = (req, res) => {
+  const name = req.params.name;
+
+
+
+  User.findOne( {where: {username: name}})
+    .then(data => {
+
+      UserRanks.findByPk(data.dataValues.id)
+        .then(ranks => {
+
+          const { password, email, createdAt, updatedAt, banned, account_type, ...userWithoutPassword } = data.dataValues;
+          const { user_id, ...ranksWithoutUserId} = ranks.dataValues;
+          userWithoutPassword["ranks"] = ranksWithoutUserId
+          res.send(userWithoutPassword);
+        })
+        .catch(err => {
+          res.status(500).send({
+            message: "Error retrieving User with name=" + name
+          });
+      });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving User with name=" + name
+      });
+    });
+};
+
+
 // Update a User by the id in the request
 exports.update = async (req, res) => {
   const urlId = req.params.id;
 
   if (parseInt(req.userId) !== parseInt(urlId)) {
-    res.status(403).send({
+    res.status(401).send({
       message: "Unauthorized!"
     });
     return;

@@ -1,0 +1,210 @@
+.all-create{
+    display: flex;
+    justify-content: center;
+    padding: 2.5em 10% 2.5em 10%;
+}
+
+.CreateTSection{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 2em;
+    /* width: 300px; */
+}
+
+.label-form{
+    text-align: left;
+}
+
+.name-section-T{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.name-section-T > :first-child{
+    flex: 1 1 40%;
+}
+.name-section-T > :last-child{
+    flex: 1 1 60%;
+    font-size: 1em;
+}
+
+.pc-section{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 5%;
+    width: 100%;
+}
+
+.pc-section > :first-child{
+    flex: 1 1 40%;
+}
+
+.pc-section > :last-child{
+    flex: 1 1 55%;
+}
+
+.privacy-section-T{
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.privacy-section-T input#password{
+    font-size: 1.2em;
+    margin-bottom: 0.5em;
+}
+
+.privacy-section-T label{
+    font-size: 1.2em;
+    margin-top: 0.5em;
+}
+
+
+
+.radio-b{
+    width: 20px;
+}
+
+.hidden{
+    display: none;
+}
+
+.show{
+    display: flex;
+}
+
+.inner-radio{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.inner-radio label{
+    margin: 0;
+    font-size: 1.2em;
+}
+
+.games-section{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+/* Choose Game */
+.label-game{
+    margin: 0 auto 0.2em auto;
+    font-size: 3em;
+}
+
+.modal-games-T{
+    background-color: transparent;
+    padding: 1em 2em;
+    margin: 0 0.15em ;
+    border: 1px solid rgb(110, 204, 241);
+}
+
+.not-display{
+    display: none;
+}
+
+.game-card {
+    text-align: center;
+    justify-content: center;
+	width: 80%;
+	height: auto;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: transparent;
+    border: none;
+    border-radius: 2%;
+    min-width: 170px;
+}
+
+.game-card > :first-child{
+    z-index: 2;
+}
+
+
+.game-card::before{
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    background: linear-gradient(100deg, #fd5c11,#faad06, #b1310a);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite !important;
+    transform: skew(-8deg,-3deg);
+    border-radius: 2%;
+    border: 3px solid rgb(255, 255, 255);
+    z-index: 2;
+}
+
+.game-card:hover{
+    transform: scale(1.1);
+    background: linear-gradient(132deg, blue,purple,red);
+    background-size: 400% 400%;
+    animation: gradient 5s ease infinite !important;
+    cursor:pointer;
+    border: none;
+}
+
+.game-card:hover::before{
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.game-card.active{
+    transform: scale(1.1);
+    background: linear-gradient(132deg, blue,purple,red);
+    background-size: 400% 400%;
+    animation: gradient 5s ease infinite !important;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+
+.game-card.not-active{
+    opacity: 0.6;
+}
+
+.game-card.not-active::before{
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.game-img{
+    width: 100px;
+	height: 100px;
+    margin-top: 1em;
+	border-radius: 15px;
+	box-shadow: rgba(0, 0, 0, 0.35) 5px 15px 15px;
+	border: 2px solid white;
+}
+
+.row.buttons{
+    gap: 1em;
+    margin: 2em 0 0 auto;
+}
+

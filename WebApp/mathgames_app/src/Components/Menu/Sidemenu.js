@@ -9,11 +9,12 @@ import { Link } from 'react-router-dom';
 import './Menu.css'
 
 /* Data and Service */
-import {sidebarData_group1, sidebarData_group2, sidebarData_group_admin} from '../../data/SidebarData';
+import {sidebarData_group_user,sidebarData_group_nouser, sidebarData_group2, sidebarData_group_admin} from '../../data/SidebarData';
 import AuthService from '../../Services/auth.service';
 
 function Sidemenu() {
 	const [Admin, setAdmin] = useState(false);
+	const [withoutUser, setWithoutUser] = useState(true);
 	const [normalUser, setNormalUser] = useState(false);
 	
 
@@ -22,10 +23,12 @@ function Sidemenu() {
 		var current_user = AuthService.getCurrentUser();
 
 		if (current_user === null){
-			setNormalUser(true);
+			setWithoutUser(true)
 		} else if (current_user['account_type'] === 'A') {
+			setWithoutUser(false)
 			setAdmin(true);
 		} else {
+			setWithoutUser(false)
 			setNormalUser(true);
 		}
 		
@@ -39,7 +42,7 @@ function Sidemenu() {
 					<li className="nav-text">
 						<Link to="/"> 
 							<i className="subicon"><AiIcons.AiFillHome/></i>
-							<span className="sidebar-icons icons-name">Inicio</span>
+							<span className="sidebar-icons icons-noname">Inicio</span>
 							{/* <span className={sidebar ? "icons-name" : "icons-noname"}>Inicio</span> */}
 						</Link>
 					</li>
@@ -55,7 +58,7 @@ function Sidemenu() {
 								<li  className={item.cName}>
 									<Link to={item.path}> 
 										<i className="subicon">{item.icon}</i>
-										<span className="sidebar-icons icons-name">{item.title}</span>
+										<span className="sidebar-icons icons-noname">{item.title}</span>
 										{/* <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span> */}
 									</Link>
 								</li>
@@ -67,13 +70,32 @@ function Sidemenu() {
 
 				{ normalUser && 
 					<div>
-						{sidebarData_group1.map((item) =>{
+						{sidebarData_group_user.map((item) =>{
 						return(
 							<div key={item.id} className="nav-item">
 								<li className={item.cName}>
 									<Link to={item.path}> 
 										<i className="subicon">{item.icon}</i>
-										<span className="sidebar-icons icons-name">{item.title}</span>
+										<span className="sidebar-icons icons-noname">{item.title}</span>
+										{/* <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span> */} 
+										
+									</Link>
+								</li>
+							</div>
+							);
+						})}
+					</div>
+				}
+
+				{ withoutUser && 
+					<div>
+						{sidebarData_group_nouser.map((item) =>{
+						return(
+							<div key={item.id} className="nav-item">
+								<li className={item.cName}>
+									<Link to={item.path}> 
+										<i className="subicon">{item.icon}</i>
+										<span className="sidebar-icons icons-noname">{item.title}</span>
 										{/* <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span> */} 
 										
 									</Link>
@@ -93,7 +115,7 @@ function Sidemenu() {
 							<li  className={item.cName}>
 								<Link to={item.path}> 
 									<i className="subicon">{item.icon}</i>
-									<span className="sidebar-icons icons-name">{item.title}</span>
+									<span className="sidebar-icons icons-noname">{item.title}</span>
 									{/* <span className={sidebar ? "icons-name" : "icons-noname"}>{item.title}</span> */}
 								</Link>
 							</li>

@@ -6,6 +6,11 @@ import "./Welcome.css";
 import "./Welcome.scss";
 
 function Welcome() {
+    function checkMobile(){
+        if (window.innerWidth < 500){
+            alert("Infelizmente o nosso website não está disponivel para telemóveis. Faz download da nossa aplicação para telemóvel através do botão mais a baixo!")
+        }
+    }
     return (
         <>
             <div className="header">
@@ -73,8 +78,8 @@ function Welcome() {
 											
 										</a>
 									</div> */}
-                                    <div id="container">
-                                        <Link to="/gamesDashboard">
+                                    <div className="align-right">
+                                        <Link to="/gamesDashboard" onClick={() => checkMobile()}>
                                             <button className="learn-more slide-up-btn">
                                                 <span
                                                     className="circle"
@@ -102,32 +107,22 @@ function Welcome() {
 									*/}
                                 </div>
                                 <div className="half container col-xl-6 col-lg-6 col-md-8 col-sm-12">
-                                    <div className="row">
-                                        <div className="half container align-right">
-                                            <figure>
-                                                <img
-                                                    className="mobile-icons"
-                                                    src={
-                                                        process.env.PUBLIC_URL +
-                                                        "/images/android.png"
-                                                    }
-                                                    alt="android"
-                                                />
-                                            </figure>
+                                    <a href="https://github.com/ricardocruz29/PI_projectWebsite/raw/master/apk/MathGames.apk" role="button">
+                                        <div className="row">
+                                            <div className="align-right">
+                                                <figure>
+                                                    <img
+                                                        className="mobile-icons"
+                                                        src={
+                                                            process.env.PUBLIC_URL +
+                                                            "/images/android.png"
+                                                        }
+                                                        alt="android"
+                                                    />
+                                                </figure>
+                                            </div>
                                         </div>
-                                        <div className="half container">
-                                            <figure>
-                                                <img
-                                                    className="mobile-icons"
-                                                    src={
-                                                        process.env.PUBLIC_URL +
-                                                        "/images/ios.png"
-                                                    }
-                                                    alt="ios"
-                                                />
-                                            </figure>
-                                        </div>
-                                    </div>
+                                    </a>
                                 </div>
                             </div>
                         </div>
