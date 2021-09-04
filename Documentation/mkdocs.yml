@@ -1,0 +1,87 @@
+site_name: MathGames Developer Docs
+site_description: Documentation for MathGames project.
+site_author: MathGames Team
+site_url: http://138.68.191.32/
+
+repo_url: https://gitlab.com/Miglou/pi_mathgames
+
+# Configuration
+theme:
+    name: material
+
+    # Don't include MkDocs' JavaScript
+    include_search_page: false
+    search_index_only: true
+
+    # Default values, taken from mkdocs_theme.yml
+    language: en
+    features:
+        - content.tabs.link
+        # - navigation.instant
+        - navigation.sections
+        - navigation.tabs
+        - navigation.tracking
+        - search.highlight
+        - search.share
+        - search.suggest
+    palette:
+        - scheme: default
+          primary: indigo
+          accent: indigo
+          toggle:
+            icon: material/toggle-switch-off-outline
+            name: Switch to dark mode
+        - scheme: slate
+          primary: red
+          accent: red
+          toggle:
+            icon: material/toggle-switch
+            name: Switch to light mode
+    font:
+        text: Roboto
+        code: Roboto Mono
+    favicon: assets/logo.ico
+    logo: assets/logo.ico
+
+
+nav:
+    - Home: index.md
+    - Frontend:
+        - Introduction: Frontend/Introduction.md
+        - Development Environment: Frontend/DevelopmentEnvironment.md
+        - File Structure: Frontend/FileStructure.md
+        - Pages:
+            - Welcome: Frontend/Pages/Welcome.md
+            - Login: Frontend/Pages/Login.md
+            - Profile: Frontend/Pages/Profile.md
+            - ChooseGame: Frontend/Pages/ChooseGame.md
+            - GamePage: Frontend/Pages/GamePage.md
+            - Game: Frontend/Pages/Game.md
+            - Tournaments: Frontend/Pages/Tournaments.md
+            - Podium: Frontend/Pages/Podium.md
+            - Statistics: Frontend/Pages/Statistics.md
+        - Components:
+            - Game Engines:
+                - Rastros Engine: Frontend/Components/GameEngines/RastrosEngine.md
+                - Gatos & Cães Engine: Frontend/Components/GameEngines/GatosCaesEngine.md
+            - AI:
+                - Rastros AI: Frontend/Components/AI/RastrosAI.md
+                - Gatos & Cães AI: Frontend/Components/AI/GatosCaesAI.md
+            - Menu: Frontend/Components/Menu.md
+            - Games List: Frontend/Components/GamesList.md
+            - Game Over Modal: Frontend/Components/GameOverModal.md
+            - Player Card: Frontend/Components/PlayerCard.md
+
+        - Data: Frontend/Data.md
+    - Backend:
+        - Introduction: Backend/Introduction.md
+        - Development Environment: Backend/DevelopmentEnvironment.md
+        - File Structure: Backend/FileStructure.md
+        - Server: Backend/Server.md
+    - API: 
+        - Introduction: API/Introduction.md
+        - Models: API/Models.md
+        - Endpoints: API/Endpoints.md
+    - Websockets: Websockets/Websockets.md
+    - Expanding the Application:
+        - Add a new Game: Expanding/AddGame.md

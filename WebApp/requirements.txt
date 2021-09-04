@@ -1,6 +1,0 @@
-yarn add @fortawesome/fontawesome-free
-yarn add bootstrap
-yarn add react-bootstrap
-yarn add react-icons
-yarn add react-router-dom
-yarn add react-hash-link
