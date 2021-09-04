@@ -38,9 +38,14 @@ export const RastrosEngine = forwardRef(({trigger_timer_switch, process_game_ove
             scene: [newScene]
         }
         gameInstance.current = new Phaser.Game(config);
+
     }, [trigger_timer_switch, process_game_over, arg_game_mode, arg_ai_diff, curr_match]);
 
     useImperativeHandle(ref, () => ({
+
+        isFinished() {
+            return gameInstance.current.scene.getScene("RastrosScene").game_over;
+        },
 
         getGame() {
             return gameInstance.current;
@@ -86,7 +91,6 @@ class RastrosScene extends Phaser.Scene {
     }
 
     create() {
-        console.log("tou create")
         this.squares_group = this.add.group();
     
         // Sound effect played after every move
@@ -135,6 +139,14 @@ class RastrosScene extends Phaser.Scene {
             }
         }
 
+        if (game_mode !== "offline") {
+            let homeSquare = (this.player.has(1) ? 42 : 6 )
+            this.squares_group.getChildren()[homeSquare].setTint(0xb3940b);
+        } else {
+            this.squares_group.getChildren()[42].setTint(0xb3940b);
+            this.squares_group.getChildren()[6].setTint(0xb3940b);
+        }
+
         // Fill in the moving piece
         this.player_piece = this.add.image(this.INITIAL_BOARD_POS + this.DISTANCE_BETWEEN_SQUARES*4, this.INITIAL_BOARD_POS+this.DISTANCE_BETWEEN_SQUARES*2, 'piece').setName('player_piece').setInteractive();
         this.player_piece.on('pointerup', this.click_piece, this);
@@ -147,8 +159,9 @@ class RastrosScene extends Phaser.Scene {
 
     update() {
         this.mycount += 1;
+
         if ( this.mycount >= 2 && !this.game_over && game_mode === "ai" && !this.player.has(this.current_player) )
-            this.move( this.squares_group.getChildren()[ this.rastrosAI.randomPlay(ai_diff, this.valid_squares, this.player_piece) ] );
+        this.move( this.squares_group.getChildren()[ this.rastrosAI.randomPlay(ai_diff, this.valid_squares, this.player_piece) ] );
     }
 
     click_square(clicked_square) {
@@ -160,8 +173,9 @@ class RastrosScene extends Phaser.Scene {
 
         if ( this.valid_squares.has( parseInt(clicked_square.name) ) ) {
             this.move(clicked_square);
-            if ( game_mode === "online" || game_mode === "amigo" )
+            if ( game_mode === "online" || game_mode === "amigo" ) {
                 socket.emit("move", clicked_square.name, AuthService.getCurrentUserId(), current_match['match_id']);
+            }
         }
         
     }

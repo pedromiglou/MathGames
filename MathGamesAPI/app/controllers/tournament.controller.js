@@ -24,7 +24,7 @@ const getPagingData = (data, page, limit) => {
 
 
 // Create and Save a new Tournament
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   // Validate request
   if (!req.body) {
     res.status(400).send({
@@ -41,10 +41,18 @@ exports.create = (req, res) => {
   }
 
   if (req.body.private === true && req.body.password === "") {
-    res.status(400).send({
+    res.status(500).send({
       message: "Private tournaments must have a password."
     });
     return;
+  }
+
+  var resultado = await Tournament.findOne({where: {name: req.body.name}})
+  if (resultado !== null) {
+    res.status(400).send({
+      message: "Tournament name is already in use!"
+    });
+    return
   }
 
   // Create a Tournament
@@ -63,11 +71,9 @@ exports.create = (req, res) => {
   Tournament.create(tournament)
     .then(data => {
       res.send(data);
-    })
-    .catch(err => {
+    }).catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Tournament."
+        message: "Some error occurred while creating the TournamentUser."
       });
     });
 };
@@ -192,43 +198,50 @@ exports.initialize = (req, res) => {
       }
 
       TournamentUsers.findAll({where: {tournament_id: torneio.dataValues.id}}).then(async (tournament_users) => {
-
-          if (tournament_users.length !== torneio.dataValues.max_users) {
-            res.status(500).send({
-              message: "The tournament need to be full to start."
-            });
-            return
-          }
           
+
+        if (tournament_users.length < 3) {
+          res.status(404).send({
+            message: "The tournament should have atleast 3 players."
+          });
+          return
+        }
+
           var array_players_id = []
           for (let player of tournament_users) {
             array_players_id.push(player.dataValues.user_id)
           }
 
-          var bracket = doBracket(torneio.dataValues.max_users, array_players_id)
+          var bracket = doBracket(tournament_users.length, array_players_id)
+          
           var match_id_translation = {}
 
           for (let game of bracket) {
-            // Create a GameMatch
-            const gameMatch = {
-              player1: game.player1,
-              player2: game.player2,
-              winner: null,
-              game_type: "online",
-              game_id: torneio.dataValues.game_id,
-            };
 
-            // Save GameMatch in the database
-            await GameMatch.create(gameMatch).then(game_match => {
-              match_id_translation[game.matchNo] = game_match.dataValues.id
-            }).catch(err => {
-              res.status(500).send({
-                message: "An error occurred on the server. Operation was not concluded!"
+              // Create a GameMatch
+              const gameMatch = {
+                player1: game.player1,
+                player2: game.player2,
+                winner: null,
+                game_type: "online",
+                game_id: torneio.dataValues.game_id,
+              };
+
+              // Save GameMatch in the database
+              await GameMatch.create(gameMatch).then(game_match => {
+                match_id_translation[game.matchNo] = game_match.dataValues.id
+              }).catch(err => {
+                res.status(500).send({
+                  message: "An error occurred on the server. Operation was not concluded!"
+                });
               });
-            });
+
           }
 
+          var games_with_bye = []
+
           for (let game of bracket) {
+    
             // Create a TournamentMatch
             const tournamentMatch = {
               match_id: match_id_translation[game.matchNo],
@@ -243,15 +256,51 @@ exports.initialize = (req, res) => {
             };
 
             // Save TournamentMatch in the database
-            TournamentMatch.create(tournamentMatch)
-              .catch(err => {
-                res.status(500).send({
-                  message: "An error occurred on the server. Operation was not concluded!"
-                });
+            await TournamentMatch.create(tournamentMatch)
+            .catch(err => {
+              res.status(500).send({
+                message: "An error occurred on the server. Operation was not concluded!"
               });
-          }
-          
+            });
 
+            if (game.bye) {
+              games_with_bye.push(game)
+            }
+          }
+
+          for (let game of games_with_bye) {
+            var winner = (game.player1 === null ? "2" : "1" )
+            var player = (winner === "2" ? game.player2 : game.player1)
+
+            await TournamentMatch.findOne({where: {tournament_id: torneio.dataValues.id, match_id: match_id_translation[game.nextGame]}}).then(async (nextgame) => {
+              if (match_id_translation[game.matchNo] === nextgame.dataValues.lastGame1) {
+                  // Player do bye tem que ser colocado como player1 do proximo jogo no torneio
+                  await TournamentMatch.update({player1 : player}, {where: {tournament_id: torneio.dataValues.id, match_id: match_id_translation[game.nextGame]}}).catch(err => {
+                    console.log(err)
+                  })
+                  await GameMatch.update({player1 : player}, {where: {id: match_id_translation[game.nextGame]}}).catch(err => {
+                    console.log(err)
+                  })
+              } else {
+                  // Player do bye tem que ser colocado como player2 do proximo jogo no torneio
+                  await TournamentMatch.update({player2 : player}, {where: {tournament_id: torneio.dataValues.id, match_id: match_id_translation[game.nextGame]}}).catch(err => {
+                    console.log(err)
+                  })
+                  await GameMatch.update({player2 : player}, {where: {id: match_id_translation[game.nextGame]}}).catch(err => {
+                    console.log(err)
+                  })
+              }
+              
+
+              await GameMatch.update({winner: "b"}, {where: {id: match_id_translation[game.matchNo]}}).catch(err => {
+                console.log(err)
+              })
+
+            }).catch(err => {
+              console.log(err)
+            })
+          }          
+          
           Tournament.update( {status: "STARTED"}, {
             where: { id: torneio.dataValues.id }
           }).then(sucesso => {
@@ -316,11 +365,9 @@ exports.initializeround = (req, res) => {
         return
       }
       
-      console.log("vou analisar partidas")
       TournamentMatch.findAll({where: {tournament_id: torneio.dataValues.id, roundNo: parseInt(torneio.dataValues.current_round)}}).then( async (tournament_matches) => {
         for (let game of tournament_matches) {
           await GameMatch.findByPk(game.dataValues.match_id).then(match => {
-            console.log(match.dataValues)
             if (match.dataValues.winner === null) {
               res.status(500).send({
                 message: "Matches from previous round are still being played"
@@ -357,16 +404,32 @@ exports.findAll = (req, res) => {
 
   const capacity = !req.query.capacity ? "%": req.query.capacity;
 
+  const jogos = req.query.jogos
+  
+  var date = new Date();
+  var last24hours = new Date(date.getTime() - (24 * 60 * 60 * 1000));
+  last24hours.setTime( last24hours.getTime() - new Date().getTimezoneOffset()*60*1000 );
   var condition;
+  var lastFinishedTournaments = [ {status: { [Op.ne]: "FINISHED" }}, { [Op.and]: [ {status: "FINISHED"} , {updatedAt: {[Op.gte]: last24hours} }] } ];
   if (req.query.private === "true") {
+    condition = { [Op.or]: lastFinishedTournaments};
     condition = {private: true};
   } else if (req.query.private === "false") {
+    condition = { [Op.or]: lastFinishedTournaments};
     condition = {private: false};
   } else {
-    condition = {[Op.or]: [{private: true}, {private: false}] }
+    condition = { [Op.and]: [ {[Op.or]: [{private: true}, {private: false}] }, { [Op.or]: lastFinishedTournaments } ] };
   }
+  
   condition["name"] = { [Op.like]: `%${name}` };
   condition["max_users"] = { [Op.like]: `${capacity}` }
+  if (jogos !== undefined) {
+    let arrayIds = jogos.split("-")
+    arrayIds = arrayIds.map(function(e) { 
+      return parseInt(e);
+    });
+    condition["game_id"] = arrayIds 
+  }
 
   const { limit, offset } = getPagination(page, size);
   Tournament.findAndCountAll({
@@ -378,6 +441,10 @@ exports.findAll = (req, res) => {
         var tournament_ids = data.rows.map(element => {
           return element.id;
         });
+      }
+      for (i = 0; i < data.rows.length ; i++) {
+        const { password, ...tournamentWithoutPassword } = data.rows[i].dataValues;
+        data.rows[i].dataValues = tournamentWithoutPassword;
       }
 
       TournamentUsers.findAll({where: {tournament_id: tournament_ids}}).then( tournament_users => {
@@ -429,6 +496,76 @@ exports.findOne = (req, res) => {
       });
     });
 };
+
+
+// Find a single tournament by his name
+exports.findByName = (req, res) => {
+  const name = req.params.name;
+
+  Tournament.findOne( {where: {name: name}})
+    .then(data => {
+      const { password, ...tournamentWithoutPassword } = data.dataValues;
+      res.send(tournamentWithoutPassword);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving Tournament with name=" + name
+      });
+    });
+};
+
+
+// Find a single Tournament with an id
+exports.findByCreator = (req, res) => {
+  const creator_id = req.params.id;
+  const { page, size } = req.query;
+  const { limit, offset } = getPagination(page, size);
+
+  Tournament.findAndCountAll({where: {creator: creator_id}, limit, offset})
+    .then(data => {
+      if (data.length !== 0) {
+        var tournament_ids = data.rows.map(element => {
+          return element.id;
+        });
+      }
+      for (i = 0; i < data.rows.length ; i++) {
+        const { password, ...tournamentWithoutPassword } = data.rows[i].dataValues;
+        data.rows[i].dataValues = tournamentWithoutPassword;
+      }
+
+      TournamentUsers.findAll({where: {tournament_id: tournament_ids}}).then( tournament_users => {
+        for (var tournament in data.rows) {
+          let contador = 0;
+          var indices = []
+          for (var user in tournament_users ) {
+            if (tournament_users[user].tournament_id === data.rows[tournament].id) {
+              contador++;
+              indices.push(user)
+            }
+          }
+          for (var x = indices.length - 1; x >= 0; x--) {
+            tournament_users.splice(indices[x], 1);
+          }
+          indices = [];
+          data.rows[tournament].dataValues["usersCount"] = contador;
+        }
+        const response = getPagingData(data, page, limit);
+        res.send(response);
+      }).catch(err => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while retrieving Tournaments Users."
+        });
+      })
+
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving Tournaments that belong to creator with id=" + creator_id
+      });
+    });
+};
+
 
 
 // Update a Tournament by the id in the request
@@ -561,9 +698,9 @@ function doBracket(base, players) {
   //bracketCount = 0;
   shuffleArray(players)
 
-  var closest 		= knownBrackets.filter(function (k) { return k>=base; }  ),
+  var closest 		= knownBrackets.find(function (k) { return k>=base; }  ),
   byes 			= closest-base;
-  
+
   if(byes>0)	base = closest;
 
   var brackets 	= [],
@@ -592,10 +729,10 @@ function doBracket(base, players) {
       lastGames2:	round==1 ? null : last[1].game,
       nextGame:	nextInc+i>base-1?null:nextInc+i,
       player1: round==1 ? players[teamMark] : null,
-      player2: round==1 ? players[teamMark+1] : null,
+      player2: round==1 ? (isBye ? null: players[teamMark+1] ): null,
       bye:		isBye
     });
-    teamMark+=2;
+    isBye ? teamMark+=1 : teamMark+=2;
     if(i%2!=0)	nextInc--;
     while(baseR>=1) {
       round++;

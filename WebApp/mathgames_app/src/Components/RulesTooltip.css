@@ -22,9 +22,9 @@
     color: transparent;
     background-color: transparent;
     border-color: transparent;
-    height: 42px;
+    /* height: 42px;
     width: 42px;
-    border-radius: 70%;
+    border-radius: 70%; */
 }
 
 .btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show > .btn-primary.dropdown-toggle {

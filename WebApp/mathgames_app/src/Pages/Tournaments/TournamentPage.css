@@ -1,5 +1,5 @@
 .tournaments-container{
-    padding: 2em;
+    padding: 2em 2em 1em 2em;
 }
 
 .tournamentPage_section{
@@ -7,15 +7,145 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
 }
 
 .tournamentPage_section h1{
     text-align: center;
 }
 
-.tournamentPage_section > *{
-    flex: 1 1 50%;
+.tournamentPage_section > :first-child,.tournamentPage_section > :last-child{
+    flex: 1 1 47%;
+}
+
+.vertical-divider{  
+    width: 2px;
+    margin: 0 2%;
+    height: 65vh;
+    background-color: white;
+}
+
+.tournament-name-h1{
+    font-size: 4rem;
+}
+
+.tournament-info-sp{
+    display: flex;
+    margin: 0 3em;
+}
+
+.tournament-state{
+    margin-left: auto;
+}
+
+.tournament-divider{
+    background-color: rgb(214, 214, 214);
+}
+
+.state-participants{
+    margin: 0 3em;
+}
+
+.description-game{
+    margin: 2em 0;
+}
+
+.tournament-list-participants{
+    overflow-y: auto;
+    margin: 2em 3em 1em 3em;
+    height: 450px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    padding: 2em;
+}
+
+.list-group-item-t{
+	background-color: transparent;
+	border: none;
+	border-bottom: 2px solid white;
+	padding: 1em;
+	font-size: 1.5em;
+	text-align: center;
+	color: rgb(238, 238, 238);
+	margin: 0 4em;
+}
+
+.participants-item{
+    margin: 0 !important;
+}
+
+.list-group-item-t:nth-child(1){
+	background-color: transparent;
+	color: rgb(203, 205, 240);
+	font-weight: bold;
+	font-size: 2em;
+	padding-top: 0em;
+	margin: 0 3em;
+}
+
+.list-group-item-t:hover:not(:first-child){
+	background-color: rgb(48, 173, 231);
+    cursor: pointer;
+}
+
+/* Clicky Button */
+
+.join-tournament{
+    background: hsl(135, 53%, 53%) !important;
+}
+
+.join-tournament span.front{
+    background: hsl(125, 74%, 43%) !important;
+}
+
+.leave-tournament{
+    background: hsl(0, 47%, 51%) !important;
+}
+
+.leave-tournament span.front{
+    background: hsl(0, 74%, 43%) !important;
+}
+
+.see-bracket{
+    background: hsl(187, 53%, 53%) !important;
+}
+
+.see-bracket span.front{
+    background: hsl(189, 86%, 49%) !important;
+}
+
+.button-clicky {
+    width: 30%;
+    min-width: 200px;
+	color: white;
+	border: none;
+	border-radius: 12px !important;
+	padding: 0;
+	cursor: pointer !important;
+	position: relative !important;
+    margin: 4em auto 0 auto;
+}
+
+.button-clicky span.front {
+	display: block;
+	padding: 5px 10px;
+	border-radius: 12px !important;
+	color: white;
+	transform: translateY(-8px);
+	text-align: center;
+    font-size: 1.5em;
+}
+
+
+.button-clicky:hover span.front{
+	transform: translateY(-4px);
+	transition: filter 250ms;
+  	filter: brightness(110%);
+}
+
+.button-clicky:active span.front{
+	transform: translateY(-1px);
+	transition: filter 250ms;
+  	filter: brightness(110%);
 }
 
 .tournament-game{
@@ -31,28 +161,36 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: flex-start;
+    flex-wrap: wrap;
 }
 
 .game-info > *{
     flex: 1 1 50%;
 }
 
-.brackets{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 2em;
+.jogos-label{
+    text-align: left !important;
+}
+
+.caract-label{
+    text-align: left !important;
+}
+
+.game-image-tournament{
+    width: px;
+    height: auto;
 }
 
 .details-edit{
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     gap: 1em;
 }
 
 .details-edit .edit-icon{
     padding: 0.3em;
+    margin-bottom: .5rem;
 }
 
 .edit-icon:hover{
@@ -62,23 +200,158 @@
     border-radius: 50%;
 }
 
+
+
 .tournament-rules{
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
 }
 
 .description-t{
-    border: 3px solid red;
-    word-wrap: break-word;
-    height: 100%;
-    max-height: 200px;
-    width: 450px;
-    overflow-x: hidden;
-    overflow-y: scroll;
+    height: 150px;
+    width: 100%;
+    display: flex;
+    gap: 2em;
 }
 
 .description-input{
-    width: 100%;
+    flex: 1 1 100%;
+    height: 100%;
+    background-color: transparent;
+    outline: none;
+    border: 1px solid rgb(255, 255, 255);
+    padding: 0.5em;
+    color: white;
+    font-size: 1.2em;
 }
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: white;
+    opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: white;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+    color: white;
+}
+
+
+.tournament-bottom-actions{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 3em;
+}
+
+
+.buttons-description-tournament{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1em;
+}
+
+.description-c{
+    margin: 0 auto;
+    width: 120px;
+    min-width: 120px;
+    font-size: 1em;
+}
+
+.description-c span.front{
+    font-size: 1.3em;
+}
+
+
+@media only screen and (max-width: 1160px) {
+    .vertical-divider{
+        display: none;
+    }
+
+    .participants_section{
+        margin-bottom: 1em;
+    }
+
+    .list-group-item-t:nth-child(1) {
+        font-size: 1.5em;
+    }
+}
+
+
+@media only screen and (max-width: 680px) {
+    .list-group-item-t:nth-child(1) {
+        font-size: 1.5em;
+    }
+
+    .game-info{
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        
+    }
+    .brackets_section{
+        min-width: 200px;
+    }
+
+    .description-t{
+        flex-direction: column;
+        height: 450px;
+    }
+
+    .buttons-description-tournament{
+        flex-direction: row;
+    }
+
+    .button-clicky{
+        width: 120px;
+        min-width: 120px;
+    }
+
+    .button-clicky span.front{
+        font-size: 1.3em;
+    }
+    
+    .tournament-name-h1{
+        font-size: 2em;
+    }
+
+    .tournament-participants{
+        font-size: 1em;
+    }
+
+    .tournament-state{
+        font-size: 1em;
+    }
+}
+
+.title-reload {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    position: relative;
+}
+
+.title-reload .reload-icon {
+    position: absolute;
+    right: 20px;
+    color: white; 
+}
+
+.title-reload .reload-icon:hover {
+    cursor: pointer;
+}
+
+
+.icon-reload {
+    -webkit-animation:spin 1s linear infinite;
+    -moz-animation:spin 1s linear infinite;
+    animation:spin 1s linear infinite;
+}
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }

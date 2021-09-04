@@ -1,7 +1,5 @@
 .list-tournaments{
-	margin: 2em 5em;
-	padding: 1em 2em;
-    min-width: 330px;
+	margin: 2em 3em;
 }
 
 .filters-t{
@@ -84,7 +82,7 @@
     flex-basis: 75%;
 }
 
-.inner-checkbox h5{
+.inner-checkbox label{
     font-size: 1.5em;
 }
 
@@ -178,3 +176,136 @@ ul.list-group{
 	padding: 1em 0;
 }
 
+
+
+.tournament-rules-section{
+	position: relative;
+}
+
+
+.rule-button.tournaments{
+	position: absolute;
+	top: 0;
+	right: -30px;
+}
+
+
+.join-tournament{
+    background: hsl(135, 53%, 53%) !important;
+}
+
+.join-tournament span.front{
+    background: hsl(125, 74%, 43%) !important;
+}
+
+
+.leave-tournament{
+    background: hsl(0, 47%, 51%) !important;
+}
+
+.leave-tournament span.front{
+    background: hsl(0, 74%, 43%) !important;
+}
+
+.blue-clicky{
+    background: hsl(187, 53%, 53%) !important;
+	width: 150px !important;
+	margin-bottom: 1em !important;
+}
+
+.blue-clicky span.front{
+    background: hsl(189, 86%, 49%) !important;
+}
+
+.bigger{
+	background: hsl(187, 53%, 53%) !important;
+	width: 200px !important;
+	margin-bottom: 1em !important;
+}
+
+.bigger span.front{
+	background: hsl(189, 86%, 49%) !important;
+	padding: 1em !important;
+}
+
+.tournament-create-link{
+	text-decoration: none !important;
+}
+
+
+.button-clicky-tp {
+    width: 50px;
+	color: white;
+	border: none;
+	border-radius: 12px !important;
+	padding: 0;
+	cursor: pointer !important;
+	position: relative !important;
+    margin: 0 auto;
+}
+
+.button-clicky-tp span.front {
+	display: block;
+	padding: 5px 10px;
+	border-radius: 12px !important;
+	color: white;
+	transform: translateY(-8px);
+	text-align: center;
+    font-size: 1em;
+}
+
+
+.button-clicky-tp:hover span.front{
+	transform: translateY(-4px);
+	transition: filter 250ms;
+  	filter: brightness(110%);
+}
+
+.button-clicky-tp:active span.front{
+	transform: translateY(-1px);
+	transition: filter 250ms;
+  	filter: brightness(110%);
+}
+
+
+@media only screen and (max-width: 960px) {
+	.tournament-filter .list-group-item-t:first-child {
+        font-size: 1em;
+    }
+    .tournament-filter .list-group-item-t {
+        font-size: 1em;
+    }
+
+	.button-clicky-tp {
+		width: 30px;
+	}
+
+	.button-clicky-tp span.front {
+		font-size: 0.7em;
+	}
+
+	.form-tournaments{
+		padding: 0 1em 2em 1em;
+	}
+
+	.inner-checkbox label{
+		font-size: 1.1em;
+	}
+	
+}
+
+@media only screen and (max-width: 690px) {
+	.list-group-item-t{
+		margin: 0 !important;
+	}
+}
+
+@media only screen and (max-width: 578px) {
+	.button-clicky-tp{
+		margin: 1em auto !important;
+	}
+
+	.bigger{
+		width: 150px !important;
+	}
+}

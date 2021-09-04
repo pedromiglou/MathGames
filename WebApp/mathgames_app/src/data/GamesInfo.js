@@ -15,7 +15,9 @@ export const games_info =
             dificulty_label: "fácil",
             rules:  "- Cada jogador desloca a peça de forma alternada para um dos quadrados adjacentes que não esteja bloqueado.\n" +
                     "- A posição onde estava a peça é boqueada, sendo que a peça branca não se pode deslocar para posições bloqueadas.\n" +
-                    "- O jogo começa com a peça na posição e5.",
+                    "- O jogo começa com a peça na posição e5. \n" +
+                    "- Cada jogador possuí um total de 5 minutos para efetuar todas as jogadas no jogo. O tempo disponível está visível junto às informações de cada jogador. \n" ,
+            goal:   "- A vitória é obtida pelo jogador que conseguir deslocar a peça até à sua casa ou se conseguri deixar o oponente sem jogadas possíveis, impedindo-o de jogar.",
         },
     
         1: {
@@ -33,7 +35,9 @@ export const games_info =
                     "- Cada jogador coloca, de forma alternada, uma peça numa casa vazia.\n" +
                     "- Começam os Gatos e o primeiro gato deve ser colocado em uma das quatro posições centrais do tabuleiro (indicada com cruzes). O primeiro cão deve ser colocado fora dessas quatro posições.\n" +
                     "- Os jogadores não podem colocar um gato ao lado de um cão, nem um cão ao lado de um gato (na horizontal ou na vertical).\n" +
-                    "- O primeiro jogador a ficar sem posições onde colocar uma nova peça, perde o jogo.", 
+                    "- O primeiro jogador a ficar sem posições onde colocar uma nova peça, perde o jogo. \n" +
+                    "- Cada jogador possuí um total de 5 minutos para efetuar todas as jogadas no jogo. O tempo disponível está visível junto às informações de cada jogador. \n" , 
+            goal:   "- O jogador que efetuar a última jogada do jogo, deixando o seu oponente sem jogadas possíveis, é o vencedor."
         },
     
         2: {

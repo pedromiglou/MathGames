@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, View, Image, StyleSheet, Dimensions, TouchableHighlight } from 'react-native';
+import { Text, View, Image, StyleSheet, Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -10,18 +10,29 @@ import Login from './screens/Login';
 import Profile from './screens/Profile';
 import LastGames from './screens/LastGames';
 import Inventory from './screens/Inventory';
+import Friends from './screens/Friends';
+import Ranking from './screens/Ranking';
+import AboutUs from './screens/AboutUs';
 
 import { Feather } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { useState, useEffect } from 'react';
 import { useFonts } from 'expo-font';
-import {readData, saveData} from './utilities/AsyncStorage';
+import {readData, saveData, deleteData} from './utilities/AsyncStorage';
 import Game from './screens/Game';
 /* Uuid */
 import { v4 as uuidv4 } from 'uuid';
 
 import { DrawerActions } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import Notifications from './screens/Notifications';
+
+import * as ScreenOrientation from 'expo-screen-orientation';
+
+import CustomisableAlert from "react-native-customisable-alert";
+import socket from './utilities/Socket';
+import { MaterialIcons } from '@expo/vector-icons';
+
 export const navigationRef = React.createRef();
 export function openDrawer(routeName, params) {
   navigationRef.current.dispatch(DrawerActions.toggleDrawer());
@@ -39,9 +50,9 @@ function Games() {
     return () => {mounted=false}
   }, [currentGame]);
   return (
-    <Stack.Navigator screenOptions={{headerStyle: {backgroundColor: '#78c9ff'}}}>
-      <Stack.Screen name="ChooseGame" options={{headerTitle: () => (<Text style={styles.header}>Jogos</Text>)}} component={ChooseGame} />
-      <Stack.Screen name="GamePage" options={{
+    <Stack.Navigator screenOptions={{headerStyle: {backgroundColor: '#78c9ff'}}} initialRouteName="Jogos">
+      <Stack.Screen name="Jogos" options={{headerTitle: () => (<Text style={styles.header}>Jogos</Text>)}} component={ChooseGame} />
+      <Stack.Screen name="Jogo" options={{
         headerTitle: () => (<Text style={styles.headerWithArrow}>{currentGame.title}</Text>),
         headerTintColor: "white",
         headerTitleAlign: "center"
@@ -61,18 +72,66 @@ function ProfileNav() {
 
   return (
     <StackProfile.Navigator screenOptions={{headerStyle: {backgroundColor: '#78c9ff'}}}>
-      <StackProfile.Screen name="Profile" options={{headerTitle: () => (<Text style={styles.header}>Perfil</Text>)}} component={Profile} />
-      <StackProfile.Screen name="Inventory" options={{
+      <StackProfile.Screen name="Perfil" options={{headerTitle: () => (<Text style={styles.header}>Perfil</Text>)}} component={Profile} />
+      <StackProfile.Screen name="Inventario" options={{
         headerTitle: () => (<Text style={styles.headerWithArrow}>Inventário</Text>),
         headerTintColor: "white",
         headerTitleAlign: "center"
       }} component={Inventory} />
-      <StackProfile.Screen name="LastGames" options={{
+      <StackProfile.Screen name="Ultimos Jogos" options={{
         headerTitle: () => (<Text style={styles.headerWithArrow}>Últimos jogos</Text>),
         headerTintColor: "white",
         headerTitleAlign: "center"
       }} component={LastGames} />
     </StackProfile.Navigator>
+  )
+}
+
+const StackNotifications = createStackNavigator();
+
+function NotificationsNav() {
+  const [currentGame, setCurrentGame] = useState({name: ""});
+  useEffect(() => {
+    let mounted = true;
+    readData("game").then(value => {if (value !== null && mounted) {setCurrentGame(JSON.parse(value));}});
+    return () => {mounted=false}
+  }, [currentGame]);
+
+  return (
+    <StackNotifications.Navigator screenOptions={{headerStyle: {backgroundColor: '#78c9ff'}}} initialRouteName="Notificações">
+      <StackNotifications.Screen name="Notificações" options={{
+        headerTitle: () => (<Text style={styles.header}>Notificações</Text>)
+      }} component={Notifications} />
+      <Stack.Screen name="Game" options={{
+        headerTitle: () => (<Text style={styles.headerWithArrow}>{currentGame.title}</Text>),
+        headerTintColor: "white",
+        headerTitleAlign: "center"
+      }} component={Game} />
+    </StackNotifications.Navigator>
+  )
+}
+
+const StackFriends = createStackNavigator();
+
+function FriendsNav() {
+  const [currentGame, setCurrentGame] = useState({name: ""});
+  useEffect(() => {
+    let mounted = true;
+    readData("game").then(value => {if (value !== null && mounted) {setCurrentGame(JSON.parse(value));}});
+    return () => {mounted=false}
+  }, [currentGame]);
+
+  return (
+    <StackFriends.Navigator screenOptions={{headerStyle: {backgroundColor: '#78c9ff'}}} initialRouteName="Amigos">
+      <StackFriends.Screen name="Amigos" options={{
+        headerTitle: () => (<Text style={styles.header}>Amigos</Text>)
+      }} component={Friends} />
+      <StackFriends.Screen name="Game" options={{
+        headerTitle: () => (<Text style={styles.headerWithArrow}>{currentGame.title}</Text>),
+        headerTintColor: "white",
+        headerTitleAlign: "center"
+      }} component={Game} />
+    </StackFriends.Navigator>
   )
 }
 
@@ -86,19 +145,28 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
 
-  readData('user_id').then(id=>{
-    if (id===null) {
-      saveData('user_id', uuidv4());
+  readData('username').then(username=>{
+    if (username===null) {
+      username = "Guest_"+uuidv4();
+      saveData('user_id', username);
+      saveData('username', username);
+      socket.emit("new_user", {"user_id": username});
     } else {
-      setUsername(id.slice(1, -1));
+      setUsername(username.slice(1, -1));
     }
-  })
+  });
 
   if (!loaded) {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+    deleteData("user");
+    deleteData("user_id");
+    deleteData("username")
     return <Text>Loading...</Text>;
   } else {
     return (
       <NavigationContainer ref={navigationRef}>
+        {/*this alert needs to be here to be used everywhere*/}
+        <CustomisableAlert/>
         <View style={styles.topView}>
           <TouchableOpacity onPress = {() => login ? setLogin(false) : openDrawer()}>
             <Feather name="menu" size={28} color="grey" style={styles.topIcon}/>
@@ -109,18 +177,29 @@ function App() {
               resizeMode = {'contain'}
               source={require('./../public/images/logo-light.png')}
             />
-          
-          {loggedIn ?
-            <TouchableOpacity style={styles.loginImage} onPress={()=>navigationRef.current.dispatch(DrawerActions.jumpTo('Profile'))}>
+
+          <TouchableOpacity onPress={()=>loggedIn && navigationRef.current.dispatch(DrawerActions.jumpTo('Notificações'))}>
+            <MaterialIcons name="notifications" size={28} color={loggedIn ? "#FFD300":"grey"} style={styles.topIcon}/>
+          </TouchableOpacity>
+
+          {loggedIn &&
+            <TouchableOpacity style={styles.loginImage} onPress={()=>navigationRef.current.dispatch(DrawerActions.jumpTo('Perfil'))}>
               <Text style={styles.username} numberOfLines={1}>{username}</Text>
             </TouchableOpacity>
-            :
+          }
+
+          {(!loggedIn&&login) &&
+            <TouchableOpacity onPress = {() => setLogin(!login)} style={styles.loginImage}>
+              <Text style={styles.username}>Voltar</Text>
+            </TouchableOpacity>
+          }
+          {(!loggedIn&&!login) &&
             <TouchableOpacity onPress = {() => setLogin(!login)}>
               <Image
-                  style={styles.loginImage}
-                  resizeMode = {'contain'}
-                  source={require('./../public/images/Login.png')}
-                />
+                style={styles.loginImage}
+                resizeMode = {'contain'}
+                source={require('./../public/images/Login.png')}
+              />
             </TouchableOpacity>
           }
         </View>
@@ -128,13 +207,20 @@ function App() {
           <Login return={setLogin} login={setLoggedIn}/>
           :
           <Drawer.Navigator>
-            <Drawer.Screen name="Welcome" component={Welcome} />
-            <Drawer.Screen name="Games" component={Games} />
-            {loggedIn && <Drawer.Screen name="Tournaments" component={Welcome} />}
-            <Drawer.Screen name="Rankings" component={Welcome} />
-            <Drawer.Screen name="Settings" component={Welcome} />
-            {loggedIn && <Drawer.Screen name="Profile" component={ProfileNav} />}
-            <Drawer.Screen name="About us" component={Welcome} />
+            <Drawer.Screen name="Bem-vindo" component={Welcome} options={{
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Bem-vindo</Text>)}}/>
+            <Drawer.Screen name="Jogos" component={Games} options={{
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Jogos</Text>)}}/>
+            <Drawer.Screen name="Classificações" component={Ranking} options={{
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Classificações</Text>)}}/>
+            {loggedIn && <Drawer.Screen name="Perfil" component={ProfileNav} options={{
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Perfil</Text>)}}/>}
+            {loggedIn && <Drawer.Screen name="Amigos" component={FriendsNav} options={{
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Amigos</Text>)}}/>}
+            {loggedIn && <Drawer.Screen name="Notificações" component={NotificationsNav} options={{
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Notificações</Text>)}}/>}
+            <Drawer.Screen name="Sobre Nós" component={AboutUs} options={{
+                drawerLabel: () => (<Text style={{fontFamily: "BubblegumSans", fontSize: 20}}>Quem somos</Text>)}}/>
           </Drawer.Navigator>
         }
       </NavigationContainer>
@@ -162,8 +248,9 @@ const styles = StyleSheet.create({
     marginLeft: 10
   },
   logoImage: {
-      width: win.width/5*3,
-      height: win.width*360/1463/5*3,
+      margin: 5,
+      width: win.width/2.1,
+      height: win.width*360/1463/2.1,
       marginTop: Constants.statusBarHeight
   },
   loginImage: {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import UserService from '../../../Services/user.service';
 import './Statistics.css';
-import { Modal, Button } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import Pagination from "@material-ui/lab/Pagination";
 import * as IoIcons from 'react-icons/io5';
 //import {Line} from 'react-chartjs-2';
@@ -57,8 +57,14 @@ function StatisticsPlayers(props){
               <p style={{color: "#0056b3", fontSize: 20}}>{text}</p>
             </Modal.Body>
             <Modal.Footer>
-              <Button style={{fontSize: 18}} onClick={() => {modal_function(props.id); props.onHide();}} className="btn save-btn">Confimar</Button>
-              <Button style={{fontSize: 18}} onClick={props.onHide} className="btn cancel-btn">Cancelar</Button>
+                <div id="confirm-b" title="Confirmar" onClick={() => {modal_function(props.id); props.onHide();}}  className="button-clicky-modal confirm-modal">
+				    <span className="shadow"></span>
+				    <span className="front">Confirmar</span>
+			    </div>
+			    <div id="cancel-b" title="Cancelar" onClick={props.onHide}  className="button-clicky-modal cancel-modal">
+				    <span className="shadow"></span>
+				    <span className="front">Cancelar</span>
+			    </div>
             </Modal.Footer>
           </Modal>
         );
@@ -157,7 +163,19 @@ function StatisticsPlayers(props){
                             <ul className="list-group">
                                 {/* Cabeçalho. Se não quiserem por, deixem estar assim vazio. */}
                                 <li className="list-group-item d-flex justify-content-between align-items-center row">
-                                
+                                    <div className="col-lg-2 col-md-2 col-sm-2">
+                                        
+                                    </div>
+
+                                    <div className="col-lg-4 col-md-4 col-sm-4">
+                                        Nome
+                                    </div>
+                                    <div className="col-lg-3 col-md-3 col-sm-3">
+                                        Reports
+                                    </div>
+                                    <div className="col-lg-3 col-md-3 col-sm-3">
+                                        
+                                    </div>
                                 </li>
 
                                 {users.map(function(user, index) {
@@ -168,14 +186,17 @@ function StatisticsPlayers(props){
                                                 <span className="badge badge-primary badge-pill">{numberClassificationUsers}</span>
                                             </div>
 
-                                            <div className="col-lg-5 col-md-5 col-sm-5">
+                                            <div className="col-lg-4 col-md-4 col-sm-4">
                                                 {user.receiver_user.username}
                                             </div>
-                                            <div className="col-lg-4 col-md-4 col-sm-4">
-                                                {user.reportCount} reports
+                                            <div className="col-lg-3 col-md-3 col-sm-3">
+                                                {user.reportCount}
                                             </div>
-                                            <div className="col-lg-1 col-md-1 col-sm-1">
-                                                <i className="subicon pointer" style={{marginLeft:"10px"}}  onClick={() => {setModalUserId(user.receiver_user.id); setModalUsername(user.receiver_user.username); setModalOperation("ban"); setConfirmModalShow(true) }}><IoIcons.IoBan/></i>
+                                            <div className="col-lg-3 col-md-3 col-sm-3">
+                                                <div title="banir" onClick={() => {setModalUserId(user.receiver_user.id); setModalUsername(user.receiver_user.username); setModalOperation("ban"); setConfirmModalShow(true) }} className="ban-button">
+                                                    <span className="shadow"></span>
+                                                    <span className="front"><IoIcons.IoBan/></span>
+                                                </div>
                                             </div>
                                         </li>
                                     )

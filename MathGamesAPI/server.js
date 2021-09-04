@@ -1,13 +1,11 @@
 const bodyParser = require("body-parser");
-//const helmet = require("helmet");
 const cors = require('cors')
 const express = require("express");
 const index = require("./app/routes/index")
 const sql = require("./app/models/db.js");
 const errorHandler = require("./app/config/errorhandler");
 var uuid = require('uuid');
-//const { PassThrough } = require("stream");
-//const { match } = require("assert");
+
 
 const app = express();
 app.use(index);
@@ -19,6 +17,36 @@ app.use(errorHandler)
 const server = require("http").createServer(app)
 
 const port = process.env.PORT || 4000;
+
+
+/////
+// Start Swagger Configuration Section
+/////
+
+const swaggerJsDoc = require("swagger-jsdoc")
+const swaggerUi = require("swagger-ui-express")
+
+const swaggerOptions = {
+  swaggerDefinition: {
+    info: {
+      title: "MathGames API",
+      description: "MathGames Server REST API",
+      contact: {
+        name: "MathGames"
+      },
+      servers: ["http://localhost:4000"]
+    }
+  },
+  apis: ["app/routes/*.js"]
+}
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions)
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+
+/////
+// End Swagger Configuration Section
+/////
+
 
 const io = require("socket.io")(server, {
   cors: {
@@ -252,6 +280,7 @@ async function synchronize() {
 synchronize()
 
 var current_games = {};
+var players_in_game = {};
 var match_queue = {0: [], 1: []};
 var users_info = {}
 var active_friend_link = {}
@@ -281,16 +310,49 @@ var active_tournaments = {}
 
 //Connecting new Users
 io.on("connection", (socket) => { 
-  console.log("New client connected");
-  console.log("id: ", socket.id);
+    console.log("New client connected");
+    console.log("id: ", socket.id);
+
+    socket.on("new_user", (msg) => {
+      let user_id = String(msg["user_id"])
+
+      if ( Object.keys(users_info).includes(user_id) ) {
+        io.to( users_info[user_id] ).emit("logout", {"logout": true});
+        disconnect_user(user_id);
+      }
+
+      users_info[user_id] = socket.id;
+
+    })
+
+    socket.on("new_notification", (msg) => {
+      let sender = String(msg["sender"])
+      let receiver = String(msg["receiver"])
+      let notification_type = msg["notification_type"]
+      let notification_text = msg["notification_text"]
+
+      create_notification(sender, receiver, notification_type, notification_text)
+    })
+
+
+    socket.on("disconnect", function() {
+        var user_id = String( Object.keys(users_info).find(key => users_info[key] === socket.id) );
+        console.log("Leaving user id: ", user_id)
+        if (user_id === null)
+            return;
+
+        disconnect_user(user_id);
+
+    })
+
 
   //
   // FRIEND GAME BY INVITE SECTION
   // 
 
   socket.on("generate_invite", (msg) => {
-    let user_id = msg["user_id"]
-    let outro_id = msg["outro_id"]
+    let user_id = String(msg["user_id"])
+    let outro_id = String(msg["outro_id"])
     let game_id = parseInt(msg["game_id"])
 
     // If the user still has an active link, return null match_id
@@ -312,15 +374,15 @@ io.on("connection", (socket) => {
   // user that accepts friend invite needs match_id. 
   socket.on("get_match_id", (msg) => {
     if (msg["user_id"] !== null) {
-      var user_id = msg["user_id"]
-      var outro_id = msg["outro_id"]
+      var user_id = String(msg["user_id"])
+      var outro_id = String(msg["outro_id"])
 
       users_info[user_id] = socket.id
 
-      if ( Object.keys(active_friend_invites).includes(String(outro_id)) && active_friend_invites[outro_id]["outro_id"] === String(user_id)) {
-        io.to( users_info[String(user_id)] ).emit("match_link", {"match_id": active_friend_invites[outro_id]["match_id"], "game_id": active_friend_invites[outro_id]["game_id"]})
+      if ( Object.keys(active_friend_invites).includes(outro_id) && active_friend_invites[outro_id]["outro_id"] === user_id) {
+        io.to( users_info[user_id] ).emit("match_link", {"match_id": active_friend_invites[outro_id]["match_id"], "game_id": active_friend_invites[outro_id]["game_id"]})
       } else {
-        io.to( users_info[String(user_id)] ).emit("match_link", {"error": "invite expired"})
+        io.to( users_info[user_id] ).emit("match_link", {"error": "invite expired"})
       }
     }
   })
@@ -329,16 +391,13 @@ io.on("connection", (socket) => {
     console.log("User conected through link.")
     if (msg["user_id"] !== null) {
       var match_id = msg["match_id"]
-      var user_id = msg["user_id"]
-      var outro_id = msg["outro_id"]
+      var user_id = String(msg["user_id"])
+      var outro_id = String(msg["outro_id"])
       var game_id = parseInt(msg["game_id"])
       users_info[user_id] = socket.id
 
-      if ( Object.keys(active_friend_invites).includes(String(outro_id)) && active_friend_invites[outro_id]["outro_id"] === String(user_id)) {
-        console.log("Vou criar e enviar!")
+      if ( Object.keys(active_friend_invites).includes(outro_id) && active_friend_invites[outro_id]["outro_id"] === user_id)
         create_game(match_id, game_id, user_id, outro_id, "amigo", null)
-        //io.to( users_info[outro_id] ).emit("friend_joined", {"match_id": match_id, "player1": user_id, "player2": outro_id})
-      }
     }
   })
 
@@ -350,9 +409,10 @@ io.on("connection", (socket) => {
   //User sends user_id and wants to play with a friend through a link
   socket.on("generate_link", (msg) => {
     let user_id = msg["user_id"]
+    let game_id = parseInt(msg["game_id"])
 
     // If the user still has an active link, return null match_id
-    if ( Object.values(active_friend_link).includes(user_id) ) {
+    if ( Object.values(active_friend_link).find(elemento => elemento["user_id"] === user_id) ) {
       io.to(socket.id).emit("invite_link", {"match_id": null});
       return;
     }
@@ -360,12 +420,12 @@ io.on("connection", (socket) => {
     users_info[user_id] = socket.id;
 
     let new_match_id = uuid.v4();
-    active_friend_link[new_match_id] = user_id;
+    active_friend_link[new_match_id] = {"user_id": user_id, "game_id": game_id};
+
 
     io.to(socket.id).emit("invite_link", {"match_id": new_match_id});
     // After 2 minutes, the links expires
     setTimeout(() => { delete active_friend_link[new_match_id]; }, 120000);
-    console.log("Active friend link:", active_friend_link)
   })
 
   socket.on("entered_link", (msg) => {
@@ -377,10 +437,9 @@ io.on("connection", (socket) => {
       var game_id = parseInt(msg["game_id"])
       users_info[user_id] = socket.id
 
-      if ( Object.keys(active_friend_link).includes(match_id) ) {
-        console.log("Vou criar e enviar!")
-        create_game(match_id, game_id, user_id, active_friend_link[match_id], "amigo", null)
-        io.to( users_info[active_friend_link[match_id]] ).emit("friend_joined", {"match_id": match_id, "player1": user_id, "player2": active_friend_link[match_id]})
+      if ( Object.keys(active_friend_link).includes(match_id) && active_friend_link[match_id]["game_id"] === game_id ) {
+        create_game(match_id, game_id, user_id, active_friend_link[match_id]["user_id"], "amigo", null)
+        io.to( users_info[active_friend_link[match_id]["user_id"]] ).emit("friend_joined", {"match_id": match_id, "player1": user_id, "player2": active_friend_link[match_id]["user_id"]})
       }
     }
   })
@@ -393,10 +452,12 @@ io.on("connection", (socket) => {
   // 
 
   //User says that he wants to play Online and put himself in matchqueue list
-  socket.on("user_id", (msg) => {
-    console.log(msg)
-    var user_id = msg["user_id"];
+  socket.on("enter_matchmaking", (msg) => {
+      
+    var user_id = String(msg["user_id"]);
+    console.log("Entering matchmaking: ", user_id)
     var game_id = parseInt(msg["game_id"]);
+    
     users_info[user_id] = socket.id;
     match_queue[game_id].push(user_id)
 
@@ -414,6 +475,40 @@ io.on("connection", (socket) => {
         if (player2 !== undefined) match_queue[game_id].unshift(player2)
       }
     }
+  });
+
+  socket.on("leave_matchmaking", (msg) => {
+    
+    
+    var user_id = String(msg["user_id"]);
+    console.log("Leaving matchmaking: ", user_id)
+    var game_id = parseInt(msg["game_id"]);
+
+    if (match_queue[game_id] === undefined || match_queue[game_id] === null) {
+      return
+    }
+
+    let user_idx = match_queue[game_id].indexOf(user_id);
+
+    if ( socket.id === users_info[user_id] && user_idx > -1 )
+      match_queue[game_id].splice( user_idx, 1 )
+  })
+
+  socket.on("forfeit_match", (msg) => {
+    console.log("Forfeiting match: ", user_id)
+    var user_id = String(msg["user_id"]);
+
+    if ( socket.id === users_info[user_id] ) {
+      var in_game_user_match_id = players_in_game[user_id]
+
+      if ( in_game_user_match_id !== undefined ) {
+        let game = current_games[in_game_user_match_id];
+        game['state']['isFinished'] = true;
+        game['state']['winner'] = (user_id === current_games[in_game_user_match_id]['state']['player1']) ? "2" : "1";
+        finish_game(in_game_user_match_id, "forfeit")
+      }
+    }
+
   });
 
   //User sends match id, userid and new_pos when he wants to make a move in the game
@@ -447,8 +542,6 @@ io.on("connection", (socket) => {
           
           current_games[match_id]['state']['isFinished'] = true
           current_games[match_id]['state']['winner'] = (user_id === current_games[match_id]['state']['player1']) ? "2" : "1"
-          current_games[match_id]['timers'][user_id].pause();
-          current_games[match_id]['timers'][opponent].pause();
           
           finish_game(match_id, "invalid_move")
         }
@@ -467,6 +560,7 @@ io.on("connection", (socket) => {
 
   //Tournament creator says that he wants to start a new round
   socket.on("tournament_newround", async (msg) => {
+
     var user_id = msg["user_id"];
     var tournament_id = parseInt(msg["tournament_id"]);
 
@@ -479,19 +573,28 @@ io.on("connection", (socket) => {
       io.to( socket.id ).emit("round_start", {"erro": true});
       return
     }
+
     active_tournaments[torneio.id] = {}
     active_tournaments[torneio.id]["torneio_info"] = torneio
     active_tournaments[torneio.id]["players"] = {}
     active_tournaments[torneio.id]["rooms"] = {}
-
+    active_tournaments[torneio.id]["byes"] = []
 
     //Buscar os jogos da proxima rodada (rodada que se vai iniciar) e criar as salas
     await TournamentMatch.findAll({where: {tournament_id: torneio.id, roundNo: torneio.current_round+1}}).then(newmatches => {
       for (let newmatch of newmatches) {
-        let new_match_id = String(newmatch.dataValues.match_id)
-        active_tournaments[torneio.id]["players"][newmatch.dataValues.player1] = new_match_id
-        active_tournaments[torneio.id]["players"][newmatch.dataValues.player2] = new_match_id
-        active_tournaments[torneio.id]["rooms"][new_match_id] = {"players_in": [], "started": false, "player1": newmatch.dataValues.player1, "player2": newmatch.dataValues.player2} 
+        if (newmatch.dataValues.player1 !== null && newmatch.dataValues.player2 !== null) {
+          //match nao é um bye
+          let new_match_id = String(newmatch.dataValues.match_id)
+          active_tournaments[torneio.id]["players"][newmatch.dataValues.player1] = new_match_id
+          active_tournaments[torneio.id]["players"][newmatch.dataValues.player2] = new_match_id
+          active_tournaments[torneio.id]["rooms"][new_match_id] = {"players_in": [], "started": false, "player1": newmatch.dataValues.player1, "player2": newmatch.dataValues.player2} 
+        } else {
+          if (newmatch.dataValues.player1 !== null)
+            active_tournaments[torneio.id]["byes"].push(newmatch.dataValues.player1)
+          if (newmatch.dataValues.player2 !== null)
+            active_tournaments[torneio.id]["byes"].push(newmatch.dataValues.player2)
+        }
       }
     }).catch(err => {
       io.to( socket.id ).emit("round_start", {"erro": true});
@@ -501,17 +604,16 @@ io.on("connection", (socket) => {
     //Buscar todos os jogadores ainda nao eliminados e enviar notificação
     TournamentUser.findAll({where: {tournament_id: torneio.id, eliminated: false}}).then(players_in_play => {
       for (let player of players_in_play) {
-        let notification = {
-          sender: torneio.creator,
-          receiver: player.dataValues.user_id,
-          notification_type: "R"
-        }
-        Notification.create(notification);
+        create_notification(torneio.creator, player.dataValues.user_id, "R", torneio.name + " iniciou um novo round! Faça o check-in para a sua partida.")
       }
     }).catch(err => {
       io.to( socket.id ).emit("round_start", {"erro": true});
       return
     })
+
+    // 5 minutes to check if everybody checked in
+    setTimeout(() => { check_check_ins(torneio.id) }, 300000);
+
 
     //Atualizar o current_round para o round que vai arrancar
     await Tournament.update({current_round: (torneio.current_round + 1)}, {where: {id: torneio.id}}).then(success => {
@@ -519,7 +621,6 @@ io.on("connection", (socket) => {
     }).catch(err => {
       io.to( socket.id ).emit("round_start", {"erro": true});
     })
-
 
   });
 
@@ -544,7 +645,11 @@ io.on("connection", (socket) => {
         }
         io.to( socket.id ).emit("check_in", {"erro": true, "message": "Game has already started"});
       } else {
-        io.to( socket.id ).emit("check_in", {"erro": true, "message": "You are not participating in this tournament"});
+        if ( active_tournaments[tournament_id]["byes"].includes(user_id)) {
+          io.to( socket.id ).emit("check_in", {"erro": false, "message": "You are a tournament bye"});
+        } else {
+          io.to( socket.id ).emit("check_in", {"erro": true, "message": "You are not participating in this tournament"});
+        }
       }
     } else {
       io.to( socket.id ).emit("check_in", {"erro": true, "message": "Tournament is not active"});
@@ -588,6 +693,131 @@ io.on("connection", (socket) => {
   })
 });
 
+function disconnect_user(user_id) {
+  delete users_info[user_id];
+
+  let user_idx_0 = match_queue[0].indexOf(user_id);
+  let user_idx_1 = match_queue[1].indexOf(user_id);
+
+  if ( user_idx_0 > -1 )
+      match_queue[0].splice( user_idx_0, 1 )
+  if ( user_idx_1 > -1 )
+      match_queue[1].splice( user_idx_1, 1 )
+    
+
+  var in_game_user_match_id = players_in_game[user_id]
+
+  if ( in_game_user_match_id !== undefined ) {
+    let game = current_games[in_game_user_match_id];
+    game['state']['isFinished'] = true;
+    game['state']['winner'] = (user_id === current_games[in_game_user_match_id]['state']['player1']) ? "2" : "1";
+    finish_game(in_game_user_match_id, "forfeit")
+  }
+}
+
+async function check_check_ins(tournament_id) {
+
+  if (Object.keys(active_tournaments).includes(String(tournament_id))) {
+    for (let match_id in active_tournaments[String(tournament_id)]["rooms"]) {
+      if (active_tournaments[String(tournament_id)]["rooms"][match_id]["players_in"].length < 2) {
+
+        var winner = "1"
+        var player1 = active_tournaments[String(tournament_id)]["rooms"][match_id]["player1"]
+        var player2 = active_tournaments[String(tournament_id)]["rooms"][match_id]["player2"]
+
+        if (active_tournaments[String(tournament_id)]["rooms"][match_id]["players_in"].length === 0) {
+          // Noone has checked in for the match. Random player will pass
+          var randomNumber = Math.round(Math.random())
+
+          if (randomNumber === 1){
+            winner = "1"
+          } else {
+            winner = "2"
+          }
+        }
+
+        if (active_tournaments[String(tournament_id)]["rooms"][match_id]["players_in"].length === 1) {
+          // 1 player has checked in. The other have not. The one who checked in wins.
+
+          if (active_tournaments[String(tournament_id)]["rooms"][match_id]["players_in"].includes(player1)) {
+            winner = "1"
+          } else {
+            winner = "2"
+          }
+        }
+
+        await TournamentMatch.findOne({where: {tournament_id: tournament_id, match_id: match_id}}).then(async (game) => {
+          if (game.dataValues.nextGame !== null ) {
+            //Update Players playing next match in the tournament
+            await TournamentMatch.findOne({where: {tournament_id: tournament_id, match_id: game.dataValues.nextGame}}).then(async (nextgame) => {
+            if (game.dataValues.match_id === nextgame.dataValues.lastGame1) {
+              // Player que venceu tem que ser colocado como player1 do proximo jogo no torneio
+              if (winner == 1) {
+                await TournamentMatch.update({player1 : player1}, {where: {tournament_id: tournament_id, match_id: game.dataValues.nextGame}}).catch(err => {
+                  console.log(err)
+                })
+                await GameMatch.update({player1 : player1}, {where: {id: game.dataValues.nextGame}}).catch(err => {
+                  console.log(err)
+                })
+              } else {
+                await TournamentMatch.update({player1 : player2}, {where: {tournament_id: tournament_id, match_id: game.dataValues.nextGame}}).catch(err => {
+                  console.log(err)
+                })
+                await GameMatch.update({player1 : player2}, {where: {id: game.dataValues.nextGame}}).catch(err => {
+                  console.log(err)
+                })
+              }
+            } else {
+              // Player que venceu tem que ser colocado como player2 do proximo jogo no torneio
+              if (winner == 1) {
+                await TournamentMatch.update({player2 : player1}, {where: {tournament_id: tournament_id, match_id: game.dataValues.nextGame}}).catch(err => {
+                  console.log(err)
+                })
+                await GameMatch.update({player2 : player1}, {where: {id: game.dataValues.nextGame}}).catch(err => {
+                  console.log(err)
+                })
+              } else {
+                await TournamentMatch.update({player2 : player2}, {where: {tournament_id: tournament_id, match_id: game.dataValues.nextGame}}).catch(err => {
+                  console.log(err)
+                })
+                await GameMatch.update({player2 : player2}, {where: {id: game.dataValues.nextGame}}).catch(err => {
+                  console.log(err)
+                })
+              }
+            }
+            })
+          } else {
+            // Last game from tournament
+            // Update winner and state from tournament
+            if (winner == 1)
+              await Tournament.update({winner: player1, status: "FINISHED"}, {where: {id: tournament_id}})
+            else
+              await Tournament.update({winner: player2, status: "FINISHED"}, {where: {id: tournament_id}})
+            
+            delete active_tournaments[tournament_id];
+          }
+        })
+    
+        //Update winner from current match
+        await GameMatch.update({winner: winner}, {where: {id: match_id}}).catch(err => {
+          console.log(err)
+        })
+  
+        //Update players that were eliminated from tournament
+        if (winner == 1 ) {
+          await TournamentUser.update({eliminated: true}, {where: {user_id: player2, tournament_id: tournament_id}}).catch(err => {
+            console.log(err)
+          })
+        } else {
+          await TournamentUser.update({eliminated: true}, {where: {user_id: player1, tournament_id: tournament_id}}).catch(err => {
+            console.log(err)
+          })
+        }
+        
+      }
+    } 
+  }
+}
 
 function create_game(match_id, game_id, user1, user2, game_type, tournament_id) {
   user1 = String(user1);
@@ -615,18 +845,18 @@ function create_game(match_id, game_id, user1, user2, game_type, tournament_id) 
                                               current_games[match_id]['state']['isFinished'] = true;
                                               current_games[match_id]['state']['winner'] = "2";
                                               finish_game(match_id, "timeout");
-                                            }, 15000);
+                                            }, 300000);
   current_games[match_id]['timers'][user2] = new Timer(function() {
                                               current_games[match_id]['state']['isFinished'] = true;
                                               current_games[match_id]['state']['winner'] = "1";
                                               finish_game(match_id, "timeout");
-                                            }, 15000);
+                                            }, 300000);
 
   current_games[match_id]['timers'][user1].start();
 
   current_games[match_id]['state']['current_player'] = user1
   if (game_id === 0) {
-    current_games[match_id]['state']['blocked_pos'] = new Set()
+    current_games[match_id]['state']['blocked_pos'] = new Set([18])
     current_games[match_id]['state']['current_pos'] = 18
     current_games[match_id]['state']['valid_squares'] = new Set([10, 11, 12, 17, 19, 24, 25, 26])
   } else if (game_id === 1) {
@@ -658,6 +888,7 @@ function initiate_game(match_id) {
       username1 = u1.dataValues.username
       current_games[match_id]['users'][user1] = [ current_games[match_id]['users'][user1][0], true ]
     }
+    console.log("username1: ", username1)
 
     if (u2 === null)
       username2 = user2
@@ -666,6 +897,8 @@ function initiate_game(match_id) {
       current_games[match_id]['users'][user2] = [ current_games[match_id]['users'][user2][0], true ]
     }
 
+    players_in_game[user1] = match_id;
+    players_in_game[user2] = match_id;
     io.to(users_info[user1]).emit("match_found", {"erro": false, "match_id": match_id, "player1": username1, "player2": username2});
     io.to(users_info[user2]).emit("match_found", {"erro": false, "match_id": match_id, "player1": username1, "player2": username2});
   });
@@ -766,30 +999,39 @@ function validate_gatoscaes_move(user_id, match_id, new_pos) {
   if (current_games[match_id]['state']['player_1_first_move'] && current_games[match_id]['state']['player2'] === user_id)
     current_games[match_id]['state']['player_1_first_move'] = false
   
+
   // Get new square's position [0..49]
-  var adjacents = new Set()
-  var current_pos = new_pos;
+
+  var current_pos = parseInt(new_pos);
 
   current_games[match_id]['state']['player_0_valid_squares'].delete(String(current_pos))
   current_games[match_id]['state']['player_1_valid_squares'].delete(String(current_pos))
-  adjacents.add(String(current_pos-1))
-  adjacents.add(String(current_pos+1))
-  adjacents.add(String(current_pos-8))
-  adjacents.add(String(current_pos+8))
+
+  var n1 = current_pos-1
+  var n2 = current_pos+1
+  var n3 = current_pos-8
+  var n4 = current_pos+8
+  var adjacents = new Set([String(n1), String(n2), String(n3), String(n4)]);
 
   // Remove invalid squares (edge cases)
   if ( [0,1,2,3,4,5,6,7].includes(current_pos) )
-    adjacents.delete(String(current_pos-8));
+    adjacents.delete(String(n3));
 
   if ( [56,57,58,59,60,61,62,63].includes(current_pos) )
-    adjacents.delete(String(current_pos+8));
+    adjacents.delete(String(n4));
 
   if ( [0,8,16,24,32,40,48,56].includes(current_pos) )
-    adjacents.delete(String(current_pos-1));
+    adjacents.delete(String(n1));
 
   if ( [7,15,23,31,39,47,55].includes(current_pos) )
-    adjacents.delete(String(current_pos+1));
-    
+    adjacents.delete(String(n2));
+
+
+  // Remove played position from both player's valid squares
+  var set_current_pos = new Set([String(current_pos)])
+  current_games[match_id]['state']['player_1_valid_squares'] = set_diff(current_games[match_id]['state']['player_1_valid_squares'], set_current_pos)
+  current_games[match_id]['state']['player_0_valid_squares'] = set_diff(current_games[match_id]['state']['player_0_valid_squares'], set_current_pos)
+
   // Add player piece to new square
   if (current_games[match_id]['state']['player1'] === user_id) {
     current_games[match_id]['state']['player_1_valid_squares'] = set_diff(current_games[match_id]['state']['player_1_valid_squares'], adjacents)
@@ -818,18 +1060,20 @@ function validate_gatoscaes_move(user_id, match_id, new_pos) {
 }
 
 
-//endMode: ["invalid_move", "valid_move"]
+//endMode: ["invalid_move", "valid_move", "timeout"]
 async function finish_game(match_id, endMode) {
-  console.log("Tou finnish game")
-  var winner = current_games[match_id]['state']['winner'] 
-  var player1 = current_games[match_id]['state']['player1']
-  var player_1_account_player = current_games[match_id]['users'][player1][1]
-  var player2 = current_games[match_id]['state']['player2'] 
-  var player_2_account_player = current_games[match_id]['users'][player2][1]
-  var game_id = current_games[match_id]['game_id']
-  var game_type = current_games[match_id]['game_type']
+  let current_match = current_games[match_id]
+  console.log("Terminating match ", match_id);
+  var winner = current_match['state']['winner']
+  var player1 = current_match['state']['player1']
+  var player_1_account_player = current_match['users'][player1][1]
+  var player2 = current_match['state']['player2'] 
+  var player_2_account_player = current_match['users'][player2][1]
+  var game_id = current_match['game_id']
+  var game_type = current_match['game_type']
 
-
+  current_match['timers'][player1].pause();
+  current_match['timers'][player2].pause();
 
   let player1_final_result;
   let player2_final_result;
@@ -843,12 +1087,11 @@ async function finish_game(match_id, endMode) {
     player1_final_result = "draw"
     player2_final_result = "draw"
   }
-
   
-  if (current_games[match_id]['tournament'] === null) {
+  if (current_match['tournament'] === null) {
     //Partida não é de torneio , por isso precisamos de criar a instância na BD
 
-    // Create a GameMatch 
+    // Create a GameMatch
     var gameMatch = {
       player1: parseInt(player1),
       player2: parseInt(player2),
@@ -868,52 +1111,85 @@ async function finish_game(match_id, endMode) {
     await GameMatch.create(gameMatch)
   }
   
-  console.log("---- FIM GAME ----")
-  console.log(player1)
-  console.log(player2)
-  console.log(winner)
 
   if (player_1_account_player === true || player_2_account_player === true) {
 
-    if (game_type === "online") {
+    if (game_type === "online" && current_match['tournament'] === null) {
+      // Jogo online modo competitivo
       var jogo = null;
       if (game_id === 0)
         jogo = "rastros"
       else if (game_id === 1)
         jogo = "gatos_e_caes"
       
+      var player1_elo = 0
+      var player2_elo = 0
+
+      if (player_1_account_player) {
+        await UserRank.findByPk(player1).then(ranks_player1 => {
+          player1_elo = ranks_player1.dataValues[jogo]
+        })
+      } else {
+        player1_elo = 700
+      }
+
+      if (player_2_account_player) {
+        await UserRank.findByPk(player2).then(ranks_player2 => {
+          player2_elo = ranks_player2.dataValues[jogo]
+        })
+      } else {
+        player2_elo = 700
+      }
+
+      var higher_elo_difference
+      var lower_elo_difference
+
+      if (player1_elo > player2_elo) {
+        higher_elo_difference = Math.round((1 / (1+Math.pow(10, (player2_elo-player1_elo)/400))) *50)
+        lower_elo_difference = Math.round((1 / (1+Math.pow(10, (player1_elo-player2_elo)/400))) *50)
+      } else {
+        higher_elo_difference = Math.round((1 / (1+Math.pow(10, (player1_elo-player2_elo)/400))) *50)
+        lower_elo_difference = Math.round((1 / (1+Math.pow(10, (player2_elo-player1_elo)/400))) *50)
+      }
+
       if (winner === "1") {
+        if (player1_elo > player2_elo) {
+          player1_elo = player1_elo + lower_elo_difference
+          player2_elo = player2_elo - lower_elo_difference
+        } else {
+          player1_elo = player1_elo + higher_elo_difference
+          player2_elo = player2_elo - higher_elo_difference
+        }
+
         if (player_1_account_player) {
-          await UserRank.findByPk(player1).then(ranks_player1 => {
-            var updated_elo = ranks_player1.dataValues[jogo] + 25;
-            UserRank.update({ [jogo]: updated_elo}, {where: {user_id: player1}}).then(result => {console.log(result)}).catch(err => console.log(err));
-          })
+          UserRank.update({ [jogo]: player1_elo}, {where: {user_id: player1}}).then(result => {console.log(result)}).catch(err => console.log(err));
         }
         if (player_2_account_player) {
-          await UserRank.findByPk(player2).then(ranks_player2 => {
-            var updated_elo = ranks_player2.dataValues[jogo] - 25;
-            UserRank.update({ [jogo]: updated_elo}, {where: {user_id: player2}}).then(result => {console.log(result)}).catch(err => console.log(err));
-          })
+          UserRank.update({ [jogo]: player2_elo}, {where: {user_id: player2}}).then(result => {console.log(result)}).catch(err => console.log(err));
         }
+
       } else if (winner === "2") {
+        if (player1_elo > player2_elo) {
+          player1_elo = player1_elo - higher_elo_difference
+          player2_elo = player2_elo + higher_elo_difference
+        } else {
+          player1_elo = player1_elo - lower_elo_difference
+          player2_elo = player2_elo + lower_elo_difference
+        }
+
         if (player_2_account_player) {
-          await UserRank.findByPk(player2).then(ranks_player2 => {
-            var updated_elo = ranks_player2.dataValues[jogo] + 25;
-            UserRank.update({ [jogo]: updated_elo}, {where: {user_id: player2}}).then(result => {console.log(result)}).catch(err => console.log(err));
-          }).catch(err => {console.log(err)})
+          UserRank.update({ [jogo]: player2_elo}, {where: {user_id: player2}}).then(result => {console.log(result)}).catch(err => console.log(err));
         }
         if (player_1_account_player) {
-          await UserRank.findByPk(player1).then(ranks_player1 => {
-            var updated_elo = ranks_player1.dataValues[jogo] - 25;
-            UserRank.update({ [jogo]: updated_elo}, {where: {user_id: player1}}).then(result => {console.log(result)}).catch(err => console.log(err));
-          })
+          UserRank.update({ [jogo]: player1_elo}, {where: {user_id: player1}}).then(result => {console.log(result)}).catch(err => console.log(err));
         }
       }
+
     }
   }
 
-  if (current_games[match_id]['tournament'] !== null) {
-    var tournament_id = current_games[match_id]['tournament']
+  if (current_match['tournament'] !== null) {
+    var tournament_id = current_match['tournament']
 
     await TournamentMatch.findOne({where: {tournament_id: tournament_id, match_id: match_id}}).then(async (game) => {
       if (game.dataValues.nextGame !== null ) {
@@ -958,15 +1234,24 @@ async function finish_game(match_id, endMode) {
       } else {
         // Last game from tournament
         // Update winner and state from tournament
-        if (winner == 1)
-          await Tournament.update({winner: player1, status: "FINISHED"}, {where: {id: tournament_id}}).catch(err => {
-            console.log(err)
-          })
-        else
-          await Tournament.update({winner: player2, status: "FINISHED"}, {where: {id: tournament_id}}).catch(err => {
-            console.log(err)
-          })
-        
+
+        if (winner == 1) {
+          await Tournament.update({winner: player1, status: "FINISHED"}, {where: {id: tournament_id}}).catch(err => {console.log(err)})
+
+          await User.findOne({where: {id: player1}}).then(async (jogador) => {
+            var new_exp = jogador.dataValues.account_level + 1000
+            await User.update({account_level: new_exp}, {where: {id: player1}}).catch(err => {console.log(err)})
+          }).catch(err => {console.log(err)})
+        }
+        else {
+
+          await Tournament.update({winner: player2, status: "FINISHED"}, {where: {id: tournament_id}}).catch(err => {console.log(err)})
+
+          await User.findOne({where: {id: player2}}).then(async (jogador) => {
+            var new_exp = jogador.dataValues.account_level + 1000
+            await User.update({account_level: new_exp}, {where: {id: player2}}).catch(err => {console.log(err)})
+          }).catch(err => {console.log(err)})
+        }
         delete active_tournaments[tournament_id];
       }
     })
@@ -994,6 +1279,42 @@ async function finish_game(match_id, endMode) {
   delete current_games[match_id];
   delete active_friend_link[match_id];
 
+  delete active_friend_invites[player1];
+  delete active_friend_invites[player2];
+
+  delete players_in_game[player1];
+  delete players_in_game[player2];
+
+}
+
+
+async function create_notification(sender, receiver, notification_type, notification_text) {
+  let notification = {
+    sender: sender,
+    receiver: receiver,
+    notification_type: notification_type,
+    notification_text: notification_text
+  }
+
+  if (notification_type === "F" || notification_type === "A" || notification_type === "N" || notification_type === "P" || notification_type === "T") {
+    var result = await Notification.findOne({where: {
+      sender: sender,
+      receiver: receiver,
+      notification_type: notification_type
+    }})
+
+    if (result !== null) {
+      res.status(405).send({
+        message: "Duplicated notification is not allowed."
+      });
+      return
+    }
+  }
+
+
+  Notification.create(notification).then( succes => {
+    io.to(users_info[receiver]).emit("reload_notifications", {"reload": true})
+  });
 }
 
 var Timer = function(callback, delay) {

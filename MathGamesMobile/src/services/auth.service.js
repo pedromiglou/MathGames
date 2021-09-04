@@ -1,6 +1,6 @@
 import {urlAPI} from "./../data/data";
-import {saveData} from "./../utilities/AsyncStorage";
-import { Alert } from 'react-native';
+import {saveData,readData} from "./../utilities/AsyncStorage";
+import socket from "../utilities/Socket";
 
 class AuthService {
     async login(username, password) {
@@ -19,13 +19,14 @@ class AuthService {
         var json = await res.json()
 
         if(json.id) {
-            saveData("user_id", String(json.username));
+            saveData("user_id", String(json.id));
+            socket.emit("new_user", {"user_id": json.id});
+            saveData("username", String(json.username));
             saveData("user", JSON.stringify(json));
-            return json;
+            return true;
         } else {
-            Alert.alert("Falha no Login");
+            return false;
         }
-        
     }
 
 
@@ -45,38 +46,32 @@ class AuthService {
 
         var json = await res.json();
 
-        console.log(json);
         
         if(json.id) {
-            return json;
+            return false;
+        } else {
+            return json.message;
         }
-        if(json.message === "Failed! Username is already in use!")
-            Alert.alert("O Username já existe");
-        if(json.message === "Failed! Email is already in use!")
-            Alert.alert("O Email já existe");
-        if(json.message === "Password invalid")
-            Alert.alert("Palavra-passe demasiado fraca.")
-        Alert.alert("Ocorreu um problema no registo")
     }
 
-    /*
+    
     getCurrentUser() {
-        return JSON.parse(sessionStorage.getItem("user"))
+        return readData("user");
     }
 
     getCurrentUserId() {
         let current_user = this.getCurrentUser();
-        return current_user !== null ? current_user.id : sessionStorage.getItem('user_id');
+        return current_user !== null ? current_user.id : readData('user_id');
     }
 
     getCurrentUsername() {
         let current_user = this.getCurrentUser();
-        return current_user !== null ? String(current_user.username) : sessionStorage.getItem('user_id');
+        return current_user !== null ? String(current_user.username) : readData('user_id');
     }
 
     isAuthenticated() {
         return this.getCurrentUser() !== null;
-    }*/
+    }
 }
 
 export default new AuthService()

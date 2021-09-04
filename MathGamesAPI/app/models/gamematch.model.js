@@ -23,7 +23,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.CHAR(1),
         validate: {
             winnerValue() {
-                if (!(this.winner == "1" || this.winner == "X" || this.winner == "2")) {
+                if (!(this.winner == "1" || this.winner == "X" || this.winner == "2" || this.winner == "b")) {
                     throw new Error("Winner value error")
                 }
             }
@@ -41,12 +41,13 @@ module.exports = (sequelize, Sequelize) => {
       timestamps: true,
       hooks: {
         afterCreate: async (game_match) => {
-
           let winner = game_match.winner;
+
           let player1 = game_match.player1;
           let player2 = game_match.player2;
 
           if (winner === null) return
+          if (winner === "b") return
 
           if (winner !== "X") {
             //alguem ganhou

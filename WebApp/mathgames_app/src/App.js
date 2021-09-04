@@ -1,5 +1,5 @@
 /* React */
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Switch, Route, withRouter } from 'react-router-dom';
 import * as FaIcons from 'react-icons/fa';
 import {IconContext} from 'react-icons';
@@ -28,9 +28,6 @@ import TournamentPage from './Pages/Tournaments/TournamentPage';
 import Bracket from './Pages/Tournaments/Bracket';
 
 
-/* Uuid */
-import { v4 as uuidv4 } from 'uuid';
-
 
 /* Redux */
 import { Provider } from 'react-redux';
@@ -39,25 +36,53 @@ import store from './store';
 
 
 function App() {
+    const [mobile, setMobile] = useState(window.innerWidth < 500);
 
-    if (sessionStorage.getItem('user_id') === null)
-        sessionStorage.setItem('user_id', "Guest_" + uuidv4());		
-
-
+    window.addEventListener("resize", function() {
+        if (window.innerWidth < 500){
+            setMobile(true)
+            return
+        }
+        setMobile(false)
+        
+        var sidebar = document.getElementById("sidebar");
+        var sidebarBtn = document.getElementById("sidebarCollapse");
+        var main = document.getElementById("content");
+        var icons = document.getElementsByClassName("sidebar-icons");
+        var n;
+        
+        if (window.matchMedia("(max-width: 950px)").matches) {
+            main.style.marginLeft = "65px";
+    
+            sidebar.classList.remove("active");
+            sidebar.classList.add("collapsed");
+    
+            sidebarBtn.classList.remove("active");
+    
+            for (n = icons.length-1; n >= 0; n--) {
+                icons[n].classList.remove("icons-name");
+                icons[n].classList.add("icons-noname");
+            }
+        }
+      })
     
     return(
         <Provider store={store}>
             <BrowserRouter >
-                <div className="wrapper">
+                { mobile && 
+                    <Welcome></Welcome>
+                } 
+                {!mobile && 
+                <>
                     <div id="sidebarCollapse" className="menu-bars" onClick={toggleNav}>
-                        <IconContext.Provider value={{color: 'grey'}}>
-                            <FaIcons.FaBars/>
-                        </IconContext.Provider>
+                    <IconContext.Provider value={{color: 'grey'}}>
+                        <FaIcons.FaBars/>
+                    </IconContext.Provider>
                     </div>
 
                     <Navbar/>
 
-                    <nav id="sidebar" className="nav-menu active">
+                    <nav id="sidebar" className="nav-menu collapsed">
                         <Sidemenu/>
                     </nav>
 
@@ -79,12 +104,16 @@ function App() {
                             <Route path='/bracket' component={withRouter(Bracket)}/>
                         </Switch>
                     </div>
+                </>
+                }
+                
 
-                </div>
+            
             </BrowserRouter>
         </Provider>
     )
 }
+
 
 function toggleNav() {
     var sidebar = document.getElementById("sidebar");
@@ -95,6 +124,7 @@ function toggleNav() {
 
     if ( sidebar.classList.contains("active") ) {
         main.style.marginLeft = "65px";
+        main.style.transition = "700ms";
 
         sidebar.classList.remove("active");
         sidebar.classList.add("collapsed");
@@ -107,6 +137,7 @@ function toggleNav() {
         }
     } else {
         main.style.marginLeft = "300px";
+        main.style.transition = "600ms";
 
         sidebar.classList.add("active");
         sidebar.classList.remove("collapsed");

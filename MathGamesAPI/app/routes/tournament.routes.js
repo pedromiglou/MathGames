@@ -4,31 +4,189 @@ module.exports = app => {
     const tournaments = require("../controllers/tournament.controller.js");
     var router = require("express").Router();
   
-    // Create a new tournament
+    /**
+     * @swagger
+     * /api/tournaments/:
+     *  post:
+     *    description: Creates a new tournament
+     *    responses: 
+     *      '200':
+     *         description: Tournament created with success
+     *      '401':
+     *         description: Unauthorized operation
+     *      '403':
+     *         description: No token provided
+     *      '500':
+     *         description: An internal error has occoured
+     */
     router.post("/", [authJwt.verifyToken, authJwt.isTournamentManager], tournaments.create);
 
-    // Join a tournament
+    /**
+     * @swagger
+     * /api/tournaments/joins:
+     *  post:
+     *    description: Player wants to join a tournament
+     *    responses: 
+     *      '200':
+     *         description: Player joinned tournament with success
+     *      '401':
+     *         description: Unauthorized operation
+     *      '403':
+     *         description: No token provided
+     *      '500':
+     *         description: An internal error has occoured
+     */
     router.post("/join", [authJwt.verifyToken], tournaments.join);
 
-    // Initialize tournament
-    router.post("/initialize", [authJwt.verifyToken], tournaments.initialize);
+    /**
+     * @swagger
+     * /api/tournaments/initialize:
+     *  post:
+     *    description: Tournament owner wants to initialize the tournament. Instances are created on the database
+     *    responses: 
+     *      '200':
+     *         description: Tournament starts with success
+     *      '401':
+     *         description: Unauthorized operation
+     *      '403':
+     *         description: No token provided
+     *      '500':
+     *         description: An internal error has occoured
+     */
+    router.post("/initialize", [authJwt.verifyToken, authJwt.isTournamentManager], tournaments.initialize);
 
-    router.post("/initializeround", [authJwt.verifyToken], tournaments.initializeround);
+    /**
+     * @swagger
+     * /api/tournaments/initializeround:
+     *  post:
+     *    description: Tournament owner wants to initialize a new round
+     *    responses: 
+     *      '200':
+     *         description: New round is initialized with success
+     *      '401':
+     *         description: Unauthorized operation
+     *      '403':
+     *         description: No token provided
+     *      '500':
+     *         description: An internal error has occoured
+     */
+    router.post("/initializeround", [authJwt.verifyToken, authJwt.isTournamentManager], tournaments.initializeround);
   
-    // Retrieve all tournaments
+    /**
+     * @swagger
+     * /api/tournaments/:
+     *  get:
+     *    description: Retrieves information regarding all tournaments
+     *    responses: 
+     *      '200':
+     *         description: Retrieved all tournaments with success
+     *      '401':
+     *         description: Unauthorized operation
+     *      '403':
+     *         description: No token provided
+     *      '500':
+     *         description: An internal error has occoured
+     */
     router.get("/", [authJwt.verifyToken], tournaments.findAll);
   
-    // Retrieve a single tournament with id
+    /**
+     * @swagger
+     * /api/tournaments/:id:
+     *  get:
+     *    description: Retrieves information of a tournament by tournament id
+     *    responses: 
+     *      '200':
+     *         description: Retrieved required tournament with success
+     *      '401':
+     *         description: Unauthorized operation
+     *      '403':
+     *         description: No token provided
+     *      '500':
+     *         description: An internal error has occoured
+     */
     router.get("/:id", [authJwt.verifyToken], tournaments.findOne);
 
-    // Update a tournament with id
-    router.put("/:id", [authJwt.verifyToken], tournaments.update);
+
+    /**
+     * @swagger
+     * /api/tournaments/name/:name:
+     *  get:
+     *    description: Retrieve a single tournament by name
+     *    responses: 
+     *      '200':
+     *         description: Succesfully returned requested tournament    
+     *      '500':
+     *         description: An internal error has occoured
+     */
+     router.get("/name/:name", [authJwt.verifyToken], tournaments.findByName);
+
+    /**
+     * @swagger
+     * /api/tournaments/creator/:id:
+     *  get:
+     *    description: Retrieves information of all tournament that belong to creator by creator id
+     *    responses: 
+     *      '200':
+     *         description: Retrieved required tournament with success
+     *      '401':
+     *         description: Unauthorized operation
+     *      '403':
+     *         description: No token provided
+     *      '500':
+     *         description: An internal error has occoured
+     */
+     router.get("/creator/:id", [authJwt.verifyToken, authJwt.isTournamentManager], tournaments.findByCreator);
+
+    /**
+     * @swagger
+     * /api/tournaments/:id:
+     *  put:
+     *    description: Updates tournament information by tournament id
+     *    responses: 
+     *      '200':
+     *         description: Tournament is updated with success
+     *      '401':
+     *         description: Unauthorized operation
+     *      '403':
+     *         description: No token provided
+     *      '500':
+     *         description: An internal error has occoured
+     */
+    router.put("/:id", [authJwt.verifyToken, authJwt.isTournamentManager], tournaments.update);
   
-    // Delete a tournament with id
-    router.delete("/:id", [authJwt.verifyToken], tournaments.delete);
+    /**
+     * @swagger
+     * /api/tournaments/:id:
+     *  delete:
+     *    description: Delete tournament by tournament id
+     *    responses: 
+     *      '200':
+     *         description: Tournament was deleted with success
+     *      '401':
+     *         description: Unauthorized operation
+     *      '403':
+     *         description: No token provided
+     *      '500':
+     *         description: An internal error has occoured
+     */
+    router.delete("/:id", [authJwt.verifyToken, authJwt.isTournamentManager], tournaments.delete);
   
-    // Delete all tournaments
-    router.delete("/", tournaments.deleteAll);
+    /**
+     * @swagger
+     * /api/tournaments/:
+     *  delete:
+     *    description: Delete all tournaments
+     *    responses: 
+     *      '200':
+     *         description: All tournaments was deleted with success
+     *      '401':
+     *         description: Unauthorized operation
+     *      '403':
+     *         description: No token provided
+     *      '500':
+     *         description: An internal error has occoured
+     */
+    router.delete("/", [authJwt.verifyToken, authJwt.isAdmin], tournaments.deleteAll);
   
     app.use('/api/tournaments', router);
   };

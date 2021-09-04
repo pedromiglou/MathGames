@@ -202,14 +202,14 @@ class UserService {
         return;
     }
 
-    accept_friendship(notification) {
+    async accept_friendship(notification) {
         let friends= {
             friend1: notification.sender_user.sender_id,
             friend2: notification.receiver,
         }
 
         var url = urlAPI + 'api/friends/';
-        fetch(url, {
+        await fetch(url, {
             method:'POST',
             headers:{'Content-type':'application/json',
                      'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
@@ -219,11 +219,12 @@ class UserService {
         return;
     }
 
-    async send_notification_request(sender, receiver, not_type) {
+    async send_notification_request(sender, receiver, not_type, not_text) {
         let request= {
             sender: sender,
             receiver: receiver,
-            notification_type: not_type
+            notification_type: not_type,
+            notification_text: not_text
         }
 
         var url = urlAPI + 'api/notifications/';
@@ -235,9 +236,36 @@ class UserService {
             body: JSON.stringify(request)
         });
 
-        return;        
     }
 
+
+
+    async send_notification_request_by_username(sender, receiver, not_type, not_text) {
+        var url1 = urlAPI + 'api/users/username/'+receiver
+        fetch(url1, {headers: {'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}}).then(res => {
+            if (res.status !== 200) {
+                return {"error": true};
+            }
+            res.json().then( async (result) => {
+                let request= {
+                    sender: sender,
+                    receiver: result.id,
+                    notification_type: not_type,
+                    notification_text: not_text
+                }
+        
+                var url = urlAPI + 'api/notifications/';
+                
+                await fetch(url, {
+                    method:'POST',
+                    headers:{'Content-type':'application/json',
+                             'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
+                    body: JSON.stringify(request)
+                });
+        
+            });
+        });
+    }
 
 
     async remove_friend(friend1, friend2) {
@@ -249,7 +277,6 @@ class UserService {
                      'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
         });
 
-        return;    
     }
     
     async report_player(sender, receiver, reason) {
@@ -291,7 +318,6 @@ class UserService {
             body: JSON.stringify(ban)
         });
 
-        return;    
     }
 
     async remove_ban(player) {
@@ -303,7 +329,6 @@ class UserService {
                      'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
         });
 
-        return;    
     }
 
     async upgrade_account(player) {
@@ -315,7 +340,6 @@ class UserService {
                         'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
         });
 
-        return;    
     }
 
     async downgrade_account(player) {
@@ -327,7 +351,6 @@ class UserService {
                         'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]},
         });
 
-        return;  
     }
 
     convert_user_rank(accountRank) {

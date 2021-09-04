@@ -16,7 +16,7 @@ export default class RastrosAI {
 		} else if (dif==="medium") {
 			this.dif = 0.5;
 		} else if (dif==="hard") {
-			this.dif===0.8;
+			this.dif = 0.8;
 		}
 		this.turnCount=0;
 	}

@@ -11,9 +11,34 @@ class TournamentService {
         return res.json();
     }
 
+    async getTournamentByName(name) {
+        var url = urlAPI + 'api/tournaments/name/' + name;
+        var res = await fetch(url, {
+            method:'GET',
+            headers:{'Content-type':'application/json',
+            'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        if (res.status !== 200) 
+            return null;
+        return res.json();
+    }
 
-    async getTournamentsWithFilters(nome, capacidade, privado, page, pageSize) {
+    async getTournamentByCreator(creator_id, page, pageSize) {
+        var url = urlAPI + 'api/tournaments/creator/' + creator_id + '?page=' + page + '&size=' + pageSize;
+        console.log(url);
+        var res = await fetch(url, {
+            method:'GET',
+            headers:{'Content-type':'application/json',
+            'x-access-token': JSON.parse(sessionStorage.getItem("user"))["token"]}});
+        console.log(res);
+        return res.json();
+    }
+
+
+    async getTournamentsWithFilters(nome, capacidade, privado, jogos, page, pageSize) {
         var url = urlAPI + 'api/tournaments?page=' + page + '&size=' + pageSize;
+        if (jogos !== null) {
+            url = url +'&jogos='+jogos;
+        }
         if (privado !== null && privado !== undefined)
             url = url + '&private='+privado;
 
@@ -75,7 +100,11 @@ class TournamentService {
             body: JSON.stringify(tournament)
         });
         if (res.status !== 200) {
-            return {error: true}
+            if (res.status === 400) {
+                return {error: true, message: "Tournament name is already in use!"}
+            } else {
+                return {error: true, message: "Internal Server Error"}
+            }
         }
         return {error: false};
     }
@@ -112,7 +141,10 @@ class TournamentService {
             body: JSON.stringify(tournament)
         });
         if (res.status !== 200) {
-            return {error: true}
+            if (res.status === 404)
+                return {error: true, message: "The tournament should have atleast 3 players"}
+            else
+                return {error: true}
         }
         return {error: false};
 

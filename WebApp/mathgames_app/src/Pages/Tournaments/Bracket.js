@@ -1,4 +1,6 @@
 import React, {useEffect, useState} from "react";
+import {useHistory} from 'react-router-dom';
+
 
 import "./Bracket.css";
 
@@ -75,86 +77,12 @@ function Bracket() {
 
 
 
-    async function renderBrackets(struct) {
-        var bracketCount = 0;
-        var groupCount = struct.map(function(s) { return s.roundNo; }).filter((v, i, a) => a.indexOf(v) === i).length; 
-
-        var group = document.createElement("div");
-        group.className = "group"+(groupCount+1);
-        group.id = "b"+bracketCount
-
-        const groupBy = key => array =>
-            array.reduce((objectsByKeyValue, obj) => {
-                const value = obj[key];
-                objectsByKeyValue[value] = (objectsByKeyValue[value] || []).concat(obj);
-                return objectsByKeyValue;
-         }, {});
-
-        const groupByRound = groupBy('roundNo');
-        var grouped = groupByRound(struct)
-        
-        for(let g=1;g<=groupCount;g++) {
-
-            var round = document.createElement("div");
-            round.className = "r"+g;
-
-            grouped[g].forEach(function(gg) {
-                if(gg.bye) {
-                    var newdiv = document.createElement("div")
-                    round.appendChild(newdiv)
-                }
-                else {
-                    var span3 = document.createElement("span")
-                    span3.className = "teama"
-                    span3.innerHTML = (gg.player1 === null ? "null" : gg.player1)
-                    var span4 = document.createElement("span")
-                    span4.className = "teamb"
-                    span4.innerHTML = (gg.player2 === null ? "null" : gg.player2)
-                    var div1 = document.createElement("div")
-                    div1.className = "bracketbox"
-                    div1.appendChild(span3)
-                    div1.appendChild(span4)
-                    var div2 = document.createElement("div")
-                    div2.appendChild(div1)
-                    round.appendChild(div2)
-                }
-            });
-
-            group.appendChild(round);
-        }
-        
-        var lastdiv = document.createElement("div")
-        lastdiv.className = "r"+(groupCount+1)
-        var lastdiv2 = document.createElement("div")
-        lastdiv2.className="final"
-        var lastdiv3 = document.createElement("div")
-        lastdiv3.className="bracketbox"
-        var lastspan1 = document.createElement("span")
-        lastspan1.className = "teamc"
-
-        var torneio = await TournamentService.getTournamentById(tournament_id)
-        var winner = "null";
-        console.log(players)
-        console.log(torneio)
-        if (torneio !== undefined && torneio.winner !== null) {
-            winner = players[torneio.winner].username
-        }
-        lastspan1.innerHTML = winner
-        lastdiv3.appendChild(lastspan1)
-        lastdiv2.appendChild(lastdiv3)
-        lastdiv.appendChild(lastdiv2)
-        group.appendChild(lastdiv)
-        
-        var elemento = document.getElementsByClassName("brackets")
-        elemento[0].appendChild(group)        
-        bracketCount++;
-    }
-
-    const [players, setPlayers] = useState({})
-    const [matches, setMatches] = useState([])
-    const [bracket, setBracket] = useState([])
+    const [players] = useState({})
+    const [bracket] = useState([])
     const [readyToDisplay, setReadyToDisplay] = useState(false)
     const [bracketUnavailable, setBracketUnavailable] = useState(false)
+
+    const history = useHistory();
 
     const url = new URLSearchParams(window.location.search);
 	let tournament_id = url.get("id");
@@ -162,7 +90,7 @@ function Bracket() {
        window.location.assign(urlWeb)
     }
  
-    const retrieveInformation = async () => {
+    const retrieveInformation = () => {
         async function checkTournamentStatus() {
             setBracketUnavailable(false)
             var response = await TournamentService.getTournamentById(tournament_id)
@@ -173,6 +101,8 @@ function Bracket() {
                     return true
                 }
                 return false
+            } else {
+                history.push("/tournaments")
             }
             return false
         }
@@ -180,7 +110,6 @@ function Bracket() {
         async function fetchApiTournamentMatches() {
             var response = await TournamentService.getMatchesByTournament(tournament_id)
             if (!response["message"]) {
-                setMatches(response)
                 for (let match of response) {
                     bracket.push({ 
                         matchNo: match.match_id,
@@ -205,22 +134,101 @@ function Bracket() {
             }
         }
 
-        var notavailable = await checkTournamentStatus();
-        if (notavailable) return;
-        await fetchApiTournamentPlayers();
-        await fetchApiTournamentMatches();
-        setReadyToDisplay(true)
+        async function getData() {
+            var notavailable = await checkTournamentStatus();
+            if (notavailable) return;
+            await fetchApiTournamentPlayers();
+            await fetchApiTournamentMatches();
+            setReadyToDisplay(true)
+        }
+        getData()
     }
 
     useEffect(
         retrieveInformation
-    , []) 
+    , [bracket, players, tournament_id, history]) 
 
 
     useEffect( () => {
+
+        async function renderBrackets(struct) {
+            var bracketCount = 0;
+            var groupCount = struct.map(function(s) { return s.roundNo; }).filter((v, i, a) => a.indexOf(v) === i).length; 
+
+            var group = document.createElement("div");
+            group.className = "group"+(groupCount+1);
+            group.id = "b"+bracketCount
+    
+            const groupBy = key => array =>
+                array.reduce((objectsByKeyValue, obj) => {
+                    const value = obj[key];
+                    objectsByKeyValue[value] = (objectsByKeyValue[value] || []).concat(obj);
+                    return objectsByKeyValue;
+             }, {});
+    
+            const groupByRound = groupBy('roundNo');
+            var grouped = groupByRound(struct)
+
+            for(let g=1;g<=groupCount;g++) {
+    
+                var round = document.createElement("div");
+                round.className = "r"+g;
+    
+                for (let gg = 0; gg < grouped[g].length; gg++) {
+                    if(grouped[g][gg].bye) {
+                        var newdiv = document.createElement("div")
+                        round.appendChild(newdiv)
+                    }
+                    else {
+                        var span3 = document.createElement("span")
+                        span3.className = "teama"
+                        span3.innerHTML = (grouped[g][gg].player1 === null ? "null" : grouped[g][gg].player1)
+                        var span4 = document.createElement("span")
+                        span4.className = "teamb"
+                        span4.innerHTML = (grouped[g][gg].player2 === null ? "null" : grouped[g][gg].player2)
+                        var div1 = document.createElement("div")
+                        div1.className = "bracketbox"
+                        div1.appendChild(span3)
+                        div1.appendChild(span4)
+                        var div2 = document.createElement("div")
+                        div2.appendChild(div1)
+                        round.appendChild(div2)
+                    }
+                }
+    
+                group.appendChild(round);
+            }
+            
+            var lastdiv = document.createElement("div")
+            lastdiv.className = "r"+(groupCount+1)
+            var lastdiv2 = document.createElement("div")
+            lastdiv2.className="final"
+            var lastdiv3 = document.createElement("div")
+            lastdiv3.className="bracketbox"
+            var lastspan1 = document.createElement("span")
+            lastspan1.className = "teamc"
+    
+            var torneio = await TournamentService.getTournamentById(tournament_id)
+            var winner = "null";
+            console.log(players)
+            console.log(torneio)
+            if (torneio !== undefined && torneio.winner !== null) {
+                winner = players[torneio.winner].username
+            }
+            lastspan1.innerHTML = winner
+            lastdiv3.appendChild(lastspan1)
+            lastdiv2.appendChild(lastdiv3)
+            lastdiv.appendChild(lastdiv2)
+            group.appendChild(lastdiv)
+            
+            var elemento = document.getElementsByClassName("brackets")
+            elemento[0].appendChild(group)        
+            bracketCount++;
+        }
+
         if (readyToDisplay === true)
             renderBrackets(bracket)
-    },[readyToDisplay])
+    },[bracket, readyToDisplay, players, tournament_id])
 
 
     if (bracketUnavailable) {

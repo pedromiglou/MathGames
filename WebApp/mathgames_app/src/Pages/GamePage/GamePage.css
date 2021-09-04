@@ -1,6 +1,7 @@
 /* Global container */
 .choose-game-mode-container {
 	margin-top: 20px;
+    margin-bottom: 20px;
     width: 100%;
 }
 
@@ -83,7 +84,7 @@
 
 .progress.caract{
     height: 30px;
-    margin-bottom: 50px;
+    margin-bottom: 40px;
 }
 
 .player-info-and-modes {
@@ -124,6 +125,7 @@
 
     transform: translateY(1000px);
     animation: slideIn 0.8s ease forwards 0.5s;
+    height: 643px;
 }
 
 .center-progress-bar {
@@ -164,11 +166,77 @@
     padding: 15px;
 }
 
-.title-gamemode{
+.title-gamemode {
     font-size: 2.2rem;
     text-align: left;
     padding-top: 10px;
 }
+
+.matchmaking-search {
+    font-size: 1.3rem;
+}
+
+/* Searching for game section */
+.DeliveriesSection.wait{
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5%;
+}
+
+.DeliveriesSection.wait > *:nth-child(1) {
+    flex: 1 1 30%;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-items: center;
+}
+
+.DeliveriesSection.wait > *:nth-child(2) {
+    flex: 1 1 65%;
+}
+
+.DeliveriesSection {
+    height: 100%;
+    min-height: 400px;
+    display: flex;
+}
+
+.bouncer{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 100px;
+    width: 100px;
+}
+
+.bouncer div{
+    width: 20px;
+    height: 20px;
+    background-color: #0077ff;
+    border-radius: 50%;
+    animation: bouncer 0.5s cubic-bezier(.19,.57,.3,.98) infinite alternate;
+}
+
+.bouncer div:nth-child(2){
+    animation-delay: 0.1s;
+    opacity: 0.8;
+}
+.bouncer div:nth-child(3){
+    animation-delay: 0.2s;
+    opacity: 0.6;
+}
+.bouncer div:nth-child(4){
+    animation-delay: 0.3s;
+    opacity: 0.4;
+}
+
+@keyframes bouncer {
+    from { transform: translate(0);}
+    to {transform: translateY(-100px);}
+}
+/* Searching for game section */
 
 .mode-card {
     text-align: center;
@@ -326,6 +394,23 @@
     cursor: not-allowed;
 }
 
+.button-stop{
+    margin-top: 25px;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+    padding: 0.3em 1em;
+    border-radius: 2%;
+    border: 3px solid white;
+    color: white;
+    background: linear-gradient(100deg,#b30909, #ff0000);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite !important;
+    cursor: pointer;
+}
+
+.button-stop:hover{
+    transform: scale(1.3);
+}
 
 .choose_names{
     display: flex;
